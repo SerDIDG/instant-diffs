@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.2.0-b.10',
+		version: '1.2.0-b.11',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -139,6 +139,7 @@ $( function () {
 			'Special:Diff',
 			'Special:PermanentLink',
 			'Special:MobileDiff',
+			'Special:Redirect',
 		],
 		specialPagesSearchRegExp: '^($1)',									// $1 - joined specialPages
 		specialPagesPathRegExp: '$1($2)',									// $1 - article path, $2 - joined specialPages
@@ -261,10 +262,13 @@ $( function () {
 		links: new Map(),
 		linkSelector: null,
 
-		specialPages: [],
-		specialPagesPrefixed: [],
+		specialPages: {},
+		specialPagesPrefixed: {},
+		specialPagesLocal: {},
+		specialPagesLocalPrefixed: [],
 		specialPagesAliases: {},
 		specialPagesAliasesPrefixed: {},
+
 		specialPagesPathRegExp: null,
 		specialPagesSearchRegExp: null,
 		articlePathRegExp: null,
@@ -443,6 +447,21 @@ $( function () {
 		console.info( `${ _utils.msg( 'name' ) }: ${ name }: ${ diff }.` );
 	};
 
+	_utils.getSpecialPageAliases = ( data, name ) => {
+		const namespace = 'Special';
+		const localNamespace = mw.config.get( 'wgFormattedNamespaces' )[ '-1' ];
+		const nameParts = name.split( ':' );
+		const localName = data[ name ];
+		const localNameParts = localName.split( ':' );
+
+		// Collect aliases variants
+		nameParts[ 0 ] = localNamespace;
+		localNameParts[ 0 ] = namespace;
+
+		const values = [ name, localName, nameParts.join( ':' ), localNameParts.join( ':' ) ];
+		return [ ...new Set( values ) ];
+	};
+
 	/*** LINKS ***/
 
 	_utils.getLinks = ( $container ) => {
@@ -588,18 +607,36 @@ $( function () {
 	};
 
 	_utils.getSplitSpecialUrl = ( title ) => {
-		const localizedPermanentLink = _local.specialPagesAliasesPrefixed[ 'Special:PermanentLink' ];
-		const splitParams = title.split( '/' );
+		const titleParts = title.split( '/' );
 		const page = {};
-		if ( splitParams[ 0 ] === localizedPermanentLink ) {
-			page.oldid = splitParams[ 1 ];
-		} else {
-			if ( splitParams.length > 1 ) {
-				page.diff = splitParams.pop();
+
+		// Check for the 'Special:PermanentLink'
+		const permanentLink = _local.specialPagesAliasesPrefixed[ 'Special:PermanentLink' ];
+		if ( permanentLink.includes( titleParts[ 0 ] ) ) {
+			page.oldid = titleParts[ 1 ];
+			return page;
+		}
+
+		// Check for the 'Special:Redirect'
+		const redirect = _local.specialPagesAliasesPrefixed[ 'Special:Redirect' ];
+		if ( redirect.includes( titleParts[ 0 ] ) ) {
+			if ( titleParts[ 1 ] === 'revision' ) {
+				page.oldid = titleParts[ 2 ];
+				return page;
 			}
-			if ( splitParams.length > 1 ) {
-				page.oldid = splitParams.pop();
+			if ( titleParts[ 1 ] === 'page' ) {
+				page.curid = titleParts[ 2 ];
+				return page;
 			}
+			return page;
+		}
+
+		// Other special pages
+		if ( titleParts.length > 1 ) {
+			page.diff = titleParts.pop();
+		}
+		if ( titleParts.length > 1 ) {
+			page.oldid = titleParts.pop();
 		}
 		return page;
 	};
@@ -3574,11 +3611,16 @@ $( function () {
 	}
 
 	function getLocalizedTitles() {
+		// Convert to the key value format
+		_config.specialPages.forEach( name => {
+			_local.specialPages[ name ] = name;
+		} );
+
 		// Try to get cached specialPages from local storage
-		_local.specialPagesAliases = mw.storage.getObject( `${ _config.prefix }-specialPagesAliases` );
+		_local.specialPagesLocal = mw.storage.getObject( `${ _config.prefix }-specialPagesLocal` );
 		if (
-			_local.specialPagesAliases &&
-			Object.keys( _local.specialPagesAliases ).length === _config.specialPages.length
+			_local.specialPagesLocal &&
+			Object.keys( _local.specialPagesLocal ).length === Object.keys( _local.specialPages ).length
 		) {
 			return true;
 		}
@@ -3598,21 +3640,21 @@ $( function () {
 	function onRequestLocalizedTitlesDone( data ) {
 		if ( !data?.query?.pages ) return;
 
-		_local.specialPagesAliases = {};
+		_local.specialPagesLocal = {};
 
 		// Fallback for names of special pages
-		_config.specialPages.forEach( item => {
-			_local.specialPagesAliases[ item ] = item;
-		} );
+		for ( const [ key, value ] of Object.entries( _local.specialPages ) ) {
+			_local.specialPagesLocal[ key ] = value;
+		}
 
 		// Localized names of special pages
 		if ( data.query.normalized ) {
 			data.query.normalized.forEach( item => {
-				_local.specialPagesAliases[ item.from ] = item.to;
+				_local.specialPagesLocal[ item.from ] = item.to;
 			} );
 		}
 
-		mw.storage.setObject( `${ _config.prefix }-specialPagesAliases`, _local.specialPagesAliases );
+		mw.storage.setObject( `${ _config.prefix }-specialPagesLocal`, _local.specialPagesLocal );
 	}
 
 	function getMessages() {
@@ -3645,35 +3687,35 @@ $( function () {
 		} );
 
 		// Assemble special pages link selector
-		_local.specialPages = [];
-		_local.specialPagesPrefixed = [];
-		_local.specialPagesAliasesPrefixed = {};
+		for ( const [ name, local ] of Object.entries( _local.specialPagesLocal ) ) {
+			const namePrefixed = new mw.Title( name ).getPrefixedDb();
+			const localPrefixed = new mw.Title( local ).getPrefixedDb();
 
-		const specialPagesKeys = Object.keys( _local.specialPagesAliases );
-		specialPagesKeys.forEach( name => {
-			const title = _local.specialPagesAliases[ name ];
-			const titlePrefixed = new mw.Title( title ).getPrefixedDb();
+			_local.specialPagesPrefixed[ name ] = namePrefixed;
+			_local.specialPagesLocalPrefixed[ name ] = localPrefixed;
 
-			_local.specialPagesPrefixed.push( titlePrefixed );
-			_local.specialPagesAliasesPrefixed[ name ] = titlePrefixed;
+			_local.specialPagesAliases[ name ] = _utils.getSpecialPageAliases( _local.specialPagesLocal, name );
+			_local.specialPagesAliasesPrefixed[ name ] = _utils.getSpecialPageAliases( _local.specialPagesLocalPrefixed, name );
 
-			linkSelector.push(
-				_config.specialPagesSelector.replaceAll( '$1', title ),
-			);
-		} );
+			_local.specialPagesAliases[ name ].forEach( title => {
+				linkSelector.push(
+					_config.specialPagesSelector.replaceAll( '$1', title ),
+				);
+			} );
+		}
 
 		// Join link selector assembled results
 		_local.linkSelector = linkSelector.join( ',' );
 
 		// Assemble RegExp for testing page titles in the links
-		const specialPagesPrefixed = _local.specialPagesPrefixed.join( '|' );
+		const specialPagesAliasesPrefixed = Object.values( _local.specialPagesAliasesPrefixed ).flat().join( '|' );
 		_local.specialPagesPathRegExp = new RegExp(
 			_config.specialPagesPathRegExp
 				.replaceAll( '$1', _local.mwArticlePath )
-				.replaceAll( '$2', specialPagesPrefixed ),
+				.replaceAll( '$2', specialPagesAliasesPrefixed ),
 		);
 		_local.specialPagesSearchRegExp = new RegExp(
-			_config.specialPagesSearchRegExp.replaceAll( '$1', specialPagesPrefixed ),
+			_config.specialPagesSearchRegExp.replaceAll( '$1', specialPagesAliasesPrefixed ),
 		);
 	}
 
