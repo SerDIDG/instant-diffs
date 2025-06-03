@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.2.2-gm',
+		version: '1.2.3-gm',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -2903,7 +2903,7 @@ $( function () {
 		return this.page;
 	};
 
-	DialogButton.prototype.getType = function () {
+	HistoryCompareButton.prototype.getType = function () {
 		return 'diff';
 	};
 
