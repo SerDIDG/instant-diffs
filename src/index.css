@@ -1,0 +1,600 @@
+/******* VARIABLES *******/
+
+:root {
+	--instantDiffs-label-diff: '❖';
+	--instantDiffs-label-revision: '✪';
+	--instantDiffs-label-placeholder: '◇';
+
+	--instantDiffs-color-link: var(--color-progressive, #36c);
+	--instantDiffs-color-link--hover: var(--color-progressive--hover, #3056a9);
+	--instantDiffs-color-link--active: var(--color-progressive--active, #233566);
+
+	--instantDiffs-background-line: color-mix(in srgb, var(--border-color-progressive, #cfe3ff) 30%, transparent);
+	--instantDiffs-background-navigation: color-mix(in srgb, var(--background-color-base, #ffffff) 70%, transparent);
+}
+
+.skin-fandomdesktop {
+	--instantDiffs-background-navigation: color-mix(in srgb, var(--theme-page-background-color--secondary, #ffffff) 70%, transparent);
+}
+
+.skin-citizen {
+	--instantDiffs-color-link: var(--color-link);
+	--instantDiffs-color-link--hover: var(--color-link--hover);
+	--instantDiffs-color-link--active: var(--color-link--active);
+}
+
+/******* UTIL *******/
+
+.instantDiffs-hidden {
+	display: none;
+}
+
+/******* LINK *******/
+
+.instantDiffs-link {
+	padding-inline: .25em;
+	-webkit-box-decoration-break: clone;
+	box-decoration-break: clone;
+	border-radius: 1em;
+	background: var(--background-color-progressive-subtle, #f1f4fd);
+	color: var(--instantDiffs-color-link);
+	text-decoration: none;
+}
+
+.instantDiffs-link:is(:hover, :focus-visible) {
+	background: var(--background-color-interactive-subtle--hover, #eaecf0);
+	color: var(--instantDiffs-color-link--hover);
+	text-decoration: none;
+}
+
+.instantDiffs-link:is(:active, :focus) {
+	background: var(--background-color-interactive-subtle--active, #dadde3);
+	color: var(--instantDiffs-color-link--active);
+	text-decoration: none;
+}
+
+.instantDiffs-link--diff.is-insertBefore::before {
+	content: var(--instantDiffs-label-diff);
+}
+
+.instantDiffs-link--diff.is-insertAfter::after {
+	content: var(--instantDiffs-label-diff);
+}
+
+.instantDiffs-link--revision.is-insertBefore::before {
+	content: var(--instantDiffs-label-revision);
+}
+
+.instantDiffs-link--revision.is-insertAfter::after {
+	content: var(--instantDiffs-label-revision);
+}
+
+body.ltr .instantDiffs-link::before,
+.mw-parser-output.mw-content-ltr .instantDiffs-link::before {
+	margin-right: .25em;
+	margin-left: 0;
+}
+
+body.ltr .instantDiffs-link::after,
+.mw-parser-output.mw-content-ltr .instantDiffs-link::after {
+	margin-right: 0;
+	margin-left: .25em;
+}
+
+body.rtl .instantDiffs-link::before,
+.mw-parser-output.mw-content-rtl .instantDiffs-link::before {
+	margin-right: 0;
+	margin-left: .25em;
+}
+
+body.rtl .instantDiffs-link::after,
+.mw-parser-output.mw-content-rtl .instantDiffs-link::after {
+	margin-right: .25em;
+	margin-left: 0;
+}
+
+.instantDiffs-link--pending {
+	cursor: wait !important;
+}
+
+.instantDiffs-link--error {
+	background: var(--background-color-error-subtle, #ffe9e5);
+	color: var(--color-error, #bf3c2c);
+}
+
+.instantDiffs-link--error:is(:hover, :focus-visible) {
+	background: var(--background-color-error-subtle--hover, #ffdad3);
+	color: var(--color-error--hover, #9f3526);
+}
+
+.instantDiffs-link--error:is(:active, :focus) {
+	background: var(--background-color-error-subtle--active, #ffc8bd);
+	color: var(--color-error--active, #612419);
+}
+
+/* [Fix] Override link background for the "pending edits" link in the Watchlist */
+.flaggedrevs-pending > .instantDiffs-link {
+	background: transparent;
+}
+
+/******* PANEL *******/
+
+.instantDiffs-panel {
+	margin-right: .25em;
+	margin-left: .25em;
+	font-weight: normal;
+	font-style: normal;
+	color: #72777d;
+	user-select: none;
+}
+
+.instantDiffs-panel:is(:empty) {
+	display: none !important;;
+}
+
+span.instantDiffs-panel {
+	display: inline;
+}
+
+.instantDiffs-panel a {
+	cursor: pointer;
+	color: inherit;
+}
+
+body.ltr .instantDiffs-panel .item:not(:last-child),
+.mw-parser-output.mw-content-ltr .instantDiffs-panel .item:not(:last-child) {
+	margin-right: .25em;
+	margin-left: 0;
+}
+
+body.rtl .instantDiffs-panel .item:not(:last-child),
+.mw-parser-output.mw-content-rtl .instantDiffs-panel .item:not(:last-child) {
+	margin-right: 0;
+	margin-left: .25em;
+}
+
+.instantDiffs-panel .error {
+	font-size: inherit;
+}
+
+.instantDiffs-panel .error-info {
+	cursor: help;
+}
+
+/* Fake panel for proper indents in History page */
+.instantDiffs-panel-placeholder {
+	padding: 0 .25em;
+}
+
+.instantDiffs-panel-placeholder.has-link {
+	padding: 0;
+}
+
+.instantDiffs-panel-placeholder:after {
+	color: var(--color-placeholder, #72777d);
+	content: var(--instantDiffs-label-placeholder);
+}
+
+body.ltr .instantDiffs-panel-placeholder:after,
+.mw-parser-output.mw-content-ltr .instantDiffs-panel-placeholder:after {
+	margin-right: 0;
+	margin-left: .25em;
+}
+
+body.rtl .instantDiffs-panel-placeholder:after,
+.mw-parser-output.mw-content-rtl .instantDiffs-panel-placeholder:after {
+	margin-right: .25em;
+	margin-left: 0;
+}
+
+.instantDiffs-panel-placeholder--diff:after {
+	content: var(--instantDiffs-label-diff);
+}
+
+.instantDiffs-panel-placeholder--revision:after {
+	content: var(--instantDiffs-label-revision);
+}
+
+.instantDiffs-panel-placeholder--loader:after {
+	color: var(--color-disabled, #a2a9b1);
+	animation: instantDiffs-blink 1s infinite alternate;
+}
+
+@keyframes instantDiffs-blink {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+/******* MEDIAWIKI LIST LINE *******/
+
+/* Tags legend:
+ * li - contributions, page history
+ * tr - watchlist, pending changes
+ * table - watchlist with groups
+ */
+
+li.instantDiffs-line,
+tr.instantDiffs-line td,
+table.instantDiffs-line td {
+	transition: all 1000ms ease-in-out;
+}
+
+li.instantDiffs-line--highlight,
+tr.instantDiffs-line--highlight td,
+table.instantDiffs-line--highlight td {
+	transition-duration: 250ms;
+	background-color: var(--instantDiffs-background-line) !important;
+}
+
+body.ltr .mw-fr-reviewlink .instantDiffs-panel,
+body.ltr .mw-changeslist-links .instantDiffs-panel,
+body.ltr .mw-changeslist-diff-cur + .instantDiffs-panel,
+body.ltr .mw-changeslist-diff + .instantDiffs-panel {
+	margin-right: 0;
+}
+
+body.rtl .mw-fr-reviewlink .instantDiffs-panel,
+body.rtl .mw-changeslist-links .instantDiffs-panel,
+body.rtl .mw-changeslist-diff-cur + .instantDiffs-panel,
+body.rtl .mw-changeslist-diff + .instantDiffs-panel {
+	margin-left: 0;
+}
+
+/* [Fix] Apply a z-index higher than the click overlay for mobile lists. */
+.instantDiffs-line .instantDiffs-panel {
+	display: inline-block;
+	position: relative;
+	z-index: 10;
+}
+
+/* [Fix] Hide the user icon in lists that were loaded from dependencies after the InstantDiffs dialog opens. */
+.skin-minerva.mw-special-Recentchanges .instantDiffs-line .mw-userlink::before,
+.skin-minerva.mw-special-Recentchangeslinked .instantDiffs-line .mw-userlink::before,
+.skin-minerva:not(.mw-mf-amc-disabled) .instantDiffs-line .mw-userlink::before {
+	height: 0;
+	min-height: 0;
+	margin: 0;
+	content: '';
+}
+
+.skin-minerva.mw-special-Recentchangeslinked .instantDiffs-line .mw-userlink::before,
+.skin-minerva:not(.mw-mf-amc-disabled) .instantDiffs-line--history .mw-userlink::before {
+	width: 0;
+	min-width: 0;
+}
+
+/* [Fix] Display user tools in lists that were loaded from dependencies after the InstantDiffs dialog opens. */
+.skin-minerva.mw-special-Recentchanges .instantDiffs-line .mw-usertoollinks,
+.skin-minerva.mw-special-Recentchangeslinked .instantDiffs-line .mw-usertoollinks,
+.skin-minerva:not(.mw-mf-amc-disabled) .instantDiffs-line .mw-usertoollinks {
+	display: inline !important;
+}
+
+/* [Fix] Display other styles that were loaded from dependencies after the InstantDiffs dialog opens. */
+.skin-minerva:not(.mw-mf-amc-disabled) .instantDiffs-line .minoredit {
+	font-size: inherit;
+}
+
+/* [Fix] Override link size and color when Advanced mode disabled in the mobile  */
+.skin-minerva.mw-mf-amc-disabled .instantDiffs-line a.mw-history-histlinks-previous,
+.skin-minerva.mw-mf-amc-disabled .instantDiffs-line a.mw-changeslist-diff {
+	position: relative;
+	font-size: 0.85rem;
+	color: var(--color-progressive, #36c) !important;
+}
+
+/*** HISTORY PAGE ***/
+
+.instantDiffs-button--compare {
+	font-weight: normal;
+}
+
+/* [Fix] Button min-width for legacy wikis */
+.instantDiffs-button--compare.mw-ui-button {
+	min-width: 0;
+}
+
+/* [Fix] Buttons vertical alignment */
+.instantDiffs-enabled .mw-history-compareselectedversions .mw-ui-button,
+.instantDiffs-enabled .mw-history-compareselectedversions .cdx-button {
+	vertical-align: top;
+}
+
+/* [Fix] Buttons position for mobile and Minerva */
+.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions,
+.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .mw-history-revisionactions {
+	display: flex !important;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 0 10px;
+	flex: auto;
+}
+
+.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .mw-history-revisionactions {
+	margin-bottom: 10px;
+}
+
+.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .mw-ui-button,
+.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .cdx-button {
+	max-width: none;
+	flex: auto;
+	margin: 10px 0;
+}
+
+.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .mw-history-compareselectedversions-button {
+	width: auto;
+	flex: auto;
+}
+
+.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .instantDiffs-button--compare {
+	flex: none;
+}
+
+.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .instantDiffs-spacer {
+	display: none;
+}
+
+/* [Fix] Indent before left checkbox selector for the all skins except Minerva */
+body:not(.skin-minerva).ltr .instantDiffs-line--history .mw-history-histlinks {
+	margin-right: 0.5em;
+}
+
+body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-history-histlinks {
+	margin-left: 0.5em;
+}
+
+/* [Fix] Indent after right checkbox selector for the all skins except Minerva */
+body:not(.skin-minerva).ltr .instantDiffs-line--history .mw-changeslist-date {
+	margin-left: 0.5em;
+}
+
+body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
+	margin-right: 0.5em;
+}
+
+/* [Fix] Hide ID's "Compare selected revisions" button when Advanced mode disabled in the mobile  */
+.skin-minerva.mw-mf-amc-disabled .mw-history-compareselectedversions .instantDiffs-button--compare {
+	display: none;
+}
+
+/* [Fix] Margin for PCGamingWiki */
+.skin-overclocked .mw-history-compareselectedversions {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.skin-overclocked .mw-history-compareselectedversions-button {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.skin-overclocked .instantDiffs-button--compare {
+	padding: 8px 12px;
+}
+
+/******* DIALOG *******/
+
+/* Enable click to close on the overlay */
+.instantDiffs-dialog .oo-ui-window-overlay {
+	z-index: -1;
+	inset: 0 0 0 0;
+}
+
+/*** CONTENT ***/
+
+.instantDiffs-dialog-content {
+	width: auto;
+	max-width: none;
+	display: flow-root;
+	margin: 0;
+	font-size: var(--font-size-medium, 0.875rem);
+	line-height: var(--line-height-medium, 1.5714285);
+}
+
+.instantDiffs-dialog-content .diff-currentversion-title {
+	margin-top: 1em;
+}
+
+.instantDiffs-dialog-content #toc {
+	display: none;
+}
+
+/* [Fix] Text color for Monobook. */
+.skin-monobook .instantDiffs-dialog-content {
+	color: #000000;
+}
+
+/* [Fix] Override fixed positioning for the edit contributor block on mobile. */
+@media (max-width: 639px) {
+	.skin-minerva .instantDiffs-dialog-content #mw-diff-ntitle2 {
+		height: auto;
+		margin-bottom: 0.5em;
+		position: relative;
+		inset: auto;
+		border: 1px solid var(--border-color-subtle, #c8ccd1);
+	}
+
+	.skin-minerva .instantDiffs-dialog-content .mw-diff-tool {
+		position: relative;
+		z-index: 1;
+		inset: auto;
+	}
+
+	.skin-minerva .instantDiffs-dialog-content .mw-userlink::before {
+		width: calc(var(--font-size-medium, 1rem) + 4px);
+		display: inline-block;
+	}
+}
+
+/*** NAVIGATION ***/
+
+.instantDiffs-navigation {
+	margin: 0 -16px;
+	padding: 1em 16px;
+	display: flex;
+	gap: 8px;
+	position: sticky;
+	z-index: 2;
+	top: 0;
+	border-bottom: 1px solid transparent;
+	background: var(--instantDiffs-background-navigation);
+	background-clip: padding-box;
+	-webkit-backdrop-filter: blur(16px);
+	backdrop-filter: blur(16px);
+}
+
+.skin-monobook .instantDiffs-navigation {
+	margin: 0 -1em;
+	padding: 1em;
+}
+
+.skin-fandomdesktop .instantDiffs-navigation {
+	margin: 0 -24px;
+	padding: 1em 24px;
+}
+
+.instantDiffs-navigation.is-sticky {
+	border-bottom-color: var(--border-color-base, #eaecf0);
+}
+
+.instantDiffs-navigation-group--left {
+	display: flex;
+	justify-content: flex-start;
+	flex: 1;
+}
+
+.instantDiffs-navigation-group--center {
+	flex: none;
+}
+
+.instantDiffs-navigation-group--right {
+	display: flex;
+	justify-content: flex-end;
+	flex: 1;
+}
+
+@media (max-width: 639px) {
+	.instantDiffs-navigation {
+		font-size: 90%;
+	}
+
+	.instantDiffs-navigation-group--left {
+		display: none;
+	}
+
+	.instantDiffs-navigation-group--center {
+		min-width: 0;
+		flex: auto;
+	}
+
+	.instantDiffs-navigation-group--center .oo-ui-buttonGroupWidget {
+		display: flex;
+	}
+
+	.instantDiffs-navigation-group--center .oo-ui-buttonElement {
+		min-width: 0;
+		flex: 1;
+	}
+
+	.instantDiffs-navigation-group--center .oo-ui-buttonElement-button {
+		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+}
+
+/*** BUTTONS ***/
+
+.instantDiffs-group--vertical {
+	display: flex;
+	flex-direction: column;
+	padding: 0;
+}
+
+.instantDiffs-group--vertical hr {
+	margin: 0;
+}
+
+.instantDiffs-button--link {
+	display: block;
+}
+
+.instantDiffs-button--link.instantDiffs-button--link:first-child {
+	margin: 0;
+}
+
+.instantDiffs-button--link > .oo-ui-buttonElement-button {
+	display: block;
+}
+
+.instantDiffs-button--link.oo-ui-buttonElement-frameless > .oo-ui-buttonElement-button {
+	padding-right: 12px;
+	padding-left: 12px;
+}
+
+.instantDiffs-button--link.oo-ui-widget-enabled > .oo-ui-buttonElement-button:is(:hover, :focus) {
+	background-color: var(--background-color-progressive-subtle, #eaf3ff);
+	color: var(--instantDiffs-color-link--hover);
+}
+
+.instantDiffs-button--link.oo-ui-widget-enabled > .oo-ui-buttonElement-button:active {
+	border: 1px solid var(--border-color-progressive--active, #2a4b8d);
+	background-color: var(--background-color-progressive-subtle--active, #cbd6f6);
+	color: var(--instantDiffs-color-link--active);
+}
+
+.instantDiffs-button--link-id .oo-ui-labelElement-label {
+	white-space: wrap;
+}
+
+.instantDiffs-button--link-id .oo-ui-labelElement-label .name {
+	white-space: nowrap;
+}
+
+.instantDiffs-button--link-id .oo-ui-labelElement-label .version {
+	font-size: 0.8em;
+	color: var(--color-placeholder, #72777d);
+}
+
+/*** FLAGGED REVISIONS ***/
+
+.instantDiffs-dialog-content #mw-fr-diff-headeritems {
+	margin-top: 1em;
+}
+
+.instantDiffs-dialog-content #mw-fr-revisiontag-old {
+	margin-bottom: 1em;
+}
+
+.instantDiffs-dialog-content .fr-diff-to-stable {
+	display: none;
+}
+
+/*** ROLLBACK LINK ***/
+
+.instantDiffs-dialog-content table.diff .mw-rollback-link {
+	display: initial;
+}
+
+/******* SETTINGS *******/
+
+/* 1.42857143em is a size of the OOUI checkbox\radio */
+.instantDiffs-list--settings {
+	margin-block: 0;
+	margin-inline: 1.42857143em 0;
+}
+
+.instantDiffs-list--settings i {
+	direction: ltr;
+	unicode-bidi: embed;
+}
+
+/******* NOTIFICATION *******/
+
+.instantDiffs-notification-label {
+	font-weight: bold;
+}

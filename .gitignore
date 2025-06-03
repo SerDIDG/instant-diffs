@@ -1,0 +1,10 @@
+.DS_Store
+.idea
+.git
+.env
+ehthumbs.db
+Thumbs.db
+env.json
+package-lock.json
+node_modules
+bower_components
