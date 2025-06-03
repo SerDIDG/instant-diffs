@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.1.3',
+		version: '1.2.0-b.6',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -20,7 +20,7 @@ $( function () {
 		settingsPrefix: 'userjs-instantDiffs',
 
 		dependencies: {
-			styles: '/w/index.php?title=User:Serhio_Magpie/instantDiffs.css&action=raw&ctype=text/css',
+			styles: '/w/index.php?title=User:Serhio_Magpie/instantDiffs.test.css&action=raw&ctype=text/css',
 			messages: '/w/index.php?title=User:Serhio_Magpie/instantDiffs-i18n/$lang.js&action=raw&ctype=text/javascript',
 			main: [
 				'mediawiki.api',
@@ -92,7 +92,7 @@ $( function () {
 		labels: {
 			page: {
 				ltr: '➔',
-				rtl: '🡰'
+				rtl: '🡰',
 			},
 			diff: '❖',
 			revision: '✪',
@@ -114,7 +114,15 @@ $( function () {
 		},
 
 		// MediaWiki config
-		mwConfigBackup: [ 'thanks-confirmation-required' ],
+		mwConfigBackup: [
+			'thanks-confirmation-required',
+			'wgArticleId',
+			'wgCurRevisionId',
+			'wgRevisionId',
+			'wgDiffOldId',
+			'wgDiffNewId',
+			'wgPageContentModel',
+		],
 		mwServers: [],
 		skinBodyClasses: {
 			'vector-2022': [ 'vector-body' ],
@@ -255,8 +263,8 @@ $( function () {
 
 		specialPages: [],
 		specialPagesPrefixed: [],
-		specialPagesNames: {},
-		specialPagesNamesPrefixed: {},
+		specialPagesAliases: {},
+		specialPagesAliasesPrefixed: {},
 		specialPagesPathRegExp: null,
 		specialPagesSearchRegExp: null,
 		articlePathRegExp: null,
@@ -335,7 +343,7 @@ $( function () {
 			page.oldid || page.curid,
 			page.diff,
 			page.titleText || page.title,
-			error.message || _utils.msg( 'error-wasted' )
+			error.message || _utils.msg( 'error-wasted' ),
 		);
 	};
 
@@ -364,7 +372,7 @@ $( function () {
 				label: _utils.msg( 'name' ),
 				href: _utils.getOrigin( `/wiki/${ _config.link }` ),
 				target: '_blank',
-				container: $label
+				container: $label,
 			} );
 			const $message = $( '<div>' )
 				.text( message )
@@ -410,7 +418,7 @@ $( function () {
 	};
 
 	_utils.getOrigin = ( path ) => {
-		return `${ _config.origin }${ path }`
+		return `${ _config.origin }${ path }`;
 	};
 
 	_utils.getDependencies = ( data ) => {
@@ -418,6 +426,11 @@ $( function () {
 			const state = mw.loader.getState( item );
 			return state && ![ 'error', 'missing' ].includes( state );
 		} );
+	};
+
+	_utils.isAllowed = () => {
+		return _config.include.actions.includes( mw.config.get( 'wgAction' ) ) &&
+			!_config.exclude.pages.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) );
 	};
 
 	_utils.logTimer = ( name, start, end ) => {
@@ -445,8 +458,8 @@ $( function () {
 		return typeof label === 'object' ? label[ document.dir ] : label;
 	};
 
-	_utils.getTarget = ( force = true ) => {
-		return _utils.defaults( 'openInNewTab' ) && force ? '_blank' : '_self';
+	_utils.getTarget = ( isInDialog ) => {
+		return _utils.defaults( 'openInNewTab' ) && isInDialog ? '_blank' : '_self';
 	};
 
 	/*** DIFF \ REVISION ***/
@@ -575,7 +588,7 @@ $( function () {
 	};
 
 	_utils.getSplitSpecialUrl = ( title ) => {
-		const localizedPermanentLink = _local.specialPagesNamesPrefixed[ 'Special:PermanentLink' ];
+		const localizedPermanentLink = _local.specialPagesAliasesPrefixed[ 'Special:PermanentLink' ];
 		const splitParams = title.split( '/' );
 		const page = {};
 		if ( splitParams[ 0 ] === localizedPermanentLink ) {
@@ -595,6 +608,24 @@ $( function () {
 		try {
 			const url = new URL( href );
 			return url.searchParams.get( 'title' );
+		} catch ( e ) {
+			return null;
+		}
+	};
+
+	_utils.getOldidFromUrl = ( href ) => {
+		try {
+			const url = new URL( href );
+			return url.searchParams.get( 'oldid' );
+		} catch ( e ) {
+			return null;
+		}
+	};
+
+	_utils.getHashFromUrl = ( href ) => {
+		try {
+			const url = new URL( href );
+			return url.hash;
 		} catch ( e ) {
 			return null;
 		}
@@ -635,13 +666,15 @@ $( function () {
 		return sectionMatch && sectionMatch[ 1 ] || null;
 	};
 
-	_utils.setPageTitle = ( page, title, section ) => {
-		if ( !_utils.isEmpty( title ) ) {
-			page.title = title;
+	_utils.extendPage = ( page, params = {} ) => {
+		if ( _utils.isValidID( params.oldid ) ) {
+			page.oldid = params.oldid;
 		}
-
-		if ( !_utils.isEmpty( section ) ) {
-			page.section = section.replace( /^#/, '' );
+		if ( !_utils.isEmpty( params.title ) ) {
+			page.title = params.title;
+		}
+		if ( !_utils.isEmpty( params.section ) ) {
+			page.section = params.section.replace( /^#/, '' );
 		}
 
 		if ( !_utils.isEmpty( page.title ) ) {
@@ -666,7 +699,7 @@ $( function () {
 		const server = mw.config.get( 'wgServer' );
 		const regExp = new RegExp( `^//${ language }` );
 		if ( regExp.test( server ) ) {
-			return server.replace( regExp, `//${ language }.m` )
+			return server.replace( regExp, `//${ language }.m` );
 		}
 	};
 
@@ -736,15 +769,12 @@ $( function () {
 	};
 
 	_utils.getMWDiffLineTitle = ( item ) => {
-		if ( item.hasLine ) {
-			const selector = _config.mwLineTitle.selector.join( ',' );
-			item.$title = item.$line.find( selector );
-			if ( item.$title.length > 0 ) {
-				const title = item.$title.attr( 'title' );
-				return !_utils.isEmpty( title ) ? title : item.$title.text();
-			}
-		}
-		return item.link.title;
+		const selector = _config.mwLineTitle.selector.join( ',' );
+		item.$title = item.$line.find( selector );
+		if ( item.$title?.length === 0 ) return;
+
+		const title = item.$title.attr( 'title' );
+		return !_utils.isEmpty( title ) ? title : item.$title.text();
 	};
 
 	/*** ELEMENTS ***/
@@ -770,8 +800,16 @@ $( function () {
 			return event.type === 'keypress' && ![ 'Enter', 'Space' ].includes( event.code );
 		};
 
+		// Add title about alternative click action
 		if ( useAltKey && !_utils.isEmpty( node.href ) ) {
-			node.title = [ node.title, _utils.msg( 'alt-click' ) ].join( ' ' );
+			if ( _utils.isEmpty( node.dataset.altTitle ) ) {
+				node.dataset.altTitle = node.title;
+			}
+			node.dataset.altTitle = [ node.dataset.altTitle, _utils.msg( 'alt-click' ) ].join( ' ' );
+			node.dataset.origTitle = node.title;
+
+			node.addEventListener( 'mouseenter', () => ( node.title = node.dataset.altTitle ) );
+			node.addEventListener( 'mouseleave', () => ( node.title = node.dataset.origTitle ) );
 		}
 
 		node.addEventListener( 'click', callback );
@@ -882,6 +920,8 @@ $( function () {
 			container: null,
 			insertMethod: 'appendTo',
 			ariaHaspopup: false,
+			altTitle: null,
+			useAltKey: false,
 		}, options );
 
 		// Validate
@@ -923,8 +963,11 @@ $( function () {
 		if ( this.options.ariaHaspopup ) {
 			this.node.setAttribute( 'aria-haspopup', 'dialog' );
 		}
+		if ( !_utils.isEmpty( this.options.altTitle ) ) {
+			this.node.dataset.altTitle = this.options.altTitle;
+		}
 
-		_utils.addClick( this.node, this.options.handler.bind( this ), false );
+		_utils.addClick( this.node, this.options.handler.bind( this ), this.options.useAltKey );
 	};
 
 	Button.prototype.embed = function ( container, insertMethod ) {
@@ -1000,28 +1043,26 @@ $( function () {
 	function Link( node, options ) {
 		this.node = node;
 		this.options = $.extend( true, {
+			type: null,
 			behavior: 'default',            // default | basic | event
 			insertMethod: 'insertAfter',
-			initiatorDialog: null,
 			initiatorLink: null,
-			diffOptions: {
-				initiatorDiff: null
-			},
+			initiatorDialog: null,
+			initiatorDiff: null,
 			onOpen: function () {},
 			onClose: function () {},
 		}, options );
 
-		this.type = null;
 		this.nodes = {};
 		this.page = {};
-		this.diff = {};
+		this.action = {};
 		this.mw = {
 			hasLink: false,
-			hasLine: false
+			hasLine: false,
 		};
 		this.manual = {
 			hasLink: false,
-			behavior: 'default'
+			behavior: 'default',
 		};
 		this.isLoading = false;
 		this.isLoaded = false;
@@ -1031,33 +1072,38 @@ $( function () {
 		// Check if a link was opened from the ID dialog
 		if ( _local.dialog && _local.dialog.isParent( this.node ) ) {
 			this.options.initiatorDialog = _local.dialog;
-			this.options.diffOptions.initiatorDiff = _local.dialog.getDiff();
+			this.options.initiatorDiff = _local.dialog.getDiff();
 		}
 
 		// Check if a link generated by MediaWiki
 		this.mw.hasLink = _utils.isMWLink( this.node, _config.mwLink );
 		if ( this.mw.hasLink ) {
-			this.mw.isDiffOnly = _utils.isMWLink( this.node, _config.mwLinkDiffOnly );
-			this.mw.isExcluded = _utils.isMWLink( this.node, _config.mwLinkExclude );
+			this.mw.link = this.node;
+
+			this.mw.isDiffOnly = _utils.isMWLink( this.mw.link, _config.mwLinkDiffOnly );
+			this.mw.isExcluded = _utils.isMWLink( this.mw.link, _config.mwLinkExclude );
 			if ( !this.mw.isExcluded ) {
 				this.options.behavior = 'basic';
 			}
-			this.mw.isPrepend = _utils.isMWLink( this.node, _config.mwLinkPrepend );
+			this.mw.isPrepend = _utils.isMWLink( this.mw.link, _config.mwLinkPrepend );
 			if ( this.mw.isPrepend ) {
 				this.options.insertMethod = 'insertBefore';
 			}
-			this.mw.link = this.node;
+
 			this.mw.line = _utils.getMWDiffLine( this.mw );
 			if ( this.mw.line ) {
 				this.mw.hasLine = true;
 				this.mw.$line = $( this.mw.line ).addClass( 'instantDiffs-line' );
+				this.mw.title = _utils.getMWDiffLineTitle( this.mw );
 			}
-			this.mw.title = _utils.getMWDiffLineTitle( this.mw );
 		}
 
-		// Check if a link was marked manually by data-instantdiffs-link attribute: default | basic | link
+		// Check if a link was marked manually by the "data-instantdiffs-link" attribute: default | basic | event | link (deprecated)
 		this.manual.behavior = this.node.dataset.instantdiffsLink;
-		if ( [ 'default', 'basic', 'link', 'event' ].includes( this.manual.behavior ) ) {
+		if ( this.manual.behavior === 'link' ) {
+			this.manual.behavior = 'event';
+		}
+		if ( [ 'default', 'basic', 'event' ].includes( this.manual.behavior ) ) {
 			this.options.behavior = this.manual.behavior;
 			this.manual.hasLink = true;
 		}
@@ -1086,6 +1132,11 @@ $( function () {
 		} catch ( e ) {
 			return;
 		}
+
+		// Get link origin and index.php endpoint
+		this.page.origin = this.url.origin;
+		this.page.mwEndPoint = `${ this.page.origin }${ mw.config.get( 'wgScript' ) }`;
+		this.page.mwEndPointUrl = new URL( this.page.mwEndPoint );
 
 		if ( _local.specialPagesSearchRegExp.test( urlParts.title ) ) {
 			// Get components from splitting url title
@@ -1117,11 +1168,6 @@ $( function () {
 			this.page.curid = this.page.curid.split( '|' ).shift();
 		}
 
-		// Get mediawiki page title if not empty
-		if ( !_utils.isEmpty( this.page.title ) ) {
-			this.page = _utils.setPageTitle( this.page );
-		}
-
 		// Validate components
 		if ( [ 0, '0', 'current' ].includes( this.page.diff ) ) {
 			this.page.diff = 'cur';
@@ -1130,6 +1176,18 @@ $( function () {
 			this.page.direction = 'prev';
 		}
 
+		// Populate the page title from the watchlist line entry for edge cases
+		// Link minifiers like [[:ru:User:Stjn/minilink.js]] often remove titles from links
+		if ( _utils.isEmpty( this.page.title ) && this.mw.hasLine ) {
+			this.page.title = this.mw.title;
+		}
+
+		// Validate page params
+		this.page.isValid = this.validate();
+
+		// Extend page object
+		this.page = _utils.extendPage( this.page );
+
 		switch ( this.options.behavior ) {
 			// Render actions for the special links generated by MediaWiki
 			case 'basic':
@@ -1137,7 +1195,6 @@ $( function () {
 				break;
 
 			// Add events on the existing link
-			case 'link':
 			case 'event':
 				this.renderManual();
 				break;
@@ -1150,52 +1207,16 @@ $( function () {
 		}
 	};
 
-	/*** OBSERVER ***/
-
-	Link.prototype.observe = function () {
-		if ( this.isObserved ) return;
-		this.isObserved = true;
-		_local.observer.observe( this.node );
-	};
-
-	Link.prototype.unobserve = function () {
-		if ( !this.isObserved ) return;
-		this.isObserved = false;
-		_local.observer.unobserve( this.node );
-	};
-
-	Link.prototype.onIntersect = function () {
-		if ( this.isLoading || this.isLoaded || !this.isObserved ) return;
-		this.unobserve();
-		this.request();
-	};
-
-	/*** REQUESTS ***/
-
-	Link.prototype.renderRequest = function () {
-		this.hasRequest = this.validateRequest();
-
-		if ( this.hasRequest ) {
-			this.toggleSpinner( true );
-			this.observe();
-		} else {
-			this.toggleSpinner( false );
-			this.isLoaded = true;
-			this.isProcessed = false;
-			this.unobserve();
-		}
-	}
-
-	Link.prototype.validateRequest = function () {
+	Link.prototype.validate = function () {
 		// Prepare a request for a revision
 		if ( _utils.isValidID( this.page.oldid ) && _utils.isEmpty( this.page.diff ) ) {
-			this.type = 'revision';
+			this.options.type = 'revision';
 			return true;
 		}
 
 		// Request a compare by given ids
 		if ( _utils.isValidID( this.page.diff ) || _utils.isValidID( this.page.oldid ) ) {
-			this.type = 'diff';
+			this.options.type = 'diff';
 
 			// Swap parameters if oldid is a direction and a title is empty
 			if ( _utils.isEmpty( this.page.title ) && _utils.isValidDir( this.page.oldid ) ) {
@@ -1225,21 +1246,55 @@ $( function () {
 
 		// Request a compare by given title and direction
 		if ( !_utils.isEmpty( this.page.title ) && _utils.isValidDir( this.page.diff ) ) {
-			this.type = 'diff';
+			this.options.type = 'diff';
 			return true;
 		}
 
 		// Request a page by given curid
 		if ( _utils.isValidID( this.page.curid ) ) {
-			this.type = 'revision';
+			this.options.type = 'revision';
 			return true;
 		}
 
 		return false;
-	}
+	};
+
+	/*** OBSERVER ***/
+
+	Link.prototype.observe = function () {
+		if ( this.isObserved ) return;
+		this.isObserved = true;
+		_local.observer.observe( this.node );
+	};
+
+	Link.prototype.unobserve = function () {
+		if ( !this.isObserved ) return;
+		this.isObserved = false;
+		_local.observer.unobserve( this.node );
+	};
+
+	Link.prototype.onIntersect = function () {
+		if ( this.isLoading || this.isLoaded || !this.isObserved ) return;
+		this.unobserve();
+		this.request();
+	};
+
+	/*** REQUESTS ***/
+
+	Link.prototype.renderRequest = function () {
+		if ( this.page.isValid ) {
+			this.toggleSpinner( true );
+			this.observe();
+		} else {
+			this.toggleSpinner( false );
+			this.isLoaded = true;
+			this.isProcessed = false;
+			this.unobserve();
+		}
+	};
 
 	Link.prototype.request = function () {
-		switch ( this.type ) {
+		switch ( this.options.type ) {
 			case 'revision':
 				this.requestRevision();
 				break;
@@ -1286,7 +1341,7 @@ $( function () {
 
 		this.error = {
 			type: 'revision',
-			specifics: !_utils.isEmpty( this.page.curid ) ? 'curid' : 'generic',
+			code: !_utils.isEmpty( this.page.curid ) ? 'curid' : 'generic',
 		};
 
 		if ( data?.error ) {
@@ -1294,7 +1349,7 @@ $( function () {
 			this.error.message = data.error.info;
 		} else {
 			this.error.message = error;
-			_utils.notifyError( `error-revision-${ this.error.specifics }`, this.page, this.error, true );
+			_utils.notifyError( `error-revision-${ this.error.code }`, this.page, this.error, true );
 		}
 
 		this.renderError();
@@ -1306,11 +1361,12 @@ $( function () {
 		// Render error if the query request is completely failed
 		const query = data?.query;
 		if ( !query || ( !query.badrevids && !query.badpageids && !query.pages ) ) {
-			return this.onRequestRevisionError( data );
+			return this.onRequestRevisionError( null, data );
 		}
 
 		// Get a page for the query request
 		const page = query.pages?.[ 0 ];
+		const revision = page?.revisions?.[ 0 ];
 
 		// Check for a specific error code
 		const error = { type: 'revision' };
@@ -1318,7 +1374,7 @@ $( function () {
 			error.code = 'badrevids';
 		} else if ( query.badpageids ) {
 			error.code = 'badpageids';
-		} else if ( !page || page.missing ) {
+		} else if ( !page || page.missing || !revision ) {
 			error.code = 'missing';
 		} else if ( page.invalid ) {
 			error.code = 'invalid';
@@ -1331,14 +1387,14 @@ $( function () {
 			return this.renderError();
 		}
 
-		this.revision = page.revisions?.[ 0 ];
-		if ( this.revision ) {
-			this.page.oldid = this.revision.revid;
-		}
-		this.page.title = page.title;
-		this.page.section = _utils.getRevisionSection( this.revision ) || this.page.section;
+		this.revision = revision;
+		this.page.isHidden = _utils.isRevisionHidden( this.revision );
+		this.page = _utils.extendPage( this.page, {
+			oldid: this.revision.revid,
+			title: page.title,
+			section: _utils.getRevisionSection( this.revision ),
+		} );
 
-		this.prepareHrefs();
 		this.renderSuccess();
 	};
 
@@ -1391,57 +1447,42 @@ $( function () {
 		// Render error if the compare request is completely failed
 		this.compare = data?.compare;
 		if ( !this.compare ) {
-			return this.onRequestDiffError( data );
+			return this.onRequestDiffError( null, data );
 		}
 
-		this.page.title = _utils.getCompareTitle( this.compare ) || this.page.title;
-		this.page.section = _utils.getCompareSection( this.compare ) || this.page.section;
+		this.page.isHidden = _utils.isCompareHidden( this.compare );
+		this.page = _utils.extendPage( this.page, {
+			title: _utils.getCompareTitle( this.compare ),
+			section: _utils.getCompareSection( this.compare ),
+		} );
 
-		this.prepareHrefs();
 		this.renderSuccess();
 	};
 
 	/*** RENDER ***/
-
-	Link.prototype.prepareHrefs = function () {
-		// Some link shorteners remove the title from the mw link's href: [[ru:User:Stjn/minilink.js]]
-		if ( this.mw.hasLink && _utils.isEmpty( this.page.title ) ) {
-			this.page.title = this.mw.title;
-		}
-
-		// Get a full url path
-		if ( !_utils.isEmpty( this.page.title ) ) {
-			this.page = _utils.setPageTitle( this.page );
-		}
-
-		this.diff.href = _utils.getDiffHref( this.page );
-	};
 
 	Link.prototype.renderManual = function () {
 		if ( _utils.isEmpty( this.page.diff ) && _utils.isEmpty( this.page.oldid ) && _utils.isEmpty( this.page.curid ) ) return;
 
 		this.isLoaded = true;
 		this.isProcessed = true;
-		this.type = ( _utils.isValidID( this.page.oldid ) || _utils.isValidID( this.page.curid ) ) && _utils.isEmpty( this.page.diff ) ? 'revision' : 'diff';
-		this.prepareHrefs();
 
-		this.diff.button = new Button( {
+		this.action.button = new Button( {
 			node: this.node,
 			handler: this.openDialog.bind( this ),
 			ariaHaspopup: true,
 		} );
+
+		mw.hook( `${ _config.prefix }.link.renderSuccess` ).fire( this );
 	};
 
 	Link.prototype.renderBasic = function () {
-		if ( _utils.isEmpty( this.page.diff ) && _utils.isEmpty( this.page.oldid ) ) return;
+		if ( _utils.isEmpty( this.page.diff ) && _utils.isEmpty( this.page.oldid ) && _utils.isEmpty( this.page.curid ) ) return;
+		if ( this.mw.isDiffOnly && this.options.type !== 'diff' ) return;
 
 		this.isLoaded = true;
 		this.isProcessed = true;
-		this.type = _utils.isValidID( this.page.oldid ) && _utils.isEmpty( this.page.diff ) ? 'revision' : 'diff';
 
-		if ( this.mw.isDiffOnly && this.type !== 'diff' ) return;
-
-		this.prepareHrefs();
 		this.renderSuccess();
 	};
 
@@ -1480,7 +1521,7 @@ $( function () {
 		this.renderWrapper();
 
 		if ( this.mw.hasLink || this.revision || this.compare ) {
-			if ( this.type === 'revision' ) {
+			if ( this.options.type === 'revision' ) {
 				this.renderRevisionAction();
 			} else {
 				this.renderDiffAction();
@@ -1521,8 +1562,8 @@ $( function () {
 	Link.prototype.renderRevisionAction = function () {
 		// Indicate hidden revisions for sysops
 		let message = 'revision-title';
-		if ( _utils.isRevisionHidden( this.revision ) ) {
-			this.diff.hasError = true;
+		if ( this.page.isHidden ) {
+			this.action.hasError = true;
 			message = `${ message }-admin`;
 		}
 
@@ -1537,8 +1578,8 @@ $( function () {
 	Link.prototype.renderDiffAction = function () {
 		// Indicate hidden revisions for sysops
 		let message = 'diff-title';
-		if ( _utils.isCompareHidden( this.compare ) ) {
-			this.diff.hasError = true;
+		if ( this.page.isHidden ) {
+			this.action.hasError = true;
 			message = `${ message }-admin`;
 		}
 
@@ -1552,34 +1593,37 @@ $( function () {
 
 	Link.prototype.renderLinkAction = function ( message ) {
 		const classes = [];
-		if ( this.diff.hasError ) {
+		if ( this.action.hasError ) {
 			classes.push( 'error', 'error-admin' );
 		}
 
-		this.diff.button = this.renderAction( {
-			label: _utils.getLabel( this.type ),
+		this.action.button = this.renderAction( {
+			label: _utils.getLabel( this.options.type ),
 			title: _utils.msg( message ),
 			classes: classes,
-			modifiers: [ this.type ],
+			modifiers: [ this.options.type ],
 			handler: this.openDialog.bind( this ),
 			ariaHaspopup: true,
 		} );
 	};
 
 	Link.prototype.mutateLinkAction = function ( message ) {
-		const classes = [ 'instantDiffs-link', `instantDiffs-link--${ this.type }`, `is-${ this.options.insertMethod }` ];
-		if ( this.diff.hasError ) {
+		const classes = [ 'instantDiffs-link', `instantDiffs-link--${ this.options.type }`, `is-${ this.options.insertMethod }` ];
+		if ( this.action.hasError ) {
 			classes.push( 'instantDiffs-link--error' );
 		}
 
 		this.node.classList.remove( 'external' );
 		this.node.classList.add( ...classes );
-		this.node.title = _utils.msg( message );
-
 		this.node.setAttribute( 'data-instantdiffs-link', this.options.behavior );
-		this.node.setAttribute( 'aria-haspopup', 'dialog' );
 
-		_utils.addClick( this.node, this.openDialog.bind( this ) );
+		this.action.button = new Button( {
+			node: this.node,
+			handler: this.openDialog.bind( this ),
+			ariaHaspopup: true,
+			altTitle: _utils.msg( message ),
+			useAltKey: true,
+		} );
 	};
 
 	Link.prototype.renderPageAction = function () {
@@ -1600,9 +1644,9 @@ $( function () {
 			_local.dialog = new Dialog();
 		}
 		_local.dialog.process( this, {
-			diffOptions: this.options.diffOptions,
+			initiatorDiff: this.options.initiatorDiff,
 			onOpen: this.onDialogOpen.bind( this ),
-			onClose: this.onDialogClose.bind( this )
+			onClose: this.onDialogClose.bind( this ),
 		} );
 
 		this.toggleLoader( true );
@@ -1650,15 +1694,15 @@ $( function () {
 	/*** ACTIONS ***/
 
 	Link.prototype.toggleLoader = function ( value ) {
-		if ( this.diff.button ) {
-			this.diff.button.pending( value );
+		if ( this.action.button ) {
+			this.action.button.pending( value );
 		} else {
 			this.node.classList.toggle( 'instantDiffs-link--pending', value );
 		}
 	};
 
 	Link.prototype.toggleSpinner = function ( value ) {
-		const classes = _utils.getPlaceholderClasses( [ 'loader', this.type ] );
+		const classes = _utils.getPlaceholderClasses( [ 'loader', this.options.type ] );
 
 		if ( value ) {
 			this.node.classList.add( ...classes );
@@ -1697,28 +1741,34 @@ $( function () {
 
 	/******* DIFF CONSTRUCTOR *******/
 
-	function Diff( page, pageParams, options ) {
+	function Diff( page, options ) {
 		this.page = $.extend( {
 			title: null,
 			section: null,
 			oldid: null,
 			diff: null,
-			direction: null
+			curid: null,
+			direction: null,
 		}, page );
 
-		this.pageParams = $.extend( {
-			action: 'render',
-			diffonly: 1,
-			unhide: _utils.defaults( 'unHideDiffs' ) ? 1 : 0,
-			uselang: _local.language,
-		}, pageParams );
-
 		this.options = $.extend( true, {
-			isOnlyRevision: false,
-			isHiddenRevision: false,
+			type: 'diff',
 			initiatorDiff: null,
 			initiatorDialog: null,
 		}, options );
+
+		this.pageParams = {
+			action: 'render',
+			diffonly: this.options.type === 'diff' ? 1 : 0,
+			unhide: _utils.defaults( 'unHideDiffs' ) ? 1 : 0,
+			uselang: _local.language,
+		};
+
+		this.mwConfg = {
+			'thanks-confirmation-required': true,
+			wgDiffOldId: null,
+			wgDiffNewId: null,
+		};
 
 		this.nodes = {};
 		this.buttons = {};
@@ -1732,23 +1782,22 @@ $( function () {
 		if ( !_utils.isValidDir( this.page.direction ) ) {
 			this.page.direction = 'prev';
 		}
-		if ( !_utils.isEmpty( this.page.title ) ) {
-			this.page = _utils.setPageTitle( this.page );
-		}
+		this.page = _utils.extendPage( this.page );
 	}
 
 	Diff.prototype.load = function () {
 		if ( this.isLoading ) return;
 
-		if ( this.options.isOnlyRevision ) {
-			this.requestDependencies();
+		if ( this.options.type === 'revision' ) {
+			this.requestPageDependencies();
 		}
+
 		return this.request();
 	};
 
 	/*** REQUESTS ***/
 
-	Diff.prototype.requestDependencies = function () {
+	Diff.prototype.requestPageDependencies = function () {
 		const params = {
 			action: 'parse',
 			prop: [ 'modules', 'jsconfigvars' ],
@@ -1766,34 +1815,34 @@ $( function () {
 
 		return _local.mwApi
 			.get( params )
-			.then( this.onRequestDependenciesDone.bind( this ) )
-			.fail( this.onRequestDependenciesError.bind( this ) );
+			.then( this.onRequestPageDependenciesDone.bind( this ) )
+			.fail( this.onRequestPageDependenciesError.bind( this ) );
 	};
 
-	Diff.prototype.onRequestDependenciesError = function ( code, data ) {
-		const error = {
+	Diff.prototype.onRequestPageDependenciesError = function ( error, data ) {
+		const params = {
 			type: 'dependencies',
-			code: code
 		};
-		if ( data && data.error ) {
-			error.message = data.error.info;
+		if ( data?.error ) {
+			params.code = data.error.code;
+			params.message = data.error.info;
+		} else {
+			params.message = error;
 		}
-		if ( error.code !== 'permissiondenied' ) {
-			_utils.notifyError( 'error-dependencies-parse', this.page, error, true );
-		}
+		_utils.notifyError( 'error-dependencies-parse', this.page, params, true );
 	};
 
-	Diff.prototype.onRequestDependenciesDone = function ( data ) {
-		if ( !data || !data.parse ) {
-			const error = {
-				type: 'dependencies'
-			};
-			_utils.notifyError( 'error-dependencies-parse', this.page, error, true );
-			return;
+	Diff.prototype.onRequestPageDependenciesDone = function ( data ) {
+		// Render error if the parse request is completely failed
+		const parse = data?.parse;
+		if ( !parse ) {
+			return this.onRequestPageDependenciesError( null, data );
 		}
-		mw.loader.load( data.parse.modules );
-		mw.loader.load( data.parse.modulestyles );
-		mw.config.set( data.parse.jsconfigvars );
+
+		mw.loader.load( parse.modules );
+		mw.loader.load( parse.modulestyles );
+		mw.loader.load( parse.modulescripts );
+		mw.config.set( parse.jsconfigvars );
 	};
 
 	Diff.prototype.request = function () {
@@ -1806,6 +1855,7 @@ $( function () {
 			oldid: !_utils.isEmpty( this.page.oldid ) ? this.page.oldid : undefined,
 			curid: !_utils.isEmpty( this.page.curid ) ? this.page.curid : undefined,
 		};
+
 		const params = {
 			url: _local.mwEndPoint,
 			dataType: 'html',
@@ -1820,21 +1870,20 @@ $( function () {
 	Diff.prototype.onRequestError = function ( data ) {
 		this.isLoading = false;
 
-		this.error = {};
-		if ( this.options.isOnlyRevision ) {
-			this.error.type = 'revision';
-			this.error.type = !_utils.isEmpty( this.page.curid ) ? 'curid' : 'generic';
-		} else {
-			this.error.type = 'diff';
-			this.error.specifics = 'generic';
-		}
-		if ( data && data.error ) {
+		this.error = {
+			type: this.options.type,
+			code: this.options.type === 'revision' && !_utils.isEmpty( this.page.curid ) ? 'curid' : 'generic',
+		};
+
+		if ( data?.error ) {
+			this.error.code = data.error.code;
 			this.error.message = data.error.info;
 		}
-		_utils.notifyError( `error-${ this.error.type }-${ this.error.specifics }`, this.page, this.error );
+		_utils.notifyError( `error-${ this.error.type }-${ this.error.code }`, this.page, this.error );
 
 		this.render();
 		mw.hook( `${ _config.prefix }.diff.renderError` ).fire( this );
+		mw.hook( `${ _config.prefix }.diff.renderComplete` ).fire( this );
 	};
 
 	Diff.prototype.onRequestDone = function ( data ) {
@@ -1847,6 +1896,7 @@ $( function () {
 
 		this.render();
 		mw.hook( `${ _config.prefix }.diff.renderSuccess` ).fire( this );
+		mw.hook( `${ _config.prefix }.diff.renderComplete` ).fire( this );
 	};
 
 	/*** RENDER ***/
@@ -1898,7 +1948,7 @@ $( function () {
 			.appendTo( this.nodes.$container );
 
 		// Revision Table
-		if ( !this.options.isOnlyRevision ) {
+		if ( this.options.type === 'diff' ) {
 			this.renderDiffTable();
 		}
 
@@ -1913,7 +1963,7 @@ $( function () {
 		}
 
 		// Set additional config variables
-		mw.config.set( 'thanks-confirmation-required', true );
+		mw.config.set( this.mwConfg );
 	};
 
 	Diff.prototype.renderDiffTable = function () {
@@ -1940,7 +1990,7 @@ $( function () {
 			.find( '#differences-nextlink' )
 			.detach();
 
-		// Clean whitespaces
+		// Clear whitespaces
 		const leftTitle4 = this.nodes.$table.find( '#mw-diff-otitle4' );
 		if ( leftTitle4.length > 0 ) {
 			leftTitle4.text( leftTitle4.text().trim() );
@@ -1954,7 +2004,7 @@ $( function () {
 	Diff.prototype.renderError = function () {
 		this.nodes.$emptyMessage = $( `<p>${ _utils.msg( 'error-revision-missing' ) }</p>` );
 		if ( this.error?.message ) {
-			this.nodes.$emptyMessage.add( `<p>${ this.error.message }</p>` )
+			this.nodes.$emptyMessage.add( `<p>${ this.error.message }</p>` );
 		}
 		this.renderEmptyMessage();
 	};
@@ -1971,35 +2021,40 @@ $( function () {
 	};
 
 	Diff.prototype.collectDataFromTable = function () {
-		const $links = this.nodes.$data.find(
-			'#mw-diff-ntitle1 strong > a, #mw-diff-ntitle4 > a, #mw-diff-otitle1 strong > a, #mw-diff-otitle4 > a'
-		);
+		const $fromLinks = this.nodes.$data.find( '#mw-diff-otitle1 strong > a, #mw-diff-otitle4 > a' );
+		const $toLinks = this.nodes.$data.find( '#mw-diff-ntitle1 strong > a, #mw-diff-ntitle4 > a' );
+
+		// Get diff and oldid
+		if ( $fromLinks.length > 0 && $toLinks.length > 0 ) {
+			const oldid = _utils.getOldidFromUrl( $fromLinks.prop( 'href' ) );
+			const diff = _utils.getOldidFromUrl( $toLinks.prop( 'href' ) );
+			if ( _utils.isValidID( oldid ) && _utils.isValidID( diff ) ) {
+				this.mwConfg.wgDiffOldId = oldid;
+				this.mwConfg.wgDiffNewId = diff;
+				this.mwConfg.wgRevisionId = diff;
+			}
+		}
+
+		// Get page title
+		const $links = $toLinks.add( $fromLinks );
 		if ( _utils.isEmpty( this.page.title ) && $links.length > 0 ) {
 			const title = _utils.getTitleFromUrl( $links.prop( 'href' ) );
-			this.page = _utils.setPageTitle( this.page, title );
+			this.page = _utils.extendPage( this.page, { title } );
 		}
 
-		const $toRevisionLinks = this.nodes.$data.find(
-			'#mw-diff-ntitle1 strong > a, #mw-diff-ntitle4 > a'
-		);
-		if ( this.page.diff === 'cur' && $toRevisionLinks.length > 0 ) {
-			try {
-				const url = new URL( $toRevisionLinks.prop( 'href' ) );
-				const oldid = url.searchParams.get( 'oldid' );
-				if ( _utils.isValidID( oldid ) ) {
-					this.page.diff = oldid;
-				}
-			} catch ( e ) {}
+		// Populate diff id value
+		if ( this.page.diff === 'cur' && $toLinks.length > 0 ) {
+			const diff = _utils.getOldidFromUrl( $toLinks.prop( 'href' ) );
+			if ( _utils.isValidID( diff ) ) {
+				this.page.diff = diff;
+			}
 		}
 
-		const $toRevisionSectionLinks = this.nodes.$data.find(
-			'#mw-diff-ntitle3 .autocomment a'
-		);
-		if ( _utils.isEmpty( this.page.section ) && $toRevisionSectionLinks.length > 0 ) {
-			try {
-				const url = new URL( $toRevisionSectionLinks.prop( 'href' ) );
-				this.page = _utils.setPageTitle( this.page, this.page.title, url.hash );
-			} catch ( e ) {}
+		// Populate section name
+		const $toSectionLinks = this.nodes.$data.find( '#mw-diff-ntitle3 .autocomment a' );
+		if ( _utils.isEmpty( this.page.section ) && $toSectionLinks.length > 0 ) {
+			const section = _utils.getHashFromUrl( $toSectionLinks.prop( 'href' ) );
+			this.page = _utils.extendPage( this.page, { section } );
 		}
 	};
 
@@ -2040,7 +2095,7 @@ $( function () {
 				invisibleLabel: true,
 				icon: 'doubleChevronStart',
 				href: previousLink ? _utils.getDiffHref( previousLink.getPage() ) : null,
-				target: _utils.getTarget(),
+				target: _utils.getTarget( true ),
 				disabled: !previousLink,
 			} );
 			if ( previousLink ) {
@@ -2059,7 +2114,7 @@ $( function () {
 				invisibleLabel: true,
 				icon: 'doubleChevronEnd',
 				href: nextLink ? _utils.getDiffHref( nextLink.getPage() ) : null,
-				target: _utils.getTarget(),
+				target: _utils.getTarget( true ),
 				disabled: !nextLink,
 			} );
 			if ( nextLink ) {
@@ -2077,28 +2132,28 @@ $( function () {
 		}
 
 		this.buttons.linksGroup = new OO.ui.ButtonGroupWidget( {
-			items: items
+			items: items,
 		} );
 		this.nodes.$navigationLeft.append( this.buttons.linksGroup.$element );
 	};
 
 	Diff.prototype.renderNavigationBackLink = function () {
 		this.buttons.initiatorDiff = new OO.ui.ButtonWidget( {
-			label: _utils.msg( this.options.initiatorDiff.options.isOnlyRevision ? 'goto-back-revision' : 'goto-back-diff' ),
+			label: _utils.msg( `goto-back-${ this.options.initiatorDiff.options.type }` ),
 			icon: 'newline',
 			href: _utils.getDiffHref( this.options.initiatorDiff.getPage(), this.options.initiatorDiff.getPageParams() ),
-			target: _utils.getTarget(),
+			target: _utils.getTarget( true ),
 		} );
 		this.links.initiatorDiff = new Link( this.buttons.initiatorDiff.$button.get( 0 ), {
-			behavior: 'event'
+			behavior: 'event',
 		} );
 	};
 
 	Diff.prototype.renderNavigationMainLinks = function () {
 		const items = [];
 
-		if ( this.options.isOnlyRevision ) {
-			// Link to the diff if only revision content shown
+		if ( this.options.type === 'revision' ) {
+			// Link to the revisions diff
 			this.renderNavigationDiffLink();
 			items.push( this.buttons.diff );
 		} else {
@@ -2107,7 +2162,7 @@ $( function () {
 			this.buttons.prev = new OO.ui.ButtonWidget( {
 				label: [ ( document.dir === 'ltr' ? '←' : '→' ), _utils.msg( 'goto-prev-diff' ) ].join( ' ' ),
 				href: hasPrevLink ? this.nodes.$prevLink.attr( 'href' ) : null,
-				target: _utils.getTarget(),
+				target: _utils.getTarget( true ),
 				disabled: !hasPrevLink,
 			} );
 			if ( hasPrevLink ) {
@@ -2122,13 +2177,11 @@ $( function () {
 				this.buttons.diffToStable = new OO.ui.ButtonWidget( {
 					label: this.nodes.$diffToStableLink.text(),
 					href: this.nodes.$diffToStableLink.attr( 'href' ),
-					target: _utils.getTarget(),
+					target: _utils.getTarget( true ),
 				} );
 				this.links.diffToStable = new Link( this.buttons.diffToStable.$button.get( 0 ), {
 					behavior: 'event',
-					diffOptions: {
-						initiatorDiff: this,
-					},
+					initiatorDiff: this,
 				} );
 				items.push( this.buttons.diffToStable );
 			}
@@ -2138,7 +2191,7 @@ $( function () {
 			this.buttons.next = new OO.ui.ButtonWidget( {
 				label: [ _utils.msg( 'goto-next-diff' ), ( document.dir === 'ltr' ? '→' : '←' ) ].join( ' ' ),
 				href: hasNextLink ? this.nodes.$nextLink.attr( 'href' ) : null,
-				target: _utils.getTarget(),
+				target: _utils.getTarget( true ),
 				disabled: !hasNextLink,
 			} );
 			if ( hasNextLink ) {
@@ -2161,13 +2214,11 @@ $( function () {
 		this.buttons.diff = new OO.ui.ButtonWidget( {
 			label: _utils.msg( 'goto-view-diff' ),
 			href: _utils.getDiffHref( page, this.pageParams ),
-			target: _utils.getTarget(),
+			target: _utils.getTarget( true ),
 		} );
 		this.links.diff = new Link( this.buttons.diff.$button.get( 0 ), {
-			behavior: 'link',
-			diffOptions: {
-				initiatorDiff: this,
-			},
+			behavior: 'event',
+			initiatorDiff: this,
 		} );
 	};
 
@@ -2198,12 +2249,12 @@ $( function () {
 		} );
 		items.push( this.buttons.wikilinkCopy );
 
-		// Link to the revision or to the diff
-		if ( this.options.isOnlyRevision ) {
+		// Link to the revision or to the edit
+		if ( this.options.type === 'revision' ) {
 			this.buttons.linkRevision = new OO.ui.ButtonWidget( {
 				label: _utils.msg( 'goto-revision' ),
 				href: _utils.getRevisionHref( this.page ),
-				target: _utils.getTarget(),
+				target: _utils.getTarget( true ),
 				framed: false,
 				classes: [ 'instantDiffs-button--link' ],
 			} );
@@ -2212,7 +2263,7 @@ $( function () {
 			this.buttons.linkEdit = new OO.ui.ButtonWidget( {
 				label: _utils.msg( 'goto-edit' ),
 				href: _utils.getDiffHref( this.page ),
-				target: _utils.getTarget(),
+				target: _utils.getTarget( true ),
 				framed: false,
 				classes: [ 'instantDiffs-button--link' ],
 			} );
@@ -2224,7 +2275,7 @@ $( function () {
 			this.buttons.linkPage = new OO.ui.ButtonWidget( {
 				label: _utils.msg( 'goto-page' ),
 				href: this.page.href,
-				target: _utils.getTarget(),
+				target: _utils.getTarget( true ),
 				framed: false,
 				classes: [ 'instantDiffs-button--link' ],
 			} );
@@ -2234,7 +2285,7 @@ $( function () {
 			this.buttons.linkHistory = new OO.ui.ButtonWidget( {
 				label: _utils.msg( 'goto-history' ),
 				href: mw.util.getUrl( this.page.title, { action: 'history' } ),
-				target: _utils.getTarget(),
+				target: _utils.getTarget( true ),
 				framed: false,
 				classes: [ 'instantDiffs-button--link' ],
 			} );
@@ -2245,7 +2296,7 @@ $( function () {
 				this.buttons.linkTalkPage = new OO.ui.ButtonWidget( {
 					label: _utils.msg( 'goto-talkpage' ),
 					href: this.page.mwTitle.getTalkPage().getUrl(),
-					target: _utils.getTarget(),
+					target: _utils.getTarget( true ),
 					framed: false,
 					classes: [ 'instantDiffs-button--link' ],
 				} );
@@ -2276,7 +2327,7 @@ $( function () {
 		this.buttons.linkID = new OO.ui.ButtonWidget( {
 			label: linkIdLabel,
 			href: _utils.getOrigin( `/wiki/${ _config.link }` ),
-			target: _utils.getTarget(),
+			target: _utils.getTarget( true ),
 			framed: false,
 			classes: [ 'instantDiffs-button--link', 'instantDiffs-button--link-id' ],
 		} );
@@ -2298,7 +2349,7 @@ $( function () {
 				padded: false,
 				anchor: false,
 				align: 'backwards',
-			}
+			},
 		} );
 		this.nodes.$navigationRight.append( this.buttons.menuDropdown.$element );
 	};
@@ -2313,7 +2364,7 @@ $( function () {
 			minify: _utils.defaults( 'linksFormat' ) === 'minify',
 			relative: false,
 		};
-		const href = this.options.isOnlyRevision
+		const href = this.options.type === 'revision'
 			? _utils.getRevisionHref( this.page, {}, params )
 			: _utils.getDiffHref( this.page, {}, params );
 
@@ -2331,7 +2382,7 @@ $( function () {
 			minify: _utils.defaults( 'linksFormat' ) === 'minify',
 			relative: false,
 		};
-		const href = this.options.isOnlyRevision
+		const href = this.options.type === 'revision'
 			? _utils.getRevisionHref( this.page, {}, params )
 			: _utils.getDiffHref( this.page, {}, params );
 
@@ -2347,7 +2398,7 @@ $( function () {
 		}
 		_local.settings.process( {
 			onOpen: this.onSettingsOpen.bind( this ),
-			onClose: this.onSettingsClose.bind( this )
+			onClose: this.onSettingsClose.bind( this ),
 		} );
 
 		this.buttons.linkSettingsHelper.pending( true );
@@ -2371,6 +2422,13 @@ $( function () {
 		$links.each( ( i, node ) => node.setAttribute( 'target', '_blank' ) );
 	};
 
+	Diff.prototype.updateSize = function ( params ) {
+		params = $.extend( {
+			top: 0,
+		}, params );
+		this.nodes.$navigation.toggleClass( 'is-sticky', params.top > 0 );
+	};
+
 	Diff.prototype.getPage = function () {
 		return this.page;
 	};
@@ -2385,18 +2443,6 @@ $( function () {
 
 	Diff.prototype.getContainer = function () {
 		return this.nodes.$container;
-	};
-
-	Diff.prototype.updateSize = function ( params ) {
-		params = $.extend( {
-			top: 0
-		}, params );
-
-		if ( params.top === 0 ) {
-			this.nodes.$navigation.removeClass( 'is-sticky' );
-		} else {
-			this.nodes.$navigation.addClass( 'is-sticky' );
-		}
 	};
 
 	Diff.prototype.detach = function () {
@@ -2416,15 +2462,15 @@ $( function () {
 		this.options = {};
 		this.opener = {
 			link: null,
-			options: {}
+			options: {},
 		};
 		this.initiator = {
 			link: null,
-			options: {}
+			options: {},
 		};
 		this.previousInitiator = {
 			link: null,
-			options: {}
+			options: {},
 		};
 
 		this.link = null;
@@ -2435,11 +2481,9 @@ $( function () {
 	Dialog.prototype.process = function ( link, options ) {
 		this.link = link;
 		this.options = $.extend( true, {
-			diffOptions: {
-				initiatorDiff: null
-			},
+			initiatorDiff: null,
 			onOpen: function () {},
-			onClose: function () {}
+			onClose: function () {},
 		}, options );
 
 		if ( !this.isOpen ) {
@@ -2466,9 +2510,6 @@ $( function () {
 	Dialog.prototype.load = function () {
 		if ( this.isLoading ) return;
 
-		if ( !this.mwConfigBackup ) {
-			this.mwConfigBackup = _utils.backupMWConfig();
-		}
 		if ( this.isDependenciesLoaded ) {
 			return this.request();
 		}
@@ -2483,7 +2524,7 @@ $( function () {
 
 	Dialog.prototype.getDependencies = function () {
 		return _config.dependencies.dialog.concat(
-			_utils.getDependencies( _config.dependencies.content )
+			_utils.getDependencies( _config.dependencies.content ),
 		);
 	};
 
@@ -2492,7 +2533,7 @@ $( function () {
 		this.isDependenciesLoaded = false;
 		this.error = {
 			type: 'dependencies',
-			message: error && error.message ? error.message : null
+			message: error && error.message ? error.message : null,
 		};
 		_utils.notifyError( 'error-dependencies-generic', null, this.error );
 	};
@@ -2510,13 +2551,13 @@ $( function () {
 		// Define custom dialog width
 		// ToDo: find or suggest more elegant solution
 		OO.ui.WindowManager.static.sizes.instantDiffs = {
-			width: 1200
+			width: 1200,
 		};
 
 		// Construct a custom MessageDialog
 		this.MessageDialog = function () {
 			that.MessageDialog.super.call( this, {
-				classes: [ 'instantDiffs-dialog' ]
+				classes: [ 'instantDiffs-dialog' ],
 			} );
 		};
 		OO.inheritClass( this.MessageDialog, OO.ui.MessageDialog );
@@ -2526,8 +2567,8 @@ $( function () {
 		this.MessageDialog.static.actions = [
 			{
 				action: 'close',
-				label: _utils.msg( 'close' )
-			}
+				label: _utils.msg( 'close' ),
+			},
 		];
 
 		this.MessageDialog.prototype.initialize = function () {
@@ -2565,10 +2606,10 @@ $( function () {
 			return new OO.ui.Process()
 				.next( function () {
 					this.title.setLabel(
-						data.title !== undefined ? data.title : this.constructor.static.title
+						data.title !== undefined ? data.title : this.constructor.static.title,
 					);
 					this.message.setLabel(
-						data.message !== undefined ? data.message : this.constructor.static.message
+						data.message !== undefined ? data.message : this.constructor.static.message,
 					);
 
 					// Label click workaround
@@ -2613,31 +2654,25 @@ $( function () {
 		this.isLoading = true;
 		this.error = null;
 
-		const options = $.extend( true, {}, this.options.diffOptions );
-		const page = this.link.getPage();
-
-		// Set initiator dialog
-		options.initiatorDialog = this;
-
-		// Get options depending on the Link type
-		if ( this.link.type === 'revision' ) {
-			const revision = this.link.getRevision();
-			options.isOnlyRevision = true;
-			options.isHiddenRevision = _utils.isRevisionHidden( revision )
-		} else {
-			const compare = this.link.getCompare();
-			options.isOnlyRevision = ( compare && !compare.fromrevid ) || !page.diff;
-			options.isHiddenRevision = _utils.isCompareHidden( compare );
+		// When the Diff is about to change, restore the mw.config to the initial state
+		if ( this.mwConfigBackup ) {
+			_utils.restoreMWConfig( this.mwConfigBackup );
+		}
+		if ( !this.mwConfigBackup ) {
+			this.mwConfigBackup = _utils.backupMWConfig();
 		}
 
-		// Get page params
-		const pageParams = {
-			diffonly: options.isOnlyRevision ? 0 : 1,
+		// Construct the Diff options
+		const page = this.link.getPage();
+		const options = {
+			type: this.link.options.type,
+			initiatorDiff: this.options.initiatorDiff,
+			initiatorDialog: this,
 		};
 
-		// Load Diff content
+		// Load the Diff content
 		this.previousDiff = this.diff;
-		this.diff = new Diff( page, pageParams, options );
+		this.diff = new Diff( page, options );
 		return $.when( this.diff.load() )
 			.then( this.onRequestSuccess.bind( this ) )
 			.fail( this.onRequestError.bind( this ) );
@@ -2668,25 +2703,10 @@ $( function () {
 		}
 	};
 
-	Dialog.prototype.fire = function () {
-		// Detach previous Diff if exists
-		if ( this.previousDiff instanceof Diff ) {
-			this.previousDiff.detach();
-		}
-
-		mw.hook( 'wikipage.content' ).fire( this.diff.getContainer() );
-		mw.hook( 'wikipage.diff' ).fire( this.diff.getContainer() );
-
-		// Open links in a new tab, except for confirmable links
-		this.diff.processLinksTaget();
-
-		// Refresh dialog content height
-		this.dialog.updateSize();
-	};
-
 	Dialog.prototype.onOpen = function () {
 		this.isOpen = true;
 		this.fire();
+
 		if ( _utils.isFunction( this.options.onOpen ) ) {
 			this.options.onOpen( this );
 		}
@@ -2694,10 +2714,17 @@ $( function () {
 
 	Dialog.prototype.onClose = function () {
 		this.isOpen = false;
-		this.diff.detach();
+
+		if ( this.diff ) {
+			this.diff.detach();
+			this.diff = null;
+		}
+
 		if ( this.mwConfigBackup ) {
 			_utils.restoreMWConfig( this.mwConfigBackup );
+			this.mwConfigBackup = null;
 		}
+
 		if ( _utils.isFunction( this.options.onClose ) ) {
 			this.options.onClose( this );
 		}
@@ -2711,6 +2738,7 @@ $( function () {
 
 	Dialog.prototype.onUpdate = function () {
 		this.fire();
+
 		if (
 			this.previousInitiator.link instanceof Link &&
 			this.opener.link !== this.previousInitiator.link &&
@@ -2730,11 +2758,27 @@ $( function () {
 	Dialog.prototype.onScroll = function ( event ) {
 		// Update diff content positions and sizes
 		this.diff.updateSize( {
-			top: event.target.scrollTop
+			top: event.target.scrollTop,
 		} );
 	};
 
 	/*** ACTIONS ***/
+
+	Dialog.prototype.fire = function () {
+		// Detach previous Diff if exists
+		if ( this.previousDiff instanceof Diff ) {
+			this.previousDiff.detach();
+		}
+
+		mw.hook( 'wikipage.content' ).fire( this.diff.getContainer() );
+		mw.hook( 'wikipage.diff' ).fire( this.diff.getContainer() );
+
+		// Open links in a new tab, except for confirmable links
+		this.diff.processLinksTaget();
+
+		// Refresh dialog content height
+		this.dialog.updateSize();
+	};
 
 	Dialog.prototype.focus = function () {
 		this.dialog.focus();
@@ -2758,7 +2802,7 @@ $( function () {
 		this.page = {
 			title: null,
 			oldid: null,
-			diff: null
+			diff: null,
 		};
 		this.button = new Button( this.options );
 	}
@@ -2771,7 +2815,7 @@ $( function () {
 		}
 		_local.dialog.process( this, {
 			onOpen: this.onDialogOpen.bind( this ),
-			onClose: this.onDialogClose.bind( this )
+			onClose: this.onDialogClose.bind( this ),
 		} );
 
 		this.toggleLoader( true );
@@ -2842,7 +2886,7 @@ $( function () {
 	Settings.prototype.process = function ( options ) {
 		this.options = $.extend( true, {
 			onOpen: function () {},
-			onClose: function () {}
+			onClose: function () {},
 		}, options );
 	};
 
@@ -2868,7 +2912,7 @@ $( function () {
 		this.isDependenciesLoaded = false;
 		this.error = {
 			type: 'dependencies',
-			message: error && error.message ? error.message : null
+			message: error && error.message ? error.message : null,
 		};
 		_utils.notifyError( 'error-dependencies-generic', null, this.error );
 	};
@@ -2916,7 +2960,7 @@ $( function () {
 				title: _utils.msg( 'close' ),
 				invisibleLabel: true,
 				icon: 'close',
-				flags: [ 'safe', 'close' ]
+				flags: [ 'safe', 'close' ],
 			},
 		];
 
@@ -3009,7 +3053,7 @@ $( function () {
 				instantDiffs.settings.showLink ||
 				instantDiffs.settings.showPageLink ||
 				instantDiffs.settings.highlightLine ||
-				instantDiffs.settings.markWatchedLine
+				instantDiffs.settings.markWatchedLine,
 			);
 		};
 
@@ -3096,7 +3140,7 @@ $( function () {
 				instantDiffs.settings.unHideDiffs ||
 				instantDiffs.settings.openInNewTab ||
 				instantDiffs.settings.linksFormat ||
-				instantDiffs.settings.wikilinksFormat
+				instantDiffs.settings.wikilinksFormat,
 			);
 
 			// Trigger selects actions
@@ -3137,7 +3181,7 @@ $( function () {
 			] );
 			this.layouts.general.toggle(
 				instantDiffs.settings.enableMobile ||
-				instantDiffs.settings.notifyErrors
+				instantDiffs.settings.notifyErrors,
 			);
 		};
 
@@ -3396,7 +3440,9 @@ $( function () {
 
 	/******* PAGE SPECIFIC FUNCTIONS *******/
 
-	function applyPageSpecificChanges() {
+	function applyPageSpecificAdjustments() {
+		if ( !_utils.isAllowed() ) return;
+
 		// Change Lists
 		if ( _config.changeLists.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) ) ) {
 			return processChangelistPage();
@@ -3424,7 +3470,7 @@ $( function () {
 		$contributionsLines.each( ( i, node ) => {
 			const $node = $( node );
 			if ( $node.find( 'a' ).length === 0 ) {
-				$node.wrapInner( _utils.getPlaceholder() )
+				$node.wrapInner( _utils.getPlaceholder() );
 			}
 		} );
 	}
@@ -3443,10 +3489,10 @@ $( function () {
 			const $cur = $container.find( '.mw-history-histlinks > span:first-child' );
 			const $prev = $container.find( '.mw-history-histlinks > span:last-child' );
 			if ( $cur.find( 'a' ).length === 0 ) {
-				$cur.wrapInner( _utils.getPlaceholder() )
+				$cur.wrapInner( _utils.getPlaceholder() );
 			}
 			if ( $prev.find( 'a' ).length === 0 ) {
-				$prev.wrapInner( _utils.getPlaceholder() )
+				$prev.wrapInner( _utils.getPlaceholder() );
 			}
 		} );
 
@@ -3481,7 +3527,7 @@ $( function () {
 
 		// Prepare locale variables
 		_local.mwIsAnon = mw.user?.isAnon?.() ?? true;
-		_local.mwEndPoint = [ location.origin, mw.config.get( 'wgScript' ) ].join( '' );
+		_local.mwEndPoint = `${ location.origin }${ mw.config.get( 'wgScript' ) }`;
 		_local.mwEndPointUrl = new URL( _local.mwEndPoint );
 		_local.mwApi = new mw.Api();
 		_local.mwArticlePath = mw.config.get( 'wgArticlePath' ).replace( '$1', '' );
@@ -3515,10 +3561,10 @@ $( function () {
 
 	function getLocalizedTitles() {
 		// Try to get cached specialPages from local storage
-		_local.specialPagesNames = mw.storage.getObject( `${ _config.prefix }-specialPagesNames` );
+		_local.specialPagesAliases = mw.storage.getObject( `${ _config.prefix }-specialPagesAliases` );
 		if (
-			_local.specialPagesNames &&
-			Object.keys( _local.specialPagesNames ).length === _config.specialPages.length
+			_local.specialPagesAliases &&
+			Object.keys( _local.specialPagesAliases ).length === _config.specialPages.length
 		) {
 			return true;
 		}
@@ -3538,21 +3584,21 @@ $( function () {
 	function onRequestLocalizedTitlesDone( data ) {
 		if ( !data?.query?.pages ) return;
 
-		_local.specialPagesNames = {};
+		_local.specialPagesAliases = {};
 
 		// Fallback for names of special pages
 		_config.specialPages.forEach( item => {
-			_local.specialPagesNames[ item ] = item;
+			_local.specialPagesAliases[ item ] = item;
 		} );
 
 		// Localized names of special pages
 		if ( data.query.normalized ) {
 			data.query.normalized.forEach( item => {
-				_local.specialPagesNames[ item.from ] = item.to;
+				_local.specialPagesAliases[ item.from ] = item.to;
 			} );
 		}
 
-		mw.storage.setObject( `${ _config.prefix }-specialPagesNames`, _local.specialPagesNames );
+		mw.storage.setObject( `${ _config.prefix }-specialPagesAliases`, _local.specialPagesAliases );
 	}
 
 	function getMessages() {
@@ -3567,19 +3613,19 @@ $( function () {
 	function assembleLinkSelector() {
 		// Assemble RegExp for testing for mwArticlePath
 		_local.articlePathRegExp = new RegExp(
-			_config.articlePathRegExp.replaceAll( '$1', _local.mwArticlePath )
+			_config.articlePathRegExp.replaceAll( '$1', _local.mwArticlePath ),
 		);
 
 		// Start assemble links selector
 		const linkSelector = [];
 		_config.linkSelector.forEach( item => {
 			linkSelector.push(
-				item.replaceAll( '$1', mw.config.get( 'wgServer' ) )
+				item.replaceAll( '$1', mw.config.get( 'wgServer' ) ),
 			);
 			if ( /\$1/.test( item ) ) {
 				_config.mwServers.forEach( server => {
 					linkSelector.push(
-						item.replaceAll( '$1', server )
+						item.replaceAll( '$1', server ),
 					);
 				} );
 			}
@@ -3588,18 +3634,18 @@ $( function () {
 		// Assemble special pages link selector
 		_local.specialPages = [];
 		_local.specialPagesPrefixed = [];
-		_local.specialPagesNamesPrefixed = {};
+		_local.specialPagesAliasesPrefixed = {};
 
-		const specialPagesKeys = Object.keys( _local.specialPagesNames );
+		const specialPagesKeys = Object.keys( _local.specialPagesAliases );
 		specialPagesKeys.forEach( name => {
-			const title = _local.specialPagesNames[ name ];
+			const title = _local.specialPagesAliases[ name ];
 			const titlePrefixed = new mw.Title( title ).getPrefixedDb();
 
 			_local.specialPagesPrefixed.push( titlePrefixed );
-			_local.specialPagesNamesPrefixed[ name ] = titlePrefixed;
+			_local.specialPagesAliasesPrefixed[ name ] = titlePrefixed;
 
 			linkSelector.push(
-				_config.specialPagesSelector.replaceAll( '$1', title )
+				_config.specialPagesSelector.replaceAll( '$1', title ),
 			);
 		} );
 
@@ -3611,10 +3657,10 @@ $( function () {
 		_local.specialPagesPathRegExp = new RegExp(
 			_config.specialPagesPathRegExp
 				.replaceAll( '$1', _local.mwArticlePath )
-				.replaceAll( '$2', specialPagesPrefixed )
+				.replaceAll( '$2', specialPagesPrefixed ),
 		);
 		_local.specialPagesSearchRegExp = new RegExp(
-			_config.specialPagesSearchRegExp.replaceAll( '$1', specialPagesPrefixed )
+			_config.specialPagesSearchRegExp.replaceAll( '$1', specialPagesPrefixed ),
 		);
 	}
 
@@ -3649,62 +3695,66 @@ $( function () {
 			return;
 		}
 
-		// Start processing links
+		// Perform page-specific adjustments after preparation and call the ready state
 		instantDiffs.isReady = true;
 		document.body.classList.add( 'instantDiffs-enabled' );
-		applyPageSpecificChanges();
 		assembleLinkSelector();
+		applyPageSpecificAdjustments();
 
 		// Track on ready time
 		_timers.ready = Date.now();
 
-		// Fire process hooks
+		// Fire the ready state hook
 		mw.hook( `${ _config.prefix }.ready` ).fire( instantDiffs );
-		mw.hook( 'wikipage.content' ).add( process );
+
+		// Add process hook listeners
+		mw.hook( 'wikipage.content' ).add( processContent );
 		mw.hook( `${ _config.prefix }.process` ).add( process );
 	}
 
-	function process( $context ) {
-		// Check the including / excluding rules
-		if (
-			!$context ||
-			!_config.include.actions.includes( mw.config.get( 'wgAction' ) ) ||
-			_config.exclude.pages.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) )
-		) {
-			return;
-		}
-
-		// Track on process start time
-		_timers.processStart = Date.now();
+	function processContent( $context ) {
+		// Check the including / excluding rules only for the 'wikipage.content' hook
+		if ( !$context || !_utils.isAllowed() ) return;
 
 		// Process all page links including system messages on the first run
-		const isFirstRun = !instantDiffs.isRunCompleted;
-		if ( isFirstRun ) {
+		instantDiffs.isFirstRun = !instantDiffs.isRunCompleted;
+		if ( instantDiffs.isFirstRun ) {
 			instantDiffs.isRunCompleted = true;
 			$context = _utils.getBodyContentNode();
 		}
 
+		// Process links
+		process( $context );
+
+		// Log timers for the first run
+		if ( _utils.defaults( 'logTimers' ) && instantDiffs.isFirstRun ) {
+			_utils.logTimer( 'ready time', _timers.run, _timers.ready );
+			_utils.logTimer( 'total time', _timers.run, _timers.processEnd );
+		}
+	}
+
+	function process( $context ) {
+		if ( !$context ) return;
+
+		// Track on process start time
+		_timers.processStart = Date.now();
+
+		// Get all links using the assembled selector and skip those already processed
 		const links = _utils.getLinks( $context )
 			.filter( ( index, node ) => !_local.links.has( node ) )
-			.each( ( index, node ) => new Link( node ) );
+			.map( ( index, node ) => new Link( node ) );
 
 		// Track on process end time
 		_timers.processEnd = Date.now();
 
-		// Log timers
-		if ( _utils.defaults( 'logTimers' ) ) {
-			if ( isFirstRun ) {
-				_utils.logTimer( 'total time', _timers.run, _timers.processEnd );
-				_utils.logTimer( 'ready time', _timers.run, _timers.ready );
-			}
-			if ( links.length > 0 ) {
-				_utils.logTimer( 'process time', _timers.processStart, _timers.processEnd );
-				console.info( `${ _utils.msg( 'name' ) }: links processed: ${ links.length }.` );
-			}
+		// Log timers for the process
+		if ( _utils.defaults( 'logTimers' ) && links.length > 0 ) {
+			console.info( `${ _utils.msg( 'name' ) }: links processed: ${ links.length }.` );
+			_utils.logTimer( 'process time', _timers.processStart, _timers.processEnd );
 		}
 
-		// Fire process end hook
-		mw.hook( `${ _config.prefix }.processed` ).fire( instantDiffs );
+		// Fire the process end hook
+		mw.hook( `${ _config.prefix }.processed` ).fire( links );
 	}
 
 	function observe( entries ) {
@@ -3806,12 +3856,14 @@ $( function () {
 			return href;
 		};
 
+		// Process already rendered links
 		if ( id.isRunCompleted ) {
 			for ( const link of id.local.links.values() ) {
 				renderLink( link );
 			}
 		}
 
+		// Add hook listener to process newly added links
 		mw.hook( `${ instantDiffs.config.prefix }.link.renderSuccess` ).add( function ( link ) {
 			if ( !link ) return;
 			renderLink( link );
@@ -3828,21 +3880,11 @@ $( function () {
 		if (
 			typeof wikEd !== 'undefined' &&
 			wikEd.diffTableLinkified &&
-			!diff.options.isOnlyRevision &&
+			diff.options.type === 'diff' &&
 			( diff.nodes.$table.length > 0 && wikEd.diffTable === diff.nodes.$table.get( 0 ) )
 		) {
 			wikEd.diffTableLinkified = false;
 		}
-	} );
-
-	/*** [[mw:Reference Tooltips]] ***/
-
-	mw.hook( `${ instantDiffs.config.prefix }.link.renderError` ).add( function ( link ) {
-		if ( !link ) return;
-
-		const rtClass = window.rt_COMMENTED_TEXT_CLASS || 'rt-commentedText';
-		link.nodes.error.classList.add( rtClass );
-		mw.hook( 'wikipage.content' ).fire( $( link.getContainer() ) );
 	} );
 
 	/******* BOOTSTRAP *******/
