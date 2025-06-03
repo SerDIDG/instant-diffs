@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.2.0-b.11',
+		version: '1.2.0-b.12',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -265,7 +265,7 @@ $( function () {
 		specialPages: {},
 		specialPagesPrefixed: {},
 		specialPagesLocal: {},
-		specialPagesLocalPrefixed: [],
+		specialPagesLocalPrefixed: {},
 		specialPagesAliases: {},
 		specialPagesAliasesPrefixed: {},
 
