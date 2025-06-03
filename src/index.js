@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.2.0-b.9',
+		version: '1.2.0-b.10',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -710,7 +710,7 @@ $( function () {
 		if ( !_utils.isEmpty( project ) ) {
 			const regExp = new RegExp( `^//${ prefix }${ project }` );
 			if ( regExp.test( server ) ) {
-				return server.replace( regExp, _utils.isEmpty( prefix ) ? `//${ project }.m` : `//m.${ project }` );
+				return server.replace( regExp, !_utils.isEmpty( prefix ) ? `//m.${ project }` : `//${ project }.m` );
 			}
 		}
 	};
@@ -1404,7 +1404,6 @@ $( function () {
 		this.revision = revision;
 		this.page.isHidden = _utils.isRevisionHidden( this.revision );
 		this.page = _utils.extendPage( this.page, {
-			oldid: this.revision.revid,
 			title: page.title,
 			section: _utils.getRevisionSection( this.revision ),
 		} );
