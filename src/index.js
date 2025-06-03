@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.2.0-b.8',
+		version: '1.2.0-b.9',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -710,7 +710,7 @@ $( function () {
 		if ( !_utils.isEmpty( project ) ) {
 			const regExp = new RegExp( `^//${ prefix }${ project }` );
 			if ( regExp.test( server ) ) {
-				return server.replace( regExp, `//m.${ project }` );
+				return server.replace( regExp, _utils.isEmpty( prefix ) ? `//${ project }.m` : `//m.${ project }` );
 			}
 		}
 	};
