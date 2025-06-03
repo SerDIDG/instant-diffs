@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.2.0-gm',
+		version: '1.2.1-gm',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -733,21 +733,21 @@ $( function () {
 
 	_utils.getMobileServer = () => {
 		const server = mw.config.get( 'wgServer' );
-		const prefix = new RegExp( `^//www.` ).test( server ) ? 'www.' : '';
+		const prefix = new RegExp( `^//www\\.` ).test( server ) ? 'www.' : '';
 
 		const language = mw.config.get( 'wgContentLanguage' );
 		if ( !_utils.isEmpty( language ) ) {
-			const regExp = new RegExp( `^//${ language }` );
+			const regExp = new RegExp( `^//${ language }\\.` );
 			if ( regExp.test( server ) ) {
-				return server.replace( regExp, `//${ language }.m` );
+				return server.replace( regExp, `//${ language }.m.` );
 			}
 		}
 
 		const project = mw.config.get( 'wgNoticeProject' );
 		if ( !_utils.isEmpty( project ) ) {
-			const regExp = new RegExp( `^//${ prefix }${ project }` );
+			const regExp = new RegExp( `^//${ prefix }${ project }\\.` );
 			if ( regExp.test( server ) ) {
-				return server.replace( regExp, !_utils.isEmpty( prefix ) ? `//m.${ project }` : `//${ project }.m` );
+				return server.replace( regExp, !_utils.isEmpty( prefix ) ? `//m.${ project }.` : `//${ project }.m.` );
 			}
 		}
 	};
