@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.2.0-b.6',
+		version: '1.2.0-b.7',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -1282,7 +1282,9 @@ $( function () {
 	/*** REQUESTS ***/
 
 	Link.prototype.renderRequest = function () {
-		if ( this.page.isValid ) {
+		this.hasRequest = this.page.isValid;
+
+		if ( this.hasRequest ) {
 			this.toggleSpinner( true );
 			this.observe();
 		} else {
