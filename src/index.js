@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.2.0-b.7',
+		version: '1.2.0-b.8',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -123,7 +123,6 @@ $( function () {
 			'wgDiffNewId',
 			'wgPageContentModel',
 		],
-		mwServers: [],
 		skinBodyClasses: {
 			'vector-2022': [ 'vector-body' ],
 			vector: [ 'vector-body' ],
@@ -250,6 +249,7 @@ $( function () {
 		mwEndPointUrl: null,
 		mwApi: null,
 		mwArticlePath: null,
+		mwServers: [],
 		titleText: null,
 		language: null,
 		messages: {},
@@ -401,7 +401,7 @@ $( function () {
 		}
 	};
 
-	_utils.processUserDefaults = () => {
+	_utils.processDefaults = () => {
 		// Set settings stored in the Local Storage
 		try {
 			const settings = mw.storage.getObject( `${ _config.prefix }-settings` );
@@ -695,11 +695,23 @@ $( function () {
 	/*** MW ***/
 
 	_utils.getMobileServer = () => {
-		const language = mw.config.get( 'wgContentLanguage' );
 		const server = mw.config.get( 'wgServer' );
-		const regExp = new RegExp( `^//${ language }` );
-		if ( regExp.test( server ) ) {
-			return server.replace( regExp, `//${ language }.m` );
+		const prefix = new RegExp( `^//www.` ).test( server ) ? 'www.' : '';
+
+		const language = mw.config.get( 'wgContentLanguage' );
+		if ( !_utils.isEmpty( language ) ) {
+			const regExp = new RegExp( `^//${ language }` );
+			if ( regExp.test( server ) ) {
+				return server.replace( regExp, `//${ language }.m` );
+			}
+		}
+
+		const project = mw.config.get( 'wgNoticeProject' );
+		if ( !_utils.isEmpty( project ) ) {
+			const regExp = new RegExp( `^//${ prefix }${ project }` );
+			if ( regExp.test( server ) ) {
+				return server.replace( regExp, `//m.${ project }` );
+			}
 		}
 	};
 
@@ -3535,10 +3547,11 @@ $( function () {
 		_local.mwArticlePath = mw.config.get( 'wgArticlePath' ).replace( '$1', '' );
 		_local.titleText = new mw.Title( mw.config.get( 'wgPageName' ) ).getPrefixedText();
 
-		// Get mobile server
+		// Get hostnames (including mobile variants) used to assemble the link selector
+		_local.mwServers.push( mw.config.get( 'wgServer' ) );
 		const mobileServer = _utils.getMobileServer();
 		if ( mobileServer ) {
-			_config.mwServers.push( mobileServer );
+			_local.mwServers.push( mobileServer );
 		}
 
 		// Init links Intersection Observer
@@ -3621,15 +3634,14 @@ $( function () {
 		// Start assemble links selector
 		const linkSelector = [];
 		_config.linkSelector.forEach( item => {
-			linkSelector.push(
-				item.replaceAll( '$1', mw.config.get( 'wgServer' ) ),
-			);
 			if ( /\$1/.test( item ) ) {
-				_config.mwServers.forEach( server => {
+				_local.mwServers.forEach( server => {
 					linkSelector.push(
 						item.replaceAll( '$1', server ),
 					);
 				} );
+			} else {
+				linkSelector.push( item );
 			}
 		} );
 
@@ -3688,7 +3700,7 @@ $( function () {
 	}
 
 	function ready() {
-		_utils.processUserDefaults();
+		_utils.processDefaults();
 		_utils.processMessages();
 
 		// Check if the script is enabled on the mobile skin (Minerva)
@@ -3772,7 +3784,7 @@ $( function () {
 
 	function unload() {
 		instantDiffs.isUnloading = true;
-		_local.observer && _local.observer.disconnect();
+		_local.observer?.disconnect();
 	}
 
 	/******* EXPORTS *******/
