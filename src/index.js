@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.2.1-gm',
+		version: '1.2.2-gm',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -1781,12 +1781,8 @@ $( function () {
 		return this.page;
 	};
 
-	Link.prototype.getRevision = function () {
-		return this.revision;
-	};
-
-	Link.prototype.getCompare = function () {
-		return this.compare;
+	Link.prototype.getType = function () {
+		return this.options.type;
 	};
 
 	/******* DIFF CONSTRUCTOR *******/
@@ -2715,7 +2711,7 @@ $( function () {
 		// Construct the Diff options
 		const page = this.link.getPage();
 		const options = {
-			type: this.link.options.type,
+			type: this.link.getType(),
 			initiatorDiff: this.options.initiatorDiff,
 			initiatorDialog: this,
 		};
@@ -2849,11 +2845,7 @@ $( function () {
 			handler: this.openDialog.bind( this ),
 			ariaHaspopup: true,
 		} );
-		this.page = {
-			title: null,
-			oldid: null,
-			diff: null,
-		};
+		this.page = {};
 		this.button = new Button( this.options );
 	}
 
@@ -2881,21 +2873,25 @@ $( function () {
 	};
 
 	DialogButton.prototype.onDialogOpen = function () {};
+
 	DialogButton.prototype.onDialogClose = function () {};
+
 	DialogButton.prototype.getPage = function () {};
-	DialogButton.prototype.getCompare = function () {};
+
+	DialogButton.prototype.getType = function () {};
 
 	/*** COMPARE BUTTON ***/
 
 	function HistoryCompareButton( options ) {
 		DialogButton.call( this, options );
-		this.page.title = _local.titleText;
 	}
 
 	HistoryCompareButton.prototype = Object.create( DialogButton.prototype );
 	HistoryCompareButton.prototype.constructor = HistoryCompareButton;
 
 	HistoryCompareButton.prototype.getPage = function () {
+		this.page.title = _local.titleText;
+
 		this.page.$oldid = $( '#mw-history-compare input[name="oldid"]:checked' );
 		this.page.$oldidLine = this.page.$oldid.closest( 'li' );
 		this.page.oldid = this.page.$oldid.val();
@@ -2905,6 +2901,10 @@ $( function () {
 		this.page.diff = this.page.$diff.val();
 
 		return this.page;
+	};
+
+	DialogButton.prototype.getType = function () {
+		return 'diff';
 	};
 
 	HistoryCompareButton.prototype.onDialogOpen = function () {
