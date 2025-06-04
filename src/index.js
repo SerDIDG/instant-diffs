@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.2.4',
+		version: '1.2.5-gm',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -3000,7 +3000,9 @@ $( function () {
 			this.inputOptions = {};
 			this.fields = {};
 			this.layouts = {};
-			wrapper.SettingsDialog.super.call( this );
+			wrapper.SettingsDialog.super.call( this, {
+				classes: [ 'instantDiffs-settings' ],
+			} );
 		};
 		OO.inheritClass( this.SettingsDialog, OO.ui.ProcessDialog );
 

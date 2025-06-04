@@ -26,7 +26,8 @@
 	--instantDiffs-line-height: 1.65;
 }
 
-.skin-fandomdesktop {
+.skin-fandomdesktop,
+.skin-fandommobile {
 	--instantDiffs-background-navigation: color-mix(in srgb, var(--theme-page-background-color--secondary, #ffffff) 70%, transparent);
 	--instantDiffs-font-size: 1rem;
 	--instantDiffs-line-height: 1.75;
@@ -395,6 +396,10 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 
 /******* DIALOG *******/
 
+.skin-fandommobile .instantDiffs-dialog.instantDiffs-dialog {
+	top: 55px;
+}
+
 /* Enable click to close on the overlay */
 .instantDiffs-dialog .oo-ui-window-overlay {
 	z-index: -1;
@@ -469,7 +474,8 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 	padding: 1em;
 }
 
-.skin-fandomdesktop .instantDiffs-navigation {
+.skin-fandomdesktop .instantDiffs-navigation,
+.skin-fandommobile .instantDiffs-navigation {
 	margin: 0 -24px;
 	padding: 1em 24px;
 }
@@ -598,6 +604,10 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 }
 
 /******* SETTINGS *******/
+
+.skin-fandommobile .instantDiffs-settings.instantDiffs-settings {
+	top: 55px;
+}
 
 /* 1.42857143em is a size of the OOUI checkbox\radio */
 .instantDiffs-list--settings {
