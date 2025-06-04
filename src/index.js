@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.3.0-b.3',
+		version: '1.3.0-b.4',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -2333,7 +2333,6 @@ $( function () {
 
 		this.links.switch = new Link( this.buttons.switch.$button.get( 0 ), {
 			behavior: 'event',
-			initiatorDiff: this,
 		} );
 	};
 
