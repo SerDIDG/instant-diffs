@@ -14,6 +14,9 @@
 
 	--instantDiffs-font-size: var(--font-size-medium, 0.875rem);
 	--instantDiffs-line-height: var(--line-height-medium, 1.5714285);
+
+	--instantDiffs-font-size-navigation: var(--font-size-medium, 0.875rem);
+	--instantDiffs-line-height-navigation: var(--line-height-medium, 1.5714285);
 }
 
 .skin-monobook {
@@ -464,7 +467,7 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 	margin: 0 -16px;
 	padding: 1em 16px;
 	display: flex;
-	gap: 8px;
+	gap: 4px;
 	position: sticky;
 	z-index: 2;
 	top: 0;
@@ -473,10 +476,8 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 	background-clip: padding-box;
 	-webkit-backdrop-filter: blur(16px);
 	backdrop-filter: blur(16px);
-}
-
-.skin-minerva .instantDiffs-navigation {
-	font-size: 90%;
+	font-size: var(--instantDiffs-font-size-navigation);
+	line-height: var(--instantDiffs-line-height-navigation);
 }
 
 .skin-monobook .instantDiffs-navigation {
@@ -582,20 +583,40 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 	color: var(--color-placeholder, #72777d);
 }
 
-
-@media (min-width: 640px) {
-	.instantDiffs-label--short {
-		display: none;
-	}
-}
-
 @media (max-width: 639px) {
 	.instantDiffs-button--back,
 	.instantDiffs-button--switch,
 	.instantDiffs-button--pending {
 		display: none;
 	}
+}
 
+/*** LABEL ***/
+
+.instantDiffs-label {
+	display: flex;
+	gap: 0.25rem;
+}
+
+.instantDiffs-label i {
+	flex: none;
+}
+
+.instantDiffs-label span {
+	min-width: 0;
+	flex: auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+@media (min-width: 960px) {
+	.instantDiffs-label--short {
+		display: none;
+	}
+}
+
+@media (max-width: 959px) {
 	.instantDiffs-label--long {
 		display: none;
 	}

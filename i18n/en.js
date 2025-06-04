@@ -9,6 +9,8 @@ instantDiffs.i18n ||= {};
 instantDiffs.i18n.en = {
 	'name': 'Instant Diffs',
 
+	/*** LINKS ***/
+
 	'diff-title': 'Difference between revisions',
 	'diff-title-admin': 'Difference between revisions is hidden',
 	'revision-title': 'Revision content',
@@ -17,10 +19,18 @@ instantDiffs.i18n.en = {
 	'compare-title': 'Compare selected revisions ($1)',
 	'alt-click': '(Alt+Click: open the link)',
 
+	/*** DIALOG ***/
+
 	'save': 'Save',
 	'cancel': 'Cancel',
 	'close': 'Close',
 	'reload': 'Reload',
+
+	'title-empty': '[No title]',
+	'title-not-found': '[Not found]',
+	'unsupported-wikilambda': 'WikiLambda app is not currently supported.',
+
+	/*** NAVIGATION ***/
 
 	'goto-links': 'Links',
 	'goto-snapshot-next': 'Next link on a page',
@@ -45,6 +55,8 @@ instantDiffs.i18n.en = {
 	'goto-talkpage': 'Discussion',
 	'goto-settings': 'Settings',
 
+	/*** ACTIONS ***/
+
 	'copy-link': 'Copy link',
 	'copy-link-copied': 'The link has been copied to the clipboard.',
 	'copy-link-error': 'Couldn\'t copy the link.',
@@ -54,6 +66,8 @@ instantDiffs.i18n.en = {
 	'wikilink-diff': 'diff',
 	'wikilink-revision': 'revision',
 	'wikilink-example-title': 'Main Page',
+
+	/*** SETTINGS ***/
 
 	'settings-title': 'Instant Diffs Settings',
 	'settings-saved': 'The settings have been saved successfully. Reload the page to apply them.',
@@ -80,7 +94,7 @@ instantDiffs.i18n.en = {
 	'settings-enable-mobile-help': 'To re-enable Instant Diffs, you will need to switch to a different skin.',
 	'settings-notify-errors': 'Show popup alerts for critical errors.',
 
-	'unsupported-wikilambda': 'WikiLambda app is not currently supported.',
+	/*** ERRORS ***/
 
 	'error-wasted': 'wasted',
 	'error-generic': 'Something went wrong: $4',
