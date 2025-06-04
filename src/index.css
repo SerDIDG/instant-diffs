@@ -44,7 +44,7 @@
 /******* UTIL *******/
 
 .instantDiffs-hidden {
-	display: none;
+	display: none !important;
 }
 
 /******* LINK *******/
@@ -417,22 +417,28 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 	line-height: var(--instantDiffs-line-height);
 }
 
-.instantDiffs-dialog-content .diff-currentversion-title {
-	margin-top: 1em;
-}
-
-.instantDiffs-dialog-content #toc {
-	display: none;
-}
-
 /* [Fix] Text color for Monobook. */
 .skin-monobook .instantDiffs-dialog-content {
 	color: #000000;
 }
 
+.instantDiffs-dialog-body {
+	display: flow-root;
+	position: relative;
+	z-index: 1;
+}
+
+.instantDiffs-dialog-body .diff-currentversion-title {
+	margin-top: 1em;
+}
+
+.instantDiffs-dialog-body #toc {
+	display: none;
+}
+
 /* [Fix] Override fixed positioning for the edit contributor block on mobile. */
 @media (max-width: 639px) {
-	.skin-minerva .instantDiffs-dialog-content #mw-diff-ntitle2 {
+	.skin-minerva .instantDiffs-dialog-body #mw-diff-ntitle2 {
 		height: auto;
 		margin-bottom: 0.5em;
 		position: relative;
@@ -440,13 +446,13 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 		border: 1px solid var(--border-color-subtle, #c8ccd1);
 	}
 
-	.skin-minerva .instantDiffs-dialog-content .mw-diff-tool {
+	.skin-minerva .instantDiffs-dialog-body .mw-diff-tool {
 		position: relative;
 		z-index: 1;
 		inset: auto;
 	}
 
-	.skin-minerva .instantDiffs-dialog-content .mw-userlink::before {
+	.skin-minerva .instantDiffs-dialog-body .mw-userlink::before {
 		width: calc(var(--font-size-medium, 1rem) + 4px);
 		display: inline-block;
 	}
@@ -591,10 +597,6 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 
 .instantDiffs-dialog-content #mw-fr-revisiontag-old {
 	margin-bottom: 1em;
-}
-
-.instantDiffs-dialog-content .fr-diff-to-stable {
-	display: none;
 }
 
 /*** ROLLBACK LINK ***/
