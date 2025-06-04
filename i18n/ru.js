@@ -28,6 +28,8 @@ instantDiffs.i18n.ru = {
 	'goto-view-diff': 'Разница версий',
 	'goto-view-pending': 'Непроверенные правки',
 	'goto-view-revision': 'Показать версию',
+	"goto-prev": "Предыдущая",
+	"goto-next": "Следующая",
 	'goto-prev-diff': 'Предыдущая правка',
 	'goto-next-diff': 'Следующая правка',
 	'goto-back-diff': 'Вернуться',

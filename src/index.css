@@ -529,16 +529,6 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 	text-overflow: ellipsis;
 }
 
-@media (max-width: 639px) {
-	.instantDiffs-navigation-group--left {
-		display: none;
-	}
-
-	.instantDiffs-navigation-group--center {
-		justify-content: flex-start;
-	}
-}
-
 /*** BUTTONS ***/
 
 .instantDiffs-group--vertical {
@@ -600,6 +590,7 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 }
 
 @media (max-width: 639px) {
+	.instantDiffs-button--back,
 	.instantDiffs-button--switch,
 	.instantDiffs-button--pending {
 		display: none;

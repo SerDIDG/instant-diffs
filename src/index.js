@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.3.0-b.5',
+		version: '1.3.0-b.6',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -2245,7 +2245,7 @@ $( function () {
 		items.push( this.buttons.switch );
 
 		// [FlaggedRevisions] Link to all unpatrolled changes
-		if ( this.options.type === 'diffs' ) {
+		if ( this.options.type === 'diff' ) {
 			if ( this.nodes.$pendingLink?.length > 0 ) {
 				this.renderPendingLink();
 				items.push( this.buttons.pending );
@@ -2371,6 +2371,7 @@ $( function () {
 			icon: 'newline',
 			href: _utils.getTypeHref( initiator.getType(), initiator.getPage(), initiator.getPageParams() ),
 			target: _utils.getTarget( true ),
+			classes: [ 'instantDiffs-button--back' ],
 		} );
 
 		this.links.initiatorDiff = new Link( this.buttons.initiatorDiff.$button.get( 0 ), {
