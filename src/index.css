@@ -11,16 +11,33 @@
 
 	--instantDiffs-background-line: color-mix(in srgb, var(--border-color-progressive, #cfe3ff) 30%, transparent);
 	--instantDiffs-background-navigation: color-mix(in srgb, var(--background-color-base, #ffffff) 70%, transparent);
+
+	--instantDiffs-font-size: var(--font-size-medium, 0.875rem);
+	--instantDiffs-line-height: var(--line-height-medium, 1.5714285);
+}
+
+.skin-monobook {
+	--instantDiffs-font-size: 0.794rem; /* 127% (12.7px) */
+	--instantDiffs-line-height: 1.5;
+}
+
+.skin-minerva {
+	--instantDiffs-font-size: 1rem;
+	--instantDiffs-line-height: 1.65;
 }
 
 .skin-fandomdesktop {
 	--instantDiffs-background-navigation: color-mix(in srgb, var(--theme-page-background-color--secondary, #ffffff) 70%, transparent);
+	--instantDiffs-font-size: 1rem;
+	--instantDiffs-line-height: 1.75;
 }
 
 .skin-citizen {
 	--instantDiffs-color-link: var(--color-link);
 	--instantDiffs-color-link--hover: var(--color-link--hover);
 	--instantDiffs-color-link--active: var(--color-link--active);
+	--instantDiffs-font-size: var(--font-size-medium, 1rem);
+	--instantDiffs-line-height: var(--line-height, 1.6);
 }
 
 /******* UTIL *******/
@@ -391,8 +408,8 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 	max-width: none;
 	display: flow-root;
 	margin: 0;
-	font-size: var(--font-size-medium, 0.875rem);
-	line-height: var(--line-height-medium, 1.5714285);
+	font-size: var(--instantDiffs-font-size);
+	line-height: var(--instantDiffs-line-height);
 }
 
 .instantDiffs-dialog-content .diff-currentversion-title {
