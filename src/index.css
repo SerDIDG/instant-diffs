@@ -475,6 +475,10 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 	backdrop-filter: blur(16px);
 }
 
+.skin-minerva .instantDiffs-navigation {
+	font-size: 90%;
+}
+
 .skin-monobook .instantDiffs-navigation {
 	margin: 0 -1em;
 	padding: 1em;
@@ -497,7 +501,10 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 }
 
 .instantDiffs-navigation-group--center {
-	flex: none;
+	min-width: 0;
+	display: flex;
+	justify-content: center;
+	flex: auto;
 }
 
 .instantDiffs-navigation-group--right {
@@ -506,33 +513,29 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 	flex: 1;
 }
 
-@media (max-width: 639px) {
-	.instantDiffs-navigation {
-		font-size: 90%;
-	}
+.instantDiffs-navigation-group .oo-ui-buttonGroupWidget {
+	min-width: 0;
+	display: flex;
+}
 
+.instantDiffs-navigation-group--center .oo-ui-buttonElement {
+	min-width: 0;
+	flex: auto;
+}
+
+.instantDiffs-navigation-group--center .oo-ui-buttonElement-button {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+@media (max-width: 639px) {
 	.instantDiffs-navigation-group--left {
 		display: none;
 	}
 
 	.instantDiffs-navigation-group--center {
-		min-width: 0;
-		flex: auto;
-	}
-
-	.instantDiffs-navigation-group--center .oo-ui-buttonGroupWidget {
-		display: flex;
-	}
-
-	.instantDiffs-navigation-group--center .oo-ui-buttonElement {
-		min-width: 0;
-		flex: 1;
-	}
-
-	.instantDiffs-navigation-group--center .oo-ui-buttonElement-button {
-		display: block;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		justify-content: flex-start;
 	}
 }
 
@@ -587,6 +590,24 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 .instantDiffs-button--link-id .oo-ui-labelElement-label .version {
 	font-size: 0.8em;
 	color: var(--color-placeholder, #72777d);
+}
+
+
+@media (min-width: 640px) {
+	.instantDiffs-label--short {
+		display: none;
+	}
+}
+
+@media (max-width: 639px) {
+	.instantDiffs-button--switch,
+	.instantDiffs-button--pending {
+		display: none;
+	}
+
+	.instantDiffs-label--long {
+		display: none;
+	}
 }
 
 /*** FLAGGED REVISIONS ***/

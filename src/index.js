@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.3.0-b.4',
+		version: '1.3.0-b.5',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -2278,8 +2278,14 @@ $( function () {
 			href = this.nodes.$prevLink.attr( 'href' );
 		}
 
+		const icon = document.dir === 'ltr' ? '←' : '→';
+		const $label = $( `
+			<span class="instantDiffs-label--long">${ icon } ${ _utils.msg( `goto-prev-${ this.options.type }` ) }</span>
+			<span class="instantDiffs-label--short">${ icon } ${ _utils.msg( 'goto-prev' ) }</span>
+		` );
+
 		this.buttons.prev = new OO.ui.ButtonWidget( {
-			label: [ ( document.dir === 'ltr' ? '←' : '→' ), _utils.msg( `goto-prev-${ this.options.type }` ) ].join( ' ' ),
+			label: $label,
 			href: href,
 			target: _utils.getTarget( true ),
 			disabled: !href,
@@ -2308,8 +2314,14 @@ $( function () {
 			}
 		}
 
+		const icon = document.dir === 'ltr' ? '→' : '←';
+		const $label = $( `
+			<span class="instantDiffs-label--long">${ _utils.msg( `goto-next-${ this.options.type }` ) } ${ icon }</span>
+			<span class="instantDiffs-label--short">${ _utils.msg( 'goto-next' ) } ${ icon }</span>
+		` );
+
 		this.buttons.next = new OO.ui.ButtonWidget( {
-			label: [ _utils.msg( `goto-next-${ this.options.type }` ), ( document.dir === 'ltr' ? '→' : '←' ) ].join( ' ' ),
+			label: $label,
 			href: href,
 			target: _utils.getTarget( true ),
 			disabled: !href,
@@ -2329,6 +2341,7 @@ $( function () {
 			label: _utils.msg( `goto-view-${ type }` ),
 			href: _utils.getTypeHref( type, this.page, this.pageParams ),
 			target: _utils.getTarget( true ),
+			classes: [ 'instantDiffs-button--switch' ],
 		} );
 
 		this.links.switch = new Link( this.buttons.switch.$button.get( 0 ), {
@@ -2341,6 +2354,7 @@ $( function () {
 			label: _utils.msg( 'goto-view-pending' ),
 			href: this.nodes.$pendingLink.attr( 'href' ),
 			target: _utils.getTarget( true ),
+			classes: [ 'instantDiffs-button--pending' ],
 		} );
 
 		this.links.pending = new Link( this.buttons.pending.$button.get( 0 ), {
