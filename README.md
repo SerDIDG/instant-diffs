@@ -6,6 +6,8 @@
 * Displays an action button (➔) after the link to navigate to the page and section where the edit was made. If the [Convenient Discussions](https://www.mediawiki.org/wiki/Convenient_Discussions) script is installed, the button will also try to navigate to the corresponding comment.
 * Provides a quick actions menu in the dialog, allowing you to copy the link or an [internal wiki link](https://www.mediawiki.org/wiki/Help:Links#Internal_links), go to the page, its history, or the discussion.
 * Enables administrators to view hidden revisions directly in the dialog, without any additional steps. The <code>suppressrevision</code> [user right](https://www.mediawiki.org/wiki/Help:RevisionDelete) is required to access hidden revision content.
+* Allows quick switching between a revision view and its comparison (diff) with another revision.
+* Fully adapts to mobile devices, especially optimized for the [Minerva](https://www.mediawiki.org/wiki/Skin:Minerva_Neue) skin.
 * Offers a wide range of customization settings that are saved globally across all [Wikimedia](https://meta.wikimedia.org/wiki/Wikimedia_movement) projects.
 
 ## See also
