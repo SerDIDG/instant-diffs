@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.2.5',
+		version: '1.3.0',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -57,6 +57,7 @@ $( function () {
 			markWatchedLine: true,
 			unHideDiffs: true,
 			openInNewTab: true,
+			showRevisionInfo: true,
 			linksFormat: true,
 			wikilinksFormat: true,
 			enableMobile: true,
@@ -73,6 +74,7 @@ $( function () {
 			markWatchedLine: true,
 			unHideDiffs: true,
 			openInNewTab: true,
+			showRevisionInfo: false,
 			linksFormat: 'full',
 			wikilinksFormat: 'special',
 			enableMobile: true,
@@ -97,6 +99,12 @@ $( function () {
 			diff: '❖',
 			revision: '✪',
 			error: '𝓔',
+		},
+
+		// Breakpoints
+		breakpoints: {
+			mobileUp: '(min-width: 640px)',
+			mobileDown: '(max-width: 639px)',
 		},
 
 		// Wikilink format presets
@@ -297,6 +305,93 @@ $( function () {
 		return event.type === 'click' || ( event.type === 'keypress' && [ 'Enter', 'Space' ].includes( event.code ) );
 	};
 
+	/*** COMMON ***/
+
+	_utils.getOrigin = ( path ) => {
+		return `${ _config.origin }${ path }`;
+	};
+
+	_utils.getDependencies = ( data ) => {
+		return data.filter( item => {
+			const state = mw.loader.getState( item );
+			return state && ![ 'error', 'missing' ].includes( state );
+		} );
+	};
+
+	_utils.isAllowed = () => {
+		return _config.include.actions.includes( mw.config.get( 'wgAction' ) ) &&
+			!_config.exclude.pages.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) );
+	};
+
+	_utils.log = ( type, message, data = [] ) => {
+		const logger = console[ type ];
+		if ( !logger ) return;
+		logger( `${ _utils.msg( 'name' ) }: ${ message }.`, ...data );
+	};
+
+	_utils.logTimer = ( name, start, end ) => {
+		let diff = end - start;
+		if ( diff < 1000 ) {
+			diff = `${ diff }ms`;
+		} else {
+			diff = `${ ( diff / 1000 ).toFixed( 2 ) }s`;
+		}
+		_utils.log( 'info', `${ name }: ${ diff }` );
+	};
+
+	_utils.isBreakpoint = ( breakpoint ) => {
+		breakpoint = _config.breakpoints[ breakpoint ];
+		return breakpoint ? window.matchMedia( breakpoint ) : false;
+	};
+
+	_utils.getSpecialPageAliases = ( data, name ) => {
+		const namespace = 'Special';
+		const localNamespace = mw.config.get( 'wgFormattedNamespaces' )[ '-1' ];
+		const nameParts = name.split( ':' );
+		const localName = data[ name ];
+		const localNameParts = localName.split( ':' );
+
+		// Collect aliases variants
+		nameParts[ 0 ] = localNamespace;
+		localNameParts[ 0 ] = namespace;
+
+		const values = [ name, localName, nameParts.join( ':' ), localNameParts.join( ':' ) ];
+		return [ ...new Set( values ) ];
+	};
+
+	/*** DEFAULTS ***/
+
+	_utils.defaults = ( key ) => {
+		return key ? instantDiffs.defaults[ key ] : instantDiffs.defaults;
+	};
+
+	_utils.setDefaults = ( data, save ) => {
+		instantDiffs.defaults = $.extend( {}, instantDiffs.defaults, data );
+
+		// Temporary save defaults to the local User Options
+		if ( save && !_local.mwIsAnon ) {
+			try {
+				mw.user.options.set( _config.settingsPrefix, JSON.stringify( instantDiffs.defaults ) );
+			} catch ( e ) {}
+		}
+	};
+
+	_utils.processDefaults = () => {
+		// Set settings stored in the Local Storage
+		try {
+			const settings = mw.storage.getObject( `${ _config.prefix }-settings` );
+			_utils.setDefaults( settings, false );
+		} catch ( e ) {}
+
+		// Set settings stored in the User Options
+		if ( !_local.mwIsAnon ) {
+			try {
+				const settings = JSON.parse( mw.user.options.get( `${ _config.settingsPrefix }-settings` ) );
+				_utils.setDefaults( settings, false );
+			} catch ( e ) {}
+		}
+	};
+
 	/*** MESSAGES ***/
 
 	_utils.msg = function () {
@@ -389,86 +484,6 @@ $( function () {
 		}
 
 		_utils.log( 'error', message, [ page, error ] );
-	};
-
-	/*** COMMON ***/
-
-	_utils.defaults = ( key ) => {
-		return key ? instantDiffs.defaults[ key ] : instantDiffs.defaults;
-	};
-
-	_utils.setDefaults = ( data, save ) => {
-		instantDiffs.defaults = $.extend( {}, instantDiffs.defaults, data );
-
-		// Temporary save defaults to the local User Options
-		if ( save && !_local.mwIsAnon ) {
-			try {
-				mw.user.options.set( _config.settingsPrefix, JSON.stringify( instantDiffs.defaults ) );
-			} catch ( e ) {}
-		}
-	};
-
-	_utils.processDefaults = () => {
-		// Set settings stored in the Local Storage
-		try {
-			const settings = mw.storage.getObject( `${ _config.prefix }-settings` );
-			_utils.setDefaults( settings, false );
-		} catch ( e ) {}
-
-		// Set settings stored in the User Options
-		if ( !_local.mwIsAnon ) {
-			try {
-				const settings = JSON.parse( mw.user.options.get( `${ _config.settingsPrefix }-settings` ) );
-				_utils.setDefaults( settings, false );
-			} catch ( e ) {}
-		}
-	};
-
-	_utils.getOrigin = ( path ) => {
-		return `${ _config.origin }${ path }`;
-	};
-
-	_utils.getDependencies = ( data ) => {
-		return data.filter( item => {
-			const state = mw.loader.getState( item );
-			return state && ![ 'error', 'missing' ].includes( state );
-		} );
-	};
-
-	_utils.isAllowed = () => {
-		return _config.include.actions.includes( mw.config.get( 'wgAction' ) ) &&
-			!_config.exclude.pages.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) );
-	};
-
-	_utils.log = ( type, message, data = [] ) => {
-		const logger = console[ type ];
-		if ( !logger ) return;
-		logger( `${ _utils.msg( 'name' ) }: ${ message }.`, ...data );
-	};
-
-	_utils.logTimer = ( name, start, end ) => {
-		let diff = end - start;
-		if ( diff < 1000 ) {
-			diff = `${ diff }ms`;
-		} else {
-			diff = `${ ( diff / 1000 ).toFixed( 2 ) }s`;
-		}
-		_utils.log( 'info', `${ name }: ${ diff }` );
-	};
-
-	_utils.getSpecialPageAliases = ( data, name ) => {
-		const namespace = 'Special';
-		const localNamespace = mw.config.get( 'wgFormattedNamespaces' )[ '-1' ];
-		const nameParts = name.split( ':' );
-		const localName = data[ name ];
-		const localNameParts = localName.split( ':' );
-
-		// Collect aliases variants
-		nameParts[ 0 ] = localNamespace;
-		localNameParts[ 0 ] = namespace;
-
-		const values = [ name, localName, nameParts.join( ':' ), localNameParts.join( ':' ) ];
-		return [ ...new Set( values ) ];
 	};
 
 	/*** LINKS ***/
@@ -581,21 +596,32 @@ $( function () {
 		params = $.extend( params, { type: 'diff' } );
 
 		// Minify url in cases where provided id and diff / oldid = prev
-		if ( _utils.isValidID( page.oldid ) && _utils.isValidDir( page.diff ) && page.diff === 'prev' ) {
-			pageParams.diff = page.oldid;
-		} else if ( _utils.isValidID( page.diff ) && _utils.isValidDir( page.oldid ) && page.oldid === 'prev' ) {
+		if ( _utils.isValidID( page.oldid ) && _utils.isValidID( page.diff ) ) {
+			pageParams.oldid = page.oldid;
 			pageParams.diff = page.diff;
-		} else {
-			if ( !_utils.isEmpty( page.oldid ) ) {
+		} else if ( _utils.isValidID( page.oldid ) ) {
+			if ( _utils.isValidDir( page.diff ) && page.diff !== 'prev' ) {
 				pageParams.oldid = page.oldid;
+				pageParams.diff = page.diff;
+			} else if ( _utils.isValidDir( page.direction ) && page.direction !== 'prev' ) {
+				pageParams.oldid = page.oldid;
+				pageParams.diff = page.direction;
+			} else {
+				pageParams.diff = page.oldid;
 			}
-			if ( !_utils.isEmpty( page.diff ) ) {
+		} else if ( _utils.isValidID( page.diff ) ) {
+			if ( _utils.isValidDir( page.oldid ) && page.oldid !== 'prev' ) {
+				pageParams.oldid = page.diff;
+				pageParams.diff = page.oldid;
+			} else if ( _utils.isValidDir( page.direction ) && page.direction !== 'prev' ) {
+				pageParams.oldid = page.diff;
+				pageParams.diff = page.direction;
+			} else {
 				pageParams.diff = page.diff;
 			}
-			if ( _utils.isEmpty( page.oldid ) && _utils.isEmpty( page.diff ) && _utils.isValidID( page.curid ) ) {
-				params.type = 'page';
-				pageParams.curid = page.curid;
-			}
+		} else if ( _utils.isValidID( page.curid ) ) {
+			params.type = 'page';
+			pageParams.curid = page.curid;
 		}
 
 		return _utils.getHref( page, pageParams, params );
@@ -605,14 +631,25 @@ $( function () {
 		pageParams = $.extend( {}, pageParams );
 		params = $.extend( params, { type: 'revision' } );
 
-		if ( _utils.isValidID( page.oldid ) ) {
+		if ( _utils.isValidID( page.revid ) ) {
+			pageParams.oldid = page.revid;
+		} else if ( _utils.isValidID( page.oldid ) ) {
 			pageParams.oldid = page.oldid;
+			if ( _utils.isValidDir( page.direction ) && page.direction === 'next' ) {
+				pageParams.direction = page.direction;
+			}
 		} else if ( _utils.isValidID( page.curid ) ) {
 			params.type = 'page';
 			pageParams.curid = page.curid;
 		}
 
 		return _utils.getHref( page, pageParams, params );
+	};
+
+	_utils.getTypeHref = ( type, page, pageParams, params ) => {
+		return type === 'revision'
+			? _utils.getRevisionHref( page, pageParams, params )
+			: _utils.getDiffHref( page, pageParams, params );
 	};
 
 	_utils.getSplitSpecialUrl = ( title ) => {
@@ -949,7 +986,7 @@ $( function () {
 		return classes;
 	};
 
-	_utils.getPlaceholder = () => {
+	_utils.renderPlaceholder = () => {
 		return $( '<span>' ).addClass( _utils.getPlaceholderClasses() );
 	};
 
@@ -957,6 +994,41 @@ $( function () {
 		const manager = new OO.ui.WindowManager();
 		$( document.body ).append( manager.$element );
 		return manager;
+	};
+
+	_utils.renderLabel = ( params ) => {
+		params = $.extend( {
+			short: null,
+			long: null,
+			iconBefore: null,
+			iconAfter: null,
+		}, params );
+
+		if ( !_utils.isEmpty( params.short ) ) {
+			params.short = `<span>${ params.short }</span>`;
+		}
+		if ( !_utils.isEmpty( params.long ) ) {
+			params.long = `<span>${ params.long }</span>`;
+		}
+		if ( !_utils.isEmpty( params.iconBefore ) ) {
+			params.iconBefore = `<i>${ params.iconBefore }</i>`;
+		}
+		if ( !_utils.isEmpty( params.iconAfter ) ) {
+			params.iconAfter = `<i>${ params.iconAfter }</i>`;
+		}
+
+		const short = [ params.iconBefore, params.short, params.iconAfter ]
+			.filter( item => !_utils.isEmpty( item ) )
+			.join( '' );
+
+		const long = [ params.iconBefore, params.long, params.iconAfter ]
+			.filter( item => !_utils.isEmpty( item ) )
+			.join( '' );
+
+		return $( `
+			<span class="instantDiffs-label instantDiffs-label--long">${ long }</span>
+			<span class="instantDiffs-label instantDiffs-label--short">${ short }</span>
+		` );
 	};
 
 	/******* BUTTON CONSTRUCTOR *******/
@@ -1097,7 +1169,7 @@ $( function () {
 	function Link( node, options ) {
 		this.node = node;
 		this.options = $.extend( true, {
-			type: null,
+			type: null,                     // diff | revision | null
 			behavior: 'default',            // default | basic | event
 			insertMethod: 'insertAfter',
 			initiatorLink: null,
@@ -1268,7 +1340,7 @@ $( function () {
 			return true;
 		}
 
-		// Request a compare by given ids
+		// Prepare a compare by given ids
 		if ( _utils.isValidID( this.page.diff ) || _utils.isValidID( this.page.oldid ) ) {
 			this.options.type = 'diff';
 
@@ -1298,13 +1370,13 @@ $( function () {
 			return true;
 		}
 
-		// Request a compare by given title and direction
+		// Prepare a compare by given title and direction
 		if ( !_utils.isEmpty( this.page.title ) && _utils.isValidDir( this.page.diff ) ) {
 			this.options.type = 'diff';
 			return true;
 		}
 
-		// Request a page by given curid
+		// Prepare a page by given curid
 		if ( _utils.isValidID( this.page.curid ) ) {
 			this.options.type = 'revision';
 			return true;
@@ -1800,6 +1872,7 @@ $( function () {
 			section: null,
 			oldid: null,
 			diff: null,
+			revid: null,
 			curid: null,
 			direction: null,
 		}, page );
@@ -1824,8 +1897,8 @@ $( function () {
 		};
 
 		this.nodes = {};
-		this.buttons = {};
 		this.links = {};
+		this.buttons = {};
 		this.isLoading = false;
 
 		// Validate page object
@@ -1855,11 +1928,13 @@ $( function () {
 			action: 'parse',
 			prop: [ 'modules', 'jsconfigvars' ],
 			disablelimitreport: 1,
+			redirects: 1,
 			format: 'json',
 			formatversion: 2,
 			uselang: _local.language,
 		};
 
+		// FixMe: oldid can be for the previous revision (in cases when direction = next)
 		if ( !_utils.isEmpty( this.page.oldid ) ) {
 			params.oldid = this.page.oldid;
 		} else if ( !_utils.isEmpty( this.page.curid ) ) {
@@ -1892,10 +1967,10 @@ $( function () {
 			return this.onRequestPageDependenciesError( null, data );
 		}
 
-		mw.loader.load( parse.modules );
+		mw.config.set( parse.jsconfigvars );
 		mw.loader.load( parse.modulestyles );
 		mw.loader.load( parse.modulescripts );
-		mw.config.set( parse.jsconfigvars );
+		mw.loader.load( parse.modules );
 	};
 
 	Diff.prototype.request = function () {
@@ -1965,6 +2040,10 @@ $( function () {
 			.attr( 'dir', document.dir )
 			.addClass( classes );
 
+		this.nodes.$body = $( '<div>' )
+			.addClass( 'instantDiffs-dialog-body' )
+			.appendTo( this.nodes.$container );
+
 		if ( this.error ) {
 			this.renderError();
 		} else {
@@ -1975,116 +2054,69 @@ $( function () {
 	};
 
 	Diff.prototype.renderContent = function () {
+		// Parse and append all data coming from endpoint
 		this.nodes.data = $.parseHTML( this.data );
-		this.nodes.$data = $( this.nodes.data );
+		this.nodes.$data = $( this.nodes.data ).appendTo( this.nodes.$body );
 
-		// Collect missing data from the diff table
-		this.collectDataFromTable();
-
-		// Content warnings
+		// Prepend content warnings
 		this.nodes.$data
-			.filter( '.cdx-message ' )
-			.appendTo( this.nodes.$container );
+			.filter( '.cdx-message' )
+			.prependTo( this.nodes.$body );
 		this.nodes.$data
 			.find( '.cdx-message ' )
-			.appendTo( this.nodes.$container );
+			.prependTo( this.nodes.$body );
 
 		// Render a warning when revision was not found
 		this.nodes.$emptyMessage = this.nodes.$data.filter( 'p' );
 		if ( this.nodes.$emptyMessage.length > 0 ) {
-			this.renderEmptyMessage();
+			this.renderWarning( this.nodes.$emptyMessage );
 		}
 
-		// Flagged Revisions
-		this.nodes.$frNotice = this.nodes.$data
-			.filter( '#mw-fr-revisiontag-old' )
-			.appendTo( this.nodes.$container );
+		// Collect missing data from the diff table before manipulations
+		this.collectData();
 
-		// Revision Table
-		if ( this.options.type === 'diff' ) {
-			this.renderDiffTable();
-		}
+		// Process diff table
+		this.renderDiffTable();
 
-		// Parsed page content
-		this.nodes.$pageContent = this.nodes.$data.filter( '.mw-parser-output' );
-		if ( this.nodes.$pageContent.length > 0 ) {
-			this.nodes.$data
-				.filter( '.diff-currentversion-title' )
-				.appendTo( this.nodes.$container );
-			this.nodes.$pageContent
-				.appendTo( this.nodes.$container );
+		// Hide unsupported or unnecessary apps and element
+		this.nodes.$wikiLambdaApp = this.nodes.$data
+			.filter( '#ext-wikilambda-app' )
+			.addClass( 'instantDiffs-hidden' );
+
+		if ( this.nodes.$wikiLambdaApp.length > 0 ) {
+			this.nodes.$wikiLambdaAppError = $( `<p>${ _utils.msg( 'unsupported-wikilambda' ) }</p>` );
+			this.renderWarning( this.nodes.$wikiLambdaAppError );
 		}
 
 		// Set additional config variables
 		mw.config.set( this.mwConfg );
 	};
 
-	Diff.prototype.renderDiffTable = function () {
-		this.nodes.$frDiff = this.nodes.$data
-			.filter( '#mw-fr-diff-headeritems' )
-			.appendTo( this.nodes.$container );
-
-		// All unpatrolled diffs link
-		this.nodes.$diffToStableLink = this.nodes.$frDiff
-			.find( '.fr-diff-to-stable a' )
-			.detach();
-
-		// Diff table
-		this.nodes.$table = this.nodes.$data
-			.filter( 'table.diff' )
-			.appendTo( this.nodes.$container );
-
-		// Request next / previous diff using ajax
-		this.nodes.$prevLink = this.nodes.$table
-			.find( '#differences-prevlink' )
-			.detach();
-
-		this.nodes.$nextLink = this.nodes.$table
-			.find( '#differences-nextlink' )
-			.detach();
-
-		// Clear whitespaces
-		const leftTitle4 = this.nodes.$table.find( '#mw-diff-otitle4' );
-		if ( leftTitle4.length > 0 ) {
-			leftTitle4.text( leftTitle4.text().trim() );
-		}
-		const rightTitle4 = this.nodes.$table.find( '#mw-diff-ntitle4' );
-		if ( rightTitle4.length > 0 ) {
-			rightTitle4.text( rightTitle4.text().trim() );
-		}
-	};
-
-	Diff.prototype.renderError = function () {
-		this.nodes.$emptyMessage = $( `<p>${ _utils.msg( 'error-revision-missing' ) }</p>` );
-		if ( this.error?.message ) {
-			this.nodes.$emptyMessage.add( `<p>${ this.error.message }</p>` );
-		}
-		this.renderEmptyMessage();
-	};
-
-	Diff.prototype.renderEmptyMessage = function () {
-		this.nodes.$emptyWarning = $( '<div>' )
-			.addClass( [ 'cdx-message', 'cdx-message--block', 'cdx-message--warning', 'plainlinks' ] )
-			.appendTo( this.nodes.$container );
-
-		this.nodes.$emptyWarningContent = $( '<div>' )
-			.addClass( [ 'cdx-message__content' ] )
-			.append( this.nodes.$emptyMessage )
-			.appendTo( this.nodes.$emptyWarning );
-	};
-
-	Diff.prototype.collectDataFromTable = function () {
+	Diff.prototype.collectData = function () {
 		const $fromLinks = this.nodes.$data.find( '#mw-diff-otitle1 strong > a, #mw-diff-otitle4 > a' );
 		const $toLinks = this.nodes.$data.find( '#mw-diff-ntitle1 strong > a, #mw-diff-ntitle4 > a' );
 
-		// Get diff and oldid
-		if ( $fromLinks.length > 0 && $toLinks.length > 0 ) {
+		// Get diff and oldid values
+		// FixMe: request via api action=revisions
+		if ( $fromLinks.length > 0 ) {
 			const oldid = _utils.getOldidFromUrl( $fromLinks.prop( 'href' ) );
-			const diff = _utils.getOldidFromUrl( $toLinks.prop( 'href' ) );
-			if ( _utils.isValidID( oldid ) && _utils.isValidID( diff ) ) {
+			if ( _utils.isValidID( oldid ) ) {
 				this.mwConfg.wgDiffOldId = oldid;
+			}
+		}
+		if ( $toLinks.length > 0 ) {
+			const diff = _utils.getOldidFromUrl( $toLinks.prop( 'href' ) );
+			if ( _utils.isValidID( diff ) ) {
 				this.mwConfg.wgDiffNewId = diff;
 				this.mwConfg.wgRevisionId = diff;
+
+				// Set actual revision id for the copy actions, etc
+				this.page.revid = diff;
+
+				// Replace diff when its values = cur
+				if ( this.page.diff === 'cur' ) {
+					this.page.diff = diff;
+				}
 			}
 		}
 
@@ -2095,20 +2127,82 @@ $( function () {
 			this.page = _utils.extendPage( this.page, { title } );
 		}
 
-		// Populate diff id value
-		if ( this.page.diff === 'cur' && $toLinks.length > 0 ) {
-			const diff = _utils.getOldidFromUrl( $toLinks.prop( 'href' ) );
-			if ( _utils.isValidID( diff ) ) {
-				this.page.diff = diff;
-			}
-		}
-
 		// Populate section name
 		const $toSectionLinks = this.nodes.$data.find( '#mw-diff-ntitle3 .autocomment a' );
 		if ( _utils.isEmpty( this.page.section ) && $toSectionLinks.length > 0 ) {
 			const section = _utils.getHashFromUrl( $toSectionLinks.prop( 'href' ) );
 			this.page = _utils.extendPage( this.page, { section } );
 		}
+	};
+
+	Diff.prototype.renderDiffTable = function () {
+		// Hide unsupported or unnecessary element
+		this.nodes.$data
+			.filter( '.mw-revslider-container, .mw-diff-revision-history-links, .mw-diff-table-prefix, #mw-oldid' )
+			.addClass( 'instantDiffs-hidden' );
+		this.nodes.$data
+			.find( '.fr-diff-to-stable, #mw-fr-diff-dataform' )
+			.addClass( 'instantDiffs-hidden' );
+
+		// Find table elements
+		this.nodes.$frDiff = this.nodes.$data.filter( '#mw-fr-diff-headeritems' );
+		this.nodes.$table = this.nodes.$data.filter( 'table.diff' );
+
+		// Find and detach the all unpatrolled diffs link
+		this.nodes.$pendingLink = this.nodes.$frDiff
+			.find( '.fr-diff-to-stable a' )
+			.detach();
+		if ( this.options.type === 'diff' ) {
+			this.links.$pending = this.nodes.$pendingLink;
+		}
+
+		// Find and detach the next / previous diff links
+		this.links.$prev = this.nodes.$table
+			.find( '#differences-prevlink' )
+			.detach();
+		this.links.$next = this.nodes.$table
+			.find( '#differences-nextlink' )
+			.detach();
+
+		// Clear whitespaces after detaching links
+		const leftTitle4 = this.nodes.$table.find( '#mw-diff-otitle4' );
+		if ( leftTitle4.length > 0 ) {
+			leftTitle4.text( leftTitle4.text().trim() );
+		}
+		const rightTitle4 = this.nodes.$table.find( '#mw-diff-ntitle4' );
+		if ( rightTitle4.length > 0 ) {
+			rightTitle4.text( rightTitle4.text().trim() );
+		}
+
+		// Show or hide diff info table in the revisions
+		if ( this.options.type === 'revision' ) {
+			if ( !_utils.defaults( 'showRevisionInfo' ) ) {
+				this.nodes.$frDiff.addClass( 'instantDiffs-hidden' );
+				this.nodes.$table.addClass( 'instantDiffs-hidden' );
+			} else {
+				// Hide comparison lines
+				this.nodes.$table.find( 'tr:not([class])' ).addClass( 'instantDiffs-hidden' );
+			}
+		}
+	};
+
+	Diff.prototype.renderError = function () {
+		this.nodes.$emptyMessage = $( `<p>${ _utils.msg( 'error-revision-missing' ) }</p>` );
+		if ( this.error?.message ) {
+			this.nodes.$emptyMessage.add( `<p>${ this.error.message }</p>` );
+		}
+		this.renderWarning( this.nodes.$emptyMessage );
+	};
+
+	Diff.prototype.renderWarning = function ( $content ) {
+		this.nodes.$emptyWarningContent = $( '<div>' )
+			.addClass( [ 'cdx-message__content' ] )
+			.append( $content );
+
+		this.nodes.$emptyWarning = $( '<div>' )
+			.addClass( [ 'cdx-message', 'cdx-message--block', 'cdx-message--warning', 'plainlinks' ] )
+			.append( this.nodes.$emptyWarningContent )
+			.appendTo( this.nodes.$body );
 	};
 
 	/*** RENDER NAVIGATION ***/
@@ -2131,280 +2225,431 @@ $( function () {
 			.addClass( [ 'instantDiffs-navigation-group', 'instantDiffs-navigation-group--right' ] )
 			.appendTo( this.nodes.$navigation );
 
+		// Render panels
+		this.renderSnapshotLinks();
 		this.renderNavigationLinks();
-		this.renderNavigationMainLinks();
-		this.renderNavigationMenuLinks();
+		this.renderMenuLinks();
+	};
+
+	Diff.prototype.renderSnapshotLinks = function () {
+		const items = [];
+
+		if ( _local.snapshot.getLength() > 1 && _local.snapshot.getIndex() !== -1 ) {
+			// Previous link on the page
+			this.buttons.shapshotPrev = this.renderSnapshotPrevLink();
+			items.push( this.buttons.shapshotPrev );
+
+			// Next link on the page
+			this.buttons.snapshotNext = this.renderSnapshotNextLink();
+			items.push( this.buttons.snapshotNext );
+		}
+
+		// Back to the initiator diff link
+		if ( this.options.initiatorDiff ) {
+			this.buttons.initiatorDiff = this.renderBackLink();
+			items.push( this.buttons.initiatorDiff );
+		}
+
+		this.buttons.linksGroup = new OO.ui.ButtonGroupWidget( { items: items } );
+		this.nodes.$navigationLeft.append( this.buttons.linksGroup.$element );
 	};
 
 	Diff.prototype.renderNavigationLinks = function () {
 		const items = [];
 
-		if ( _local.snapshot.getLength() > 1 && _local.snapshot.getIndex() !== -1 ) {
-			// Previous link on the page
-			const previousLink = _local.snapshot.getPreviousLink();
-			this.buttons.snapshotBack = new OO.ui.ButtonWidget( {
-				label: _utils.msg( 'goto-snapshot-prev' ),
-				title: _utils.msg( 'goto-snapshot-prev' ),
-				invisibleLabel: true,
-				icon: 'doubleChevronStart',
-				href: previousLink ? _utils.getDiffHref( previousLink.getPage() ) : null,
-				target: _utils.getTarget( true ),
-				disabled: !previousLink,
-			} );
-			if ( previousLink ) {
-				this.links.snapshotBack = new Link( this.buttons.snapshotBack.$button.get( 0 ), {
-					behavior: 'event',
-					initiatorLink: previousLink,
-				} );
-			}
-			items.push( this.buttons.snapshotBack );
+		// Link to the previous diff
+		this.buttons.prev = this.renderPrevLink();
+		items.push( this.buttons.prev );
 
-			// Next link on the page
-			const nextLink = _local.snapshot.getNextLink();
-			this.buttons.snapshotNext = new OO.ui.ButtonWidget( {
-				label: _utils.msg( 'goto-snapshot-next' ),
-				title: _utils.msg( 'goto-snapshot-next' ),
-				invisibleLabel: true,
-				icon: 'doubleChevronEnd',
-				href: nextLink ? _utils.getDiffHref( nextLink.getPage() ) : null,
-				target: _utils.getTarget( true ),
-				disabled: !nextLink,
-			} );
-			if ( nextLink ) {
-				this.links.snapshotNext = new Link( this.buttons.snapshotNext.$button.get( 0 ), {
-					behavior: 'event',
-					initiatorLink: nextLink,
-				} );
-			}
-			items.push( this.buttons.snapshotNext );
+		// Link that switch between revision and diff
+		this.buttons.switch = this.renderSwitchLink();
+		items.push( this.buttons.switch );
+
+		// [FlaggedRevisions] Link to all unpatrolled changes
+		if ( this.links.$pending?.length > 0 ) {
+			this.buttons.pending = this.renderPendingLink();
+			items.push( this.buttons.pending );
 		}
 
-		if ( this.options.initiatorDiff ) {
-			this.renderNavigationBackLink();
-			items.push( this.buttons.initiatorDiff );
-		}
+		// Link to the next diff
+		this.buttons.next = this.renderNextLink();
+		items.push( this.buttons.next );
 
-		this.buttons.linksGroup = new OO.ui.ButtonGroupWidget( {
-			items: items,
-		} );
-		this.nodes.$navigationLeft.append( this.buttons.linksGroup.$element );
-	};
-
-	Diff.prototype.renderNavigationBackLink = function () {
-		this.buttons.initiatorDiff = new OO.ui.ButtonWidget( {
-			label: _utils.msg( `goto-back-${ this.options.initiatorDiff.options.type }` ),
-			icon: 'newline',
-			href: _utils.getDiffHref( this.options.initiatorDiff.getPage(), this.options.initiatorDiff.getPageParams() ),
-			target: _utils.getTarget( true ),
-		} );
-		this.links.initiatorDiff = new Link( this.buttons.initiatorDiff.$button.get( 0 ), {
-			behavior: 'event',
-		} );
-	};
-
-	Diff.prototype.renderNavigationMainLinks = function () {
-		const items = [];
-
-		if ( this.options.type === 'revision' ) {
-			// Link to the revisions diff
-			this.renderNavigationDiffLink();
-			items.push( this.buttons.diff );
-		} else {
-			// Link to the previous diff
-			const hasPrevLink = this.nodes.$prevLink && this.nodes.$prevLink.length;
-			this.buttons.prev = new OO.ui.ButtonWidget( {
-				label: [ ( document.dir === 'ltr' ? '←' : '→' ), _utils.msg( 'goto-prev-diff' ) ].join( ' ' ),
-				href: hasPrevLink ? this.nodes.$prevLink.attr( 'href' ) : null,
-				target: _utils.getTarget( true ),
-				disabled: !hasPrevLink,
-			} );
-			if ( hasPrevLink ) {
-				this.links.prev = new Link( this.buttons.prev.$button.get( 0 ), {
-					behavior: 'event',
-				} );
-			}
-			items.push( this.buttons.prev );
-
-			// Link to all unpatrolled changes
-			if ( this.nodes.$diffToStableLink && this.nodes.$diffToStableLink.length > 0 ) {
-				this.buttons.diffToStable = new OO.ui.ButtonWidget( {
-					label: this.nodes.$diffToStableLink.text(),
-					href: this.nodes.$diffToStableLink.attr( 'href' ),
-					target: _utils.getTarget( true ),
-				} );
-				this.links.diffToStable = new Link( this.buttons.diffToStable.$button.get( 0 ), {
-					behavior: 'event',
-					initiatorDiff: this,
-				} );
-				items.push( this.buttons.diffToStable );
-			}
-
-			// Link to the next diff
-			const hasNextLink = this.nodes.$nextLink && this.nodes.$nextLink.length > 0;
-			this.buttons.next = new OO.ui.ButtonWidget( {
-				label: [ _utils.msg( 'goto-next-diff' ), ( document.dir === 'ltr' ? '→' : '←' ) ].join( ' ' ),
-				href: hasNextLink ? this.nodes.$nextLink.attr( 'href' ) : null,
-				target: _utils.getTarget( true ),
-				disabled: !hasNextLink,
-			} );
-			if ( hasNextLink ) {
-				this.links.next = new Link( this.buttons.next.$button.get( 0 ), {
-					behavior: 'event',
-				} );
-			}
-			items.push( this.buttons.next );
-		}
-
-		this.buttons.mainLinksGroup = new OO.ui.ButtonGroupWidget( {
-			items: items,
-		} );
+		this.buttons.mainLinksGroup = new OO.ui.ButtonGroupWidget( { items: items } );
 		this.nodes.$navigationCenter.append( this.buttons.mainLinksGroup.$element );
 	};
 
-	Diff.prototype.renderNavigationDiffLink = function () {
-		const page = $.extend( {}, this.page, { diff: 'prev' } );
+	/*** RENDER MENU ***/
 
-		this.buttons.diff = new OO.ui.ButtonWidget( {
-			label: _utils.msg( 'goto-view-diff' ),
-			href: _utils.getDiffHref( page, this.pageParams ),
-			target: _utils.getTarget( true ),
-		} );
-		this.links.diff = new Link( this.buttons.diff.$button.get( 0 ), {
-			behavior: 'event',
-			initiatorDiff: this,
-		} );
-	};
-
-	Diff.prototype.renderNavigationMenuLinks = function () {
-		const items = [];
-
-		// Copy a link to the clipboard
-		this.buttons.linkCopy = new OO.ui.ButtonWidget( {
-			label: _utils.msg( 'copy-link' ),
+	Diff.prototype.renderMenuLinks = function () {
+		const buttonParams = {
 			framed: false,
 			classes: [ 'instantDiffs-button--link' ],
-		} );
-		this.buttons.linkCopyHelper = new Button( {
-			node: this.buttons.linkCopy.$button.get( 0 ),
-			handler: this.actionCopyLink.bind( this ),
-		} );
-		items.push( this.buttons.linkCopy );
+		};
 
-		// Copy a wikilink to the clipboard
-		this.buttons.wikilinkCopy = new OO.ui.ButtonWidget( {
-			label: _utils.msg( 'copy-wikilink' ),
-			framed: false,
-			classes: [ 'instantDiffs-button--link' ],
-		} );
-		this.buttons.wikilinkCopyHelper = new Button( {
-			node: this.buttons.wikilinkCopy.$button.get( 0 ),
-			handler: this.actionCopyWikilink.bind( this ),
-		} );
-		items.push( this.buttons.wikilinkCopy );
+		// Render menu groups
+		this.buttons.menuMobile = this.renderMenuMobileGroup( buttonParams );
+		this.buttons.menuGroup = this.renderMenuGroup( buttonParams );
 
-		// Link to the revision or to the edit
-		if ( this.options.type === 'revision' ) {
-			this.buttons.linkRevision = new OO.ui.ButtonWidget( {
-				label: _utils.msg( 'goto-revision' ),
-				href: _utils.getRevisionHref( this.page ),
-				target: _utils.getTarget( true ),
-				framed: false,
-				classes: [ 'instantDiffs-button--link' ],
-			} );
-			items.push( this.buttons.linkRevision );
-		} else {
-			this.buttons.linkEdit = new OO.ui.ButtonWidget( {
-				label: _utils.msg( 'goto-edit' ),
-				href: _utils.getDiffHref( this.page ),
-				target: _utils.getTarget( true ),
-				framed: false,
-				classes: [ 'instantDiffs-button--link' ],
-			} );
-			items.push( this.buttons.linkEdit );
-		}
+		const groupsElements = [
+			this.buttons.menuMobile.$element.get( 0 ),
+			this.buttons.menuGroup.$element.get( 0 ),
+		];
 
-		if ( !_utils.isEmpty( this.page.title ) ) {
-			// Link to the page
-			this.buttons.linkPage = new OO.ui.ButtonWidget( {
-				label: _utils.msg( 'goto-page' ),
-				href: this.page.href,
-				target: _utils.getTarget( true ),
-				framed: false,
-				classes: [ 'instantDiffs-button--link' ],
-			} );
-			items.push( this.buttons.linkPage );
-
-			// Link to the history
-			this.buttons.linkHistory = new OO.ui.ButtonWidget( {
-				label: _utils.msg( 'goto-history' ),
-				href: mw.util.getUrl( this.page.title, { action: 'history' } ),
-				target: _utils.getTarget( true ),
-				framed: false,
-				classes: [ 'instantDiffs-button--link' ],
-			} );
-			items.push( this.buttons.linkHistory );
-
-			// Link to the talk page
-			if ( !this.page.mwTitle.isTalkPage() ) {
-				this.buttons.linkTalkPage = new OO.ui.ButtonWidget( {
-					label: _utils.msg( 'goto-talkpage' ),
-					href: this.page.mwTitle.getTalkPage().getUrl(),
-					target: _utils.getTarget( true ),
-					framed: false,
-					classes: [ 'instantDiffs-button--link' ],
-				} );
-				items.push( this.buttons.linkTalkPage );
-			}
-		}
-
-		// Open Instant Diffs settings
-		this.buttons.linkSettings = new OO.ui.ButtonWidget( {
-			label: _utils.msg( 'goto-settings' ),
-			framed: false,
-			classes: [ 'instantDiffs-button--link' ],
-		} );
-		this.buttons.linkSettingsHelper = new Button( {
-			node: this.buttons.linkSettings.$button.get( 0 ),
-			handler: this.actionOpenSettings.bind( this ),
-		} );
-		items.push( this.buttons.linkSettings );
-
-		// Separator
-		items.push( _utils.renderOoUiElement( $( '<hr>' ) ) );
-
-		// Link to the Instant Diffs docs and current running version
-		const linkIdLabel = $( `
-			<span class="name">${ _utils.msg( 'name' ) }</span>
-			<span class="version">v.${ _config.version }</span>
-		` );
-		this.buttons.linkID = new OO.ui.ButtonWidget( {
-			label: linkIdLabel,
-			href: _utils.getOrigin( `/wiki/${ _config.link }` ),
-			target: _utils.getTarget( true ),
-			framed: false,
-			classes: [ 'instantDiffs-button--link', 'instantDiffs-button--link-id' ],
-		} );
-		items.push( this.buttons.linkID );
-
-		// Render menu group
-		this.buttons.menuLinksGroup = new OO.ui.ButtonGroupWidget( {
-			items: items,
-			classes: [ 'instantDiffs-group--vertical' ],
-		} );
 		this.buttons.menuDropdown = new OO.ui.PopupButtonWidget( {
 			icon: 'menu',
 			label: _utils.msg( 'goto-links' ),
 			title: _utils.msg( 'goto-links' ),
 			invisibleLabel: true,
 			popup: {
-				$content: this.buttons.menuLinksGroup.$element,
+				$content: $( groupsElements ),
 				width: 'auto',
 				padded: false,
 				anchor: false,
 				align: 'backwards',
 			},
 		} );
+
 		this.nodes.$navigationRight.append( this.buttons.menuDropdown.$element );
+	};
+
+	Diff.prototype.renderMenuGroup = function ( buttonParams ) {
+		const items = [];
+
+		// Copy a link to the clipboard
+		this.buttons.copy = new OO.ui.ButtonWidget(
+			$.extend( true, buttonParams, {
+				label: _utils.msg( 'copy-link' ),
+			} ),
+		);
+		this.buttons.copyHelper = new Button( {
+			node: this.buttons.copy.$button.get( 0 ),
+			handler: this.actionCopyLink.bind( this ),
+		} );
+		items.push( this.buttons.copy );
+
+		// Copy a wikilink to the clipboard
+		this.buttons.copyWiki = new OO.ui.ButtonWidget(
+			$.extend( true, buttonParams, {
+				label: _utils.msg( 'copy-wikilink' ),
+			} ),
+		);
+		this.buttons.copyWikiHelper = new Button( {
+			node: this.buttons.copyWiki.$button.get( 0 ),
+			handler: this.actionCopyWikilink.bind( this ),
+		} );
+		items.push( this.buttons.copyWiki );
+
+		// Link to the revision or to the edit
+		this.buttons.pageType = new OO.ui.ButtonWidget(
+			$.extend( true, buttonParams, {
+				label: _utils.msg( `goto-${ this.options.type }` ),
+				href: _utils.getTypeHref( this.options.type, this.page ),
+				target: _utils.getTarget( true ),
+			} ),
+		);
+		items.push( this.buttons.pageType );
+
+		if ( !_utils.isEmpty( this.page.title ) ) {
+			// Link to the page
+			this.buttons.page = new OO.ui.ButtonWidget(
+				$.extend( true, buttonParams, {
+					label: _utils.msg( 'goto-page' ),
+					href: this.page.href,
+					target: _utils.getTarget( true ),
+				} ),
+			);
+			items.push( this.buttons.page );
+
+			// Link to the history
+			this.buttons.history = new OO.ui.ButtonWidget(
+				$.extend( true, buttonParams, {
+					label: _utils.msg( 'goto-history' ),
+					href: mw.util.getUrl( this.page.title, { action: 'history' } ),
+					target: _utils.getTarget( true ),
+				} ),
+			);
+			items.push( this.buttons.history );
+
+			// Link to the talk page
+			if ( !this.page.mwTitle.isTalkPage() ) {
+				this.buttons.talkPage = new OO.ui.ButtonWidget(
+					$.extend( true, buttonParams, {
+						label: _utils.msg( 'goto-talkpage' ),
+						href: this.page.mwTitle.getTalkPage().getUrl(),
+						target: _utils.getTarget( true ),
+					} ),
+				);
+				items.push( this.buttons.talkPage );
+			}
+		}
+
+		// Open Instant Diffs settings
+		this.buttons.settings = new OO.ui.ButtonWidget(
+			$.extend( true, buttonParams, {
+				label: _utils.msg( 'goto-settings' ),
+			} ),
+		);
+		this.buttons.settingsHelper = new Button( {
+			node: this.buttons.settings.$button.get( 0 ),
+			handler: this.actionOpenSettings.bind( this ),
+		} );
+		items.push( this.buttons.settings );
+
+		// Separator
+		items.push( _utils.renderOoUiElement( $( '<hr>' ) ) );
+
+		// Link to the Instant Diffs docs and current running version
+		this.buttons.id = this.renderIDLink( buttonParams );
+		items.push( this.buttons.id );
+
+		// Group
+		return new OO.ui.ButtonGroupWidget( {
+			items: items,
+			classes: [ 'instantDiffs-group--vertical' ],
+		} );
+	};
+
+	Diff.prototype.renderMenuMobileGroup = function ( buttonParams ) {
+		const items = [];
+
+		// Back to the initiator diff link
+		if ( this.options.initiatorDiff ) {
+			this.buttons.mobileInitiatorDiff = this.renderBackLink( buttonParams );
+			items.push( this.buttons.mobileInitiatorDiff );
+		}
+
+		// Link that switch between revision and diff
+		this.buttons.mobileWwitch = this.renderSwitchLink( buttonParams );
+		items.push( this.buttons.mobileWwitch );
+
+		// [FlaggedRevisions] Link to all unpatrolled changes
+		if ( this.links.$pending?.length > 0 ) {
+			this.buttons.mobilePending = this.renderPendingLink( buttonParams );
+			items.push( this.buttons.mobilePending );
+		}
+
+		// Separator
+		if ( items.length > 0 ) {
+			items.push( _utils.renderOoUiElement( $( '<hr>' ) ) );
+		}
+
+		// Group
+		return new OO.ui.ButtonGroupWidget( {
+			items: items,
+			classes: [ 'instantDiffs-group--vertical', 'instantDiffs-group--mobile' ],
+		} );
+	};
+
+	/*** RENDER LINKS ***/
+
+	Diff.prototype.renderSnapshotPrevLink = function () {
+		const link = _local.snapshot.getPreviousLink();
+
+		const button = new OO.ui.ButtonWidget( {
+			label: _utils.msg( 'goto-snapshot-prev' ),
+			title: _utils.msg( 'goto-snapshot-prev' ),
+			invisibleLabel: true,
+			icon: 'doubleChevronStart',
+			href: link ? _utils.getTypeHref( link.getType(), link.getPage() ) : null,
+			target: _utils.getTarget( true ),
+			disabled: !link,
+		} );
+
+		if ( link ) {
+			new Link( button.$button.get( 0 ), {
+				behavior: 'event',
+				initiatorLink: link,
+			} );
+		}
+
+		return button;
+	};
+
+	Diff.prototype.renderSnapshotNextLink = function () {
+		const link = _local.snapshot.getNextLink();
+
+		const button = new OO.ui.ButtonWidget( {
+			label: _utils.msg( 'goto-snapshot-next' ),
+			title: _utils.msg( 'goto-snapshot-next' ),
+			invisibleLabel: true,
+			icon: 'doubleChevronEnd',
+			href: link ? _utils.getTypeHref( link.getType(), link.getPage() ) : null,
+			target: _utils.getTarget( true ),
+			disabled: !link,
+		} );
+
+		if ( link ) {
+			new Link( button.$button.get( 0 ), {
+				behavior: 'event',
+				initiatorLink: link,
+			} );
+		}
+
+		return button;
+	};
+
+	Diff.prototype.renderPrevLink = function () {
+		const hasLink = this.links.$prev?.length > 0;
+
+		let href = null;
+		if ( this.options.type === 'revision' && _utils.isValidID( this.mwConfg.wgDiffOldId ) ) {
+			const page = {
+				oldid: this.mwConfg.wgDiffOldId,
+				direction: 'prev',
+			};
+			href = _utils.getRevisionHref( page, this.pageParams );
+		} else if ( hasLink ) {
+			href = this.links.$prev.attr( 'href' );
+		}
+
+		const $label = _utils.renderLabel( {
+			short: _utils.msg( 'goto-prev' ),
+			long: _utils.msg( `goto-prev-${ this.options.type }` ),
+			iconBefore: document.dir === 'ltr' ? '←' : '→',
+		} );
+
+		const button = new OO.ui.ButtonWidget( {
+			label: $label,
+			href: href,
+			target: _utils.getTarget( true ),
+			disabled: !href,
+		} );
+
+		if ( href ) {
+			new Link( button.$button.get( 0 ), {
+				behavior: 'event',
+			} );
+		}
+
+		return button;
+	};
+
+	Diff.prototype.renderNextLink = function () {
+		const hasLink = this.links.$next?.length > 0;
+
+		let href = null;
+		if ( hasLink ) {
+			if ( this.options.type === 'revision' && _utils.isValidID( this.mwConfg.wgDiffNewId ) ) {
+				const page = {
+					oldid: this.mwConfg.wgDiffNewId,
+					direction: 'next',
+				};
+				href = _utils.getRevisionHref( page, this.pageParams );
+			} else {
+				href = this.links.$next.attr( 'href' );
+			}
+		}
+
+		const $label = _utils.renderLabel( {
+			short: _utils.msg( 'goto-next' ),
+			long: _utils.msg( `goto-next-${ this.options.type }` ),
+			iconAfter: document.dir === 'ltr' ? '→' : '←',
+		} );
+
+		const button = new OO.ui.ButtonWidget( {
+			label: $label,
+			href: href,
+			target: _utils.getTarget( true ),
+			disabled: !href,
+		} );
+
+		if ( href ) {
+			new Link( button.$button.get( 0 ), {
+				behavior: 'event',
+			} );
+		}
+
+		return button;
+	};
+
+	Diff.prototype.renderSwitchLink = function ( params ) {
+		params = $.extend( true, {
+			framed: true,
+			classes: [],
+		}, params );
+
+		const type = this.options.type === 'revision' ? 'diff' : 'revision';
+
+		const button = new OO.ui.ButtonWidget( {
+			label: _utils.msg( `goto-view-${ type }` ),
+			href: _utils.getTypeHref( type, this.page ),
+			target: _utils.getTarget( true ),
+			framed: params.framed,
+			classes: [ 'instantDiffs-button--switch', ...params.classes ],
+		} );
+
+		new Link( button.$button.get( 0 ), {
+			behavior: 'event',
+		} );
+
+		return button;
+	};
+
+	Diff.prototype.renderPendingLink = function ( params ) {
+		params = $.extend( true, {
+			framed: true,
+			classes: [],
+		}, params );
+
+		const button = new OO.ui.ButtonWidget( {
+			label: _utils.msg( 'goto-view-pending' ),
+			href: this.links.$pending.attr( 'href' ),
+			target: _utils.getTarget( true ),
+			framed: params.framed,
+			classes: [ 'instantDiffs-button--pending', ...params.classes ],
+		} );
+
+		new Link( button.$button.get( 0 ), {
+			behavior: 'event',
+			initiatorDiff: this,
+		} );
+
+		return button;
+	};
+
+	Diff.prototype.renderBackLink = function ( params ) {
+		params = $.extend( true, {
+			framed: true,
+			classes: [],
+		}, params );
+
+		const initiator = this.options.initiatorDiff;
+
+		const button = new OO.ui.ButtonWidget( {
+			label: _utils.msg( `goto-back-${ initiator.getType() }` ),
+			icon: 'newline',
+			href: _utils.getTypeHref( initiator.getType(), initiator.getPage(), initiator.getPageParams() ),
+			target: _utils.getTarget( true ),
+			framed: params.framed,
+			classes: [ 'instantDiffs-button--back', ...params.classes ],
+		} );
+
+		new Link( button.$button.get( 0 ), {
+			behavior: 'event',
+		} );
+
+		return button;
+	};
+
+	Diff.prototype.renderIDLink = function ( params ) {
+		params = $.extend( true, {
+			framed: true,
+			classes: [],
+		}, params );
+
+		const label = $( `
+			<span class="name">${ _utils.msg( 'name' ) }</span>
+			<span class="version">v.${ _config.version }</span>
+		` );
+
+		return new OO.ui.ButtonWidget( {
+			label: label,
+			href: _utils.getOrigin( `/wiki/${ _config.link }` ),
+			target: _utils.getTarget( true ),
+			framed: params.framed,
+			classes: [ 'instantDiffs-button--link-id', ...params.classes ],
+		} );
 	};
 
 	/*** ACTIONS ***/
@@ -2417,9 +2662,7 @@ $( function () {
 			minify: _utils.defaults( 'linksFormat' ) === 'minify',
 			relative: false,
 		};
-		const href = this.options.type === 'revision'
-			? _utils.getRevisionHref( this.page, {}, params )
-			: _utils.getDiffHref( this.page, {}, params );
+		const href = _utils.getTypeHref( this.options.type, this.page, {}, params );
 
 		// Copy href to the clipboard
 		_utils.clipboardWrite( href );
@@ -2435,9 +2678,7 @@ $( function () {
 			minify: _utils.defaults( 'linksFormat' ) === 'minify',
 			relative: false,
 		};
-		const href = this.options.type === 'revision'
-			? _utils.getRevisionHref( this.page, {}, params )
-			: _utils.getDiffHref( this.page, {}, params );
+		const href = _utils.getTypeHref( this.options.type, this.page, {}, params );
 
 		// Copy href to the clipboard
 		_utils.clipboardWrite( href );
@@ -2456,8 +2697,8 @@ $( function () {
 			_local.settings.process( options );
 		}
 
-		this.buttons.linkSettingsHelper.pending( true );
-		$.when( _local.settings.load() ).always( () => this.buttons.linkSettingsHelper.pending( false ) );
+		this.buttons.settingsHelper.pending( true );
+		$.when( _local.settings.load() ).always( () => this.buttons.settingsHelper.pending( false ) );
 	};
 
 	Diff.prototype.onSettingsOpen = function () {
@@ -2484,12 +2725,18 @@ $( function () {
 		this.nodes.$navigation.toggleClass( 'is-sticky', params.top > 0 );
 	};
 
+	Diff.prototype.getType = function () {
+		return this.options.type;
+	};
+
 	Diff.prototype.getPage = function () {
 		return this.page;
 	};
 
 	Diff.prototype.getPageTitleText = function () {
-		return ( this.error || _utils.isEmpty( this.page.title ) ) ? _utils.msg( 'error-revision-missing' ) : this.page.titleText;
+		if ( this.error ) return _utils.msg( 'title-not-found' );
+		if ( _utils.isEmpty( this.page.title ) ) return _utils.msg( 'title-empty' );
+		return this.page.titleText;
 	};
 
 	Diff.prototype.getPageParams = function () {
@@ -2785,7 +3032,7 @@ $( function () {
 		if ( _utils.isFunction( this.options.onClose ) ) {
 			this.options.onClose( this );
 		}
-		if ( _utils.isFunction( this.opener.options.onClose ) ) {
+		if ( _utils.isFunction( this.opener.options.onClose ) && this.opener.link !== this.link ) {
 			this.opener.options.onClose( this );
 		}
 		if ( _utils.isFunction( this.initiator.options.onClose ) ) {
@@ -3137,6 +3384,16 @@ $( function () {
 			} );
 			this.fields.unHideDiffs.toggle( instantDiffs.settings.unHideDiffs );
 
+			// Show diff info in the revisions
+			this.inputs.showRevisionInfo = new OO.ui.CheckboxInputWidget( {
+				selected: _utils.defaults( 'openInNewTab' ),
+			} );
+			this.fields.showRevisionInfo = new OO.ui.FieldLayout( this.inputs.showRevisionInfo, {
+				label: _utils.msg( 'settings-show-revision-info' ),
+				align: 'inline',
+			} );
+			this.fields.showRevisionInfo.toggle( instantDiffs.settings.showRevisionInfo );
+
 			// Open links in the new tab
 			this.inputs.openInNewTab = new OO.ui.CheckboxInputWidget( {
 				selected: _utils.defaults( 'openInNewTab' ),
@@ -3199,12 +3456,14 @@ $( function () {
 			} );
 			this.layouts.dialog.addItems( [
 				this.fields.unHideDiffs,
+				this.fields.showRevisionInfo,
 				this.fields.openInNewTab,
 				this.fields.linksFormat,
 				this.fields.wikilinksFormat,
 			] );
 			this.layouts.dialog.toggle(
 				instantDiffs.settings.unHideDiffs ||
+				instantDiffs.settings.showRevisionInfo ||
 				instantDiffs.settings.openInNewTab ||
 				instantDiffs.settings.linksFormat ||
 				instantDiffs.settings.wikilinksFormat,
@@ -3505,7 +3764,7 @@ $( function () {
 		}
 	};
 
-	/******* PAGE SPECIFIC FUNCTIONS *******/
+	/******* PAGE SPECIFIC ADJUSTMENTS *******/
 
 	function applyPageSpecificAdjustments() {
 		if ( !_utils.isAllowed() ) return;
@@ -3537,7 +3796,7 @@ $( function () {
 		$contributionsLines.each( ( i, node ) => {
 			const $node = $( node );
 			if ( $node.find( 'a' ).length === 0 ) {
-				$node.wrapInner( _utils.getPlaceholder() );
+				$node.wrapInner( _utils.renderPlaceholder() );
 			}
 		} );
 	}
@@ -3556,10 +3815,10 @@ $( function () {
 			const $cur = $container.find( '.mw-history-histlinks > span:first-child' );
 			const $prev = $container.find( '.mw-history-histlinks > span:last-child' );
 			if ( $cur.find( 'a' ).length === 0 ) {
-				$cur.wrapInner( _utils.getPlaceholder() );
+				$cur.wrapInner( _utils.renderPlaceholder() );
 			}
 			if ( $prev.find( 'a' ).length === 0 ) {
-				$prev.wrapInner( _utils.getPlaceholder() );
+				$prev.wrapInner( _utils.renderPlaceholder() );
 			}
 		} );
 
@@ -3947,7 +4206,6 @@ $( function () {
 		if (
 			typeof wikEd !== 'undefined' &&
 			wikEd.diffTableLinkified &&
-			diff.options.type === 'diff' &&
 			( diff.nodes.$table.length > 0 && wikEd.diffTable === diff.nodes.$table.get( 0 ) )
 		) {
 			wikEd.diffTableLinkified = false;
