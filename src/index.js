@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.3.0',
+		version: '1.3.1-gm',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -20,7 +20,7 @@ $( function () {
 		settingsPrefix: 'userjs-instantDiffs',
 
 		dependencies: {
-			styles: '/w/index.php?title=User:Serhio_Magpie/instantDiffs.css&action=raw&ctype=text/css',
+			styles: '/w/index.php?title=User:Serhio_Magpie/instantDiffs.test.css&action=raw&ctype=text/css',
 			messages: '/w/index.php?title=User:Serhio_Magpie/instantDiffs-i18n/$lang.js&action=raw&ctype=text/javascript',
 			main: [
 				'mediawiki.api',
@@ -1170,6 +1170,7 @@ $( function () {
 		this.node = node;
 		this.options = $.extend( true, {
 			type: null,                     // diff | revision | null
+			typeVariant: null,
 			behavior: 'default',            // default | basic | event
 			insertMethod: 'insertAfter',
 			initiatorLink: null,
@@ -1379,6 +1380,7 @@ $( function () {
 		// Prepare a page by given curid
 		if ( _utils.isValidID( this.page.curid ) ) {
 			this.options.type = 'revision';
+			this.options.typeVariant = 'page';
 			return true;
 		}
 
@@ -1864,6 +1866,10 @@ $( function () {
 		return this.options.type;
 	};
 
+	Link.prototype.getTypeVariant = function () {
+		return this.options.typeVariant;
+	};
+
 	/******* DIFF CONSTRUCTOR *******/
 
 	function Diff( page, options ) {
@@ -1879,6 +1885,7 @@ $( function () {
 
 		this.options = $.extend( true, {
 			type: 'diff',
+			typeVariant: null,
 			initiatorDiff: null,
 			initiatorDialog: null,
 		}, options );
@@ -2111,7 +2118,9 @@ $( function () {
 				this.mwConfg.wgRevisionId = diff;
 
 				// Set actual revision id for the copy actions, etc
-				this.page.revid = diff;
+				if ( this.options.typeVariant !== 'page' ) {
+					this.page.revid = diff;
+				}
 
 				// Replace diff when its values = cur
 				if ( this.page.diff === 'cur' ) {
@@ -2262,8 +2271,10 @@ $( function () {
 		items.push( this.buttons.prev );
 
 		// Link that switch between revision and diff
-		this.buttons.switch = this.renderSwitchLink();
-		items.push( this.buttons.switch );
+		if ( ![ 'page', 'compare' ].includes( this.options.typeVariant ) ) {
+			this.buttons.switch = this.renderSwitchLink();
+			items.push( this.buttons.switch );
+		}
 
 		// [FlaggedRevisions] Link to all unpatrolled changes
 		if ( this.links.$pending?.length > 0 ) {
@@ -2420,8 +2431,10 @@ $( function () {
 		}
 
 		// Link that switch between revision and diff
-		this.buttons.mobileWwitch = this.renderSwitchLink( buttonParams );
-		items.push( this.buttons.mobileWwitch );
+		if ( ![ 'page', 'compare' ].includes( this.options.typeVariant ) ) {
+			this.buttons.mobileWwitch = this.renderSwitchLink( buttonParams );
+			items.push( this.buttons.mobileWwitch );
+		}
 
 		// [FlaggedRevisions] Link to all unpatrolled changes
 		if ( this.links.$pending?.length > 0 ) {
@@ -2451,7 +2464,7 @@ $( function () {
 			title: _utils.msg( 'goto-snapshot-prev' ),
 			invisibleLabel: true,
 			icon: 'doubleChevronStart',
-			href: link ? _utils.getTypeHref( link.getType(), link.getPage() ) : null,
+			href: link ? link.href : null,
 			target: _utils.getTarget( true ),
 			disabled: !link,
 		} );
@@ -2474,7 +2487,7 @@ $( function () {
 			title: _utils.msg( 'goto-snapshot-next' ),
 			invisibleLabel: true,
 			icon: 'doubleChevronEnd',
-			href: link ? _utils.getTypeHref( link.getType(), link.getPage() ) : null,
+			href: link ? link.href : null,
 			target: _utils.getTarget( true ),
 			disabled: !link,
 		} );
@@ -2729,6 +2742,10 @@ $( function () {
 		return this.options.type;
 	};
 
+	Diff.prototype.getTypeVariant = function () {
+		return this.options.typeVariant;
+	};
+
 	Diff.prototype.getPage = function () {
 		return this.page;
 	};
@@ -2970,6 +2987,7 @@ $( function () {
 		const page = this.link.getPage();
 		const options = {
 			type: this.link.getType(),
+			typeVariant: this.link.getTypeVariant(),
 			initiatorDiff: this.options.initiatorDiff,
 			initiatorDialog: this,
 		};
@@ -3140,6 +3158,8 @@ $( function () {
 
 	DialogButton.prototype.getType = function () {};
 
+	DialogButton.prototype.getTypeVariant = function () {};
+
 	/*** COMPARE BUTTON ***/
 
 	function HistoryCompareButton( options ) {
@@ -3165,6 +3185,10 @@ $( function () {
 
 	HistoryCompareButton.prototype.getType = function () {
 		return 'diff';
+	};
+
+	HistoryCompareButton.prototype.getTypeVariant = function () {
+		return 'compare';
 	};
 
 	HistoryCompareButton.prototype.onDialogOpen = function () {
