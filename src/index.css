@@ -412,6 +412,17 @@ body.rtl .instantDiffs-panel-placeholder:after,
 	}
 }
 
+/*** EXTERNAL TOOLS ***/
+
+.instantDiffs-dialog-tools {
+	display: flex;
+	justify-content: center;
+}
+
+.instantDiffs-dialog-tools:is(:empty) {
+	display: none;
+}
+
 /*** CONTENT ***/
 
 .instantDiffs-dialog-content {
