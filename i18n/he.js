@@ -9,6 +9,8 @@ instantDiffs.i18n ||= {};
 instantDiffs.i18n.he = {
 	'name': 'Instant Diffs',
 
+	/*** LINKS ***/
+
 	'diff-title': 'השוואת הגרסאות',
 	'diff-title-admin': 'השוואת הגרסאות הוסתרה',
 	'revision-title': 'תוכן הגרסה',
@@ -17,10 +19,18 @@ instantDiffs.i18n.he = {
 	'compare-title': 'השוואת הגרסאות שנבחרו ($1)',
 	'alt-click': '(Alt+Click: מעבר ליעד הקישור)',
 
+	/*** DIALOG ***/
+
 	'save': 'שמור',
 	'cancel': 'ביטול',
 	'close': 'סגירה',
 	'reload': 'טען מחדש',
+
+	'title-empty': '[ללא כותרת]',
+	'title-not-found': '[לא נמצא]',
+	'unsupported-wikilambda': 'האפליקציה WikiLambda אינה נתמכת כעת.',
+
+	/*** NAVIGATION ***/
 
 	'goto-links': 'הקישורים',
 	'goto-snapshot-next': 'הקישור הבא בדף',
@@ -45,6 +55,8 @@ instantDiffs.i18n.he = {
 	'goto-talkpage': 'דיון',
 	'goto-settings': 'הגדרות',
 
+	/*** ACTIONS ***/
+
 	'copy-link': 'העתקת הקישור',
 	'copy-link-copied': 'הקישור הועתק ללוח ההעתקה',
 	'copy-link-error': 'נכשלה העתקת הקישור',
@@ -54,6 +66,8 @@ instantDiffs.i18n.he = {
 	'wikilink-diff': 'הבדל',
 	'wikilink-revision': 'גרסה',
 	'wikilink-example-title': 'עמוד ראשי',
+
+	/*** SETTINGS ***/
 
 	'settings-title': 'הגדרות Instant Diffs',
 	'settings-saved': 'ההגדרות נשמרו בהצלחה. רעננו את הדף כדי להחיל את השינויים.',
@@ -80,7 +94,7 @@ instantDiffs.i18n.he = {
 	'settings-enable-mobile-help': 'כדי להפעיל מחדש את Instant Diffs, יש לעבור לעיצוב אחר.',
 	'settings-notify-errors': 'הצג התראות קופצות לשגיאות קריטיות.',
 
-	'unsupported-wikilambda': 'האפליקציה WikiLambda אינה נתמכת כעת.',
+	/*** ERRORS ***/
 
 	'error-wasted': 'wasted',
 	'error-generic': 'משהו התקלקל בדרך: $4',

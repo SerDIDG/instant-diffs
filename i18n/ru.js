@@ -9,6 +9,8 @@ instantDiffs.i18n ||= {};
 instantDiffs.i18n.ru = {
 	'name': 'Instant Diffs',
 
+	/*** LINKS ***/
+
 	'diff-title': 'Разница версий',
 	'diff-title-admin': 'Разница версий скрыта',
 	'revision-title': 'Содержимое версии',
@@ -17,19 +19,27 @@ instantDiffs.i18n.ru = {
 	'compare-title': 'Сравнить выбранные версии ($1)',
 	'alt-click': '(Alt+Click: перейти по ссылке)',
 
+	/*** DIALOG ***/
+
 	'save': 'Сохранить',
 	'cancel': 'Отменить',
 	'close': 'Закрыть',
 	'reload': 'Перезагрузить',
 
+	'title-empty': '[Без названия]',
+	'title-not-found': '[Не найдено]',
+	'unsupported-wikilambda': 'Приложение WikiLambda в настоящее время не поддерживается.',
+
+	/*** NAVIGATION ***/
+
 	'goto-links': 'Ссылки',
 	'goto-snapshot-next': 'Следующая ссылка на странице',
 	'goto-snapshot-prev': 'Предыдущая ссылка на странице',
 	'goto-view-diff': 'Разница версий',
-	'goto-view-pending': 'Непроверенные правки',
+	'goto-view-pending': 'Ожидают проверки',
 	'goto-view-revision': 'Показать версию',
-	"goto-prev": "Предыдущая",
-	"goto-next": "Следующая",
+	'goto-prev': 'Предыдущая',
+	'goto-next': 'Следующая',
 	'goto-prev-diff': 'Предыдущая правка',
 	'goto-next-diff': 'Следующая правка',
 	'goto-back-diff': 'Вернуться',
@@ -45,6 +55,8 @@ instantDiffs.i18n.ru = {
 	'goto-talkpage': 'Обсуждение',
 	'goto-settings': 'Настройки',
 
+	/*** ACTIONS ***/
+
 	'copy-link': 'Скопировать ссылку',
 	'copy-link-copied': 'Ссылка скопирована в буфер обмена',
 	'copy-link-error': 'Не удалось скопировать ссылку',
@@ -54,6 +66,8 @@ instantDiffs.i18n.ru = {
 	'wikilink-diff': 'правка',
 	'wikilink-revision': 'версия',
 	'wikilink-example-title': 'Заглавная страница',
+
+	/*** SETTINGS ***/
 
 	'settings-title': 'Настройки Instant Diffs',
 	'settings-saved': 'Настройки успешно сохранены. Перезагрузите страницу, чтобы применить их.',
@@ -80,7 +94,7 @@ instantDiffs.i18n.ru = {
 	'settings-enable-mobile-help': 'Чтобы повторно включить Instant Diffs, вам нужно будет переключиться на другую тему оформления.',
 	'settings-notify-errors': 'Показывать всплывающие уведомления при критических ошибках.',
 
-	'unsupported-wikilambda': 'Приложение WikiLambda в настоящее время не поддерживается.',
+	/*** ERRORS ***/
 
 	'error-wasted': 'потрачено',
 	'error-generic': 'Что-то пошло не так: $4',

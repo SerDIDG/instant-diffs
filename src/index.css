@@ -222,7 +222,299 @@ body.rtl .instantDiffs-panel-placeholder:after,
 	}
 }
 
-/******* MEDIAWIKI LIST LINE *******/
+/******* NOTIFICATION *******/
+
+.instantDiffs-notification-label {
+	font-weight: bold;
+}
+
+/******* DIALOG *******/
+
+/* [Fix] Set top indent for the dialogs because of the fixed header on the Fandom mobile skin  */
+.skin-fandommobile .instantDiffs-dialog.instantDiffs-dialog {
+	top: 55px;
+}
+
+/* Enable click to close on the overlay */
+.instantDiffs-dialog .oo-ui-window-overlay {
+	z-index: -1;
+	inset: 0 0 0 0;
+}
+
+/*** NAVIGATION ***/
+
+.instantDiffs-navigation {
+	margin: 0 -16px;
+	padding: 1em 16px;
+	display: flex;
+	gap: 0.5em;
+	position: sticky;
+	z-index: 2;
+	top: 0;
+	border-bottom: 1px solid transparent;
+	background: var(--instantDiffs-background-navigation);
+	background-clip: padding-box;
+	-webkit-backdrop-filter: blur(16px);
+	backdrop-filter: blur(16px);
+}
+
+.skin-monobook .instantDiffs-navigation {
+	margin: 0 -1em;
+	padding: 1em;
+}
+
+.skin-fandomdesktop .instantDiffs-navigation,
+.skin-fandommobile .instantDiffs-navigation {
+	margin: 0 -24px;
+	padding: 1em 24px;
+}
+
+.instantDiffs-navigation.is-sticky {
+	border-bottom-color: var(--border-color-base, #eaecf0);
+}
+
+.instantDiffs-navigation-group--left {
+	display: flex;
+	justify-content: flex-start;
+	flex: 1;
+}
+
+.instantDiffs-navigation-group--center {
+	min-width: 0;
+	display: flex;
+	justify-content: center;
+	flex: auto;
+}
+
+.instantDiffs-navigation-group--right {
+	display: flex;
+	justify-content: flex-end;
+	flex: 1;
+}
+
+.instantDiffs-navigation-group .oo-ui-buttonGroupWidget {
+	min-width: 0;
+	display: flex;
+}
+
+.instantDiffs-navigation-group--center .oo-ui-buttonElement {
+	min-width: 0;
+	flex: auto;
+}
+
+.instantDiffs-navigation-group--center .oo-ui-buttonElement-button {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+@media (max-width: 639px) {
+	.instantDiffs-navigation {
+		padding: 0.5em;
+		font-size: 0.85rem;
+	}
+
+	.instantDiffs-navigation-group--left .instantDiffs-button--back,
+	.instantDiffs-navigation-group--center .instantDiffs-button--switch,
+	.instantDiffs-navigation-group--center .instantDiffs-button--pending {
+		display: none;
+	}
+}
+
+/*** MENU ***/
+
+.instantDiffs-group--vertical {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.instantDiffs-group--vertical hr {
+	margin: 0;
+}
+
+.instantDiffs-button--link {
+	display: block;
+}
+
+.instantDiffs-button--link.instantDiffs-button--link:first-child {
+	margin: 0;
+}
+
+.instantDiffs-button--link > .oo-ui-buttonElement-button {
+	display: block;
+}
+
+.instantDiffs-button--link.oo-ui-buttonElement-frameless > .oo-ui-buttonElement-button {
+	padding-right: 12px;
+	padding-left: 12px;
+}
+
+.instantDiffs-button--link.oo-ui-widget-enabled > .oo-ui-buttonElement-button:is(:hover, :focus) {
+	background-color: var(--background-color-progressive-subtle, #eaf3ff);
+	color: var(--instantDiffs-color-link--hover);
+}
+
+.instantDiffs-button--link.oo-ui-widget-enabled > .oo-ui-buttonElement-button:active {
+	border: 1px solid var(--border-color-progressive--active, #2a4b8d);
+	background-color: var(--background-color-progressive-subtle--active, #cbd6f6);
+	color: var(--instantDiffs-color-link--active);
+}
+
+.instantDiffs-button--link-id .oo-ui-labelElement-label {
+	white-space: wrap;
+}
+
+.instantDiffs-button--link-id .oo-ui-labelElement-label .name {
+	white-space: nowrap;
+}
+
+.instantDiffs-button--link-id .oo-ui-labelElement-label .version {
+	font-size: 0.8em;
+	color: var(--color-placeholder, #72777d);
+}
+
+@media (min-width: 640px) {
+	.instantDiffs-navigation-group .instantDiffs-group--mobile {
+		display: none;
+	}
+}
+
+/*** BUTTON LABELS ***/
+
+.instantDiffs-label {
+	display: flex;
+	gap: 0.25rem;
+}
+
+.instantDiffs-label i {
+	flex: none;
+}
+
+.instantDiffs-label span {
+	min-width: 0;
+	flex: auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+@media (min-width: 960px) {
+	.instantDiffs-label--short {
+		display: none;
+	}
+}
+
+@media (max-width: 959px) {
+	.instantDiffs-label--long {
+		display: none;
+	}
+}
+
+/*** CONTENT ***/
+
+.instantDiffs-dialog-content {
+	width: auto;
+	max-width: none;
+	display: flow-root;
+	margin: 0;
+	font-size: var(--instantDiffs-font-size);
+	line-height: var(--instantDiffs-line-height);
+}
+
+/* [Fix] Text color for Monobook. */
+.skin-monobook .instantDiffs-dialog-content {
+	color: #000000;
+}
+
+.instantDiffs-dialog-body {
+	display: flow-root;
+	position: relative;
+	z-index: 1;
+}
+
+.instantDiffs-dialog-body #toc {
+	display: none;
+}
+
+/* [Fix] Hide empty time stamps on mobile Minerva ([[phab:T394776]]) */
+.instantDiffs-dialog-body .mw-diff-timestamp:is(:empty) {
+	display: none;
+}
+
+@media (max-width: 639px) {
+	.skin-minerva .instantDiffs-dialog-body table.diff {
+		margin: 0;
+	}
+
+	/* [Fix] Override fixed positioning for the edit contributor block on mobile. */
+	.skin-minerva .instantDiffs-dialog-body #mw-diff-ntitle2 {
+		height: auto;
+		margin-bottom: 0.5em;
+		position: relative;
+		inset: auto;
+		border: 1px solid var(--border-color-subtle, #c8ccd1);
+	}
+
+	.skin-minerva .instantDiffs-dialog-body .mw-diff-tool {
+		position: relative;
+		z-index: 1;
+		inset: auto;
+	}
+
+	.skin-minerva .instantDiffs-dialog-body .mw-userlink::before {
+		width: calc(var(--font-size-medium, 1rem) + 4px);
+		display: inline-block;
+	}
+}
+
+/*** FLAGGED REVISIONS ***/
+
+.instantDiffs-dialog-body #mw-fr-diff-headeritems {
+	margin-top: 1em;
+}
+
+.instantDiffs-dialog-body #mw-fr-revisiontag-old {
+	margin-bottom: 1em;
+}
+
+@media (max-width: 639px) {
+	/* Hide patrolled/unpatrolled labels in the diff table since there is no two-pane diff view. */
+	.skin-minerva .instantDiffs-dialog-body #mw-fr-diff-headeritems {
+		display: none;
+	}
+}
+
+/*** ROLLBACK LINK ***/
+
+.instantDiffs-dialog-content table.diff .mw-rollback-link {
+	display: initial;
+}
+
+/******* SETTINGS *******/
+
+/* [Fix] Set top indent for the dialogs because of the fixed header on the Fandom mobile skin  */
+.skin-fandommobile .instantDiffs-settings.instantDiffs-settings {
+	top: 55px;
+}
+
+/* Reset list styles for a list hint element */
+/* Use more specific selector because mobile Minerva loads unscoped ".ns-special ul" */
+/* 1.42857143em is a size of the OOUI checkbox/radio */
+ul.instantDiffs-list--settings {
+	margin-block: 0;
+	margin-inline: 1.42857143em 0;
+	list-style: disc;
+}
+
+/* Set predefine direction because links can contain rtl content */
+ul.instantDiffs-list--settings i {
+	direction: ltr;
+	unicode-bidi: embed;
+}
+
+/******* PAGE SPECIFIC ADJUSTMENTS *******/
 
 /* Tags legend:
  * li - contributions, page history
@@ -387,287 +679,4 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 
 .skin-overclocked .instantDiffs-button--compare {
 	padding: 8px 12px;
-}
-
-/******* DIALOG *******/
-
-.skin-fandommobile .instantDiffs-dialog.instantDiffs-dialog {
-	top: 55px;
-}
-
-/* Enable click to close on the overlay */
-.instantDiffs-dialog .oo-ui-window-overlay {
-	z-index: -1;
-	inset: 0 0 0 0;
-}
-
-/*** NAVIGATION ***/
-
-.instantDiffs-navigation {
-	margin: 0 -16px;
-	padding: 1em 16px;
-	display: flex;
-	gap: 0.5em;
-	position: sticky;
-	z-index: 2;
-	top: 0;
-	border-bottom: 1px solid transparent;
-	background: var(--instantDiffs-background-navigation);
-	background-clip: padding-box;
-	-webkit-backdrop-filter: blur(16px);
-	backdrop-filter: blur(16px);
-}
-
-.skin-monobook .instantDiffs-navigation {
-	margin: 0 -1em;
-	padding: 1em;
-}
-
-.skin-fandomdesktop .instantDiffs-navigation,
-.skin-fandommobile .instantDiffs-navigation {
-	margin: 0 -24px;
-	padding: 1em 24px;
-}
-
-.instantDiffs-navigation.is-sticky {
-	border-bottom-color: var(--border-color-base, #eaecf0);
-}
-
-.instantDiffs-navigation-group--left {
-	display: flex;
-	justify-content: flex-start;
-	flex: 1;
-}
-
-.instantDiffs-navigation-group--center {
-	min-width: 0;
-	display: flex;
-	justify-content: center;
-	flex: auto;
-}
-
-.instantDiffs-navigation-group--right {
-	display: flex;
-	justify-content: flex-end;
-	flex: 1;
-}
-
-.instantDiffs-navigation-group .oo-ui-buttonGroupWidget {
-	min-width: 0;
-	display: flex;
-}
-
-.instantDiffs-navigation-group--center .oo-ui-buttonElement {
-	min-width: 0;
-	flex: auto;
-}
-
-.instantDiffs-navigation-group--center .oo-ui-buttonElement-button {
-	display: block;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-@media (max-width: 639px) {
-	.skin-minerva .instantDiffs-navigation {
-		padding: 0.5em;
-	}
-}
-
-/*** BUTTONS ***/
-
-.instantDiffs-group--vertical {
-	display: flex;
-	flex-direction: column;
-	padding: 0;
-}
-
-.instantDiffs-group--vertical hr {
-	margin: 0;
-}
-
-.instantDiffs-button--link {
-	display: block;
-}
-
-.instantDiffs-button--link.instantDiffs-button--link:first-child {
-	margin: 0;
-}
-
-.instantDiffs-button--link > .oo-ui-buttonElement-button {
-	display: block;
-}
-
-.instantDiffs-button--link.oo-ui-buttonElement-frameless > .oo-ui-buttonElement-button {
-	padding-right: 12px;
-	padding-left: 12px;
-}
-
-.instantDiffs-button--link.oo-ui-widget-enabled > .oo-ui-buttonElement-button:is(:hover, :focus) {
-	background-color: var(--background-color-progressive-subtle, #eaf3ff);
-	color: var(--instantDiffs-color-link--hover);
-}
-
-.instantDiffs-button--link.oo-ui-widget-enabled > .oo-ui-buttonElement-button:active {
-	border: 1px solid var(--border-color-progressive--active, #2a4b8d);
-	background-color: var(--background-color-progressive-subtle--active, #cbd6f6);
-	color: var(--instantDiffs-color-link--active);
-}
-
-.instantDiffs-button--link-id .oo-ui-labelElement-label {
-	white-space: wrap;
-}
-
-.instantDiffs-button--link-id .oo-ui-labelElement-label .name {
-	white-space: nowrap;
-}
-
-.instantDiffs-button--link-id .oo-ui-labelElement-label .version {
-	font-size: 0.8em;
-	color: var(--color-placeholder, #72777d);
-}
-
-@media (max-width: 639px) {
-	.instantDiffs-button--back,
-	.instantDiffs-button--switch,
-	.instantDiffs-button--pending {
-		display: none;
-	}
-}
-
-/*** LABEL ***/
-
-.instantDiffs-label {
-	display: flex;
-	gap: 0.25rem;
-}
-
-.instantDiffs-label i {
-	flex: none;
-}
-
-.instantDiffs-label span {
-	min-width: 0;
-	flex: auto;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-
-@media (min-width: 960px) {
-	.instantDiffs-label--short {
-		display: none;
-	}
-}
-
-@media (max-width: 959px) {
-	.instantDiffs-label--long {
-		display: none;
-	}
-}
-
-/*** CONTENT ***/
-
-.instantDiffs-dialog-content {
-	width: auto;
-	max-width: none;
-	display: flow-root;
-	margin: 0;
-	font-size: var(--instantDiffs-font-size);
-	line-height: var(--instantDiffs-line-height);
-}
-
-/* [Fix] Text color for Monobook. */
-.skin-monobook .instantDiffs-dialog-content {
-	color: #000000;
-}
-
-.instantDiffs-dialog-body {
-	display: flow-root;
-	position: relative;
-	z-index: 1;
-}
-
-.instantDiffs-dialog-body .diff-currentversion-title {
-	margin-top: 1em;
-}
-
-.instantDiffs-dialog-body #toc {
-	display: none;
-}
-
-@media (max-width: 639px) {
-	.skin-minerva .instantDiffs-dialog-body table.diff {
-		margin-top: 0;
-	}
-
-	.skin-minerva .instantDiffs-dialog-body .mw-diff-timestamp:is(:empty) {
-		display: none;
-	}
-
-	/* [Fix] Override fixed positioning for the edit contributor block on mobile. */
-	.skin-minerva .instantDiffs-dialog-body #mw-diff-ntitle2 {
-		height: auto;
-		margin-bottom: 0.5em;
-		position: relative;
-		inset: auto;
-		border: 1px solid var(--border-color-subtle, #c8ccd1);
-	}
-
-	.skin-minerva .instantDiffs-dialog-body .mw-diff-tool {
-		position: relative;
-		z-index: 1;
-		inset: auto;
-	}
-
-	.skin-minerva .instantDiffs-dialog-body .mw-userlink::before {
-		width: calc(var(--font-size-medium, 1rem) + 4px);
-		display: inline-block;
-	}
-}
-
-/*** FLAGGED REVISIONS ***/
-
-.instantDiffs-dialog-body #mw-fr-diff-headeritems {
-	margin-top: 1em;
-}
-
-.instantDiffs-dialog-body #mw-fr-revisiontag-old {
-	margin-bottom: 1em;
-}
-
-@media (max-width: 639px) {
-	.skin-minerva .instantDiffs-dialog-body #mw-fr-diff-headeritems {
-		display: none;
-	}
-}
-
-/*** ROLLBACK LINK ***/
-
-.instantDiffs-dialog-content table.diff .mw-rollback-link {
-	display: initial;
-}
-
-/******* SETTINGS *******/
-
-.skin-fandommobile .instantDiffs-settings.instantDiffs-settings {
-	top: 55px;
-}
-
-/* 1.42857143em is a size of the OOUI checkbox\radio */
-.instantDiffs-list--settings {
-	margin-block: 0;
-	margin-inline: 1.42857143em 0;
-	list-style: disc;
-}
-
-.instantDiffs-list--settings i {
-	direction: ltr;
-	unicode-bidi: embed;
-}
-
-/******* NOTIFICATION *******/
-
-.instantDiffs-notification-label {
-	font-weight: bold;
 }

@@ -9,6 +9,8 @@ instantDiffs.i18n ||= {};
 instantDiffs.i18n.uk = {
 	'name': 'Instant Diffs',
 
+	/*** LINKS ***/
+
 	'diff-title': 'Різниця версій',
 	'diff-title-admin': 'Різниця версій прихована',
 	'revision-title': 'Вміст версії',
@@ -17,16 +19,24 @@ instantDiffs.i18n.uk = {
 	'compare-title': 'Порівняти вибрані версії ($1)',
 	'alt-click': '(Alt+Click: відкрити посилання)',
 
+	/*** DIALOG ***/
+
 	'save': 'Зберегти',
 	'cancel': 'Відмінити',
 	'close': 'Закрити',
 	'reload': 'Перезавантажити',
 
+	'title-empty': '[Без назви]',
+	'title-not-found': '[Не знайдено]',
+	'unsupported-wikilambda': 'Додаток WikiLambda наразі не підтримується.',
+
+	/*** NAVIGATION ***/
+
 	'goto-links': 'Дії',
 	'goto-snapshot-next': 'Наступне посилання на сторінці',
 	'goto-snapshot-prev': 'Попереднє посилання на сторінці',
 	'goto-view-diff': 'Різниця версій',
-	'goto-view-pending': 'Неперевірені зміни',
+	'goto-view-pending': 'Очікують перевірку',
 	'goto-view-revision': 'Показати версію',
 	'goto-prev': 'Попередня',
 	'goto-next': 'Наступна',
@@ -45,6 +55,8 @@ instantDiffs.i18n.uk = {
 	'goto-talkpage': 'Обговорення',
 	'goto-settings': 'Налаштування',
 
+	/*** ACTIONS ***/
+
 	'copy-link': 'Скопіювати посилання',
 	'copy-link-copied': 'Посилання скопійовано до буферу обміну',
 	'copy-link-error': 'Не вдалося скопіювати посилання',
@@ -54,6 +66,8 @@ instantDiffs.i18n.uk = {
 	'wikilink-diff': 'редагування',
 	'wikilink-revision': 'версія',
 	'wikilink-example-title': 'Головна сторінка',
+
+	/*** SETTINGS ***/
 
 	'settings-title': 'Налаштування Instant Diffs',
 	'settings-saved': 'Налаштування успішно збережено. Перезавантажте сторінку, щоб застосувати їх.',
@@ -80,7 +94,7 @@ instantDiffs.i18n.uk = {
 	'settings-enable-mobile-help': 'Щоб повторно увімкнути Instant Diffs, вам потрібно буде переключитися на іншу тему оформлення.',
 	'settings-notify-errors': 'Показувати спливаючі повідомлення при критичних помилках.',
 
-	'unsupported-wikilambda': 'Додаток WikiLambda наразі не підтримується.',
+	/*** ERRORS ***/
 
 	'error-wasted': 'ганьба',
 	'error-generic': 'Щось пішло не так: $4',

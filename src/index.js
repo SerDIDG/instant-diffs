@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.3.0-b.7',
+		version: '1.3.0-b.8',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -99,6 +99,12 @@ $( function () {
 			diff: '❖',
 			revision: '✪',
 			error: '𝓔',
+		},
+
+		// Breakpoints
+		breakpoints: {
+			mobileUp: '(min-width: 640px)',
+			mobileDown: '(max-width: 639px)',
 		},
 
 		// Wikilink format presets
@@ -299,6 +305,93 @@ $( function () {
 		return event.type === 'click' || ( event.type === 'keypress' && [ 'Enter', 'Space' ].includes( event.code ) );
 	};
 
+	/*** COMMON ***/
+
+	_utils.getOrigin = ( path ) => {
+		return `${ _config.origin }${ path }`;
+	};
+
+	_utils.getDependencies = ( data ) => {
+		return data.filter( item => {
+			const state = mw.loader.getState( item );
+			return state && ![ 'error', 'missing' ].includes( state );
+		} );
+	};
+
+	_utils.isAllowed = () => {
+		return _config.include.actions.includes( mw.config.get( 'wgAction' ) ) &&
+			!_config.exclude.pages.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) );
+	};
+
+	_utils.log = ( type, message, data = [] ) => {
+		const logger = console[ type ];
+		if ( !logger ) return;
+		logger( `${ _utils.msg( 'name' ) }: ${ message }.`, ...data );
+	};
+
+	_utils.logTimer = ( name, start, end ) => {
+		let diff = end - start;
+		if ( diff < 1000 ) {
+			diff = `${ diff }ms`;
+		} else {
+			diff = `${ ( diff / 1000 ).toFixed( 2 ) }s`;
+		}
+		_utils.log( 'info', `${ name }: ${ diff }` );
+	};
+
+	_utils.isBreakpoint = ( breakpoint ) => {
+		breakpoint = _config.breakpoints[ breakpoint ];
+		return breakpoint ? window.matchMedia( breakpoint ) : false;
+	};
+
+	_utils.getSpecialPageAliases = ( data, name ) => {
+		const namespace = 'Special';
+		const localNamespace = mw.config.get( 'wgFormattedNamespaces' )[ '-1' ];
+		const nameParts = name.split( ':' );
+		const localName = data[ name ];
+		const localNameParts = localName.split( ':' );
+
+		// Collect aliases variants
+		nameParts[ 0 ] = localNamespace;
+		localNameParts[ 0 ] = namespace;
+
+		const values = [ name, localName, nameParts.join( ':' ), localNameParts.join( ':' ) ];
+		return [ ...new Set( values ) ];
+	};
+
+	/*** DEFAULTS ***/
+
+	_utils.defaults = ( key ) => {
+		return key ? instantDiffs.defaults[ key ] : instantDiffs.defaults;
+	};
+
+	_utils.setDefaults = ( data, save ) => {
+		instantDiffs.defaults = $.extend( {}, instantDiffs.defaults, data );
+
+		// Temporary save defaults to the local User Options
+		if ( save && !_local.mwIsAnon ) {
+			try {
+				mw.user.options.set( _config.settingsPrefix, JSON.stringify( instantDiffs.defaults ) );
+			} catch ( e ) {}
+		}
+	};
+
+	_utils.processDefaults = () => {
+		// Set settings stored in the Local Storage
+		try {
+			const settings = mw.storage.getObject( `${ _config.prefix }-settings` );
+			_utils.setDefaults( settings, false );
+		} catch ( e ) {}
+
+		// Set settings stored in the User Options
+		if ( !_local.mwIsAnon ) {
+			try {
+				const settings = JSON.parse( mw.user.options.get( `${ _config.settingsPrefix }-settings` ) );
+				_utils.setDefaults( settings, false );
+			} catch ( e ) {}
+		}
+	};
+
 	/*** MESSAGES ***/
 
 	_utils.msg = function () {
@@ -391,86 +484,6 @@ $( function () {
 		}
 
 		_utils.log( 'error', message, [ page, error ] );
-	};
-
-	/*** COMMON ***/
-
-	_utils.defaults = ( key ) => {
-		return key ? instantDiffs.defaults[ key ] : instantDiffs.defaults;
-	};
-
-	_utils.setDefaults = ( data, save ) => {
-		instantDiffs.defaults = $.extend( {}, instantDiffs.defaults, data );
-
-		// Temporary save defaults to the local User Options
-		if ( save && !_local.mwIsAnon ) {
-			try {
-				mw.user.options.set( _config.settingsPrefix, JSON.stringify( instantDiffs.defaults ) );
-			} catch ( e ) {}
-		}
-	};
-
-	_utils.processDefaults = () => {
-		// Set settings stored in the Local Storage
-		try {
-			const settings = mw.storage.getObject( `${ _config.prefix }-settings` );
-			_utils.setDefaults( settings, false );
-		} catch ( e ) {}
-
-		// Set settings stored in the User Options
-		if ( !_local.mwIsAnon ) {
-			try {
-				const settings = JSON.parse( mw.user.options.get( `${ _config.settingsPrefix }-settings` ) );
-				_utils.setDefaults( settings, false );
-			} catch ( e ) {}
-		}
-	};
-
-	_utils.getOrigin = ( path ) => {
-		return `${ _config.origin }${ path }`;
-	};
-
-	_utils.getDependencies = ( data ) => {
-		return data.filter( item => {
-			const state = mw.loader.getState( item );
-			return state && ![ 'error', 'missing' ].includes( state );
-		} );
-	};
-
-	_utils.isAllowed = () => {
-		return _config.include.actions.includes( mw.config.get( 'wgAction' ) ) &&
-			!_config.exclude.pages.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) );
-	};
-
-	_utils.log = ( type, message, data = [] ) => {
-		const logger = console[ type ];
-		if ( !logger ) return;
-		logger( `${ _utils.msg( 'name' ) }: ${ message }.`, ...data );
-	};
-
-	_utils.logTimer = ( name, start, end ) => {
-		let diff = end - start;
-		if ( diff < 1000 ) {
-			diff = `${ diff }ms`;
-		} else {
-			diff = `${ ( diff / 1000 ).toFixed( 2 ) }s`;
-		}
-		_utils.log( 'info', `${ name }: ${ diff }` );
-	};
-
-	_utils.getSpecialPageAliases = ( data, name ) => {
-		const namespace = 'Special';
-		const localNamespace = mw.config.get( 'wgFormattedNamespaces' )[ '-1' ];
-		const nameParts = name.split( ':' );
-		const localName = data[ name ];
-		const localNameParts = localName.split( ':' );
-
-		// Collect aliases variants
-		nameParts[ 0 ] = localNamespace;
-		localNameParts[ 0 ] = namespace;
-
-		const values = [ name, localName, nameParts.join( ':' ), localNameParts.join( ':' ) ];
-		return [ ...new Set( values ) ];
 	};
 
 	/*** LINKS ***/
@@ -1884,8 +1897,8 @@ $( function () {
 		};
 
 		this.nodes = {};
-		this.buttons = {};
 		this.links = {};
+		this.buttons = {};
 		this.isLoading = false;
 
 		// Validate page object
@@ -2139,12 +2152,15 @@ $( function () {
 		this.nodes.$pendingLink = this.nodes.$frDiff
 			.find( '.fr-diff-to-stable a' )
 			.detach();
+		if ( this.options.type === 'diff' ) {
+			this.links.$pending = this.nodes.$pendingLink;
+		}
 
 		// Find and detach the next / previous diff links
-		this.nodes.$prevLink = this.nodes.$table
+		this.links.$prev = this.nodes.$table
 			.find( '#differences-prevlink' )
 			.detach();
-		this.nodes.$nextLink = this.nodes.$table
+		this.links.$next = this.nodes.$table
 			.find( '#differences-nextlink' )
 			.detach();
 
@@ -2209,6 +2225,7 @@ $( function () {
 			.addClass( [ 'instantDiffs-navigation-group', 'instantDiffs-navigation-group--right' ] )
 			.appendTo( this.nodes.$navigation );
 
+		// Render panels
 		this.renderSnapshotLinks();
 		this.renderNavigationLinks();
 		this.renderMenuLinks();
@@ -2227,7 +2244,7 @@ $( function () {
 			items.push( this.buttons.snapshotNext );
 		}
 
-		// Back to the initiator diff linl
+		// Back to the initiator diff link
 		if ( this.options.initiatorDiff ) {
 			this.buttons.initiatorDiff = this.renderBackLink();
 			items.push( this.buttons.initiatorDiff );
@@ -2249,11 +2266,9 @@ $( function () {
 		items.push( this.buttons.switch );
 
 		// [FlaggedRevisions] Link to all unpatrolled changes
-		if ( this.options.type === 'diff' ) {
-			if ( this.nodes.$pendingLink?.length > 0 ) {
-				this.buttons.pending = this.renderPendingLink();
-				items.push( this.buttons.pending );
-			}
+		if ( this.links.$pending?.length > 0 ) {
+			this.buttons.pending = this.renderPendingLink();
+			items.push( this.buttons.pending );
 		}
 
 		// Link to the next diff
@@ -2264,7 +2279,169 @@ $( function () {
 		this.nodes.$navigationCenter.append( this.buttons.mainLinksGroup.$element );
 	};
 
-	/*** NAVIGATION LINKS ***/
+	/*** RENDER MENU ***/
+
+	Diff.prototype.renderMenuLinks = function () {
+		const buttonParams = {
+			framed: false,
+			classes: [ 'instantDiffs-button--link' ],
+		};
+
+		// Render menu groups
+		this.buttons.menuMobile = this.renderMenuMobileGroup( buttonParams );
+		this.buttons.menuGroup = this.renderMenuGroup( buttonParams );
+
+		const groupsElements = [
+			this.buttons.menuMobile.$element.get( 0 ),
+			this.buttons.menuGroup.$element.get( 0 ),
+		];
+
+		this.buttons.menuDropdown = new OO.ui.PopupButtonWidget( {
+			icon: 'menu',
+			label: _utils.msg( 'goto-links' ),
+			title: _utils.msg( 'goto-links' ),
+			invisibleLabel: true,
+			popup: {
+				$content: $( groupsElements ),
+				width: 'auto',
+				padded: false,
+				anchor: false,
+				align: 'backwards',
+			},
+		} );
+
+		this.nodes.$navigationRight.append( this.buttons.menuDropdown.$element );
+	};
+
+	Diff.prototype.renderMenuGroup = function ( buttonParams ) {
+		const items = [];
+
+		// Copy a link to the clipboard
+		this.buttons.copy = new OO.ui.ButtonWidget(
+			$.extend( true, buttonParams, {
+				label: _utils.msg( 'copy-link' ),
+			} ),
+		);
+		this.buttons.copyHelper = new Button( {
+			node: this.buttons.copy.$button.get( 0 ),
+			handler: this.actionCopyLink.bind( this ),
+		} );
+		items.push( this.buttons.copy );
+
+		// Copy a wikilink to the clipboard
+		this.buttons.copyWiki = new OO.ui.ButtonWidget(
+			$.extend( true, buttonParams, {
+				label: _utils.msg( 'copy-wikilink' ),
+			} ),
+		);
+		this.buttons.copyWikiHelper = new Button( {
+			node: this.buttons.copyWiki.$button.get( 0 ),
+			handler: this.actionCopyWikilink.bind( this ),
+		} );
+		items.push( this.buttons.copyWiki );
+
+		// Link to the revision or to the edit
+		this.buttons.pageType = new OO.ui.ButtonWidget(
+			$.extend( true, buttonParams, {
+				label: _utils.msg( `goto-${ this.options.type }` ),
+				href: _utils.getTypeHref( this.options.type, this.page ),
+				target: _utils.getTarget( true ),
+			} ),
+		);
+		items.push( this.buttons.pageType );
+
+		if ( !_utils.isEmpty( this.page.title ) ) {
+			// Link to the page
+			this.buttons.page = new OO.ui.ButtonWidget(
+				$.extend( true, buttonParams, {
+					label: _utils.msg( 'goto-page' ),
+					href: this.page.href,
+					target: _utils.getTarget( true ),
+				} ),
+			);
+			items.push( this.buttons.page );
+
+			// Link to the history
+			this.buttons.history = new OO.ui.ButtonWidget(
+				$.extend( true, buttonParams, {
+					label: _utils.msg( 'goto-history' ),
+					href: mw.util.getUrl( this.page.title, { action: 'history' } ),
+					target: _utils.getTarget( true ),
+				} ),
+			);
+			items.push( this.buttons.history );
+
+			// Link to the talk page
+			if ( !this.page.mwTitle.isTalkPage() ) {
+				this.buttons.talkPage = new OO.ui.ButtonWidget(
+					$.extend( true, buttonParams, {
+						label: _utils.msg( 'goto-talkpage' ),
+						href: this.page.mwTitle.getTalkPage().getUrl(),
+						target: _utils.getTarget( true ),
+					} ),
+				);
+				items.push( this.buttons.talkPage );
+			}
+		}
+
+		// Open Instant Diffs settings
+		this.buttons.settings = new OO.ui.ButtonWidget(
+			$.extend( true, buttonParams, {
+				label: _utils.msg( 'goto-settings' ),
+			} ),
+		);
+		this.buttons.settingsHelper = new Button( {
+			node: this.buttons.settings.$button.get( 0 ),
+			handler: this.actionOpenSettings.bind( this ),
+		} );
+		items.push( this.buttons.settings );
+
+		// Separator
+		items.push( _utils.renderOoUiElement( $( '<hr>' ) ) );
+
+		// Link to the Instant Diffs docs and current running version
+		this.buttons.id = this.renderIDLink( buttonParams );
+		items.push( this.buttons.id );
+
+		// Group
+		return new OO.ui.ButtonGroupWidget( {
+			items: items,
+			classes: [ 'instantDiffs-group--vertical' ],
+		} );
+	};
+
+	Diff.prototype.renderMenuMobileGroup = function ( buttonParams ) {
+		const items = [];
+
+		// Back to the initiator diff link
+		if ( this.options.initiatorDiff ) {
+			this.buttons.mobileInitiatorDiff = this.renderBackLink( buttonParams );
+			items.push( this.buttons.mobileInitiatorDiff );
+		}
+
+		// Link that switch between revision and diff
+		this.buttons.mobileWwitch = this.renderSwitchLink( buttonParams );
+		items.push( this.buttons.mobileWwitch );
+
+		// [FlaggedRevisions] Link to all unpatrolled changes
+		if ( this.links.$pending?.length > 0 ) {
+			this.buttons.mobilePending = this.renderPendingLink( buttonParams );
+			items.push( this.buttons.mobilePending );
+		}
+
+		// Separator
+		if ( items.length > 0 ) {
+			items.push( _utils.renderOoUiElement( $( '<hr>' ) ) );
+		}
+
+		// Group
+		return new OO.ui.ButtonGroupWidget( {
+			items: items,
+			classes: [ 'instantDiffs-group--vertical', 'instantDiffs-group--mobile' ],
+		} );
+	};
+
+	/*** RENDER LINKS ***/
 
 	Diff.prototype.renderSnapshotPrevLink = function () {
 		const link = _local.snapshot.getPreviousLink();
@@ -2313,7 +2490,7 @@ $( function () {
 	};
 
 	Diff.prototype.renderPrevLink = function () {
-		const hasLink = this.nodes.$prevLink && this.nodes.$prevLink.length;
+		const hasLink = this.links.$prev?.length > 0;
 
 		let href = null;
 		if ( this.options.type === 'revision' && _utils.isValidID( this.mwConfg.wgDiffOldId ) ) {
@@ -2323,7 +2500,7 @@ $( function () {
 			};
 			href = _utils.getRevisionHref( page, this.pageParams );
 		} else if ( hasLink ) {
-			href = this.nodes.$prevLink.attr( 'href' );
+			href = this.links.$prev.attr( 'href' );
 		}
 
 		const $label = _utils.renderLabel( {
@@ -2349,7 +2526,7 @@ $( function () {
 	};
 
 	Diff.prototype.renderNextLink = function () {
-		const hasLink = this.nodes.$nextLink && this.nodes.$nextLink.length > 0;
+		const hasLink = this.links.$next?.length > 0;
 
 		let href = null;
 		if ( hasLink ) {
@@ -2360,7 +2537,7 @@ $( function () {
 				};
 				href = _utils.getRevisionHref( page, this.pageParams );
 			} else {
-				href = this.nodes.$nextLink.attr( 'href' );
+				href = this.links.$next.attr( 'href' );
 			}
 		}
 
@@ -2386,14 +2563,20 @@ $( function () {
 		return button;
 	};
 
-	Diff.prototype.renderSwitchLink = function () {
+	Diff.prototype.renderSwitchLink = function ( params ) {
+		params = $.extend( true, {
+			framed: true,
+			classes: [],
+		}, params );
+
 		const type = this.options.type === 'revision' ? 'diff' : 'revision';
 
 		const button = new OO.ui.ButtonWidget( {
 			label: _utils.msg( `goto-view-${ type }` ),
-			href: _utils.getTypeHref( type, this.page, this.pageParams ),
+			href: _utils.getTypeHref( type, this.page ),
 			target: _utils.getTarget( true ),
-			classes: [ 'instantDiffs-button--switch' ],
+			framed: params.framed,
+			classes: [ 'instantDiffs-button--switch', ...params.classes ],
 		} );
 
 		new Link( button.$button.get( 0 ), {
@@ -2403,12 +2586,18 @@ $( function () {
 		return button;
 	};
 
-	Diff.prototype.renderPendingLink = function () {
+	Diff.prototype.renderPendingLink = function ( params ) {
+		params = $.extend( true, {
+			framed: true,
+			classes: [],
+		}, params );
+
 		const button = new OO.ui.ButtonWidget( {
 			label: _utils.msg( 'goto-view-pending' ),
-			href: this.nodes.$pendingLink.attr( 'href' ),
+			href: this.links.$pending.attr( 'href' ),
 			target: _utils.getTarget( true ),
-			classes: [ 'instantDiffs-button--pending' ],
+			framed: params.framed,
+			classes: [ 'instantDiffs-button--pending', ...params.classes ],
 		} );
 
 		new Link( button.$button.get( 0 ), {
@@ -2419,7 +2608,12 @@ $( function () {
 		return button;
 	};
 
-	Diff.prototype.renderBackLink = function () {
+	Diff.prototype.renderBackLink = function ( params ) {
+		params = $.extend( true, {
+			framed: true,
+			classes: [],
+		}, params );
+
 		const initiator = this.options.initiatorDiff;
 
 		const button = new OO.ui.ButtonWidget( {
@@ -2427,7 +2621,8 @@ $( function () {
 			icon: 'newline',
 			href: _utils.getTypeHref( initiator.getType(), initiator.getPage(), initiator.getPageParams() ),
 			target: _utils.getTarget( true ),
-			classes: [ 'instantDiffs-button--back' ],
+			framed: params.framed,
+			classes: [ 'instantDiffs-button--back', ...params.classes ],
 		} );
 
 		new Link( button.$button.get( 0 ), {
@@ -2437,127 +2632,24 @@ $( function () {
 		return button;
 	};
 
-	/*** RENDER MENU ***/
+	Diff.prototype.renderIDLink = function ( params ) {
+		params = $.extend( true, {
+			framed: true,
+			classes: [],
+		}, params );
 
-	Diff.prototype.renderMenuLinks = function () {
-		const items = [];
-
-		// Copy a link to the clipboard
-		this.buttons.linkCopy = new OO.ui.ButtonWidget( {
-			label: _utils.msg( 'copy-link' ),
-			framed: false,
-			classes: [ 'instantDiffs-button--link' ],
-		} );
-		this.buttons.linkCopyHelper = new Button( {
-			node: this.buttons.linkCopy.$button.get( 0 ),
-			handler: this.actionCopyLink.bind( this ),
-		} );
-		items.push( this.buttons.linkCopy );
-
-		// Copy a wikilink to the clipboard
-		this.buttons.wikilinkCopy = new OO.ui.ButtonWidget( {
-			label: _utils.msg( 'copy-wikilink' ),
-			framed: false,
-			classes: [ 'instantDiffs-button--link' ],
-		} );
-		this.buttons.wikilinkCopyHelper = new Button( {
-			node: this.buttons.wikilinkCopy.$button.get( 0 ),
-			handler: this.actionCopyWikilink.bind( this ),
-		} );
-		items.push( this.buttons.wikilinkCopy );
-
-		// Link to the revision or to the edit
-		this.buttons.linkType = new OO.ui.ButtonWidget( {
-			label: _utils.msg( `goto-${ this.options.type }` ),
-			href: _utils.getTypeHref( this.options.type, this.page ),
-			target: _utils.getTarget( true ),
-			framed: false,
-			classes: [ 'instantDiffs-button--link' ],
-		} );
-		items.push( this.buttons.linkType );
-
-		if ( !_utils.isEmpty( this.page.title ) ) {
-			// Link to the page
-			this.buttons.linkPage = new OO.ui.ButtonWidget( {
-				label: _utils.msg( 'goto-page' ),
-				href: this.page.href,
-				target: _utils.getTarget( true ),
-				framed: false,
-				classes: [ 'instantDiffs-button--link' ],
-			} );
-			items.push( this.buttons.linkPage );
-
-			// Link to the history
-			this.buttons.linkHistory = new OO.ui.ButtonWidget( {
-				label: _utils.msg( 'goto-history' ),
-				href: mw.util.getUrl( this.page.title, { action: 'history' } ),
-				target: _utils.getTarget( true ),
-				framed: false,
-				classes: [ 'instantDiffs-button--link' ],
-			} );
-			items.push( this.buttons.linkHistory );
-
-			// Link to the talk page
-			if ( !this.page.mwTitle.isTalkPage() ) {
-				this.buttons.linkTalkPage = new OO.ui.ButtonWidget( {
-					label: _utils.msg( 'goto-talkpage' ),
-					href: this.page.mwTitle.getTalkPage().getUrl(),
-					target: _utils.getTarget( true ),
-					framed: false,
-					classes: [ 'instantDiffs-button--link' ],
-				} );
-				items.push( this.buttons.linkTalkPage );
-			}
-		}
-
-		// Open Instant Diffs settings
-		this.buttons.linkSettings = new OO.ui.ButtonWidget( {
-			label: _utils.msg( 'goto-settings' ),
-			framed: false,
-			classes: [ 'instantDiffs-button--link' ],
-		} );
-		this.buttons.linkSettingsHelper = new Button( {
-			node: this.buttons.linkSettings.$button.get( 0 ),
-			handler: this.actionOpenSettings.bind( this ),
-		} );
-		items.push( this.buttons.linkSettings );
-
-		// Separator
-		items.push( _utils.renderOoUiElement( $( '<hr>' ) ) );
-
-		// Link to the Instant Diffs docs and current running version
-		const linkIdLabel = $( `
+		const label = $( `
 			<span class="name">${ _utils.msg( 'name' ) }</span>
 			<span class="version">v.${ _config.version }</span>
 		` );
-		this.buttons.linkID = new OO.ui.ButtonWidget( {
-			label: linkIdLabel,
+
+		return new OO.ui.ButtonWidget( {
+			label: label,
 			href: _utils.getOrigin( `/wiki/${ _config.link }` ),
 			target: _utils.getTarget( true ),
-			framed: false,
-			classes: [ 'instantDiffs-button--link', 'instantDiffs-button--link-id' ],
+			framed: params.framed,
+			classes: [ 'instantDiffs-button--link-id', ...params.classes ],
 		} );
-		items.push( this.buttons.linkID );
-
-		// Render menu group
-		this.buttons.menuLinksGroup = new OO.ui.ButtonGroupWidget( {
-			items: items,
-			classes: [ 'instantDiffs-group--vertical' ],
-		} );
-		this.buttons.menuDropdown = new OO.ui.PopupButtonWidget( {
-			icon: 'menu',
-			label: _utils.msg( 'goto-links' ),
-			title: _utils.msg( 'goto-links' ),
-			invisibleLabel: true,
-			popup: {
-				$content: this.buttons.menuLinksGroup.$element,
-				width: 'auto',
-				padded: false,
-				anchor: false,
-				align: 'backwards',
-			},
-		} );
-		this.nodes.$navigationRight.append( this.buttons.menuDropdown.$element );
 	};
 
 	/*** ACTIONS ***/
@@ -2605,8 +2697,8 @@ $( function () {
 			_local.settings.process( options );
 		}
 
-		this.buttons.linkSettingsHelper.pending( true );
-		$.when( _local.settings.load() ).always( () => this.buttons.linkSettingsHelper.pending( false ) );
+		this.buttons.settingsHelper.pending( true );
+		$.when( _local.settings.load() ).always( () => this.buttons.settingsHelper.pending( false ) );
 	};
 
 	Diff.prototype.onSettingsOpen = function () {
@@ -3672,7 +3764,7 @@ $( function () {
 		}
 	};
 
-	/******* PAGE SPECIFIC FUNCTIONS *******/
+	/******* PAGE SPECIFIC ADJUSTMENTS *******/
 
 	function applyPageSpecificAdjustments() {
 		if ( !_utils.isAllowed() ) return;

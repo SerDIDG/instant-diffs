@@ -9,6 +9,8 @@ instantDiffs.i18n ||= {};
 instantDiffs.i18n.fr = {
 	'name': 'Instant Diffs',
 
+	/*** LINKS ***/
+
 	'diff-title': 'Différence entre les versions',
 	'diff-title-admin': 'La différence entre les versions est masquée',
 	'revision-title': 'Contenu de la version',
@@ -17,10 +19,18 @@ instantDiffs.i18n.fr = {
 	'compare-title': 'Comparer les versions sélectionnées ($1)',
 	'alt-click': '(Alt+clic : ouvrir le lien)',
 
+	/*** DIALOG ***/
+
 	'save': 'Enregistrer',
 	'cancel': 'Annuler',
 	'close': 'Fermer',
 	'reload': 'Recharger',
+
+	'title-empty': '[Aucun titre]',
+	'title-not-found': '[Introuvable]',
+	'unsupported-wikilambda': 'L\'application WikiLambda n\'est pas encore prise en charge.',
+
+	/*** NAVIGATION ***/
 
 	'goto-links': 'Liens',
 	'goto-snapshot-next': 'Lien suivant sur la page',
@@ -29,7 +39,7 @@ instantDiffs.i18n.fr = {
 	'goto-view-pending': 'Modifications en attente',
 	'goto-view-revision': 'Afficher la révision',
 	'goto-prev': 'Ancien',
-	'goto-next': 'Plus récent',
+	'goto-next': 'Récent',
 	'goto-prev-diff': 'Modification plus ancienne',
 	'goto-next-diff': 'Modification plus récente',
 	'goto-back-diff': 'Retour',
@@ -45,6 +55,8 @@ instantDiffs.i18n.fr = {
 	'goto-talkpage': 'Discussion',
 	'goto-settings': 'Paramètres',
 
+	/*** ACTIONS ***/
+
 	'copy-link': 'Copier le lien',
 	'copy-link-copied': 'Le lien a été copié dans le presse-papiers.',
 	'copy-link-error': 'Impossible de copier le lien.',
@@ -54,6 +66,8 @@ instantDiffs.i18n.fr = {
 	'wikilink-diff': 'différence',
 	'wikilink-revision': 'révision',
 	'wikilink-example-title': 'Page principale',
+
+	/*** SETTINGS ***/
 
 	'settings-title': 'Paramètres d’Instant Diffs',
 	'settings-saved': 'Les paramètres ont été enregistrés avec succès. Rechargez la page pour les appliquer.',
@@ -80,7 +94,7 @@ instantDiffs.i18n.fr = {
 	'settings-enable-mobile-help': 'Pour réactiver Instant Diffs, vous devrez passer à un autre thème.',
 	'settings-notify-errors': 'Afficher des alertes contextuelles pour les erreurs critiques.',
 
-	'unsupported-wikilambda': 'L\'application WikiLambda n\'est pas encore prise en charge.',
+	/*** ERRORS ***/
 
 	'error-wasted': 'wasted',
 	'error-generic': 'Une erreur est survenue : $4',

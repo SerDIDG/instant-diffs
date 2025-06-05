@@ -9,6 +9,8 @@ instantDiffs.i18n ||= {};
 instantDiffs.i18n.it = {
 	'name': 'Instant Diffs',
 
+	/*** LINKS ***/
+
 	'diff-title': 'Differenze tra le versioni',
 	'diff-title-admin': 'La differenza tra le versioni è nascosta',
 	'revision-title': 'Contenuto della versione',
@@ -17,10 +19,18 @@ instantDiffs.i18n.it = {
 	'compare-title': 'Confronta versioni selezionate ($1)',
 	'alt-click': '(Alt+clic: apri il collegamento)',
 
+	/*** DIALOG ***/
+
 	'save': 'Salva',
 	'cancel': 'Annulla',
 	'close': 'Chiudi',
 	'reload': 'Ricarica',
+
+	'title-empty': '[Nessun titolo]',
+	'title-not-found': '[Non trovato]',
+	'unsupported-wikilambda': 'L\'app WikiLambda non è attualmente supportata.',
+
+	/*** NAVIGATION ***/
 
 	'goto-links': 'Collegamenti',
 	'goto-snapshot-next': 'Collegamento successivo nella pagina',
@@ -45,6 +55,8 @@ instantDiffs.i18n.it = {
 	'goto-talkpage': 'Discussione',
 	'goto-settings': 'Impostazioni',
 
+	/*** ACTIONS ***/
+
 	'copy-link': 'Copia collegamento',
 	'copy-link-copied': 'Il collegamento è stato copiato negli appunti.',
 	'copy-link-error': 'Impossibile copiare il collegamento.',
@@ -54,6 +66,8 @@ instantDiffs.i18n.it = {
 	'wikilink-diff': 'differenza',
 	'wikilink-revision': 'revisione',
 	'wikilink-example-title': 'Pagina principale',
+
+	/*** SETTINGS ***/
 
 	'settings-title': 'Impostazioni di Instant Diffs',
 	'settings-saved': 'Le impostazioni sono state salvate correttamente. Ricarica la pagina per applicarle.',
@@ -80,7 +94,7 @@ instantDiffs.i18n.it = {
 	'settings-enable-mobile-help': 'Per riabilitare Instant Diffs dovrai passare a un altro tema.',
 	'settings-notify-errors': 'Mostra popup di avviso per errori critici.',
 
-	'unsupported-wikilambda': 'L\'app WikiLambda non è attualmente supportata.',
+	/*** ERRORS ***/
 
 	'error-wasted': 'wasted',
 	'error-generic': 'Si è verificato un errore: $4',
