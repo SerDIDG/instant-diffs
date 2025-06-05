@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.3.2',
+		version: '1.3.3',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -991,6 +991,11 @@ $( function () {
 	};
 
 	_utils.getWindowManager = function () {
+		// Define custom dialog sizes
+		OO.ui.WindowManager.static.sizes.instantDiffs = {
+			width: 1200,
+		};
+
 		const manager = new OO.ui.WindowManager();
 		$( document.body ).append( manager.$element );
 		return manager;
@@ -1610,7 +1615,7 @@ $( function () {
 
 	Link.prototype.renderError = function () {
 		this.isLoaded = true;
-		this.isProcessed = true;
+		this.isProcessed = false;
 		this.toggleSpinner( false );
 
 		// Render actions panel
@@ -2037,7 +2042,12 @@ $( function () {
 	/*** RENDER ***/
 
 	Diff.prototype.render = function () {
-		const classes = [ 'instantDiffs-dialog-content', 'mw-body-content', `mw-content-${ document.dir }` ];
+		const classes = [
+			'instantDiffs-dialog-content',
+			`instantDiffs-dialog-content--${ this.options.type }`,
+			'mw-body-content',
+			`mw-content-${ document.dir }`,
+		];
 		const skinClasses = _config.skinBodyClasses[ mw.config.get( 'skin' ) ];
 		if ( skinClasses ) {
 			classes.push( ...skinClasses );
@@ -2669,7 +2679,7 @@ $( function () {
 		} );
 	};
 
-	/*** ACTIONS ***/
+	/*** LINK ACTIONS ***/
 
 	Diff.prototype.actionCopyLink = function () {
 		// Hide menu dropdown
@@ -2735,6 +2745,23 @@ $( function () {
 		$links.each( ( i, node ) => node.setAttribute( 'target', '_blank' ) );
 	};
 
+	/*** ACTIONS ***/
+
+	Diff.prototype.fire = function () {
+		// Fire hooks
+		const $diffTable = this.getDiffTable();
+		if ( $diffTable?.length > 0 ) {
+			mw.hook( 'wikipage.diff' ).fire( $diffTable );
+		}
+		const $container = this.getContainer();
+		if ( $container?.length > 0 ) {
+			mw.hook( 'wikipage.content' ).fire( $container );
+		}
+
+		// Replace link target attributes after the hook has fired
+		this.processLinksTaget();
+	};
+
 	Diff.prototype.updateSize = function ( params ) {
 		params = $.extend( {
 			top: 0,
@@ -2766,6 +2793,10 @@ $( function () {
 
 	Diff.prototype.getContainer = function () {
 		return this.nodes.$container;
+	};
+
+	Diff.prototype.getDiffTable = function () {
+		return this.nodes.$table;
 	};
 
 	Diff.prototype.detach = function () {
@@ -2873,12 +2904,6 @@ $( function () {
 		const that = this;
 		this.isConstructed = true;
 
-		// Define custom dialog width
-		// ToDo: find or suggest more elegant solution
-		OO.ui.WindowManager.static.sizes.instantDiffs = {
-			width: 1200,
-		};
-
 		// Construct a custom MessageDialog
 		this.MessageDialog = function () {
 			that.MessageDialog.super.call( this, {
@@ -2914,10 +2939,10 @@ $( function () {
 			// Parent method
 			return that.MessageDialog.super.prototype.getSetupProcess.call( this, data )
 				.next( function () {
-					// Close the dialog on click by overlay
+					// Close the dialog by click on the overlay
 					this.$overlay.on( 'click', this.close.bind( this ) );
 
-					// Label click workaround
+					// Workaround for a label click focus
 					this.appendHiddenInput();
 
 					// Set a vertical scroll position to the top of the content
@@ -3096,13 +3121,10 @@ $( function () {
 			this.previousDiff.detach();
 		}
 
-		mw.hook( 'wikipage.content' ).fire( this.diff.getContainer() );
-		mw.hook( 'wikipage.diff' ).fire( this.diff.getContainer() );
+		// Fire the Diff hooks
+		this.diff.fire();
 
-		// Open links in a new tab, except for confirmable links
-		this.diff.processLinksTaget();
-
-		// Refresh dialog content height
+		// Refresh the dialog content height
 		this.dialog.updateSize();
 	};
 
@@ -3875,9 +3897,7 @@ $( function () {
 
 	function prepare() {
 		// Hide the links panel to prevent blinking before the main stylesheet is applied
-		mw.util.addCSS( `
-			.instantDiffs-panel { display:none; }
-		` );
+		mw.util.addCSS( '.instantDiffs-panel { display:none; }' );
 
 		// Prepare locale variables
 		_local.mwIsAnon = mw.user?.isAnon?.() ?? true;
@@ -3935,6 +3955,7 @@ $( function () {
 			titles: _config.specialPages,
 			format: 'json',
 			formatversion: 2,
+			uselang: mw.config.get( 'wgContentLanguage' ),
 		};
 		return _local.mwApi
 			.get( params )
@@ -4231,10 +4252,11 @@ $( function () {
 
 		// Reset diff table linking
 		// FixMe: Suggest a better solution
+		const $diffTable = diff.getDiffTable();
 		if (
 			typeof wikEd !== 'undefined' &&
 			wikEd.diffTableLinkified &&
-			( diff.nodes.$table.length > 0 && wikEd.diffTable === diff.nodes.$table.get( 0 ) )
+			( $diffTable?.length > 0 && wikEd.diffTable === $diffTable.get( 0 ) )
 		) {
 			wikEd.diffTableLinkified = false;
 		}
