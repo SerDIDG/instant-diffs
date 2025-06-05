@@ -14,19 +14,11 @@
 
 	--instantDiffs-font-size: var(--font-size-medium, 0.875rem);
 	--instantDiffs-line-height: var(--line-height-medium, 1.5714285);
-
-	--instantDiffs-font-size-navigation: var(--font-size-medium, 0.875rem);
-	--instantDiffs-line-height-navigation: var(--line-height-medium, 1.5714285);
 }
 
 .skin-monobook {
 	--instantDiffs-font-size: 0.794rem; /* 127% (12.7px) */
 	--instantDiffs-line-height: 1.5;
-}
-
-.skin-minerva {
-	--instantDiffs-font-size: 1rem;
-	--instantDiffs-line-height: 1.65;
 }
 
 .skin-fandomdesktop,
@@ -441,6 +433,10 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 
 /* [Fix] Override fixed positioning for the edit contributor block on mobile. */
 @media (max-width: 639px) {
+	.skin-minerva .instantDiffs-dialog-body table.diff {
+		margin-top: 0;
+	}
+
 	.skin-minerva .instantDiffs-dialog-body #mw-diff-ntitle2 {
 		height: auto;
 		margin-bottom: 0.5em;
@@ -455,6 +451,10 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 		inset: auto;
 	}
 
+	.skin-minerva .instantDiffs-dialog-body .mw-diff-timestamp:is(:empty) {
+		display: none;
+	}
+
 	.skin-minerva .instantDiffs-dialog-body .mw-userlink::before {
 		width: calc(var(--font-size-medium, 1rem) + 4px);
 		display: inline-block;
@@ -467,7 +467,7 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 	margin: 0 -16px;
 	padding: 1em 16px;
 	display: flex;
-	gap: 4px;
+	gap: 0.5em;
 	position: sticky;
 	z-index: 2;
 	top: 0;
@@ -476,8 +476,6 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 	background-clip: padding-box;
 	-webkit-backdrop-filter: blur(16px);
 	backdrop-filter: blur(16px);
-	font-size: var(--instantDiffs-font-size-navigation);
-	line-height: var(--instantDiffs-line-height-navigation);
 }
 
 .skin-monobook .instantDiffs-navigation {
@@ -528,6 +526,12 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 	display: block;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+
+@media (max-width: 639px) {
+	.skin-minerva .instantDiffs-navigation {
+		padding: 0.5em;
+	}
 }
 
 /*** BUTTONS ***/

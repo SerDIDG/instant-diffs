@@ -34,7 +34,7 @@ instantDiffs.i18n.uk = {
 	'goto-next-diff': 'Наступне редагування',
 	'goto-back-diff': 'Повернутися',
 	'goto-prev-revision': 'Попередня версія',
-	'goto-next-revision': 'Новіша версія',
+	'goto-next-revision': 'Наступна версія',
 	'goto-back-revision': 'Повернутися',
 	'goto-cd': 'Перейти до повідомлення',
 	'goto-edit': 'Перейти до редагування',  // Deprecated in 1.3.0
