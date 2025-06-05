@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.3.1-gm',
+		version: '1.3.2-gm',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -2046,6 +2046,10 @@ $( function () {
 		this.nodes.$container = $( '<div>' )
 			.attr( 'dir', document.dir )
 			.addClass( classes );
+
+		this.nodes.$tools = $( '<div>' )
+			.addClass( 'instantDiffs-dialog-tools' )
+			.appendTo( this.nodes.$container );
 
 		this.nodes.$body = $( '<div>' )
 			.addClass( 'instantDiffs-dialog-body' )
