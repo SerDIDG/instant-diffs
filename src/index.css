@@ -631,24 +631,25 @@ body.rtl .mw-changeslist-diff + .instantDiffs-panel {
 }
 
 /* [Fix] Buttons position for mobile and Minerva */
+.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions {
+	padding: 10px 0;
+}
+
 .skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions,
 .skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .mw-history-revisionactions {
+	margin: 0;
 	display: flex !important;
 	flex-wrap: wrap;
 	align-items: flex-start;
-	gap: 0 10px;
+	gap: 10px;
 	flex: auto;
-}
-
-.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .mw-history-revisionactions {
-	margin-bottom: 10px;
 }
 
 .skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .mw-ui-button,
 .skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .cdx-button {
 	max-width: none;
 	flex: auto;
-	margin: 10px 0;
+	margin: 0;
 }
 
 .skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .mw-history-compareselectedversions-button {
