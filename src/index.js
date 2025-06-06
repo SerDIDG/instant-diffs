@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.3.3',
+		version: '1.3.4',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -2343,7 +2343,7 @@ $( function () {
 
 		// Copy a link to the clipboard
 		this.buttons.copy = new OO.ui.ButtonWidget(
-			$.extend( true, buttonParams, {
+			$.extend( true, {}, buttonParams, {
 				label: _utils.msg( 'copy-link' ),
 			} ),
 		);
@@ -2355,7 +2355,7 @@ $( function () {
 
 		// Copy a wikilink to the clipboard
 		this.buttons.copyWiki = new OO.ui.ButtonWidget(
-			$.extend( true, buttonParams, {
+			$.extend( true, {}, buttonParams, {
 				label: _utils.msg( 'copy-wikilink' ),
 			} ),
 		);
@@ -2367,7 +2367,7 @@ $( function () {
 
 		// Link to the revision or to the edit
 		this.buttons.pageType = new OO.ui.ButtonWidget(
-			$.extend( true, buttonParams, {
+			$.extend( true, {}, buttonParams, {
 				label: _utils.msg( `goto-${ this.options.type }` ),
 				href: _utils.getTypeHref( this.options.type, this.page ),
 				target: _utils.getTarget( true ),
@@ -2378,7 +2378,7 @@ $( function () {
 		if ( !_utils.isEmpty( this.page.title ) ) {
 			// Link to the page
 			this.buttons.page = new OO.ui.ButtonWidget(
-				$.extend( true, buttonParams, {
+				$.extend( true, {}, buttonParams, {
 					label: _utils.msg( 'goto-page' ),
 					href: this.page.href,
 					target: _utils.getTarget( true ),
@@ -2388,7 +2388,7 @@ $( function () {
 
 			// Link to the history
 			this.buttons.history = new OO.ui.ButtonWidget(
-				$.extend( true, buttonParams, {
+				$.extend( true, {}, buttonParams, {
 					label: _utils.msg( 'goto-history' ),
 					href: mw.util.getUrl( this.page.title, { action: 'history' } ),
 					target: _utils.getTarget( true ),
@@ -2399,7 +2399,7 @@ $( function () {
 			// Link to the talk page
 			if ( !this.page.mwTitle.isTalkPage() ) {
 				this.buttons.talkPage = new OO.ui.ButtonWidget(
-					$.extend( true, buttonParams, {
+					$.extend( true, {}, buttonParams, {
 						label: _utils.msg( 'goto-talkpage' ),
 						href: this.page.mwTitle.getTalkPage().getUrl(),
 						target: _utils.getTarget( true ),
@@ -2411,7 +2411,7 @@ $( function () {
 
 		// Open Instant Diffs settings
 		this.buttons.settings = new OO.ui.ButtonWidget(
-			$.extend( true, buttonParams, {
+			$.extend( true, {}, buttonParams, {
 				label: _utils.msg( 'goto-settings' ),
 			} ),
 		);
@@ -2591,7 +2591,7 @@ $( function () {
 	};
 
 	Diff.prototype.renderSwitchLink = function ( params ) {
-		params = $.extend( true, {
+		params = $.extend( true, {}, {
 			framed: true,
 			classes: [],
 		}, params );
@@ -2614,7 +2614,7 @@ $( function () {
 	};
 
 	Diff.prototype.renderPendingLink = function ( params ) {
-		params = $.extend( true, {
+		params = $.extend( true, {}, {
 			framed: true,
 			classes: [],
 		}, params );
@@ -2636,7 +2636,7 @@ $( function () {
 	};
 
 	Diff.prototype.renderBackLink = function ( params ) {
-		params = $.extend( true, {
+		params = $.extend( true, {}, {
 			framed: true,
 			classes: [],
 		}, params );
@@ -2660,7 +2660,7 @@ $( function () {
 	};
 
 	Diff.prototype.renderIDLink = function ( params ) {
-		params = $.extend( true, {
+		params = $.extend( true, {}, {
 			framed: true,
 			classes: [],
 		}, params );
