@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.4.0',
+		version: '1.4.1',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -133,7 +133,7 @@ $( function () {
 			'wgPageContentModel',
 		],
 		skinBodyClasses: {
-			'vector-2022': [ 'vector-body' ],
+			'vector-2022': [ 'mw-body', 'vector-body' ],
 			vector: [ 'vector-body' ],
 			monobook: [ 'monobook-body' ],
 			minerva: [ 'content' ],

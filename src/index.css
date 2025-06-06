@@ -18,10 +18,21 @@
 	--instantDiffs-dialog-top: 0;
 }
 
+/*** MEDIAWIKI ***/
+
 .skin-monobook {
 	--instantDiffs-font-size: 0.794rem; /* 127% (12.7px) */
 	--instantDiffs-line-height: 1.5;
 }
+
+@media (min-width: 640px) {
+	.skin-minerva {
+		--instantDiffs-font-size: 1rem;
+		--instantDiffs-line-height: 1.65;
+	}
+}
+
+/*** FANDOM ***/
 
 .skin-fandomdesktop,
 .skin-fandommobile {
@@ -34,6 +45,8 @@
 	--instantDiffs-dialog-top: 55px;
 }
 
+/*** MIRAHEZE / WIKITIDE ***/
+
 .skin-citizen {
 	--instantDiffs-color-link: var(--color-link);
 	--instantDiffs-color-link--hover: var(--color-link--hover);
@@ -41,6 +54,8 @@
 	--instantDiffs-font-size: var(--font-size-medium, 1rem);
 	--instantDiffs-line-height: var(--line-height, 1.6);
 }
+
+/*** PCGAMINGWIKI ***/
 
 .skin-overclocked {
 	--instantDiffs-dialog-top: 45px;
@@ -468,6 +483,11 @@ body.rtl .instantDiffs-panel-placeholder:after,
 	margin: 0;
 }
 
+/* [Fix] Override heading styles with default because Minerva loads unscoped ".ns-special .content h1" */
+.skin-minerva .instantDiffs-dialog-body :is( .mw-heading1, h1, .mw-heading2, h2 ) {
+	font-family: 'Linux Libertine', 'Georgia', 'Times', 'Source Serif Pro', serif;
+}
+
 @media (max-width: 639px) {
 	/* [Fix] Override fixed positioning for the edit contributor block on mobile. */
 	.skin-minerva .instantDiffs-dialog-body #mw-diff-ntitle2 {
@@ -617,8 +637,7 @@ body.rtl .mw-changeslist-diff + .instantDiffs-panel {
 }
 
 /* [Fix] Override link size and color when Advanced mode disabled in the mobile  */
-.skin-minerva.mw-mf-amc-disabled .instantDiffs-line a.mw-history-histlinks-previous,
-.skin-minerva.mw-mf-amc-disabled .instantDiffs-line a.mw-changeslist-diff {
+.skin-minerva.mw-mf-amc-disabled .instantDiffs-line a:is( .mw-history-histlinks-previous, .mw-changeslist-diff ) {
 	position: relative;
 	font-size: 0.85rem;
 	color: var(--color-progressive, #36c) !important;
@@ -636,8 +655,7 @@ body.rtl .mw-changeslist-diff + .instantDiffs-panel {
 }
 
 /* [Fix] Buttons vertical alignment */
-.instantDiffs-enabled .mw-history-compareselectedversions .mw-ui-button,
-.instantDiffs-enabled .mw-history-compareselectedversions .cdx-button {
+.instantDiffs-enabled .mw-history-compareselectedversions :is( .mw-ui-button, .cdx-button ) {
 	vertical-align: top;
 }
 
@@ -656,8 +674,7 @@ body.rtl .mw-changeslist-diff + .instantDiffs-panel {
 	flex: auto;
 }
 
-.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .mw-ui-button,
-.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .cdx-button {
+.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions :is( .mw-ui-button, .cdx-button ) {
 	max-width: none;
 	flex: auto;
 	margin: 0;
@@ -717,15 +734,21 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 /*** NEW PAGES ***/
 
 /* [UI] Show actual revision link instead of timestamp on Minerva */
-.skin-minerva.instantDiffs-enabled.mw-special-Newpages .mw-changeslist-date {
+.skin-minerva.instantDiffs-enabled.mw-special-Newpages .instantDiffs-line .mw-changeslist-date {
 	display: inline-block;
 }
 
-.skin-minerva.instantDiffs-enabled.mw-special-Newpages .mw-changeslist-time {
+.skin-minerva.instantDiffs-enabled.mw-special-Newpages .instantDiffs-line .mw-changeslist-time {
 	display: none;
 }
 
 /* [Fix] Hide the user icon in lists that were loaded from dependencies after the InstantDiffs dialog opens. */
-.skin-minerva.instantDiffs-enabled.mw-special-Newpages .mw-userlink::before {
+.skin-minerva.instantDiffs-enabled.mw-special-Newpages .instantDiffs-line .mw-userlink::before {
 	display: none;
+}
+
+/* [Fix] Reset styles of the diff table inside the Diff dialog */
+.skin-minerva.mw-special-Newpages .instantDiffs-dialog-body :is( .comment, .mw-userlink, .mw-usertoollinks ) {
+	float: none;
+	display: inline;
 }
