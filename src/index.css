@@ -235,6 +235,11 @@ body.rtl .instantDiffs-panel-placeholder:after,
 	top: 55px;
 }
 
+/* [Fix] Set top indent for the dialogs because of the fixed header on the PCGamingWiki  */
+.skin-overclocked .instantDiffs-dialog.instantDiffs-dialog {
+	top: 45px;
+}
+
 /* Enable click to close on the overlay */
 .instantDiffs-dialog .oo-ui-window-overlay {
 	z-index: -1;
@@ -510,6 +515,11 @@ body.rtl .instantDiffs-panel-placeholder:after,
 	top: 55px;
 }
 
+/* [Fix] Set top indent for the dialogs because of the fixed header on the PCGamingWiki  */
+.skin-overclocked .instantDiffs-settings.instantDiffs-settings {
+	top: 45px;
+}
+
 /* Reset list styles for a list hint element */
 /* Use more specific selector because mobile Minerva loads unscoped ".ns-special ul" */
 /* 1.42857143em is a size of the OOUI checkbox/radio */
@@ -519,7 +529,7 @@ ul.instantDiffs-list--settings {
 	list-style: disc;
 }
 
-/* Set predefine direction because links can contain rtl content */
+/* Set a predefine direction because links can contain rtl content */
 ul.instantDiffs-list--settings i {
 	direction: ltr;
 	unicode-bidi: embed;
@@ -690,4 +700,20 @@ body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
 
 .skin-overclocked .instantDiffs-button--compare {
 	padding: 8px 12px;
+}
+
+/*** NEW PAGES ***/
+
+/* [UI] Show actual revision link instead of timestamp on Minerva */
+.skin-minerva.instantDiffs-enabled.mw-special-Newpages .mw-changeslist-date {
+	display: inline-block;
+}
+
+.skin-minerva.instantDiffs-enabled.mw-special-Newpages .mw-changeslist-time {
+	display: none;
+}
+
+/* [Fix] Hide the user icon in lists that were loaded from dependencies after the InstantDiffs dialog opens. */
+.skin-minerva.instantDiffs-enabled.mw-special-Newpages .mw-userlink::before {
+	display: none;
 }
