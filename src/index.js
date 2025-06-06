@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.3.4-gm',
+		version: '1.4.0-gm',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -34,6 +34,7 @@ $( function () {
 				'oojs-ui',
 				'oojs-ui.styles.icons-movement',
 				'oojs-ui.styles.icons-interactions',
+				'oojs-ui.styles.icons-content',
 				'oojs-ui.styles.icons-layout',
 			],
 			content: [
@@ -2199,12 +2200,17 @@ $( function () {
 
 		// Show or hide diff info table in the revisions
 		if ( this.options.type === 'revision' ) {
-			if ( !_utils.defaults( 'showRevisionInfo' ) ) {
-				this.nodes.$frDiff.addClass( 'instantDiffs-hidden' );
-				this.nodes.$table.addClass( 'instantDiffs-hidden' );
-			} else {
+			if ( _utils.defaults( 'showRevisionInfo' ) ) {
+				// Hide the left side of the table and left only related to the revision info
+				this.nodes.$frDiff.find( '.fr-diff-ratings td:nth-child(2n-1)' ).addClass( 'instantDiffs-hidden' );
+				this.nodes.$table.find( 'td:is(.diff-otitle, .diff-side-deleted)' ).addClass( 'instantDiffs-hidden' );
+				this.nodes.$table.find( 'td:is(.diff-ntitle, .diff-side-added)' ).attr( 'colspan', '4' );
+
 				// Hide comparison lines
 				this.nodes.$table.find( 'tr:not([class])' ).addClass( 'instantDiffs-hidden' );
+			} else {
+				this.nodes.$frDiff.addClass( 'instantDiffs-hidden' );
+				this.nodes.$table.addClass( 'instantDiffs-hidden' );
 			}
 		}
 	};
@@ -2267,14 +2273,9 @@ $( function () {
 			items.push( this.buttons.snapshotNext );
 		}
 
-		// Back to the initiator diff link
-		if ( this.options.initiatorDiff ) {
-			this.buttons.initiatorDiff = this.renderBackLink();
-			items.push( this.buttons.initiatorDiff );
-		}
-
-		this.buttons.linksGroup = new OO.ui.ButtonGroupWidget( { items: items } );
-		this.nodes.$navigationLeft.append( this.buttons.linksGroup.$element );
+		// Render group
+		this.buttons.snapshotGroup = new OO.ui.ButtonGroupWidget( { items: items } );
+		this.nodes.$navigationLeft.append( this.buttons.snapshotGroup.$element );
 	};
 
 	Diff.prototype.renderNavigationLinks = function () {
@@ -2285,30 +2286,47 @@ $( function () {
 		items.push( this.buttons.prev );
 
 		// Link that switch between revision and diff
-		if ( ![ 'page', 'compare' ].includes( this.options.typeVariant ) ) {
+		if ( ![ 'page' ].includes( this.options.typeVariant ) ) {
 			this.buttons.switch = this.renderSwitchLink();
 			items.push( this.buttons.switch );
-		}
-
-		// [FlaggedRevisions] Link to all unpatrolled changes
-		if ( this.links.$pending?.length > 0 ) {
-			this.buttons.pending = this.renderPendingLink();
-			items.push( this.buttons.pending );
 		}
 
 		// Link to the next diff
 		this.buttons.next = this.renderNextLink();
 		items.push( this.buttons.next );
 
-		this.buttons.mainLinksGroup = new OO.ui.ButtonGroupWidget( { items: items } );
-		this.nodes.$navigationCenter.append( this.buttons.mainLinksGroup.$element );
+		// Render group
+		this.buttons.navigationGroup = new OO.ui.ButtonGroupWidget( { items: items } );
+		this.nodes.$navigationCenter.append( this.buttons.navigationGroup.$element );
 	};
 
 	/*** RENDER MENU ***/
 
 	Diff.prototype.renderMenuLinks = function () {
+		const items = [];
+
+		// Icon button parameters
+		const iconParams = {
+			invisibleLabel: true,
+			renderIcon: true,
+		};
+
+		// [FlaggedRevisions] Link to all unpatrolled changes
+		if ( this.links.$pending?.length > 0 ) {
+			this.buttons.pending = this.renderPendingLink( iconParams );
+			items.push( this.buttons.pending );
+		}
+
+		// Back to the initiator diff link
+		if ( this.options.initiatorDiff ) {
+			this.buttons.initiatorDiff = this.renderBackLink( iconParams );
+			items.push( this.buttons.initiatorDiff );
+		}
+
+		// Menu button parameters
 		const buttonParams = {
 			framed: false,
+			icon: null,
 			classes: [ 'instantDiffs-button--link' ],
 		};
 
@@ -2321,6 +2339,7 @@ $( function () {
 			this.buttons.menuGroup.$element.get( 0 ),
 		];
 
+		// Dropdown menu
 		this.buttons.menuDropdown = new OO.ui.PopupButtonWidget( {
 			icon: 'menu',
 			label: _utils.msg( 'goto-links' ),
@@ -2334,8 +2353,11 @@ $( function () {
 				align: 'backwards',
 			},
 		} );
+		items.push( this.buttons.menuDropdown );
 
-		this.nodes.$navigationRight.append( this.buttons.menuDropdown.$element );
+		// Render group
+		this.buttons.menuGroup = new OO.ui.ButtonGroupWidget( { items: items } );
+		this.nodes.$navigationRight.append( this.buttons.menuGroup.$element );
 	};
 
 	Diff.prototype.renderMenuGroup = function ( buttonParams ) {
@@ -2444,16 +2466,16 @@ $( function () {
 			items.push( this.buttons.mobileInitiatorDiff );
 		}
 
-		// Link that switch between revision and diff
-		if ( ![ 'page', 'compare' ].includes( this.options.typeVariant ) ) {
-			this.buttons.mobileWwitch = this.renderSwitchLink( buttonParams );
-			items.push( this.buttons.mobileWwitch );
-		}
-
 		// [FlaggedRevisions] Link to all unpatrolled changes
 		if ( this.links.$pending?.length > 0 ) {
 			this.buttons.mobilePending = this.renderPendingLink( buttonParams );
 			items.push( this.buttons.mobilePending );
+		}
+
+		// Link that switch between revision and diff
+		if ( ![ 'page', 'compare' ].includes( this.options.typeVariant ) ) {
+			this.buttons.mobileWwitch = this.renderSwitchLink( buttonParams );
+			items.push( this.buttons.mobileWwitch );
 		}
 
 		// Separator
@@ -2591,21 +2613,17 @@ $( function () {
 	};
 
 	Diff.prototype.renderSwitchLink = function ( params ) {
-		params = $.extend( true, {}, {
-			framed: true,
-			classes: [],
-		}, params );
-
 		const type = this.options.type === 'revision' ? 'diff' : 'revision';
 
-		const button = new OO.ui.ButtonWidget( {
+		params = $.extend( true, {}, {
 			label: _utils.msg( `goto-view-${ type }` ),
 			href: _utils.getTypeHref( type, this.page ),
 			target: _utils.getTarget( true ),
-			framed: params.framed,
-			classes: [ 'instantDiffs-button--switch', ...params.classes ],
-		} );
+			framed: true,
+			classes: [ 'instantDiffs-button--switch' ],
+		}, params );
 
+		const button = new OO.ui.ButtonWidget( params );
 		new Link( button.$button.get( 0 ), {
 			behavior: 'event',
 		} );
@@ -2615,18 +2633,16 @@ $( function () {
 
 	Diff.prototype.renderPendingLink = function ( params ) {
 		params = $.extend( true, {}, {
-			framed: true,
-			classes: [],
-		}, params );
-
-		const button = new OO.ui.ButtonWidget( {
 			label: _utils.msg( 'goto-view-pending' ),
 			href: this.links.$pending.attr( 'href' ),
 			target: _utils.getTarget( true ),
-			framed: params.framed,
-			classes: [ 'instantDiffs-button--pending', ...params.classes ],
-		} );
+			framed: true,
+			icon: 'info',
+			invisibleLabel: false,
+			classes: [ 'instantDiffs-button--pending' ],
+		}, params );
 
+		const button = new OO.ui.ButtonWidget( params );
 		new Link( button.$button.get( 0 ), {
 			behavior: 'event',
 			initiatorDiff: this,
@@ -2636,22 +2652,19 @@ $( function () {
 	};
 
 	Diff.prototype.renderBackLink = function ( params ) {
-		params = $.extend( true, {}, {
-			framed: true,
-			classes: [],
-		}, params );
-
 		const initiator = this.options.initiatorDiff;
 
-		const button = new OO.ui.ButtonWidget( {
+		params = $.extend( true, {}, {
 			label: _utils.msg( `goto-back-${ initiator.getType() }` ),
-			icon: 'newline',
 			href: _utils.getTypeHref( initiator.getType(), initiator.getPage(), initiator.getPageParams() ),
 			target: _utils.getTarget( true ),
-			framed: params.framed,
-			classes: [ 'instantDiffs-button--back', ...params.classes ],
-		} );
+			framed: true,
+			icon: 'newline',
+			invisibleLabel: false,
+			classes: [ 'instantDiffs-button--back' ],
+		}, params );
 
+		const button = new OO.ui.ButtonWidget( params );
 		new Link( button.$button.get( 0 ), {
 			behavior: 'event',
 		} );
@@ -2660,23 +2673,22 @@ $( function () {
 	};
 
 	Diff.prototype.renderIDLink = function ( params ) {
-		params = $.extend( true, {}, {
-			framed: true,
-			classes: [],
-		}, params );
-
 		const label = $( `
 			<span class="name">${ _utils.msg( 'name' ) }</span>
 			<span class="version">v.${ _config.version }</span>
 		` );
 
-		return new OO.ui.ButtonWidget( {
+		params = $.extend( true, {}, {
 			label: label,
 			href: _utils.getOrigin( `/wiki/${ _config.link }` ),
 			target: _utils.getTarget( true ),
-			framed: params.framed,
-			classes: [ 'instantDiffs-button--link-id', ...params.classes ],
-		} );
+			framed: true,
+			classes: [],
+		}, params );
+
+		params.classes.push( 'instantDiffs-button--link-id' );
+
+		return new OO.ui.ButtonWidget( params );
 	};
 
 	/*** LINK ACTIONS ***/
@@ -2748,17 +2760,24 @@ $( function () {
 	/*** ACTIONS ***/
 
 	Diff.prototype.fire = function () {
-		// Fire hooks
-		const $diffTable = this.getDiffTable();
-		if ( $diffTable?.length > 0 ) {
-			mw.hook( 'wikipage.diff' ).fire( $diffTable );
+		// Fire diff table hook
+		if (
+			this.options.type !== 'revision' ||
+			( this.options.type === 'revision' && _utils.defaults( 'showRevisionInfo' ) )
+		) {
+			const $diffTable = this.getDiffTable();
+			if ( $diffTable?.length > 0 ) {
+				mw.hook( 'wikipage.diff' ).fire( $diffTable );
+			}
 		}
+
+		// Fire general content hook
 		const $container = this.getContainer();
 		if ( $container?.length > 0 ) {
 			mw.hook( 'wikipage.content' ).fire( $container );
 		}
 
-		// Replace link target attributes after the hook has fired
+		// Replace link target attributes after the hooks have fired
 		this.processLinksTaget();
 	};
 
