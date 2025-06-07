@@ -36,8 +36,8 @@ instantDiffs.i18n.he = {
 	'goto-snapshot-next': 'הקישור הבא בדף',
 	'goto-snapshot-prev': 'הקישור הקודם בדף',
 	'goto-view-diff': 'הצג שינויים',
-	'goto-view-pending': 'שינויים ממתינים',
 	'goto-view-revision': 'הצג גרסה',
+	'goto-view-pending': 'עריכות ממתינות',
 	'goto-prev': 'ישן יותר',
 	'goto-next': 'חדש יותר',
 	'goto-prev-diff': 'העריכה הקודמת',
@@ -47,7 +47,6 @@ instantDiffs.i18n.he = {
 	'goto-next-revision': 'גרסה חדשה יותר',
 	'goto-back-revision': 'חזרה',
 	'goto-cd': 'מעבר להודעה',
-	'goto-edit': 'מעבר לעריכה', // Deprecated in 1.3.0
 	'goto-diff': 'מעבר לעריכה',
 	'goto-revision': 'מעבר לגרסה',
 	'goto-page': 'מעבר לדף',

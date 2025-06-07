@@ -36,8 +36,8 @@ instantDiffs.i18n.uk = {
 	'goto-snapshot-next': 'Наступне посилання на сторінці',
 	'goto-snapshot-prev': 'Попереднє посилання на сторінці',
 	'goto-view-diff': 'Різниця версій',
-	'goto-view-pending': 'Очікують перевірку',
 	'goto-view-revision': 'Показати версію',
+	'goto-view-pending': 'Неперевірені зміни',
 	'goto-prev': 'Попередня',
 	'goto-next': 'Наступна',
 	'goto-prev-diff': 'Попереднє редагування',
@@ -47,7 +47,6 @@ instantDiffs.i18n.uk = {
 	'goto-next-revision': 'Наступна версія',
 	'goto-back-revision': 'Повернутися',
 	'goto-cd': 'Перейти до повідомлення',
-	'goto-edit': 'Перейти до редагування',  // Deprecated in 1.3.0
 	'goto-diff': 'Перейти до редагування',
 	'goto-revision': 'Перейти до версії',
 	'goto-page': 'Перейти до сторінки',

@@ -36,8 +36,8 @@ instantDiffs.i18n.pl = {
 	'goto-snapshot-next': 'Następny link na stronie',
 	'goto-snapshot-prev': 'Poprzedni link na stronie',
 	'goto-view-diff': 'Pokaż zmiany',
-	'goto-view-pending': 'Oczekujące zmiany',
 	'goto-view-revision': 'Pokaż wersję',
+	'goto-view-pending': 'Oczekuje na przejrzenie',
 	'goto-prev': 'Starsza',
 	'goto-next': 'Nowsza',
 	'goto-prev-diff': 'Starsza edycja',
@@ -47,7 +47,6 @@ instantDiffs.i18n.pl = {
 	'goto-next-revision': 'Następna wersja',
 	'goto-back-revision': 'Wstecz',
 	'goto-cd': 'Przejdź do wiadomości',
-	'goto-edit': 'Przejdź do edycji',   // Deprecated in 1.3.0
 	'goto-diff': 'Przejdź do edycji',
 	'goto-revision': 'Przejdź do wersji',
 	'goto-page': 'Przejdź do strony',

@@ -36,8 +36,8 @@ instantDiffs.i18n.fr = {
 	'goto-snapshot-next': 'Lien suivant sur la page',
 	'goto-snapshot-prev': 'Lien précédent sur la page',
 	'goto-view-diff': 'Afficher les modifications',
-	'goto-view-pending': 'Modifications en attente',
 	'goto-view-revision': 'Afficher la révision',
+	'goto-view-pending': 'Modifications en attente',
 	'goto-prev': 'Ancien',
 	'goto-next': 'Récent',
 	'goto-prev-diff': 'Modification plus ancienne',
@@ -47,7 +47,6 @@ instantDiffs.i18n.fr = {
 	'goto-next-revision': 'Révision suivante',
 	'goto-back-revision': 'Retour',
 	'goto-cd': 'Aller au message',
-	'goto-edit': 'Aller à la modification', // Deprecated in 1.3.0
 	'goto-diff': 'Aller à la modification',
 	'goto-revision': 'Aller à la version',
 	'goto-page': 'Aller à la page',
