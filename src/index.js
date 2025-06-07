@@ -951,30 +951,34 @@ $( function () {
 		}
 	};
 
-	_utils.embedElement = ( node, container, insertMethod ) => {
-		if ( !container ) return node;
+	_utils.embed = ( node, container, insertMethod = 'appendTo' ) => {
+		if ( !container ) return;
 
 		if ( container instanceof jQuery ) {
-			$( node )[ insertMethod ]( container );
-			return node;
+			const $element = node instanceof jQuery ? node : $( node );
+			$element[ insertMethod ]( container );
+			return;
 		}
 
+		const element = node instanceof jQuery ? node.get( 0 ) : node;
 		switch ( insertMethod ) {
 			case 'insertBefore' :
-				container.before( node );
+				container.before( element );
 				break;
 
 			case 'insertAfter' :
-				container.after( node );
+				container.after( element );
 				break;
 
-			case 'appendChild' :
+			case 'prependTo' :
+				container.prepend( element );
+				break;
+
+			case 'appendTo' :
 			default:
-				container.appendChild( node );
+				container.append( element );
 				break;
 		}
-
-		return node;
 	};
 
 	_utils.renderOoUiElement = ( $element ) => {
@@ -1050,6 +1054,24 @@ $( function () {
 		` );
 	};
 
+	_utils.renderBox = ( params ) => {
+		params = $.extend( {
+			$content: null,
+			type: 'notice',
+		}, params );
+
+		const $icon = $( '<span>' )
+			.addClass( 'cdx-message__icon' );
+
+		const $content = $( '<div>' )
+			.addClass( 'cdx-message__content' )
+			.append( params.$content );
+
+		return $( '<div>' )
+			.addClass( [ 'cdx-message', 'cdx-message--block', `cdx-message--${ params.type }`, 'plainlinks' ] )
+			.append( [ $icon, $content ] );
+	};
+
 	/******* BUTTON CONSTRUCTOR *******/
 
 	function Button( options ) {
@@ -1116,7 +1138,7 @@ $( function () {
 	};
 
 	Button.prototype.embed = function ( container, insertMethod ) {
-		_utils.embedElement( this.node, container, insertMethod );
+		_utils.embed( this.node, container, insertMethod );
 	};
 
 	Button.prototype.remove = function () {
@@ -1847,7 +1869,7 @@ $( function () {
 	};
 
 	Link.prototype.embed = function ( container, insertMethod ) {
-		_utils.embedElement( this.nodes.container, container, insertMethod );
+		_utils.embed( this.nodes.container, container, insertMethod );
 	};
 
 	Link.prototype.getContainer = function () {
@@ -2103,9 +2125,9 @@ $( function () {
 			.prependTo( this.nodes.$body );
 
 		// Render a warning when revision was not found
-		this.nodes.$emptyMessage = this.nodes.$data.filter( 'p' );
-		if ( this.nodes.$emptyMessage.length > 0 ) {
-			this.renderWarning( this.nodes.$emptyMessage );
+		const $emptyMessage = this.nodes.$data.filter( 'p' );
+		if ( $emptyMessage.length > 0 ) {
+			this.renderWarning( $emptyMessage );
 		}
 
 		// Collect missing data from the diff table before manipulations
@@ -2120,8 +2142,8 @@ $( function () {
 			.addClass( 'instantDiffs-hidden' );
 
 		if ( this.nodes.$wikiLambdaApp.length > 0 ) {
-			this.nodes.$wikiLambdaAppError = $( `<p>${ _utils.msg( 'unsupported-wikilambda' ) }</p>` );
-			this.renderWarning( this.nodes.$wikiLambdaAppError );
+			const $message = $( `<p>${ _utils.msg( 'unsupported-wikilambda' ) }</p>` );
+			this.renderWarning( $message );
 		}
 
 		// Set additional config variables
@@ -2230,22 +2252,16 @@ $( function () {
 	};
 
 	Diff.prototype.renderError = function () {
-		this.nodes.$emptyMessage = $( `<p>${ _utils.msg( 'error-revision-missing' ) }</p>` );
+		const $message = $( `<p>${ _utils.msg( 'error-revision-missing' ) }</p>` );
 		if ( this.error?.message ) {
-			this.nodes.$emptyMessage.add( `<p>${ this.error.message }</p>` );
+			$message.add( `<p>${ this.error.message }</p>` );
 		}
-		this.renderWarning( this.nodes.$emptyMessage );
+		this.renderWarning( $message );
 	};
 
 	Diff.prototype.renderWarning = function ( $content ) {
-		this.nodes.$emptyWarningContent = $( '<div>' )
-			.addClass( [ 'cdx-message__content' ] )
-			.append( $content );
-
-		this.nodes.$emptyWarning = $( '<div>' )
-			.addClass( [ 'cdx-message', 'cdx-message--block', 'cdx-message--warning', 'plainlinks' ] )
-			.append( this.nodes.$emptyWarningContent )
-			.appendTo( this.nodes.$body );
+		const $box = _utils.renderBox( { $content, type: 'warning' } );
+		_utils.embed( $box, this.nodes.$body );
 	};
 
 	/*** RENDER NAVIGATION ***/
