@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.4.2-gm',
+		version: '1.5.0-b.1',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -48,6 +48,18 @@ $( function () {
 				'oojs',
 				'oojs-ui',
 			],
+			projects: {
+				commonswiki: {
+					revision: {
+						6: [
+							'filepage',
+						],
+						14: [
+							'mediawiki.page.gallery.styles',
+						],
+					},
+				},
+			},
 		},
 
 		// Settings list
@@ -1970,10 +1982,27 @@ $( function () {
 			return this.onRequestPageDependenciesError( null, data );
 		}
 
+		// Get page dependencies
+		let dependencies = [ ...parse.modulestyles, ...parse.modulescripts, ...parse.modules ];
+
+		// Get project dependencies
+		const project = mw.config.get( 'wgWikiID' );
+		const projectDependencies = _config.dependencies.projects?.[ project ]?.[ this.options.type ];
+		if ( projectDependencies ) {
+			// Set project common dependencies
+			if ( projectDependencies.common ) {
+				dependencies = dependencies.concat( projectDependencies.common );
+			}
+
+			// Set project namespace-specific dependencies
+			const pageNamespace = this.page.mwTitle?.getNamespaceId();
+			if ( projectDependencies[ pageNamespace ] ) {
+				dependencies = dependencies.concat( projectDependencies[ pageNamespace ] );
+			}
+		}
+
 		mw.config.set( parse.jsconfigvars );
-		mw.loader.load( parse.modulestyles );
-		mw.loader.load( parse.modulescripts );
-		mw.loader.load( parse.modules );
+		mw.loader.load( dependencies );
 	};
 
 	Diff.prototype.request = function () {
