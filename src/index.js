@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.5.0-b.1',
+		version: '1.5.0-b.2',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -48,17 +48,13 @@ $( function () {
 				'oojs',
 				'oojs-ui',
 			],
-			projects: {
-				commonswiki: {
-					revision: {
-						6: [
-							'filepage',
-						],
-						14: [
-							'mediawiki.page.gallery.styles',
-						],
-					},
-				},
+			revision: {
+				6: [
+					'filepage',
+				],
+				14: [
+					'mediawiki.page.gallery.styles',
+				],
 			},
 		},
 
@@ -1985,24 +1981,23 @@ $( function () {
 		// Get page dependencies
 		let dependencies = [ ...parse.modulestyles, ...parse.modulescripts, ...parse.modules ];
 
-		// Get project dependencies
-		const project = mw.config.get( 'wgWikiID' );
-		const projectDependencies = _config.dependencies.projects?.[ project ]?.[ this.options.type ];
-		if ( projectDependencies ) {
-			// Set project common dependencies
-			if ( projectDependencies.common ) {
-				dependencies = dependencies.concat( projectDependencies.common );
+		// Get dependencies by type
+		const typeDependencies = _config.dependencies[ this.options.type ];
+		if ( typeDependencies ) {
+			// Set common dependencies
+			if ( typeDependencies[ '*' ] ) {
+				dependencies = dependencies.concat( typeDependencies[ '*' ] );
 			}
 
-			// Set project namespace-specific dependencies
+			// Set namespace-specific dependencies
 			const pageNamespace = this.page.mwTitle?.getNamespaceId();
-			if ( projectDependencies[ pageNamespace ] ) {
-				dependencies = dependencies.concat( projectDependencies[ pageNamespace ] );
+			if ( typeDependencies[ pageNamespace ] ) {
+				dependencies = dependencies.concat( typeDependencies[ pageNamespace ] );
 			}
 		}
 
 		mw.config.set( parse.jsconfigvars );
-		mw.loader.load( dependencies );
+		mw.loader.load( _utils.getDependencies( dependencies ) );
 	};
 
 	Diff.prototype.request = function () {
@@ -2917,9 +2912,7 @@ $( function () {
 	};
 
 	Dialog.prototype.getDependencies = function () {
-		return _config.dependencies.dialog.concat(
-			_utils.getDependencies( _config.dependencies.content ),
-		);
+		return _utils.getDependencies( [ ..._config.dependencies.dialog, ..._config.dependencies.content ] );
 	};
 
 	Dialog.prototype.onLoadError = function ( error ) {
