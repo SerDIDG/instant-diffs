@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.5.0-b.2',
+		version: '1.5.0-b.3',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -2161,7 +2161,7 @@ $( function () {
 		// Get page title
 		const $links = $toLinks.add( $fromLinks );
 		if ( _utils.isEmpty( this.page.title ) && $links.length > 0 ) {
-			const title = _utils.getTitleFromUrl( $links.prop( 'href' ) );
+			const title = _utils.getTitleFromUrl( $links.prop( 'href' ) ) || $links.prop( 'title' );
 			this.page = _utils.extendPage( this.page, { title } );
 		}
 
@@ -2558,6 +2558,7 @@ $( function () {
 		let href = null;
 		if ( this.options.type === 'revision' && _utils.isValidID( this.mwConfg.wgDiffOldId ) ) {
 			const page = {
+				title: this.page.title,
 				oldid: this.mwConfg.wgDiffOldId,
 				direction: 'prev',
 			};
@@ -2595,6 +2596,7 @@ $( function () {
 		if ( hasLink ) {
 			if ( this.options.type === 'revision' && _utils.isValidID( this.mwConfg.wgDiffNewId ) ) {
 				const page = {
+					title: this.page.title,
 					oldid: this.mwConfg.wgDiffNewId,
 					direction: 'next',
 				};
