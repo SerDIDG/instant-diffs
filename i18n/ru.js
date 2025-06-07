@@ -36,8 +36,8 @@ instantDiffs.i18n.ru = {
 	'goto-snapshot-next': 'Следующая ссылка на странице',
 	'goto-snapshot-prev': 'Предыдущая ссылка на странице',
 	'goto-view-diff': 'Разница версий',
-	'goto-view-pending': 'Ожидают проверки',
 	'goto-view-revision': 'Показать версию',
+	'goto-view-pending': 'Непроверенные изменения',
 	'goto-prev': 'Предыдущая',
 	'goto-next': 'Следующая',
 	'goto-prev-diff': 'Предыдущая правка',
@@ -47,7 +47,6 @@ instantDiffs.i18n.ru = {
 	'goto-next-revision': 'Следующая версия',
 	'goto-back-revision': 'Вернуться',
 	'goto-cd': 'Перейти к сообщению',
-	'goto-edit': 'Перейти к правке',    // Deprecated in 1.3.0
 	'goto-diff': 'Перейти к правке',
 	'goto-revision': 'Перейти к версии',
 	'goto-page': 'Перейти к странице',

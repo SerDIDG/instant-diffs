@@ -36,8 +36,8 @@ instantDiffs.i18n.it = {
 	'goto-snapshot-next': 'Collegamento successivo nella pagina',
 	'goto-snapshot-prev': 'Collegamento precedente nella pagina',
 	'goto-view-diff': 'Mostra modifiche',
-	'goto-view-pending': 'Modifiche in attesa',
 	'goto-view-revision': 'Mostra la revisione',
+	'goto-view-pending': 'Revisiona modifiche',
 	'goto-prev': 'Precedente',
 	'goto-next': 'Successiva',
 	'goto-prev-diff': 'Modifica precedente',
@@ -47,7 +47,6 @@ instantDiffs.i18n.it = {
 	'goto-next-revision': 'Revisione successiva',
 	'goto-back-revision': 'Indietro',
 	'goto-cd': 'Vai al messaggio',
-	'goto-edit': 'Vai alla modifica', // Deprecated in 1.3.0
 	'goto-diff': 'Vai alla modifica',
 	'goto-revision': 'Vai alla versione',
 	'goto-page': 'Vai alla pagina',

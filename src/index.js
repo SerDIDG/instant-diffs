@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.4.1-gm',
+		version: '1.4.2-gm',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -75,7 +75,7 @@ $( function () {
 			markWatchedLine: true,
 			unHideDiffs: true,
 			openInNewTab: true,
-			showRevisionInfo: false,
+			showRevisionInfo: true,
 			linksFormat: 'full',
 			wikilinksFormat: 'special',
 			enableMobile: true,
@@ -163,7 +163,7 @@ $( function () {
 			'a.mw-changeslist-diff',
 			'a.mw-changeslist-diff-cur',
 			'a.mw-changeslist-groupdiff',
-			'.mw-fr-reviewlink a',
+			'.mw-fr-reviewlink a',                                          // [[Special:Watchlist]]
 			'.mw-history-histlinks a',
 			'a.mw-changeslist-date.mw-newpages-time',						// [[Special:Newpages]]
 			'.mw-diff-bytes + a',
@@ -223,7 +223,7 @@ $( function () {
 				'.mw-pager-navigation-bar + ul',
 				'.mw-history-histlinks',
 				'.mw-fr-hist-difflink',
-				'.mw-fr-reviewlink',
+				'.mw-fr-reviewlink',                                        // [[Special:Watchlist]]
 				'#mw-fr-reviewnotice',
 				'#mw-fr-revisiontag',
 				'#mw-fr-revisiontag-edit',
@@ -249,6 +249,11 @@ $( function () {
 		mwLinkExclude: {
 			closestTo: [
 				'.comment',													// Edit summary in the edit lists
+			],
+		},
+		mwLinkAltTitle: {
+			closestTo: [
+				'.mw-fr-reviewlink',										// [[Special:Watchlist]]
 			],
 		},
 	};
@@ -1213,6 +1218,7 @@ $( function () {
 		if ( this.mw.hasLink ) {
 			this.mw.link = this.node;
 
+			this.mw.isAltTitle = _utils.isMWLink( this.mw.link, _config.mwLinkAltTitle );
 			this.mw.isDiffOnly = _utils.isMWLink( this.mw.link, _config.mwLinkDiffOnly );
 			this.mw.isExcluded = _utils.isMWLink( this.mw.link, _config.mwLinkExclude );
 			if ( !this.mw.isExcluded ) {
@@ -1654,11 +1660,7 @@ $( function () {
 			this.renderWrapper();
 
 			if ( this.mw.hasLink || this.revision || this.compare ) {
-				if ( this.options.type === 'revision' ) {
-					this.renderRevisionAction();
-				} else {
-					this.renderDiffAction();
-				}
+				this.renderLinkAction();
 			}
 			if ( this.config.showPageLink ) {
 				this.renderPageAction();
@@ -1694,47 +1696,35 @@ $( function () {
 		return new Button( params );
 	};
 
-	Link.prototype.renderRevisionAction = function () {
-		// Indicate hidden revisions for sysops
-		let message = 'revision-title';
-		if ( this.page.isHidden ) {
-			this.action.hasError = true;
-			message = `${ message }-admin`;
+	Link.prototype.getLinkTitle = function ( title ) {
+		// Get an original title from the link
+		if ( this.mw.isAltTitle && !_utils.isEmpty( this.node.title ) ) {
+			return this.node.title;
 		}
 
-		// Render new link or mutate current
-		if ( _utils.defaults( 'showLink' ) ) {
-			this.renderLinkAction( message );
-		} else {
-			this.mutateLinkAction( message );
+		// Indicate about hidden revisions
+		if ( this.page.isHidden ) {
+			title = `${ title }-admin`;
 		}
+
+		return _utils.msg( title );
 	};
 
-	Link.prototype.renderDiffAction = function () {
-		// Indicate hidden revisions for sysops
-		let message = 'diff-title';
-		if ( this.page.isHidden ) {
-			this.action.hasError = true;
-			message = `${ message }-admin`;
+	Link.prototype.renderLinkAction = function () {
+		const title = this.getLinkTitle( `${ this.options.type }-title` );
+
+		if ( !_utils.defaults( 'showLink' ) ) {
+			return this.mutateLinkAction( title );
 		}
 
-		// Render new link or mutate current
-		if ( _utils.defaults( 'showLink' ) ) {
-			this.renderLinkAction( message );
-		} else {
-			this.mutateLinkAction( message );
-		}
-	};
-
-	Link.prototype.renderLinkAction = function ( message ) {
 		const classes = [];
-		if ( this.action.hasError ) {
+		if ( this.page.isHidden ) {
 			classes.push( 'error', 'error-admin' );
 		}
 
 		this.action.button = this.renderAction( {
 			label: _utils.getLabel( this.options.type ),
-			title: _utils.msg( message ),
+			title: title,
 			classes: classes,
 			modifiers: [ this.options.type ],
 			handler: this.openDialog.bind( this ),
@@ -1742,9 +1732,9 @@ $( function () {
 		} );
 	};
 
-	Link.prototype.mutateLinkAction = function ( message ) {
+	Link.prototype.mutateLinkAction = function ( title ) {
 		const classes = [ 'instantDiffs-link', `instantDiffs-link--${ this.options.type }`, `is-${ this.options.insertMethod }` ];
-		if ( this.action.hasError ) {
+		if ( this.page.isHidden ) {
 			classes.push( 'instantDiffs-link--error' );
 		}
 
@@ -1756,7 +1746,7 @@ $( function () {
 			node: this.node,
 			handler: this.openDialog.bind( this ),
 			ariaHaspopup: true,
-			altTitle: _utils.msg( message ),
+			altTitle: title,
 			useAltKey: true,
 		} );
 	};

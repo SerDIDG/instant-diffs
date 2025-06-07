@@ -36,8 +36,8 @@ instantDiffs.i18n.es = {
 	'goto-snapshot-next': 'Siguiente enlace en la página',
 	'goto-snapshot-prev': 'Enlace anterior en la página',
 	'goto-view-diff': 'Mostrar cambios',
-	'goto-view-pending': 'Cambios pendientes',
 	'goto-view-revision': 'Mostrar la revisión',
+	'goto-view-pending': 'Ediciones pendientes',
 	'goto-prev': 'Anterior',
 	'goto-next': 'Siguiente',
 	'goto-prev-diff': 'Edición anterior',
@@ -47,7 +47,6 @@ instantDiffs.i18n.es = {
 	'goto-next-revision': 'Revisión siguiente',
 	'goto-back-revision': 'Volver',
 	'goto-cd': 'Ir al mensaje',
-	'goto-edit': 'Ir a la edición', // Deprecated in 1.3.0
 	'goto-diff': 'Ir a la edición',
 	'goto-revision': 'Ir a la revisión',
 	'goto-page': 'Ir a la página',
