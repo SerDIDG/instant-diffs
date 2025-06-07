@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.5.0-b.3',
+		version: '1.5.0-gm',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -2325,16 +2325,16 @@ $( function () {
 			renderIcon: true,
 		};
 
-		// [FlaggedRevisions] Link to all unpatrolled changes
-		if ( this.links.$pending?.length > 0 ) {
-			this.buttons.pending = this.renderPendingLink( iconParams );
-			items.push( this.buttons.pending );
-		}
-
 		// Back to the initiator diff link
 		if ( this.options.initiatorDiff ) {
 			this.buttons.initiatorDiff = this.renderBackLink( iconParams );
 			items.push( this.buttons.initiatorDiff );
+		}
+
+		// [FlaggedRevisions] Link to all unpatrolled changes
+		if ( this.links.$pending?.length > 0 ) {
+			this.buttons.pending = this.renderPendingLink( iconParams );
+			items.push( this.buttons.pending );
 		}
 
 		// Menu button parameters
