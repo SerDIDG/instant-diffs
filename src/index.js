@@ -11,7 +11,7 @@
 $( function () {
 	const _config = {
 		name: 'Instant Diffs',
-		version: '1.4.4',
+		version: '1.5.0',
 		link: 'Instant_Diffs',
 		discussion: 'Talk:Instant_Diffs',
 		origin: 'https://mediawiki.org',
@@ -48,6 +48,14 @@ $( function () {
 				'oojs',
 				'oojs-ui',
 			],
+			revision: {
+				6: [
+					'filepage',
+				],
+				14: [
+					'mediawiki.page.gallery.styles',
+				],
+			},
 		},
 
 		// Settings list
@@ -1970,10 +1978,26 @@ $( function () {
 			return this.onRequestPageDependenciesError( null, data );
 		}
 
+		// Get page dependencies
+		let dependencies = [ ...parse.modulestyles, ...parse.modulescripts, ...parse.modules ];
+
+		// Get dependencies by type
+		const typeDependencies = _config.dependencies[ this.options.type ];
+		if ( typeDependencies ) {
+			// Set common dependencies
+			if ( typeDependencies[ '*' ] ) {
+				dependencies = dependencies.concat( typeDependencies[ '*' ] );
+			}
+
+			// Set namespace-specific dependencies
+			const pageNamespace = this.page.mwTitle?.getNamespaceId();
+			if ( typeDependencies[ pageNamespace ] ) {
+				dependencies = dependencies.concat( typeDependencies[ pageNamespace ] );
+			}
+		}
+
 		mw.config.set( parse.jsconfigvars );
-		mw.loader.load( parse.modulestyles );
-		mw.loader.load( parse.modulescripts );
-		mw.loader.load( parse.modules );
+		mw.loader.load( _utils.getDependencies( dependencies ) );
 	};
 
 	Diff.prototype.request = function () {
@@ -2301,16 +2325,16 @@ $( function () {
 			renderIcon: true,
 		};
 
-		// [FlaggedRevisions] Link to all unpatrolled changes
-		if ( this.links.$pending?.length > 0 ) {
-			this.buttons.pending = this.renderPendingLink( iconParams );
-			items.push( this.buttons.pending );
-		}
-
 		// Back to the initiator diff link
 		if ( this.options.initiatorDiff ) {
 			this.buttons.initiatorDiff = this.renderBackLink( iconParams );
 			items.push( this.buttons.initiatorDiff );
+		}
+
+		// [FlaggedRevisions] Link to all unpatrolled changes
+		if ( this.links.$pending?.length > 0 ) {
+			this.buttons.pending = this.renderPendingLink( iconParams );
+			items.push( this.buttons.pending );
 		}
 
 		// Menu button parameters
@@ -2890,9 +2914,7 @@ $( function () {
 	};
 
 	Dialog.prototype.getDependencies = function () {
-		return _config.dependencies.dialog.concat(
-			_utils.getDependencies( _config.dependencies.content ),
-		);
+		return _utils.getDependencies( [ ..._config.dependencies.dialog, ..._config.dependencies.content ] );
 	};
 
 	Dialog.prototype.onLoadError = function ( error ) {
