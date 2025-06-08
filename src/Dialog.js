@@ -18,7 +18,6 @@ function Dialog( link, options ) {
     this.isOpen = false;
     this.isLoading = false;
 
-    this.nodes = {};
     this.options = {};
     this.opener = {
         link: null,
