@@ -64,7 +64,7 @@ Dialog.prototype.process = function ( link, options ) {
             this.initiator.options = $.extend( true, {}, this.options );
 
             // Set only the initiator links for the current point of navigation
-            id.local.snapshot.link = this.initiator.link;
+            id.local.snapshot.setLink( this.initiator.link );
         }
     }
 };

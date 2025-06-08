@@ -2,31 +2,27 @@ import id from './id';
 import * as utils from './utils';
 
 class Snapshot {
-    links = [];
+    #links = [];
     #link;
 
     constructor() {
-        this.links = Array.from( utils.getLinks() );
+        this.#links = Array.from( utils.getLinks() );
     }
 
-    get link() {
-        return this.#link;
-    }
-
-    set link( link ) {
+    setLink( link ) {
         this.#link = link;
     }
 
     hasLink( link ) {
-        return this.links.includes( link.getNode() );
+        return this.#links.includes( link.getNode() );
     }
 
     getLength() {
-        return this.links.length;
+        return this.#links.length;
     }
 
     getIndex() {
-        return this.#link ? this.links.indexOf( this.#link.getNode() ) : -1;
+        return this.#link ? this.#links.indexOf( this.#link.getNode() ) : -1;
     }
 
     getPreviousLink( currentIndex ) {
@@ -36,7 +32,7 @@ class Snapshot {
 
         if ( currentIndex !== -1 && currentIndex > 0 ) {
             const previousIndex = currentIndex - 1;
-            const previousLinkNode = this.links[ previousIndex ];
+            const previousLinkNode = this.#links[ previousIndex ];
             const previousLink = id.local.links.get( previousLinkNode );
             return this.isLinkValid( previousLink ) ? previousLink : this.getPreviousLink( previousIndex );
         }
@@ -49,7 +45,7 @@ class Snapshot {
 
         if ( currentIndex !== -1 && ( currentIndex + 1 ) < this.getLength() ) {
             const nextIndex = currentIndex + 1;
-            const nextLinkNode = this.links[ nextIndex ];
+            const nextLinkNode = this.#links[ nextIndex ];
             const nextLink = id.local.links.get( nextLinkNode );
             return this.isLinkValid( nextLink ) ? nextLink : this.getNextLink( nextIndex );
         }
