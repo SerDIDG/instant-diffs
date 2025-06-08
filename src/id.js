@@ -160,14 +160,14 @@ instantDiffs.config = {
         'Special:MobileDiff',
         'Special:Redirect',
     ],
-    specialPagesSearchRegExp: '^($1)',									// $1 - joined specialPages
-    specialPagesPathRegExp: '$1($2)',									// $1 - article path, $2 - joined specialPages
-    specialPagesSelector: 'a[title^="$1"]',								// $1 - each of the specialPages
+    specialPagesSearchRegExp: '^($1)',                                  // $1 - joined specialPages
+    specialPagesPathRegExp: '$1($2)',                                   // $1 - article path, $2 - joined specialPages
+    specialPagesSelector: 'a[title^="$1"]',                             // $1 - each of the specialPages
 
-    articlePathRegExp: '^($1)',											// $1 - article path
+    articlePathRegExp: '^($1)',                                         // $1 - article path
     sectionRegExp: /^\/\*\s*(.*?)\s*\*\/.*$/,
 
-    linkSelector: [														// $1 - server
+    linkSelector: [                                                     // $1 - server
         'a[data-instantdiffs-link]',
         'a.external[href*="$1"]',
         'a.mw-changeslist-diff',
@@ -175,12 +175,12 @@ instantDiffs.config = {
         'a.mw-changeslist-groupdiff',
         '.mw-fr-reviewlink a',                                          // [[Special:Watchlist]]
         '.mw-history-histlinks a',
-        'a.mw-changeslist-date.mw-newpages-time',						// [[Special:Newpages]]
+        'a.mw-changeslist-date.mw-newpages-time',                       // [[Special:Newpages]]
         '.mw-diff-bytes + a',
         '.mw-fr-pending-changes-table a.cdx-docs-link',
-        '#mw-revision-nav a',											// [[Special:PermanentLink]]
-        '.diff-type-table #differences-prevlink',						// [[Special:Diff]]
-        '.diff-type-table #differences-nextlink',						// [[Special:Diff]]
+        '#mw-revision-nav a',                                           // [[Special:PermanentLink]]
+        '.diff-type-table #differences-prevlink',                       // [[Special:Diff]]
+        '.diff-type-table #differences-nextlink',                       // [[Special:Diff]]
     ],
 
     changeLists: [
@@ -219,15 +219,15 @@ instantDiffs.config = {
     },
     mwLink: {
         id: [
-            'differences-prevlink',										// [[Special:Diff]]
-            'differences-nextlink',										// [[Special:Diff]]
+            'differences-prevlink',                                     // [[Special:Diff]]
+            'differences-nextlink',                                     // [[Special:Diff]]
         ],
         hasClass: [
             'mw-changeslist-date',
             'mw-changeslist-diff',
             'mw-changeslist-diff-cur',
             'mw-changeslist-groupdiff',
-            'mw-newpages-time',											// [[Special:Newpages]]
+            'mw-newpages-time',                                         // [[Special:Newpages]]
         ],
         closestTo: [
             '.mw-pager-navigation-bar + ul',
@@ -239,31 +239,31 @@ instantDiffs.config = {
             '#mw-fr-revisiontag-edit',
             '#mw-fr-revision-tag-edit',
             '.mw-fr-pending-changes-table',
-            '#mw-revision-nav',											// [[Special:PermanentLink]]
+            '#mw-revision-nav',                                         // [[Special:PermanentLink]]
         ],
     },
     mwLinkDiffOnly: {
         id: [
-            'differences-prevlink',										// [[Special:Diff]]
-            'differences-nextlink',										// [[Special:Diff]]
+            'differences-prevlink',                                     // [[Special:Diff]]
+            'differences-nextlink',                                     // [[Special:Diff]]
         ],
         closestTo: [
-            '#mw-revision-nav',											// [[Special:PermanentLink]]
+            '#mw-revision-nav',                                         // [[Special:PermanentLink]]
         ],
     },
     mwLinkPrepend: {
         id: [
-            'differences-nextlink',										// [[Special:Diff]]
+            'differences-nextlink',                                     // [[Special:Diff]]
         ],
     },
     mwLinkExclude: {
         closestTo: [
-            '.comment',													// Edit summary in the edit lists
+            '.comment',                                                 // Edit summary in the edit lists
         ],
     },
     mwLinkAltTitle: {
         closestTo: [
-            '.mw-fr-reviewlink',										// [[Special:Watchlist]]
+            '.mw-fr-reviewlink',                                        // [[Special:Watchlist]]
         ],
     },
 };
