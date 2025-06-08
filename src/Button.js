@@ -26,7 +26,7 @@ class Button {
             this.options.tag = 'a';
         }
 
-        // If a not was provided, process it, otherwise render a new node
+        // If a node was provided, process it, otherwise render a new node
         if ( this.options.node?.nodeType === 1 ) {
             this.node = this.options.node;
             this.process();

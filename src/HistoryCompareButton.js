@@ -6,11 +6,11 @@ import * as utils from './utils';
 import DialogButton from './DialogButton';
 
 class HistoryCompareButton extends DialogButton {
+    type = 'diff';
+    typeVariant = 'compare';
+
     constructor( options ) {
         super( options );
-
-        this.type = 'diff';
-        this.typeVariant = 'compare';
     }
 
     onDialogOpen() {
