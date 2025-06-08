@@ -156,7 +156,7 @@ export function getMsgKey( str ) {
 }
 
 export function getErrorMessage( str, page, error ) {
-    str =  isMessageExists( str ) ? str : 'error-generic';
+    str = isMessageExists( str ) ? str : 'error-generic';
     page = $.extend( {}, page );
     error = $.extend( {}, error );
     return msg(
@@ -164,7 +164,7 @@ export function getErrorMessage( str, page, error ) {
         page.oldid || page.curid,
         page.diff,
         page.titleText || page.title,
-        error.message ||  msg( 'error-wasted' ),
+        error.message || msg( 'error-wasted' ),
     );
 }
 
@@ -177,7 +177,7 @@ export function notifyError( str, page, error, silent ) {
         silent = true;
     }
 
-    const message =  getErrorMessage( str, page, error );
+    const message = getErrorMessage( str, page, error );
     if ( silent ) {
         log( 'warn', message, [ page, error ] );
         return;
@@ -209,7 +209,7 @@ export function notifyError( str, page, error, silent ) {
 
 export function getLinks( $container ) {
     if ( typeof $container === 'undefined' ) {
-        $container =  getBodyContentNode();
+        $container = getBodyContentNode();
     }
     return $container.find( id.local.linkSelector );
 }
@@ -315,7 +315,7 @@ export function getDiffHref( page, pageParams, params ) {
     params = $.extend( params, { type: 'diff' } );
 
     // Minify url in cases where provided id and diff / oldid = prev
-    if ( isValidID( page.oldid ) &&  isValidID( page.diff ) ) {
+    if ( isValidID( page.oldid ) && isValidID( page.diff ) ) {
         pageParams.oldid = page.oldid;
         pageParams.diff = page.diff;
     } else if ( isValidID( page.oldid ) ) {
@@ -597,7 +597,7 @@ export function addClick( node, handler, useAltKey = true ) {
     const callback = ( event ) => {
         if ( event ) {
             // Prevent default behavior for Space\Enter buttons
-            if ( ! isToggleKey( event ) || event.button || event.ctrlKey ) return;
+            if ( !isToggleKey( event ) || event.button || event.ctrlKey ) return;
 
             event.preventDefault();
 
@@ -692,7 +692,7 @@ export function renderOoUiElement( $element ) {
 
 export function applyOoUiPolyfill() {
     // "findFirstSelectedItem" method was added in the MediaWiki 1.39 / wmf.23
-    if ( ! isFunction( OoUi.RadioSelectWidget.prototype.findFirstSelectedItem ) ) {
+    if ( !isFunction( OoUi.RadioSelectWidget.prototype.findFirstSelectedItem ) ) {
         OoUi.RadioSelectWidget.prototype.findFirstSelectedItem = function () {
             const selected = this.findSelectedItems();
             return Array.isArray( selected ) ? selected[ 0 ] || null : selected;
@@ -754,9 +754,9 @@ export function renderLabel( params ) {
         .join( '' );
 
     return $( `
-			<span class="instantDiffs-label instantDiffs-label--long">${ long }</span>
-			<span class="instantDiffs-label instantDiffs-label--short">${ short }</span>
-		` );
+        <span class="instantDiffs-label instantDiffs-label--long">${ long }</span>
+        <span class="instantDiffs-label instantDiffs-label--short">${ short }</span>
+    ` );
 }
 
 export function renderBox( params ) {
