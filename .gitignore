@@ -8,3 +8,4 @@ env.json
 package-lock.json
 node_modules
 bower_components
+dist

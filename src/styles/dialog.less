@@ -1,0 +1,223 @@
+/* [Fix] Set top indent for the dialogs because of the fixed header on the some skins  */
+.instantDiffs-dialog.instantDiffs-dialog {
+    top: var(--instantDiffs-dialog-top);
+}
+
+/* Enable click to close on the overlay */
+.instantDiffs-dialog .oo-ui-window-overlay {
+    z-index: -1;
+    inset: 0 0 0 0;
+}
+
+/*** NAVIGATION ***/
+
+.instantDiffs-navigation {
+    margin: 0 -16px;
+    padding: 1em 16px;
+    display: flex;
+    gap: 0.5em;
+    position: sticky;
+    z-index: 2;
+    top: 0;
+    border-bottom: 1px solid transparent;
+    background: var(--instantDiffs-background-navigation);
+    background-clip: padding-box;
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+}
+
+.instantDiffs-navigation.is-sticky {
+    border-bottom-color: var(--border-color-base, #eaecf0);
+}
+
+.instantDiffs-navigation-group--left {
+    display: flex;
+    justify-content: flex-start;
+    flex: 1;
+}
+
+.instantDiffs-navigation-group--center {
+    min-width: 0;
+    display: flex;
+    justify-content: center;
+    flex: auto;
+}
+
+.instantDiffs-navigation-group--right {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1;
+}
+
+.instantDiffs-navigation-group .oo-ui-buttonGroupWidget {
+    min-width: 0;
+    display: flex;
+}
+
+.instantDiffs-navigation-group--center .oo-ui-buttonElement {
+    min-width: 0;
+    flex: auto;
+}
+
+.instantDiffs-navigation-group--center .oo-ui-buttonElement-button {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 639px) {
+    .instantDiffs-navigation {
+        padding: 0.5em;
+        font-size: 0.85rem;
+    }
+
+    .instantDiffs-navigation .instantDiffs-button--switch,
+    .instantDiffs-navigation .instantDiffs-button--pending,
+    .instantDiffs-navigation .instantDiffs-button--back {
+        display: none;
+    }
+}
+
+/*** MENU ***/
+
+.instantDiffs-group--vertical {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.instantDiffs-group--vertical hr {
+    margin: 0;
+}
+
+.instantDiffs-button--link {
+    display: block;
+}
+
+.instantDiffs-button--link.instantDiffs-button--link:first-child {
+    margin: 0;
+}
+
+.instantDiffs-button--link > .oo-ui-buttonElement-button {
+    display: block;
+}
+
+.instantDiffs-button--link.oo-ui-buttonElement-frameless > .oo-ui-buttonElement-button {
+    padding-right: 12px;
+    padding-left: 12px;
+}
+
+.instantDiffs-button--link.oo-ui-widget-enabled > .oo-ui-buttonElement-button:is(:hover, :focus) {
+    background-color: var(--background-color-progressive-subtle, #eaf3ff);
+    color: var(--instantDiffs-color-link--hover);
+}
+
+.instantDiffs-button--link.oo-ui-widget-enabled > .oo-ui-buttonElement-button:active {
+    border: 1px solid var(--border-color-progressive--active, #2a4b8d);
+    background-color: var(--background-color-progressive-subtle--active, #cbd6f6);
+    color: var(--instantDiffs-color-link--active);
+}
+
+.instantDiffs-button--link-id .oo-ui-labelElement-label {
+    white-space: wrap;
+}
+
+.instantDiffs-button--link-id .oo-ui-labelElement-label .name {
+    white-space: nowrap;
+}
+
+.instantDiffs-button--link-id .oo-ui-labelElement-label .version {
+    font-size: 0.8em;
+    color: var(--color-placeholder, #72777d);
+}
+
+@media (min-width: 640px) {
+    .instantDiffs-navigation-group .instantDiffs-group--mobile {
+        display: none;
+    }
+}
+
+/*** BUTTON LABELS ***/
+
+.instantDiffs-label {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.instantDiffs-label i {
+    flex: none;
+}
+
+.instantDiffs-label span {
+    min-width: 0;
+    flex: auto;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+@media (min-width: 960px) {
+    .instantDiffs-label--short {
+        display: none;
+    }
+}
+
+@media (max-width: 959px) {
+    .instantDiffs-label--long {
+        display: none;
+    }
+}
+
+/*** EXTERNAL TOOLS ***/
+
+.instantDiffs-dialog-tools {
+    display: flex;
+    justify-content: center;
+}
+
+.instantDiffs-dialog-tools:is(:empty) {
+    display: none;
+}
+
+/*** CONTENT ***/
+
+.instantDiffs-dialog-content {
+    width: auto;
+    max-width: none;
+    display: flow-root;
+    margin: 0;
+    font-size: var(--instantDiffs-font-size);
+    line-height: var(--instantDiffs-line-height);
+}
+
+.instantDiffs-dialog-body {
+    display: flow-root;
+    position: relative;
+    z-index: 1;
+}
+
+.instantDiffs-dialog-body #toc {
+    display: none;
+}
+
+/* [Fix] Hide empty time stamps on mobile Minerva ([[phab:T394776]]) */
+.instantDiffs-dialog-body .mw-diff-timestamp:is(:empty) {
+    display: none;
+}
+
+/*** FLAGGED REVISIONS ***/
+
+.instantDiffs-dialog-body #mw-fr-diff-headeritems {
+    margin-top: 1em;
+}
+
+.instantDiffs-dialog-body #mw-fr-revisiontag-old {
+    margin-bottom: 1em;
+}
+
+/*** ROLLBACK LINK ***/
+
+.instantDiffs-dialog-content table.diff .mw-rollback-link {
+    display: initial;
+}

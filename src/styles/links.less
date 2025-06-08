@@ -1,0 +1,190 @@
+/******* LINKS *******/
+
+.instantDiffs-link {
+    padding-inline: .25em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    border-radius: 1em;
+    background: var(--background-color-progressive-subtle, #f1f4fd);
+    color: var(--instantDiffs-color-link);
+    text-decoration: none;
+
+    &:is(:hover, :focus-visible) {
+        background: var(--background-color-interactive-subtle--hover, #eaecf0);
+        color: var(--instantDiffs-color-link--hover);
+        text-decoration: none;
+    }
+
+    &:is(:active, :focus) {
+        background: var(--background-color-interactive-subtle--active, #dadde3);
+        color: var(--instantDiffs-color-link--active);
+        text-decoration: none;
+    }
+
+    &--diff {
+        &.is-insertBefore::before {
+            content: var(--instantDiffs-label-diff);
+        }
+
+        &.is-insertAfter::after {
+            content: var(--instantDiffs-label-diff);
+        }
+    }
+
+    &--revision {
+        &.is-insertBefore::before {
+            content: var(--instantDiffs-label-revision);
+        }
+
+        &.is-insertAfter::after {
+            content: var(--instantDiffs-label-revision);
+        }
+    }
+
+    &--error {
+        background: var(--background-color-error-subtle, #ffe9e5);
+        color: var(--color-error, #bf3c2c);
+
+        &:is(:hover, :focus-visible) {
+            background: var(--background-color-error-subtle--hover, #ffdad3);
+            color: var(--color-error--hover, #9f3526);
+        }
+
+        &:is(:active, :focus) {
+            background: var(--background-color-error-subtle--active, #ffc8bd);
+            color: var(--color-error--active, #612419);
+        }
+    }
+
+    &--pending {
+        cursor: wait !important;
+    }
+}
+
+
+body.ltr .instantDiffs-link::before,
+.mw-parser-output.mw-content-ltr .instantDiffs-link::before {
+    margin-right: .25em;
+    margin-left: 0;
+}
+
+body.ltr .instantDiffs-link::after,
+.mw-parser-output.mw-content-ltr .instantDiffs-link::after {
+    margin-right: 0;
+    margin-left: .25em;
+}
+
+body.rtl .instantDiffs-link::before,
+.mw-parser-output.mw-content-rtl .instantDiffs-link::before {
+    margin-right: 0;
+    margin-left: .25em;
+}
+
+body.rtl .instantDiffs-link::after,
+.mw-parser-output.mw-content-rtl .instantDiffs-link::after {
+    margin-right: .25em;
+    margin-left: 0;
+}
+
+/* [Fix] Override link background for the "pending edits" link in the Watchlist */
+.flaggedrevs-pending > .instantDiffs-link {
+    background: transparent;
+}
+
+/******* PANEL *******/
+
+.instantDiffs-panel {
+    margin-right: .25em;
+    margin-left: .25em;
+    font-weight: normal;
+    font-style: normal;
+    color: #72777d;
+    user-select: none;
+
+    &:is(:empty) {
+        display: none !important;;
+    }
+
+    span& {
+        display: inline;
+    }
+
+    a {
+        cursor: pointer;
+        color: inherit;
+    }
+
+    .error {
+        font-size: inherit;
+    }
+
+    .error-info {
+        cursor: help;
+    }
+}
+
+body.ltr .instantDiffs-panel .item:not(:last-child),
+.mw-parser-output.mw-content-ltr .instantDiffs-panel .item:not(:last-child) {
+    margin-right: .25em;
+    margin-left: 0;
+}
+
+body.rtl .instantDiffs-panel .item:not(:last-child),
+.mw-parser-output.mw-content-rtl .instantDiffs-panel .item:not(:last-child) {
+    margin-right: 0;
+    margin-left: .25em;
+}
+
+/* Fake panel for proper indents in History page */
+.instantDiffs-panel-placeholder {
+    padding: 0 .25em;
+
+    &.has-link {
+        padding: 0;
+    }
+
+    &:after {
+        color: var(--color-placeholder, #72777d);
+        content: var(--instantDiffs-label-placeholder);
+    }
+
+    &--diff {
+        &::after {
+            content: var(--instantDiffs-label-diff);
+        }
+    }
+
+    &--revision {
+        &::after {
+            content: var(--instantDiffs-label-revision);
+        }
+    }
+
+    &--loader {
+        &::after {
+            color: var(--color-disabled, #a2a9b1);
+            animation: instantDiffs-blink 1s infinite alternate;
+        }
+    }
+}
+
+body.ltr .instantDiffs-panel-placeholder:after,
+.mw-parser-output.mw-content-ltr .instantDiffs-panel-placeholder:after {
+    margin-right: 0;
+    margin-left: .25em;
+}
+
+body.rtl .instantDiffs-panel-placeholder:after,
+.mw-parser-output.mw-content-rtl .instantDiffs-panel-placeholder:after {
+    margin-right: .25em;
+    margin-left: 0;
+}
+
+@keyframes instantDiffs-blink {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
