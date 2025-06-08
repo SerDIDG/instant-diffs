@@ -8,23 +8,23 @@ import ImportGlobPlugin from 'esbuild-plugin-import-glob';
 const ImportGlob = ImportGlobPlugin.default;
 
 // Read package.json to import version
-const { version } = JSON.parse(
+const pkg = JSON.parse(
     await readFile( new URL( './package.json', import.meta.url ) ),
 );
 
 // String to replace in the files
 const strings = {
     include: /\.js$/,
-    '__version__': version,
+    '__version__': pkg.version,
 };
 
 // Prepend a banner
 const banner = `/**
  * Instant Diffs
  *
- * Author: Serhio Magpie
- * Licenses: MIT, CC BY-SA
- * Documentation: https://www.mediawiki.org/wiki/Instant_Diffs
+ * Author: ${ pkg.author }
+ * Licenses: ${ pkg.license }
+ * Documentation: ${ pkg.homepage }
  */`;
 
 await esbuild.build( {

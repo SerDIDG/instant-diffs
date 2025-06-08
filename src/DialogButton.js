@@ -5,17 +5,17 @@ import id from './id';
 import Button from './Button';
 import Dialog from './Dialog';
 
-class DialogButton {
-    options = {};
+class DialogButton extends Button {
     page = {};
-    button;
+    type;
+    typeVariant;
 
     constructor( options ) {
-        this.options = $.extend( {}, options, {
-            handler: this.openDialog.bind( this ),
+        super( {
+            ...options,
+            handler: () => this.openDialog(),
             ariaHaspopup: true,
         } );
-        this.button = new Button( this.options );
     }
 
     openDialog() {
@@ -31,27 +31,25 @@ class DialogButton {
             id.local.dialog.process( this, options );
         }
 
-        this.toggleLoader( true );
-        $.when( id.local.dialog.load() ).always( () => this.toggleLoader( false ) );
-    }
-
-    toggleLoader( value ) {
-        this.button.pending( value );
-    }
-
-    embed( container, insertMethod ) {
-        this.button.embed( container, insertMethod );
+        this.pending( true );
+        $.when( id.local.dialog.load() ).always( () => this.pending( false ) );
     }
 
     onDialogOpen() {}
 
     onDialogClose() {}
 
-    getPage() {}
+    getPage() {
+        return this.page;
+    }
 
-    getType() {}
+    getType() {
+        return this.type;
+    }
 
-    getTypeVariant() {}
+    getTypeVariant() {
+        return this.typeVariant;
+    }
 }
 
 export default DialogButton;

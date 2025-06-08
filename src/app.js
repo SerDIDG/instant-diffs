@@ -263,6 +263,9 @@ function app() {
     // Track on run start time
     id.timers.run = Date.now();
 
+    // Init extensions
+    import('./extensions.js');
+
     // Load dependencies and prepare variables
     mw.loader.load( utils.getOrigin( id.config.dependencies.styles ), 'text/css' );
     mw.loader.using( id.config.dependencies.main )
@@ -301,9 +304,6 @@ function ready() {
     // Add process hook listeners
     mw.hook( 'wikipage.content' ).add( processContent );
     mw.hook( `${ id.config.prefix }.process` ).add( process );
-
-    // Run extensions
-    import('./extensions.js');
 }
 
 function processContent( $context ) {
