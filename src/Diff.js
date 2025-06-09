@@ -594,7 +594,7 @@ Diff.prototype.renderMenuGroup = function ( buttonParams ) {
     // Group
     return new OoUi.ButtonGroupWidget( {
         items: items,
-        classes: [ 'instantDiffs-group--vertical' ],
+        classes: [ 'instantDiffs-buttons-group--vertical' ],
     } );
 };
 
@@ -627,7 +627,7 @@ Diff.prototype.renderMenuMobileGroup = function ( buttonParams ) {
     // Group
     return new OoUi.ButtonGroupWidget( {
         items: items,
-        classes: [ 'instantDiffs-group--vertical', 'instantDiffs-group--mobile' ],
+        classes: [ 'instantDiffs-buttons-group--vertical', 'instantDiffs-buttons-group--mobile' ],
     } );
 };
 

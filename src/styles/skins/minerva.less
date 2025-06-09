@@ -21,6 +21,11 @@
         font-family: 'Linux Libertine', 'Georgia', 'Times', 'Source Serif Pro', serif;
     }
 
+    // /* [Fix] Hide empty time stamps on mobile Minerva ([[phab:T394776]]) */
+    .mw-diff-timestamp:is(:empty) {
+        display: none;
+    }
+
     @media (max-width: @max-width-breakpoint-mobile) {
         // /* [Fix] Override fixed positioning for the edit contributor block on mobile. */
         #mw-diff-ntitle2 {
@@ -137,6 +142,13 @@
             position: relative;
             font-size: 0.85rem;
             color: var(--color-progressive, #36c) !important;
+        }
+
+        // /* [Fix] Apply a z-index higher than the click overlay for mobile lists. */
+        .instantDiffs-panel {
+            display: inline-block;
+            position: relative;
+            z-index: 10;
         }
     }
 }

@@ -3,87 +3,92 @@
 /******* UTILS *******/
 
 .instantDiffs-hidden {
-	display: none !important;
+    display: none !important;
 }
 
 /******* NOTIFICATION *******/
 
 .instantDiffs-notification-label {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 /******* PAGE SPECIFIC ADJUSTMENTS *******/
 
-/* Tags legend:
+/*** LINE ***/
+
+/*
+ * Tags legend:
  * li - contributions, page history
  * tr - watchlist, pending changes
  * table - watchlist with groups
  */
 
-li.instantDiffs-line,
-tr.instantDiffs-line td,
-table.instantDiffs-line td {
-	transition: all 1000ms ease-in-out;
+.instantDiffs-line {
+    li&,
+    tr& td,
+    table& td {
+        transition: all 1000ms ease-in-out;
+    }
+
+    &--highlight {
+        li&,
+        tr& td,
+        table& td {
+            transition-duration: 250ms;
+            background-color: var(--instantDiffs-background-line) !important;
+        }
+    }
 }
 
-li.instantDiffs-line--highlight,
-tr.instantDiffs-line--highlight td,
-table.instantDiffs-line--highlight td {
-	transition-duration: 250ms;
-	background-color: var(--instantDiffs-background-line) !important;
+/* Reset ending margin when panel embedded into certain core links */
+.instantDiffs-panel {
+    .mw-fr-reviewlink &,
+    .mw-changeslist-links &,
+    .mw-changeslist-diff-cur + &,
+    .mw-changeslist-diff + & {
+        margin-inline-end: 0;
+    }
 }
 
-body.ltr .mw-fr-reviewlink .instantDiffs-panel,
-body.ltr .mw-changeslist-links .instantDiffs-panel,
-body.ltr .mw-changeslist-diff-cur + .instantDiffs-panel,
-body.ltr .mw-changeslist-diff + .instantDiffs-panel {
-	margin-right: 0;
-}
-
-body.rtl .mw-fr-reviewlink .instantDiffs-panel,
-body.rtl .mw-changeslist-links .instantDiffs-panel,
-body.rtl .mw-changeslist-diff-cur + .instantDiffs-panel,
-body.rtl .mw-changeslist-diff + .instantDiffs-panel {
-	margin-left: 0;
-}
-
-/* [Fix] Apply a z-index higher than the click overlay for mobile lists. */
-.instantDiffs-line .instantDiffs-panel {
-	display: inline-block;
-	position: relative;
-	z-index: 10;
+/* Override link background for the "pending edits" link in the Watchlist */
+.instantDiffs-link {
+    .flaggedrevs-pending & {
+        background: transparent;
+    }
 }
 
 /*** HISTORY PAGE ***/
 
 .instantDiffs-button--compare {
-	font-weight: normal;
-}
+    font-weight: normal;
 
-/* [Fix] Button min-width for legacy wikis */
-.instantDiffs-button--compare.mw-ui-button {
-	min-width: 0;
+    // /* [Fix] Button min-width for legacy wikis */
+    &.mw-ui-button {
+        min-width: 0;
+    }
 }
 
 /* [Fix] Buttons vertical alignment */
-.instantDiffs-enabled .mw-history-compareselectedversions :is( .mw-ui-button, .cdx-button ) {
-	vertical-align: top;
+.instantDiffs-enabled {
+    .mw-history-compareselectedversions {
+        :is( .mw-ui-button, .cdx-button ) {
+            vertical-align: top;
+        }
+    }
 }
 
-/* [Fix] Indent before left checkbox selector for the all skins except Minerva */
-body:not(.skin-minerva).ltr .instantDiffs-line--history .mw-history-histlinks {
-	margin-right: 0.5em;
-}
+body:not(.skin-minerva) {
+    .instantDiffs-line--history {
+        /* [Fix] Add indent before left checkbox selector for the all skins except Minerva */
 
-body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-history-histlinks {
-	margin-left: 0.5em;
-}
+        .mw-history-histlinks {
+            margin-inline-end: 0.5em;
+        }
 
-/* [Fix] Indent after right checkbox selector for the all skins except Minerva */
-body:not(.skin-minerva).ltr .instantDiffs-line--history .mw-changeslist-date {
-	margin-left: 0.5em;
-}
+        /* [Fix] Add indent after right checkbox selector for the all skins except Minerva */
 
-body:not(.skin-minerva).rtl .instantDiffs-line--history .mw-changeslist-date {
-	margin-right: 0.5em;
+        .mw-changeslist-date {
+            margin-inline-start: 0.5em;
+        }
+    }
 }
