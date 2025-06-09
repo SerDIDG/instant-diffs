@@ -22,8 +22,8 @@ class DialogButton extends Button {
         if ( id.local.dialog && id.local.dialog.isLoading ) return;
 
         const options = {
-            onOpen: this.onDialogOpen.bind( this ),
-            onClose: this.onDialogClose.bind( this ),
+            onOpen: () => this.onDialogOpen(),
+            onClose: () => this.onDialogClose(),
         };
         if ( !id.local.dialog ) {
             id.local.dialog = new Dialog( this, options );

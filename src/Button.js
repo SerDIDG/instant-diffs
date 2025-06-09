@@ -2,6 +2,7 @@ import * as utils from './utils';
 
 class Button {
     options = {};
+    node;
 
     constructor(options) {
         this.options = {

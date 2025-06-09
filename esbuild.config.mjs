@@ -50,4 +50,5 @@ await esbuild.build( {
     loader: {
         '.json': 'json',
     },
+    //minify: true,
 } );

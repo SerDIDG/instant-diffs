@@ -1,12 +1,20 @@
-/* [Fix] Set top indent for the dialogs because of the fixed header on the some skins  */
-.instantDiffs-dialog.instantDiffs-dialog {
-    top: var(--instantDiffs-dialog-top);
-}
+@import ( reference ) '@wikimedia/codex-design-tokens/theme-wikimedia-ui.less';
 
-/* Enable click to close on the overlay */
-.instantDiffs-dialog .oo-ui-window-overlay {
-    z-index: -1;
-    inset: 0 0 0 0;
+/*** DIALOG ***/
+
+.instantDiffs-dialog {
+    // /* Enable click to close on the overlay */
+    .oo-ui-window-overlay {
+        z-index: -1;
+        inset: 0 0 0 0;
+    }
+
+    // /* [Fix] Set top indent for the dialogs because of the fixed header on the some skins  */
+    &.oo-ui-window-active {
+        .oo-ui-windowManager-modal > & {
+            top: var(--instantDiffs-dialog-top);
+        }
+    }
 }
 
 /*** NAVIGATION ***/
@@ -24,57 +32,57 @@
     background-clip: padding-box;
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
-}
 
-.instantDiffs-navigation.is-sticky {
-    border-bottom-color: var(--border-color-base, #eaecf0);
-}
-
-.instantDiffs-navigation-group--left {
-    display: flex;
-    justify-content: flex-start;
-    flex: 1;
-}
-
-.instantDiffs-navigation-group--center {
-    min-width: 0;
-    display: flex;
-    justify-content: center;
-    flex: auto;
-}
-
-.instantDiffs-navigation-group--right {
-    display: flex;
-    justify-content: flex-end;
-    flex: 1;
-}
-
-.instantDiffs-navigation-group .oo-ui-buttonGroupWidget {
-    min-width: 0;
-    display: flex;
-}
-
-.instantDiffs-navigation-group--center .oo-ui-buttonElement {
-    min-width: 0;
-    flex: auto;
-}
-
-.instantDiffs-navigation-group--center .oo-ui-buttonElement-button {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-@media (max-width: 639px) {
-    .instantDiffs-navigation {
-        padding: 0.5em;
-        font-size: 0.85rem;
+    &.is-sticky {
+        border-bottom-color: var(--border-color-base, #eaecf0);
     }
 
-    .instantDiffs-navigation .instantDiffs-button--switch,
-    .instantDiffs-navigation .instantDiffs-button--pending,
-    .instantDiffs-navigation .instantDiffs-button--back {
-        display: none;
+    @media (max-width: @max-width-breakpoint-mobile) {
+        padding: 0.5em;
+        font-size: 0.85rem;
+
+        .instantDiffs-button--switch,
+        .instantDiffs-button--pending,
+        .instantDiffs-button--back {
+            display: none;
+        }
+    }
+}
+
+.instantDiffs-navigation-group {
+    .oo-ui-buttonGroupWidget {
+        min-width: 0;
+        display: flex;
+    }
+
+    &--left {
+        display: flex;
+        justify-content: flex-start;
+        flex: 1;
+    }
+
+    &--center {
+        min-width: 0;
+        display: flex;
+        justify-content: center;
+        flex: auto;
+
+        .oo-ui-buttonElement {
+            min-width: 0;
+            flex: auto;
+        }
+
+        .oo-ui-buttonElement-button {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    &--right {
+        display: flex;
+        justify-content: flex-end;
+        flex: 1;
     }
 }
 
@@ -85,10 +93,10 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-}
 
-.instantDiffs-group--vertical hr {
-    margin: 0;
+    hr {
+        margin: 0;
+    }
 }
 
 .instantDiffs-button--link {
@@ -141,31 +149,32 @@
 /*** BUTTON LABELS ***/
 
 .instantDiffs-label {
-    display: flex;
+    max-width: 100%;
+    display: inline-flex;
     gap: 0.25rem;
-}
 
-.instantDiffs-label i {
-    flex: none;
-}
-
-.instantDiffs-label span {
-    min-width: 0;
-    flex: auto;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-@media (min-width: 960px) {
-    .instantDiffs-label--short {
-        display: none;
+    i {
+        flex: none;
     }
-}
 
-@media (max-width: 959px) {
-    .instantDiffs-label--long {
-        display: none;
+    span {
+        min-width: 0;
+        flex: auto;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    @media (min-width: 960px) {
+        &--short {
+            display: none;
+        }
+    }
+
+    @media (max-width: 959px) {
+        &--long {
+            display: none;
+        }
     }
 }
 

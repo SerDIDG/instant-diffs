@@ -1,162 +1,227 @@
+@import ( reference ) '@wikimedia/codex-design-tokens/theme-wikimedia-ui.less';
+
 /******* VARIABLES *******/
 
-@media (min-width: 640px) {
-    .skin-minerva {
-        --instantDiffs-font-size: 1rem;
-        --instantDiffs-line-height: 1.65;
-    }
+@media (min-width: @min-width-breakpoint-tablet) {
+    --instantDiffs-font-size: 1rem;
+    --instantDiffs-line-height: 1.65;
 }
 
 /******* DIALOG *******/
 
 /*** CONTENT ***/
 
-.skin-minerva .instantDiffs-dialog-body table.diff {
-    margin: 0;
-}
-
-/* [Fix] Override heading styles with default because Minerva loads unscoped ".ns-special .content h1" */
-.skin-minerva .instantDiffs-dialog-body :is( .mw-heading1, h1, .mw-heading2, h2 ) {
-    font-family: 'Linux Libertine', 'Georgia', 'Times', 'Source Serif Pro', serif;
-}
-
-@media (max-width: 639px) {
-    /* [Fix] Override fixed positioning for the edit contributor block on mobile. */
-    .skin-minerva .instantDiffs-dialog-body #mw-diff-ntitle2 {
-        height: auto;
-        margin-bottom: 0.5em;
-        position: relative;
-        inset: auto;
-        border: 1px solid var(--border-color-subtle, #c8ccd1);
+.instantDiffs-dialog-body {
+    table.diff {
+        margin: 0;
     }
 
-    .skin-minerva .instantDiffs-dialog-body .mw-diff-tool {
-        position: relative;
-        z-index: 1;
-        inset: auto;
+    // /* [Fix] Override heading styles with default because Minerva loads unscoped ".ns-special .content h1" */
+    &:is( .mw-heading1, h1, .mw-heading2, h2 ) {
+        font-family: 'Linux Libertine', 'Georgia', 'Times', 'Source Serif Pro', serif;
     }
 
-    .skin-minerva .instantDiffs-dialog-body .mw-userlink::before {
-        width: calc(var(--font-size-medium, 1rem) + 4px);
-        display: inline-block;
+    @media (max-width: @max-width-breakpoint-mobile) {
+        // /* [Fix] Override fixed positioning for the edit contributor block on mobile. */
+        #mw-diff-ntitle2 {
+            height: auto;
+            margin-bottom: 0.5em;
+            position: relative;
+            inset: auto;
+            border: 1px solid var(--border-color-subtle, #c8ccd1);
+        }
+
+        .mw-diff-tool {
+            position: relative;
+            z-index: 1;
+            inset: auto;
+        }
+
+        .mw-userlink::before {
+            width: calc(var(--font-size-medium, 1rem) + 4px);
+            display: inline-block;
+        }
     }
 }
 
 /*** FLAGGED REVISIONS ***/
 
-.skin-minerva .instantDiffs-dialog-body #mw-fr-diff-headeritems .fr-diff-ratings {
-    margin: 0;
-}
+.instantDiffs-dialog-body {
+    #mw-fr-diff-headeritems {
+        .fr-diff-ratings {
+            margin: 0;
 
-@media (max-width: 639px) {
-    /* Fix alignment of the right side  */
-    .skin-minerva .instantDiffs-dialog-body #mw-fr-diff-headeritems .fr-diff-ratings td {
-        width: 100% !important;
-        text-align: left !important;
-    }
+            @media (max-width: @max-width-breakpoint-mobile) {
+                // /* Fix alignment of the right side  */
+                td {
+                    width: 100% !important;
+                    text-align: left !important;
 
-    /* Hide the left side of the patrolled/unpatrolled labels in the diff table. */
-    .skin-minerva .instantDiffs-dialog-body #mw-fr-diff-headeritems .fr-diff-ratings td:nth-child(2n-1) {
-        display: none;
+                    // /* Hide the left side of the patrolled/unpatrolled labels in the diff table. */
+                    &:nth-child(2n-1) {
+                        display: none;
+                    }
+                }
+            }
+        }
     }
 }
 
 /******* PAGE SPECIFIC ADJUSTMENTS *******/
 
-/* [Fix] Hide the user icon in lists that were loaded from dependencies after the InstantDiffs dialog opens. */
-.skin-minerva.mw-special-Recentchanges .instantDiffs-line .mw-userlink::before,
-.skin-minerva.mw-special-Recentchangeslinked .instantDiffs-line .mw-userlink::before,
-.skin-minerva:not(.mw-mf-amc-disabled) .instantDiffs-line .mw-userlink::before {
-    height: 0;
-    min-height: 0;
-    margin: 0;
-    content: '';
+#instantDiffs-line--pageSpecific () {
+    // /* [Fix] Hide the user icon in lists that were loaded from dependencies after the InstantDiffs dialog opens. */
+    .fix-userlink {
+        .mw-userlink {
+            &::before {
+                height: 0;
+                min-height: 0;
+                margin: 0;
+                content: '';
+            }
+        }
+    }
+
+    .fix-userlink--width {
+        .mw-userlink {
+            &::before {
+                width: 0;
+                min-width: 0;
+            }
+        }
+    }
+
+    // /* [Fix] Display user tools in lists that were loaded from dependencies after the InstantDiffs dialog opens. */
+    .fix-usertoollinks {
+        .mw-usertoollinks {
+            display: inline !important;
+        }
+    }
 }
 
-.skin-minerva.mw-special-Recentchangeslinked .instantDiffs-line .mw-userlink::before,
-.skin-minerva:not(.mw-mf-amc-disabled) .instantDiffs-line--history .mw-userlink::before {
-    width: 0;
-    min-width: 0;
+&.mw-special-Recentchanges {
+    .instantDiffs-line {
+        #instantDiffs-line--pageSpecific.fix-userlink();
+        #instantDiffs-line--pageSpecific.fix-usertoollinks();
+    }
 }
 
-/* [Fix] Display user tools in lists that were loaded from dependencies after the InstantDiffs dialog opens. */
-.skin-minerva.mw-special-Recentchanges .instantDiffs-line .mw-usertoollinks,
-.skin-minerva.mw-special-Recentchangeslinked .instantDiffs-line .mw-usertoollinks,
-.skin-minerva:not(.mw-mf-amc-disabled) .instantDiffs-line .mw-usertoollinks {
-    display: inline !important;
+&.mw-special-Recentchangeslinked {
+    .instantDiffs-line {
+        #instantDiffs-line--pageSpecific.fix-userlink();
+        #instantDiffs-line--pageSpecific.fix-userlink--width();
+        #instantDiffs-line--pageSpecific.fix-usertoollinks();
+    }
 }
 
-/* [Fix] Display other styles that were loaded from dependencies after the InstantDiffs dialog opens. */
-.skin-minerva:not(.mw-mf-amc-disabled) .instantDiffs-line .minoredit {
-    font-size: inherit;
+&:not(.mw-mf-amc-disabled) {
+    .instantDiffs-line {
+        #instantDiffs-line--pageSpecific.fix-userlink();
+        #instantDiffs-line--pageSpecific.fix-usertoollinks();
+
+        // /* [Fix] Display other styles that were loaded from dependencies after the InstantDiffs dialog opens. */
+        .minoredit {
+            font-size: inherit;
+        }
+    }
+
+    .instantDiffs-line--history {
+        #instantDiffs-line--pageSpecific.fix-userlink--width();
+    }
 }
 
-/* [Fix] Override link size and color when Advanced mode disabled in the mobile  */
-.skin-minerva.mw-mf-amc-disabled .instantDiffs-line a:is( .mw-history-histlinks-previous, .mw-changeslist-diff ) {
-    position: relative;
-    font-size: 0.85rem;
-    color: var(--color-progressive, #36c) !important;
+&.mw-mf-amc-disabled {
+    .instantDiffs-line {
+        // /* [Fix] Override link size and color when Advanced mode disabled in the mobile  */
+        a:is( .mw-history-histlinks-previous, .mw-changeslist-diff ) {
+            position: relative;
+            font-size: 0.85rem;
+            color: var(--color-progressive, #36c) !important;
+        }
+    }
 }
 
 /*** HISTORY PAGE ***/
 
-/* [Fix] Buttons position for mobile and Minerva */
-.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions {
-    padding: 10px 0;
+#instantDiffs-buttons--historyPage () {
+    .__container {
+        margin: 0;
+        display: flex !important;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 10px;
+        flex: auto;
+    }
+
+    .__button {
+        max-width: none;
+        flex: auto;
+        margin: 0;
+    }
 }
 
-.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions,
-.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .mw-history-revisionactions {
-    margin: 0;
-    display: flex !important;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 10px;
-    flex: auto;
+&.instantDiffs-enabled {
+    // /* [Fix] Buttons position for mobile and Minerva */
+    .mw-history-compareselectedversions {
+        #instantDiffs-buttons--historyPage.__container();
+        padding: 10px 0;
+
+        .mw-history-revisionactions {
+            #instantDiffs-buttons--historyPage.__container();
+        }
+
+        :is( .mw-ui-button, .cdx-button ) {
+            #instantDiffs-buttons--historyPage.__button();
+        }
+
+        .mw-history-compareselectedversions-button {
+            width: auto;
+            flex: auto;
+        }
+
+        .instantDiffs-button--compare {
+            flex: none;
+        }
+
+        .instantDiffs-spacer {
+            display: none;
+        }
+    }
 }
 
-.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions :is( .mw-ui-button, .cdx-button ) {
-    max-width: none;
-    flex: auto;
-    margin: 0;
-}
-
-.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .mw-history-compareselectedversions-button {
-    width: auto;
-    flex: auto;
-}
-
-.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .instantDiffs-button--compare {
-    flex: none;
-}
-
-.skin-minerva.instantDiffs-enabled .mw-history-compareselectedversions .instantDiffs-spacer {
-    display: none;
-}
-
-/* [Fix] Hide ID's "Compare selected revisions" button when Advanced mode disabled in the mobile  */
-.skin-minerva.mw-mf-amc-disabled .mw-history-compareselectedversions .instantDiffs-button--compare {
-    display: none;
+&.mw-mf-amc-disabled {
+    .mw-history-compareselectedversions {
+        // /* [Fix] Hide ID's "Compare selected revisions" button when Advanced mode disabled in the mobile  */
+        .instantDiffs-button--compare {
+            display: none;
+        }
+    }
 }
 
 /*** NEW PAGES ***/
 
-/* [UI] Show actual revision link instead of timestamp on Minerva */
-.skin-minerva.instantDiffs-enabled.mw-special-Newpages .instantDiffs-line .mw-changeslist-date {
-    display: inline-block;
-}
+&.mw-special-Newpages.instantDiffs-enabled {
+    .instantDiffs-line {
+        // /* [UI] Show actual revision link instead of timestamp on Minerva */
+        .mw-changeslist-date {
+            display: inline-block;
+        }
 
-.skin-minerva.instantDiffs-enabled.mw-special-Newpages .instantDiffs-line .mw-changeslist-time {
-    display: none;
-}
+        .mw-changeslist-time {
+            display: none;
+        }
 
-/* [Fix] Hide the user icon in lists that were loaded from dependencies after the InstantDiffs dialog opens. */
-.skin-minerva.instantDiffs-enabled.mw-special-Newpages .instantDiffs-line .mw-userlink::before {
-    display: none;
-}
+        // /* [Fix] Hide the user icon in lists that were loaded from dependencies after the InstantDiffs dialog opens. */
+        .mw-userlink::before {
+            display: none;
+        }
+    }
 
-/* [Fix] Reset styles of the diff table inside the Diff dialog */
-.skin-minerva.mw-special-Newpages .instantDiffs-dialog-body :is( .comment, .mw-userlink, .mw-usertoollinks ) {
-    float: none;
-    display: inline;
+    .instantDiffs-dialog-body {
+        // /* [Fix] Reset styles of the diff table inside the Diff dialog */
+        :is( .comment, .mw-userlink, .mw-usertoollinks ) {
+            float: none;
+            display: inline;
+        }
+    }
 }

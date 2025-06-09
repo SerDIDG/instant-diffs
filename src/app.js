@@ -13,7 +13,7 @@ import Dialog from './Dialog';
 import DialogButton from './DialogButton';
 import HistoryCompareButton from './HistoryCompareButton';
 
-import './styles/skins/**.less';
+import './styles/skins.less';
 
 /******* PAGE SPECIFIC ADJUSTMENTS *******/
 
