@@ -256,7 +256,7 @@ body.rtl .instantDiffs-panel-placeholder:after,
 /******* DIALOG *******/
 
 /* [Fix] Set top indent for the dialogs because of the fixed header on the some skins  */
-.instantDiffs-dialog.instantDiffs-dialog {
+.oo-ui-windowManager-modal > .instantDiffs-dialog.oo-ui-window-active {
 	top: var(--instantDiffs-dialog-top);
 }
 
@@ -409,7 +409,8 @@ body.rtl .instantDiffs-panel-placeholder:after,
 /*** BUTTON LABELS ***/
 
 .instantDiffs-label {
-	display: flex;
+	max-width: 100%;
+	display: inline-flex;
 	gap: 0.25rem;
 }
 
@@ -547,7 +548,7 @@ body.rtl .instantDiffs-panel-placeholder:after,
 /******* SETTINGS *******/
 
 /* [Fix] Set top indent for the dialogs because of the fixed header on the some skins  */
-.instantDiffs-settings.instantDiffs-settings {
+.oo-ui-windowManager-modal > .instantDiffs-settings.oo-ui-window-active {
 	top: var(--instantDiffs-dialog-top);
 }
 
