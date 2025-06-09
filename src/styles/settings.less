@@ -1,6 +1,10 @@
-/* [Fix] Set top indent for the dialogs because of the fixed header on the some skins  */
-.instantDiffs-settings.instantDiffs-settings {
-    top: var(--instantDiffs-dialog-top);
+.instantDiffs-settings {
+    // /* [Fix] Set top indent for the dialogs because of the fixed header on the some skins  */
+    &.oo-ui-window-active {
+        .oo-ui-windowManager-modal > & {
+            top: var(--instantDiffs-dialog-top);
+        }
+    }
 }
 
 /* Reset list styles for a list hint element */
@@ -11,7 +15,7 @@ ul.instantDiffs-list--settings {
     margin-inline: 1.42857143em 0;
     list-style: disc;
 
-    /* Set a predefine direction because links can contain rtl content */
+    // /* Set a predefine direction because links can contain rtl content */
     i {
         direction: ltr;
         unicode-bidi: embed;
