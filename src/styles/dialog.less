@@ -221,14 +221,7 @@
     position: relative;
     z-index: 1;
 
-    #toc {
-        display: none;
-    }
-}
-
-/*** FLAGGED REVISIONS ***/
-
-.instantDiffs-dialog-body {
+    // /* Set indent for the Flagged Revisions nodes */
     #mw-fr-diff-headeritems {
         margin-top: 1em;
     }
@@ -236,14 +229,16 @@
     #mw-fr-revisiontag-old {
         margin-bottom: 1em;
     }
-}
 
-/*** ROLLBACK LINK ***/
-
-.instantDiffs-dialog-content {
+    // /* Reset styles for the rollback link */
     table.diff {
         .mw-rollback-link {
             display: initial;
         }
+    }
+
+    // /* Hide table of contents */
+    #toc {
+        display: none;
     }
 }
