@@ -240,6 +240,7 @@ function assembleLinkSelector() {
 /******* BOOTSTRAP *******/
 
 function app() {
+    // Prevent multiple instances of the script from running
     if ( id.isRunning ) {
         utils.notifyError( 'error-prepare-version', null, {
             type: 'version',

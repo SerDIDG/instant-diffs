@@ -16,14 +16,14 @@ instantDiffs.config = {
     version: '__version__',
     link: 'Instant_Diffs',
     discussion: 'Talk:Instant_Diffs',
-    origin: 'https://mediawiki.org',
+    origin: '__origin__',
     prefix: 'instantDiffs',
     messagePrefix: 'instant-diffs',
     settingsPrefix: 'userjs-instantDiffs',
 
     dependencies: {
-        styles: '/w/index.php?title=User:Serhio_Magpie/instantDiffs.test.css&action=raw&ctype=text/css',
-        messages: '/w/index.php?title=User:Serhio_Magpie/instantDiffs-i18n/$lang.js&action=raw&ctype=text/javascript',
+        styles: '__styles__',
+        messages: '__messages__',
         main: [
             'mediawiki.api',
             'mediawiki.util',
@@ -35,8 +35,11 @@ instantDiffs.config = {
             'oojs',
             'oojs-ui',
             'oojs-ui.styles.icons-movement',
-            'oojs-ui.styles.icons-interactions',
             'oojs-ui.styles.icons-content',
+            'oojs-ui.styles.icons-alerts',
+            'oojs-ui.styles.icons-interactions',
+            'oojs-ui.styles.icons-editing-core',
+            'oojs-ui.styles.icons-editing-advanced',
             'oojs-ui.styles.icons-layout',
         ],
         content: [
@@ -78,7 +81,7 @@ instantDiffs.config = {
 
     // Settings defaults
     defaults: {
-        debug: false,
+        debug: '__debug__' === 'true',
         logTimers: true,
         showLink: false,
         showPageLink: true,

@@ -167,7 +167,10 @@ class Navigation {
             invisibleLabel: true,
             popup: {
                 $content: $( groupsElements ),
-                classes: [ 'instantDiffs-buttons-popup' ],
+                classes: [
+                    'instantDiffs-buttons-popup',
+                    utils.defaults( 'showMenuIcons' ) ? 'has-icons' : null,
+                ],
                 width: 'auto',
                 padded: false,
                 anchor: false,
@@ -272,7 +275,13 @@ class Navigation {
         items.push( this.buttons.id );
 
         // Group
-        return new OoUi.ButtonGroupWidget( { items, classes: [ 'instantDiffs-buttons-group--vertical' ] } );
+        return new OoUi.ButtonGroupWidget( {
+            items,
+            classes: [
+                'instantDiffs-buttons-group--vertical',
+                utils.defaults( 'showMenuIcons' ) ? 'has-icons' : null,
+            ],
+        } );
     };
 
     renderMenuMobileGroup( buttonParams ) {
