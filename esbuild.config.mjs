@@ -9,7 +9,7 @@ import ImportGlobPlugin from 'esbuild-plugin-import-glob';
 
 const ImportGlob = ImportGlobPlugin.default;
 
-// Read package.json to import version
+// Read package.json
 const pkg = JSON.parse(
     await readFile( new URL( './package.json', import.meta.url ) ),
 );
@@ -25,7 +25,7 @@ const strings = {
 };
 
 if ( process.argv.includes( '--start' ) ) {
-    strings.__origin__ = 'http://127.0.0.1:8000';
+    strings.__origin__ = 'http://localhost:8000';
     strings.__styles__ = '/bundle.css';
     strings.__messages__ = '/i18n/$lang.js';
 }
