@@ -5,6 +5,7 @@ import { globalExternals } from '@fal-works/esbuild-plugin-global-externals';
 
 import { lessLoader } from 'esbuild-plugin-less';
 import ImportGlobPlugin from 'esbuild-plugin-import-glob';
+
 const ImportGlob = ImportGlobPlugin.default;
 
 // Read package.json to import version
@@ -22,6 +23,7 @@ const strings = {
 const banner = `/**
  * Instant Diffs
  *
+ * Version: ${ pkg.version }
  * Author: ${ pkg.author }
  * Licenses: ${ pkg.license }
  * Documentation: ${ pkg.homepage }

@@ -118,11 +118,8 @@ function prepare() {
     // Init links Intersection Observer
     const observerParams = {
         threshold: 0,
-        rootMargin: '20% 0px 20% 0px',
+        rootMargin: utils.defaults( 'debug' ) ? '0px 0px 0px 0px' : '20% 0px 20% 0px',
     };
-    if ( utils.defaults( 'debug' ) ) {
-        delete observerParams.rootMargin;
-    }
     id.local.observer = new IntersectionObserver( observe, observerParams );
 
     // Init unload events

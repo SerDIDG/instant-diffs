@@ -311,7 +311,7 @@ Dialog.prototype.onUpdate = function () {
 
 Dialog.prototype.onScroll = function ( event ) {
     // Update diff content positions and sizes
-    this.diff.updateSize( {
+    this.diff.redraw( {
         top: event.target.scrollTop,
     } );
 };
