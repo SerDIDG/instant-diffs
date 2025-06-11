@@ -311,7 +311,17 @@ Settings.prototype.construct = function () {
         } );
         this.fields.enableMobile.toggle( id.settings.enableMobile );
 
-        // Open links in the new tab
+        // Show icons in the dropdown menu
+        this.inputs.showMenuIcons = new OoUi.CheckboxInputWidget( {
+            selected: utils.defaults( 'showMenuIcons' ),
+        } );
+        this.fields.showMenuIcons = new OoUi.FieldLayout( this.inputs.showMenuIcons, {
+            label: utils.msg( 'settings-show-menu-icons' ),
+            align: 'inline',
+        } );
+        this.fields.showMenuIcons.toggle( id.settings.showMenuIcons );
+
+        // Show popup alerts for critical errors
         this.inputs.notifyErrors = new OoUi.CheckboxInputWidget( {
             selected: utils.defaults( 'notifyErrors' ),
         } );
@@ -327,10 +337,12 @@ Settings.prototype.construct = function () {
         } );
         this.layouts.general.addItems( [
             this.fields.enableMobile,
+            this.fields.showMenuIcons,
             this.fields.notifyErrors,
         ] );
         this.layouts.general.toggle(
             id.settings.enableMobile ||
+            id.settings.showMenuIcons ||
             id.settings.notifyErrors,
         );
     };

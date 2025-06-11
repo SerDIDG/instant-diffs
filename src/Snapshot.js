@@ -1,58 +1,102 @@
 import id from './id';
 import * as utils from './utils';
 
+import Link from './Link';
+
+/**
+ * Class meant to collect current links on the page to navigate between them in the Diff Dialog.
+ * Should be constructed only when the Diff Dialog opens.
+ */
 class Snapshot {
-    links = [];
+    /**
+     * @type {import('./Link').default}
+     */
     link;
 
+    /**
+     * @type {array}
+     */
+    links = [];
+
+    /**
+     * Create a snapshot instance.
+     */
     constructor() {
         this.links = Array.from( utils.getLinks() );
     }
 
+    /**
+     * Set the link relative to which previous and next links will be determined.
+     * @param {import('./Link').default} link a Link instance
+     */
     setLink( link ) {
         this.link = link;
     }
 
+    /**
+     * Check if the link belongs to the links' snapshot.
+     * @param {import('./Link').default} link a Link instance
+     * @returns {boolean}
+     */
     hasLink( link ) {
-        return this.links.includes( link.getNode() );
+        return link instanceof Link && this.links.includes( link.getNode() );
     }
 
+    /**
+     * Check if the link is valid and can be navigated to.
+     * @param {import('./Link').default} link a Link instance
+     * @returns {boolean}
+     */
+    isLinkValid( link ) {
+        return link instanceof Link && ( link.isProcessed || ( !link.isLoaded && link.hasRequest ) );
+    }
+
+    /**
+     * Get count of the links' snapshot
+     * @returns {number}
+     */
     getLength() {
         return this.links.length;
     }
 
+    /**
+     * Get index of the current link relative to the links' snapshot.
+     * @returns {number}
+     */
     getIndex() {
-        return this.link ? this.links.indexOf( this.link.getNode() ) : -1;
+        return this.link instanceof Link ? this.links.indexOf( this.link.getNode() ) : -1;
     }
 
+    /**
+     * Get the previous link relative to the given index if exists.
+     * @param {number} currentIndex a Link instance
+     * @returns {import('./Link').default|undefined} a Link instance
+     */
     getPreviousLink( currentIndex ) {
         if ( typeof currentIndex === 'undefined' ) {
             currentIndex = this.getIndex();
         }
+        if ( currentIndex <= 0 ) return;
 
-        if ( currentIndex !== -1 && currentIndex > 0 ) {
-            const previousIndex = currentIndex - 1;
-            const previousLinkNode = this.links[ previousIndex ];
-            const previousLink = id.local.links.get( previousLinkNode );
-            return this.isLinkValid( previousLink ) ? previousLink : this.getPreviousLink( previousIndex );
-        }
+        const index = currentIndex - 1;
+        const link = id.local.links.get( this.links[ index ] );
+        return this.isLinkValid( link ) ? link : this.getPreviousLink( index );
     }
 
+    /**
+     * Get the next link relative to the given index if exists.
+     * @param {number} currentIndex a Link instance
+     * @returns {import('./Link').default|undefined} a Link instance
+     */
     getNextLink( currentIndex ) {
         if ( typeof currentIndex === 'undefined' ) {
             currentIndex = this.getIndex();
         }
+        if ( currentIndex < 0 || currentIndex + 1 >= this.getLength() ) return;
 
-        if ( currentIndex !== -1 && ( currentIndex + 1 ) < this.getLength() ) {
-            const nextIndex = currentIndex + 1;
-            const nextLinkNode = this.links[ nextIndex ];
-            const nextLink = id.local.links.get( nextLinkNode );
-            return this.isLinkValid( nextLink ) ? nextLink : this.getNextLink( nextIndex );
-        }
-    }
-
-    isLinkValid( link ) {
-        return link && ( link.isProcessed || ( !link.isLoaded && link.hasRequest ) );
+        const index = currentIndex + 1;
+        const link = id.local.links.get( this.links[ index ] );
+        return this.isLinkValid( link ) ? link : this.getNextLink( index );
     }
 }
 

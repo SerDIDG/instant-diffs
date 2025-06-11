@@ -27,7 +27,7 @@ class Navigation {
      * @param {import('./Diff').default} diff a Diff instance
      * @param {object} page
      * @param {object} pageParams
-     * @param {object} options configuration options
+     * @param {object} [options] configuration options
      */
     constructor( diff, page, pageParams, options ) {
         this.diff = diff;
@@ -51,6 +51,9 @@ class Navigation {
         this.render();
     }
 
+    /**
+     * Render a navigation bar structure.
+     */
     render() {
         // Render structure
         this.nodes.$container = $( '<div>' )
@@ -79,7 +82,7 @@ class Navigation {
     renderSnapshotLinks() {
         const items = [];
 
-        if ( id.local.snapshot.getLength() > 1 && id.local.snapshot.getIndex() !== -1 ) {
+        if ( id.local.snapshot.getLength() > 1 ) {
             // Previous link on the page
             this.buttons.shapshotPrev = this.renderSnapshotPrevLink();
             items.push( this.buttons.shapshotPrev );
@@ -90,7 +93,7 @@ class Navigation {
         }
 
         // Render group
-        this.buttons.snapshotGroup = new OoUi.ButtonGroupWidget( { items: items } );
+        this.buttons.snapshotGroup = new OoUi.ButtonGroupWidget( { items } );
         this.nodes.$left.append( this.buttons.snapshotGroup.$element );
     }
 
@@ -112,7 +115,7 @@ class Navigation {
         items.push( this.buttons.next );
 
         // Render group
-        this.buttons.navigationGroup = new OoUi.ButtonGroupWidget( { items: items } );
+        this.buttons.navigationGroup = new OoUi.ButtonGroupWidget( { items } );
         this.nodes.$center.append( this.buttons.navigationGroup.$element );
     }
 
@@ -124,7 +127,6 @@ class Navigation {
         // Icon button parameters
         const iconParams = {
             invisibleLabel: true,
-            renderIcon: true,
         };
 
         // Back to the initiator diff link
@@ -142,9 +144,11 @@ class Navigation {
         // Menu button parameters
         const buttonParams = {
             framed: false,
-            icon: null,
             classes: [ 'instantDiffs-button--link' ],
         };
+        if ( !utils.defaults( 'showMenuIcons' ) ) {
+            buttonParams.icon = null;
+        }
 
         // Render menu groups
         this.buttons.menuMobile = this.renderMenuMobileGroup( buttonParams );
@@ -173,7 +177,7 @@ class Navigation {
         items.push( this.buttons.menuDropdown );
 
         // Render group
-        this.buttons.menuGroup = new OoUi.ButtonGroupWidget( { items: items } );
+        this.buttons.menuGroup = new OoUi.ButtonGroupWidget( { items } );
         this.nodes.$right.append( this.buttons.menuGroup.$element );
     }
 
@@ -181,12 +185,11 @@ class Navigation {
         const items = [];
 
         // Copy a link to the clipboard
-        this.buttons.copy = new OoUi.ButtonWidget(
-            $.extend( true, {}, buttonParams, {
-                label: utils.msg( 'copy-link' ),
-                icon: 'link',
-            } ),
-        );
+        this.buttons.copy = new OoUi.ButtonWidget( {
+            label: utils.msg( 'copy-link' ),
+            icon: 'link',
+            ...buttonParams,
+        } );
         this.buttons.copyHelper = new Button( {
             node: this.buttons.copy.$button.get( 0 ),
             handler: this.actionCopyLink.bind( this ),
@@ -194,12 +197,11 @@ class Navigation {
         items.push( this.buttons.copy );
 
         // Copy a wikilink to the clipboard
-        this.buttons.copyWiki = new OoUi.ButtonWidget(
-            $.extend( true, {}, buttonParams, {
-                label: utils.msg( 'copy-wikilink' ),
-                icon: 'wikiText',
-            } ),
-        );
+        this.buttons.copyWiki = new OoUi.ButtonWidget( {
+            label: utils.msg( 'copy-wikilink' ),
+            icon: 'wikiText',
+            ...buttonParams,
+        } );
         this.buttons.copyWikiHelper = new Button( {
             node: this.buttons.copyWiki.$button.get( 0 ),
             handler: this.actionCopyWikilink.bind( this ),
@@ -207,60 +209,55 @@ class Navigation {
         items.push( this.buttons.copyWiki );
 
         // Link to the revision or to the edit
-        this.buttons.pageType = new OoUi.ButtonWidget(
-            $.extend( true, {}, buttonParams, {
-                label: utils.msg( `goto-${ this.options.type }` ),
-                icon: 'articleRedirect',
-                href: utils.getTypeHref( this.options.type, this.page ),
-                target: utils.getTarget( true ),
-            } ),
-        );
+        this.buttons.pageType = new OoUi.ButtonWidget( {
+            label: utils.msg( `goto-${ this.options.type }` ),
+            icon: 'articleRedirect',
+            href: utils.getTypeHref( this.options.type, this.page ),
+            target: utils.getTarget( true ),
+            ...buttonParams,
+        } );
         items.push( this.buttons.pageType );
 
         if ( !utils.isEmpty( this.page.title ) ) {
             // Link to the page
-            this.buttons.page = new OoUi.ButtonWidget(
-                $.extend( true, {}, buttonParams, {
-                    label: utils.msg( 'goto-page' ),
-                    icon: 'article',
-                    href: this.page.href,
-                    target: utils.getTarget( true ),
-                } ),
-            );
+            this.buttons.page = new OoUi.ButtonWidget( {
+                label: utils.msg( 'goto-page' ),
+                icon: 'article',
+                href: this.page.href,
+                target: utils.getTarget( true ),
+                ...buttonParams,
+            } );
             items.push( this.buttons.page );
 
             // Link to the history
-            this.buttons.history = new OoUi.ButtonWidget(
-                $.extend( true, {}, buttonParams, {
-                    label: utils.msg( 'goto-history' ),
-                    icon: 'history',
-                    href: mw.util.getUrl( this.page.title, { action: 'history' } ),
-                    target: utils.getTarget( true ),
-                } ),
-            );
+            this.buttons.history = new OoUi.ButtonWidget( {
+                label: utils.msg( 'goto-history' ),
+                icon: 'history',
+                href: mw.util.getUrl( this.page.title, { action: 'history' } ),
+                target: utils.getTarget( true ),
+                ...buttonParams,
+            } );
             items.push( this.buttons.history );
 
             // Link to the talk page
             if ( !this.page.mwTitle.isTalkPage() ) {
-                this.buttons.talkPage = new OoUi.ButtonWidget(
-                    $.extend( true, {}, buttonParams, {
-                        label: utils.msg( 'goto-talkpage' ),
-                        icon: 'speechBubbles',
-                        href: this.page.mwTitle.getTalkPage().getUrl(),
-                        target: utils.getTarget( true ),
-                    } ),
-                );
+                this.buttons.talkPage = new OoUi.ButtonWidget( {
+                    label: utils.msg( 'goto-talkpage' ),
+                    icon: 'speechBubbles',
+                    href: this.page.mwTitle.getTalkPage().getUrl(),
+                    target: utils.getTarget( true ),
+                    ...buttonParams,
+                } );
                 items.push( this.buttons.talkPage );
             }
         }
 
         // Open Instant Diffs settings
-        this.buttons.settings = new OoUi.ButtonWidget(
-            $.extend( true, {}, buttonParams, {
-                label: utils.msg( 'goto-settings' ),
-                icon: 'settings',
-            } ),
-        );
+        this.buttons.settings = new OoUi.ButtonWidget( {
+            label: utils.msg( 'goto-settings' ),
+            icon: 'settings',
+            ...buttonParams,
+        } );
         this.buttons.settingsHelper = new Button( {
             node: this.buttons.settings.$button.get( 0 ),
             handler: this.actionOpenSettings.bind( this ),
@@ -275,10 +272,7 @@ class Navigation {
         items.push( this.buttons.id );
 
         // Group
-        return new OoUi.ButtonGroupWidget( {
-            items: items,
-            classes: [ 'instantDiffs-buttons-group--vertical' ],
-        } );
+        return new OoUi.ButtonGroupWidget( { items, classes: [ 'instantDiffs-buttons-group--vertical' ] } );
     };
 
     renderMenuMobileGroup( buttonParams ) {
@@ -511,13 +505,14 @@ class Navigation {
 			<span class="version">v.${ id.config.version }</span>
 		` );
 
-        params = $.extend( true, {}, {
+        params = {
             label: label,
             href: utils.getOrigin( `/wiki/${ id.config.link }` ),
             target: utils.getTarget( true ),
             framed: true,
             classes: [],
-        }, params );
+            ...params,
+        };
 
         params.classes.push( 'instantDiffs-button--link-id' );
 
@@ -603,7 +598,8 @@ class Navigation {
 
     /**
      * Redraw a navigation bar and toggle sticky state depending on top position.
-     * @param {object} params
+     * @param {object} [params]
+     * @param {number} [params.top] scrollTop position of the container
      */
     redraw( params ) {
         params = {

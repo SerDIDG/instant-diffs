@@ -72,6 +72,7 @@ instantDiffs.config = {
         linksFormat: true,
         wikilinksFormat: true,
         enableMobile: true,
+        showMenuIcons: true,
         notifyErrors: true,
     },
 
@@ -89,6 +90,7 @@ instantDiffs.config = {
         linksFormat: 'full',
         wikilinksFormat: 'special',
         enableMobile: true,
+        showMenuIcons: true,
         notifyErrors: true,
     },
 
