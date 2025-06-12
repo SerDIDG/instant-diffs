@@ -3,7 +3,6 @@ import * as esbuild from 'esbuild';
 import { copy } from 'esbuild-plugin-copy';
 import { replace } from 'esbuild-plugin-replace';
 import { globalExternals } from '@fal-works/esbuild-plugin-global-externals';
-
 import { lessLoader } from 'esbuild-plugin-less';
 import ImportGlobPlugin from 'esbuild-plugin-import-glob';
 

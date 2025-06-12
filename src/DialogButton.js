@@ -6,9 +6,9 @@ import Button from './Button';
 import Dialog from './Dialog';
 
 class DialogButton extends Button {
-    page = {};
     type;
     typeVariant;
+    page = {};
 
     constructor( options ) {
         super( {
@@ -39,16 +39,16 @@ class DialogButton extends Button {
 
     onDialogClose() {}
 
-    getPage() {
-        return this.page;
-    }
-
     getType() {
         return this.type;
     }
 
     getTypeVariant() {
         return this.typeVariant;
+    }
+
+    getPage() {
+        return this.page;
     }
 }
 

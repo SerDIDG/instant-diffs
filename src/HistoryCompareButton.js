@@ -9,10 +9,6 @@ class HistoryCompareButton extends DialogButton {
     type = 'diff';
     typeVariant = 'compare';
 
-    constructor( options ) {
-        super( options );
-    }
-
     onDialogOpen() {
         if ( !utils.defaults( 'highlightLine' ) ) return;
         this.page.$oldidLine.addClass( 'instantDiffs-line--highlight' );
