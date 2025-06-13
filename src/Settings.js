@@ -64,7 +64,7 @@ class Settings {
 
     /******* DIALOG *******/
 
-    construct = async function () {
+    async construct() {
         this.isConstructed = true;
 
         // Import a SettingsDialog constructor
@@ -78,7 +78,7 @@ class Settings {
 
     /******* USER OPTIONS *******/
 
-    request = async function () {
+    async request() {
         if ( !this.isConstructed ) {
             await this.construct();
         }
