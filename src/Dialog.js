@@ -14,36 +14,84 @@ import './styles/dialog.less';
  * Class representing a diff dialog.
  */
 class Dialog {
+    /**
+     * @type {import('./Link').default}
+     */
     link;
+
+    /**
+     * @type {import('./Diff').default}
+     */
     diff;
+
+    /**
+     * @type {object}
+     */
     options = {};
 
+    /**
+     * @type {object}
+     */
     opener = {
         link: null,
         options: {},
     };
 
+    /**
+     * @type {object}
+     */
     initiator = {
         link: null,
         options: {},
     };
 
+    /**
+     * @type {object}
+     */
     previousInitiator = {
         link: null,
         options: {},
     };
 
-    isDependenciesLoaded = false;
-    isConstructed = false;
-    isOpen = false;
-    isLoading = false;
-
+    /**
+     * @type {object}
+     */
     mwConfigBackup;
 
+    /**
+     * @type {boolean}
+     */
+    isDependenciesLoaded = false;
+
+    /**
+     * @type {boolean}
+     */
+    isConstructed = false;
+
+    /**
+     * @type {boolean}
+     */
+    isOpen = false;
+
+    /**
+     * @type {boolean}
+     */
+    isLoading = false;
+
+    /**
+     * Create a diff dialog.
+     * @param {import('./Link').default} link a Link instance
+     * @param {object} [options] configuration options
+     */
     constructor( link, options ) {
         this.process.apply( this, arguments );
     }
 
+    /**
+     * Setup configuration options.
+     * @param {import('./Link').default} link a Link instance
+     * @param {object} [options] configuration options
+     */
     process( link, options ) {
         this.link = link;
         this.options = {
@@ -74,6 +122,12 @@ class Dialog {
         }
     }
 
+    /******* DEPENDENCIES *******/
+
+    /**
+     * Request a diff dialog dependencies.
+     * @returns {Promise|undefined}
+     */
     load() {
         if ( this.isLoading ) return;
 
@@ -89,10 +143,18 @@ class Dialog {
             .fail( this.onLoadError.bind( this ) );
     };
 
+    /**
+     * Join a dialog and a dialog content dependencies.
+     * @returns {array}
+     */
     getDependencies() {
         return utils.getDependencies( [ ...id.config.dependencies.dialog, ...id.config.dependencies.content ] );
     }
 
+    /**
+     * Event that emits after dependency loading failed.
+     * @param {object} [error]
+     */
     onLoadError( error ) {
         this.isLoading = false;
         this.isDependenciesLoaded = false;
@@ -103,12 +165,21 @@ class Dialog {
         utils.notifyError( 'error-dependencies-generic', null, this.error );
     };
 
+    /**
+     * Event that emits after dependency loading successive.
+     * @returns {Promise}
+     */
     onLoadSuccess() {
         this.isLoading = false;
         this.isDependenciesLoaded = true;
         return this.request();
     }
 
+    /******* DIALOG *******/
+
+    /**
+     * Import and construct an instance of the DiffDialog.
+     */
     async construct() {
         this.isConstructed = true;
 
@@ -121,6 +192,12 @@ class Dialog {
         this.manager.addWindows( [ this.dialog ] );
     }
 
+    /******* DIFF *******/
+
+    /**
+     * Construct an instance of the Diff and request its content.
+     * @returns {Promise|undefined}
+     */
     async request() {
         if ( !this.isConstructed ) {
             await this.construct();
@@ -154,16 +231,25 @@ class Dialog {
             .fail( this.onRequestError.bind( this ) );
     }
 
+    /**
+     * Event that emits after the Diff request failed.
+     */
     onRequestError() {
         this.isLoading = false;
         this.open();
     }
 
+    /**
+     * Event that emits after the Diff request successive.
+     */
     onRequestSuccess() {
         this.isLoading = false;
         this.open();
     }
 
+    /**
+     * Save the Diff Dialog.
+     */
     open() {
         const options = {
             title: this.diff.getPageTitleText(),
@@ -179,6 +265,9 @@ class Dialog {
         }
     }
 
+    /**
+     * Event that emits after the Diff Dialog opens.
+     */
     onOpen() {
         this.isOpen = true;
         this.fire();
@@ -188,6 +277,9 @@ class Dialog {
         }
     }
 
+    /**
+     * Event that emits after the Diff Dialog closes.
+     */
     onClose() {
         this.isOpen = false;
 
@@ -212,6 +304,9 @@ class Dialog {
         }
     }
 
+    /**
+     * Event that emits after the Diff Dialog updates.
+     */
     onUpdate() {
         this.fire();
 
@@ -231,6 +326,9 @@ class Dialog {
         }
     }
 
+    /**
+     * Event that emits after the Diff Dialog scrolls.
+     */
     onScroll( event ) {
         // Update diff content positions and sizes
         this.diff.redraw( {

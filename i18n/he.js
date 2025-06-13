@@ -91,6 +91,7 @@ instantDiffs.i18n.he = {
     'settings-fieldset-general': 'כללי',
     'settings-enable-mobile': 'אפשר Instant Diffs בתצוגה ניידת (Minerva).',
     'settings-enable-mobile-help': 'כדי להפעיל מחדש את Instant Diffs, יש לעבור לעיצוב אחר.',
+    'settings-show-menu-icons': 'הצג סמלים בתפריט הנפתח של החלון.',
     'settings-notify-errors': 'הצג התראות קופצות לשגיאות קריטיות.',
 
     /*** ERRORS ***/

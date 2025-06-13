@@ -10,27 +10,57 @@ import './styles/settings.less';
  * Class representing a settings dialog.
  */
 class Settings {
+    /**
+     * @type {object}
+     */
     options = {};
 
+    /**
+     * @type {boolean}
+     */
     isDependenciesLoaded = false;
+
+    /**
+     * @type {boolean}
+     */
     isConstructed = false;
+
+    /**
+     * @type {boolean}
+     */
     isOpen = false;
+
+    /**
+     * @type {boolean}
+     */
     isLoading = false;
 
+    /**
+     * Create a settings dialog.
+     * @param {object} [options] configuration options
+     */
     constructor( options ) {
         this.process.apply( this, arguments );
     }
 
+    /**
+     * Setup configuration options.
+     * @param {object} [options] configuration options
+     */
     process( options ) {
         this.options = {
-            onOpen: function () {},
-            onClose: function () {},
+            onOpen: () => {},
+            onClose: () => {},
             ...options,
         };
     }
 
     /******* DEPENDENCIES *******/
 
+    /**
+     * Request a settings dialog dependencies.
+     * @returns {Promise|undefined}
+     */
     load() {
         if ( this.isLoading ) return;
 
@@ -46,16 +76,24 @@ class Settings {
             .fail( this.onLoadError.bind( this ) );
     }
 
+    /**
+     * Event that emits after dependency loading failed.
+     * @param {object} [error]
+     */
     onLoadError( error ) {
         this.isLoading = false;
         this.isDependenciesLoaded = false;
         this.error = {
             type: 'dependencies',
-            message: error && error.message ? error.message : null,
+            message: error?.message,
         };
         utils.notifyError( 'error-dependencies-generic', null, this.error );
     }
 
+    /**
+     * Event that emits after dependency loading successive.
+     * @returns {Promise}
+     */
     onLoadSuccess() {
         this.isLoading = false;
         this.isDependenciesLoaded = true;
@@ -64,6 +102,9 @@ class Settings {
 
     /******* DIALOG *******/
 
+    /**
+     * Import and construct an instance of the SettingsDialog.
+     */
     async construct() {
         this.isConstructed = true;
 
@@ -78,6 +119,10 @@ class Settings {
 
     /******* USER OPTIONS *******/
 
+    /**
+     * Request user options.
+     * @returns {Promise|undefined}
+     */
     async request() {
         if ( !this.isConstructed ) {
             await this.construct();
@@ -103,6 +148,11 @@ class Settings {
             .fail( this.onRequestError.bind( this ) );
     };
 
+    /**
+     * Event that emits after user options request failed.
+     * @param {object} [error]
+     * @param {object} [data]
+     */
     onRequestError( error, data ) {
         this.isLoading = false;
 
@@ -119,6 +169,10 @@ class Settings {
         this.open();
     }
 
+    /**
+     * Event that emits after user options request successive.
+     * @param {object} [data]
+     */
     onRequestSuccess( data ) {
         this.isLoading = false;
 
@@ -136,6 +190,10 @@ class Settings {
         this.open();
     }
 
+    /**
+     * Save user options.
+     * @returns {Promise}
+     */
     save( settings ) {
         // Update settings stored in the Local Storage
         mw.storage.setObject( `${ id.config.prefix }-settings`, settings );
@@ -152,6 +210,10 @@ class Settings {
         return this.saveLocal( settings );
     }
 
+    /**
+     * Post user options on the local project.
+     * @returns {Promise}
+     */
     saveLocal( settings ) {
         const params = [
             `${ id.config.settingsPrefix }-settings`,
@@ -160,6 +222,10 @@ class Settings {
         return id.local.mwApi.saveOption.apply( id.local.mwApi, params );
     }
 
+    /**
+     * Post user options on the global project.
+     * @returns {Promise}
+     */
     saveGlobal( settings ) {
         const params = {
             action: 'globalpreferences',
@@ -171,20 +237,22 @@ class Settings {
 
     /******* ACTIONS *******/
 
+    /**
+     * Open the Settings Dialog.
+     */
     open() {
         if ( this.isOpen ) return;
 
-        if ( !this.isConstructed ) {
-            this.construct();
-        } else {
-            this.dialog.update();
-        }
+        this.dialog.update();
 
         this.windowInstance = this.manager.openWindow( this.dialog );
         this.windowInstance.opened.then( this.onOpen.bind( this ) );
         this.windowInstance.closed.then( this.onClose.bind( this ) );
     }
 
+    /**
+     * Event that emits after the Settings Dialog opens.
+     */
     onOpen() {
         this.isOpen = true;
         if ( utils.isFunction( this.options.onOpen ) ) {
@@ -192,6 +260,9 @@ class Settings {
         }
     }
 
+    /**
+     * Event that emits after the Settings Dialog closes.
+     */
     onClose() {
         this.isOpen = false;
         if ( utils.isFunction( this.options.onClose ) ) {

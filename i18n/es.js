@@ -91,6 +91,7 @@ instantDiffs.i18n.es = {
     'settings-fieldset-general': 'General',
     'settings-enable-mobile': 'Habilitar Instant Diffs en la apariencia móvil (Minerva).',
     'settings-enable-mobile-help': 'Para volver a habilitar Instant Diffs, tendrás que cambiar a otra apariencia.',
+    'settings-show-menu-icons': 'Mostrar iconos en el menú desplegable del diálogo.',
     'settings-notify-errors': 'Mostrar alertas emergentes para errores críticos.',
 
     /*** ERRORS ***/

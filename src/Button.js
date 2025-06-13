@@ -4,7 +4,14 @@ import * as utils from './utils';
  * Class representing a button.
  */
 class Button {
+    /**
+     * @type {object}
+     */
     options = {};
+
+    /**
+     * @type {HTMLElement}
+     */
     node;
 
     /**
@@ -43,6 +50,9 @@ class Button {
         }
     }
 
+    /**
+     * Render a button structure.
+     */
     render() {
         this.node = document.createElement( this.options.tag );
         this.node.innerText = this.options.label;
@@ -63,6 +73,9 @@ class Button {
         this.embed( this.options.container, this.options.insertMethod );
     }
 
+    /**
+     * Setup button events and related attributes.
+     */
     process() {
         if ( !utils.isFunction( this.options.handler ) ) return;
 
@@ -101,6 +114,10 @@ class Button {
         this.node.classList.toggle( 'instantDiffs-link--pending', value );
     }
 
+    /**
+     * Get a button node.
+     * @returns {HTMLElement}
+     */
     getContainer() {
         return this.node;
     }

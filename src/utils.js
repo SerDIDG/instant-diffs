@@ -6,7 +6,7 @@ import id from './id';
 
 import Button from './Button';
 
-/*** BASIC TYPES ***/
+/******* BASIC TYPES *******/
 
 export function isEmpty( str ) {
     return !str || str.length === 0;
@@ -24,7 +24,7 @@ export function isToggleKey( event ) {
     return event.type === 'click' || ( event.type === 'keypress' && [ 'Enter', 'Space' ].includes( event.code ) );
 }
 
-/*** COMMON ***/
+/******* COMMON *******/
 
 export function getOrigin( path ) {
     return `${ id.config.origin }${ path }`;
@@ -78,7 +78,7 @@ export function getSpecialPageAliases( data, name ) {
     return [ ...new Set( values ) ];
 }
 
-/*** DEFAULTS ***/
+/******* DEFAULTS *******/
 
 export function defaults( key ) {
     return key ? id.defaults[ key ] : id.defaults;
@@ -111,7 +111,7 @@ export function processDefaults() {
     }
 }
 
-/*** MESSAGES ***/
+/******* MESSAGES *******/
 
 export function msg() {
     const params = Array.from( arguments );
@@ -205,7 +205,7 @@ export function notifyError( str, page, error, silent ) {
     log( 'error', message, [ page, error ] );
 }
 
-/*** LINKS ***/
+/******* LINKS *******/
 
 export function getLinks( $container ) {
     if ( typeof $container === 'undefined' ) {
@@ -224,7 +224,7 @@ export function getTarget( isInDialog ) {
     return defaults( 'openInNewTab' ) && isInDialog ? '_blank' : '_self';
 }
 
-/*** DIFF \ REVISION ***/
+/******* DIFF \ REVISION *******/
 
 export function isValidID( value ) {
     return !isEmpty( value ) && !isNaN( value );
@@ -494,7 +494,7 @@ export function extendPage( page, params = {} ) {
     return page;
 }
 
-/*** MW ***/
+/******* MW *******/
 
 export function getMobileServer() {
     const server = mw.config.get( 'wgServer' );
@@ -591,7 +591,7 @@ export function getMWDiffLineTitle( item ) {
     return !isEmpty( title ) ? title : item.$title.text();
 }
 
-/*** ELEMENTS ***/
+/******* ELEMENTS *******/
 
 export function addClick( node, handler, useAltKey = true ) {
     const callback = ( event ) => {

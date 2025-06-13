@@ -182,7 +182,9 @@ function onRequestLocalizedTitlesDone( data ) {
 
 function getMessages() {
     return [ 'en', mw.config.get( 'wgUserLanguage' ) ]
-        .filter( ( value, index, self ) => self.indexOf( value ) === index )
+        .filter( ( value, index, self ) => {
+            return self.indexOf( value ) === index && !id.i18n[ value ];
+        } )
         .map( lang => {
             const path = id.config.dependencies.messages.replace( '$lang', lang );
             return mw.loader.getScript( utils.getOrigin( path ) );
@@ -261,7 +263,10 @@ function app() {
     // Track on run start time
     id.timers.run = Date.now();
 
-    // Init extensions
+    // Bundle the english language strings
+    import('../i18n/en.js');
+
+    // Bundle extensions
     import('./extensions.js');
 
     // Load dependencies and prepare variables

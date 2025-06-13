@@ -13,24 +13,65 @@ import './styles/links.less';
  * Class representing a link.
  */
 class Link {
+    /**
+     * @type {HTMLElement}
+     */
     node;
+
+    /**
+     * @type {object}
+     */
     options = {};
 
+    /**
+     * @type {object}
+     */
     nodes = {};
+
+    /**
+     * @type {object}
+     */
     page = {};
+
+    /**
+     * @type {object}
+     */
     action = {};
+
+    /**
+     * @type {object}
+     */
     mw = {
         hasLink: false,
         hasLine: false,
     };
+
+    /**
+     * @type {object}
+     */
     manual = {
         hasLink: false,
         behavior: 'default',
     };
 
+    /**
+     * @type {boolean}
+     */
     isLoading = false;
+
+    /**
+     * @type {boolean}
+     */
     isLoaded = false;
+
+    /**
+     * @type {boolean}
+     */
     isProcessed = false;
+
+    /**
+     * @type {boolean}
+     */
     hasRequest = false;
 
     /**
@@ -670,6 +711,9 @@ class Link {
 
     /******* ACTIONS *******/
 
+    /**
+     * Toggle a pending loader cursor visibility.
+     */
     toggleLoader( value ) {
         if ( this.action.button ) {
             this.action.button.pending( value );
@@ -678,6 +722,9 @@ class Link {
         }
     }
 
+    /**
+     * Toggle a spinner loader visibility.
+     */
     toggleSpinner( value ) {
         const classes = utils.getPlaceholderClasses( [ 'loader', this.options.type ] );
 
@@ -697,28 +744,52 @@ class Link {
         utils.embed( this.nodes.container, container, insertMethod );
     }
 
+    /**
+     * Get a link's panel bar node.
+     * @returns {HTMLElement}
+     */
     getContainer() {
         return this.nodes.container;
     }
 
+    /**
+     * Get a link's node.
+     * @returns {HTMLElement}
+     */
     getNode() {
         return this.node;
     }
 
+    /**
+     * Get the initiator Link.
+     * @returns {import('./Link').default}
+     */
     getInitiatorLink() {
         return this.options.initiatorLink || this;
     }
 
-    getPage() {
-        return this.page;
-    }
-
+    /**
+     * Get type.
+     * @returns {string}
+     */
     getType() {
         return this.options.type;
     }
 
+    /**
+     * Get type variant.
+     * @returns {string}
+     */
     getTypeVariant() {
         return this.options.typeVariant;
+    }
+
+    /**
+     * Get page.
+     * @returns {object}
+     */
+    getPage() {
+        return this.page;
     }
 }
 

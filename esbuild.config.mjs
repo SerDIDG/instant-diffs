@@ -29,7 +29,7 @@ if ( process.argv.includes( '--start' ) ) {
     strings.__messages__ = '/i18n/$lang.js';
 }
 
-// Prepend a banner
+// Prepend a banner and footer
 const banner = `/**
  * Instant Diffs
  *
@@ -37,7 +37,10 @@ const banner = `/**
  * Author: ${ pkg.author.name }
  * Licenses: ${ pkg.license }
  * Documentation: ${ pkg.homepage }
- */`;
+ */
+ /* <nowiki> */`;
+
+const footer = `/* </nowiki> */`;
 
 // Build a config
 const config = {
@@ -49,6 +52,10 @@ const config = {
     banner: {
         js: banner,
         css: banner,
+    },
+    footer: {
+        js: footer,
+        css: footer,
     },
     plugins: [
         copy( {
