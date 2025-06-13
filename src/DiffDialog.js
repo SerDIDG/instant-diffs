@@ -5,7 +5,7 @@ import * as utils from './utils';
  */
 function DiffLabel() {
     DiffLabel.super.call( this, {
-        classes: [ 'oo-ui-DiffDialog-message' ],
+        classes: [ 'oo-ui-messageDialog-message' ],
     } );
 }
 
