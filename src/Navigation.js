@@ -103,15 +103,13 @@ class Navigation {
     renderSnapshotLinks() {
         const items = [];
 
-        if ( id.local.snapshot.getLength() > 1 ) {
-            // Previous link on the page
-            this.buttons.shapshotPrev = this.renderSnapshotPrevLink();
-            items.push( this.buttons.shapshotPrev );
+        // Previous link on the page
+        this.buttons.shapshotPrev = this.renderSnapshotPrevLink();
+        items.push( this.buttons.shapshotPrev );
 
-            // Next link on the page
-            this.buttons.snapshotNext = this.renderSnapshotNextLink();
-            items.push( this.buttons.snapshotNext );
-        }
+        // Next link on the page
+        this.buttons.snapshotNext = this.renderSnapshotNextLink();
+        items.push( this.buttons.snapshotNext );
 
         // Render group
         this.buttons.snapshotGroup = new OO.ui.ButtonGroupWidget( { items } );

@@ -9,7 +9,7 @@ self.instantDiffs ||= {};
 const instantDiffs = self.instantDiffs;
 
 /**
- * Configuration
+ * Configuration.
  */
 instantDiffs.config = {
     name: 'Instant Diffs',
@@ -275,7 +275,7 @@ instantDiffs.config = {
 };
 
 /**
- * Local variables
+ * Local variables.
  */
 instantDiffs.local = {
     mwIsAnon: null,
@@ -307,7 +307,7 @@ instantDiffs.local = {
 };
 
 /**
- * Script timer loggers
+ * Script timer loggers.
  */
 instantDiffs.timers = {};
 

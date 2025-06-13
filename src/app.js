@@ -113,11 +113,10 @@ function prepare() {
     }
 
     // Init links Intersection Observer
-    const observerParams = {
+    id.local.observer = new IntersectionObserver( observe, {
         threshold: 0,
         rootMargin: utils.defaults( 'debug' ) ? '0px 0px 0px 0px' : '20% 0px 20% 0px',
-    };
-    id.local.observer = new IntersectionObserver( observe, observerParams );
+    } );
 
     // Init unload events
     window.addEventListener( 'beforeunload', unload );
@@ -208,7 +207,7 @@ function assembleLinkSelector() {
         }
     } );
 
-    // Assemble special pages link selector
+    // Assemble a link selector for the special pages
     for ( const [ name, local ] of Object.entries( id.local.specialPagesLocal ) ) {
         id.local.specialPagesLocalPrefixed[ name ] = new mw.Title( local ).getPrefixedDb();
         id.local.specialPagesAliases[ name ] = utils.getSpecialPageAliases( id.local.specialPagesLocal, name );
@@ -221,9 +220,6 @@ function assembleLinkSelector() {
         } );
     }
 
-    // Join link selector assembled results
-    id.local.linkSelector = linkSelector.join( ',' );
-
     // Assemble RegExp for testing page titles in the links
     const specialPagesAliasesPrefixed = Object.values( id.local.specialPagesAliasesPrefixed ).flat().join( '|' );
     id.local.specialPagesPathRegExp = new RegExp(
@@ -234,6 +230,9 @@ function assembleLinkSelector() {
     id.local.specialPagesSearchRegExp = new RegExp(
         id.config.specialPagesSearchRegExp.replaceAll( '$1', specialPagesAliasesPrefixed ),
     );
+
+    // Join a link selector assembled results
+    id.local.linkSelector = linkSelector.join( ',' );
 }
 
 /******* BOOTSTRAP *******/
@@ -250,6 +249,7 @@ function app() {
 
     id.isRunning = true;
 
+    // Export to global scope
     id.utils = utils;
     id.api = { Button, DialogButton, HistoryCompareButton, Dialog, Diff, Link };
     id.settings ||= {};
@@ -260,7 +260,7 @@ function app() {
     // Track on run start time
     id.timers.run = Date.now();
 
-    // Bundle the english language strings
+    // Bundle english language strings
     import('../i18n/en.js');
 
     // Bundle extensions

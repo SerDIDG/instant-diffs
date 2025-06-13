@@ -91,7 +91,7 @@ instantDiffs.i18n.pt = {
     'settings-fieldset-general': 'Geral',
     'settings-enable-mobile': 'Ativar Instant Diffs no tema móvel (Minerva).',
     'settings-enable-mobile-help': 'Para reativar o Instant Diffs, você precisará mudar para outro tema.',
-    'settings-show-menu-icons': 'Mostrar ícones no menu suspenso do diálogo.',
+    'settings-show-menu-icons': 'Mostrar ícones no menu suspenso do diálogo Instant Diffs.',
     'settings-notify-errors': 'Mostrar alertas popup para erros críticos.',
 
     /*** ERRORS ***/

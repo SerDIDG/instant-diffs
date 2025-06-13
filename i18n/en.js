@@ -91,7 +91,7 @@ instantDiffs.i18n.en = {
     'settings-fieldset-general': 'General',
     'settings-enable-mobile': 'Enable Instant Diffs on the mobile skin (Minerva).',
     'settings-enable-mobile-help': 'To re-enable Instant Diffs, you will need to switch to a different skin.',
-    'settings-show-menu-icons': 'Show icons in the dialog dropdown menu.',
+    'settings-show-menu-icons': 'Show icons in the Instant Diffs dialog dropdown menu.',
     'settings-notify-errors': 'Show popup alerts for critical errors.',
 
     /*** ERRORS ***/

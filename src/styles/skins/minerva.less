@@ -79,9 +79,11 @@
     .fix-userlink {
         .mw-userlink {
             &::before {
+                width: 100%;
                 height: 0;
                 min-height: 0;
                 margin: 0;
+                display: table;
                 content: '';
             }
         }
@@ -104,6 +106,13 @@
     }
 }
 
+.instantDiffs-line {
+    // /* [Fix] Display other styles that were loaded from dependencies after the InstantDiffs dialog opens. */
+    .minoredit {
+        font-size: inherit;
+    }
+}
+
 &.mw-special-Recentchanges {
     .instantDiffs-line {
         #instantDiffs-line--pageSpecific.fix-userlink();
@@ -123,11 +132,6 @@
     .instantDiffs-line {
         #instantDiffs-line--pageSpecific.fix-userlink();
         #instantDiffs-line--pageSpecific.fix-usertoollinks();
-
-        // /* [Fix] Display other styles that were loaded from dependencies after the InstantDiffs dialog opens. */
-        .minoredit {
-            font-size: inherit;
-        }
     }
 
     .instantDiffs-line--history {

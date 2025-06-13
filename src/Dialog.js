@@ -100,7 +100,7 @@ class Dialog {
 
         if ( !this.isOpen ) {
             this.opener.link = this.link;
-            this.opener.options = $.extend( true, {}, this.options );
+            this.opener.options = { ...this.options };
 
             // Get a new snapshot of the links to properly calculate indexes for navigation between them
             id.local.snapshot = new Snapshot();
@@ -109,9 +109,9 @@ class Dialog {
         if ( this.link instanceof Link ) {
             const initiatorLink = this.link.getInitiatorLink();
             if ( id.local.snapshot.hasLink( initiatorLink ) ) {
-                this.previousInitiator = $.extend( true, {}, this.initiator );
+                this.previousInitiator = { ...this.initiator };
                 this.initiator.link = initiatorLink;
-                this.initiator.options = $.extend( true, {}, this.options );
+                this.initiator.options = { ...this.options };
 
                 // Set only the initiator links for the current point of navigation
                 id.local.snapshot.setLink( this.initiator.link );
@@ -335,6 +335,9 @@ class Dialog {
 
     /******* ACTIONS *******/
 
+    /**
+     * Fire hooks in the attached diff.
+     */
     fire() {
         // Detach previous Diff if exists
         if ( this.previousDiff instanceof Diff ) {
@@ -348,18 +351,34 @@ class Dialog {
         this.dialog.updateSize();
     }
 
+    /**
+     * Set focus on the dialog.
+     */
     focus() {
         this.dialog.focus();
     }
 
+    /**
+     * Get a diff instance.
+     * @returns {import('./Diff').default}
+     */
     getDiff() {
         return this.diff;
     }
 
+    /**
+     * Get a dialog overlay element.
+     * @returns {jQuery}
+     */
     getOverlay() {
         return this.dialog.$overlay;
     }
 
+    /**
+     * Check if a node contains in the dialog.
+     * @param {HTMLElement} node
+     * @returns {boolean}
+     */
     isParent( node ) {
         return $.contains( this.dialog.$content.get( 0 ), node );
     }

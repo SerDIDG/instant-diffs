@@ -91,7 +91,7 @@ instantDiffs.i18n.it = {
     'settings-fieldset-general': 'Generale',
     'settings-enable-mobile': 'Abilita Instant Diffs nel tema mobile (Minerva).',
     'settings-enable-mobile-help': 'Per riabilitare Instant Diffs dovrai passare a un altro tema.',
-    'settings-show-menu-icons': 'Mostra le icone nel menu a discesa del dialogo.',
+    'settings-show-menu-icons': 'Mostra le icone nel menu a discesa del dialogo Instant Diffs.',
     'settings-notify-errors': 'Mostra popup di avviso per errori critici.',
 
     /*** ERRORS ***/

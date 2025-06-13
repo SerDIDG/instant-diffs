@@ -48,6 +48,11 @@ class Diff {
      */
     isLoading = false;
 
+    /**
+     * Create a diff instance.
+     * @param {object} page a page object
+     * @param {object} [options] configuration options
+     */
     constructor( page, options ) {
         this.page = { ...page };
 

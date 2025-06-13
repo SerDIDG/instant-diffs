@@ -91,7 +91,7 @@ instantDiffs.i18n.uk = {
     'settings-fieldset-general': 'Загальні',
     'settings-enable-mobile': 'Увімкнути Instant Diffs для мобільної теми (Minerva).',
     'settings-enable-mobile-help': 'Щоб повторно увімкнути Instant Diffs, вам потрібно буде переключитися на іншу тему оформлення.',
-    'settings-show-menu-icons': 'Показувати іконки у випадаючому меню діалогу.',
+    'settings-show-menu-icons': 'Показувати іконки у випадаючому меню вікна Instant Diffs.',
     'settings-notify-errors': 'Показувати спливаючі повідомлення при критичних помилках.',
 
     /*** ERRORS ***/

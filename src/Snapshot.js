@@ -69,7 +69,7 @@ class Snapshot {
 
     /**
      * Get the previous link relative to the given index if exists.
-     * @param {number} currentIndex a Link instance
+     * @param {number|undefined} currentIndex current relative index
      * @returns {import('./Link').default|undefined} a Link instance
      */
     getPreviousLink( currentIndex ) {
@@ -85,7 +85,7 @@ class Snapshot {
 
     /**
      * Get the next link relative to the given index if exists.
-     * @param {number} currentIndex a Link instance
+     * @param {number|undefined} currentIndex current relative index
      * @returns {import('./Link').default|undefined} a Link instance
      */
     getNextLink( currentIndex ) {

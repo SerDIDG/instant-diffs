@@ -587,6 +587,56 @@ export function getMWDiffLineTitle( item ) {
     return !isEmpty( title ) ? title : item.$title.text();
 }
 
+/******* OOUI *******/
+
+export function applyOoUiPolyfill() {
+    // "findFirstSelectedItem" method was added in the MediaWiki 1.39 / wmf.23
+    if ( !isFunction( OO.ui.RadioSelectWidget.prototype.findFirstSelectedItem ) ) {
+        OO.ui.RadioSelectWidget.prototype.findFirstSelectedItem = function () {
+            const selected = this.findSelectedItems();
+            return Array.isArray( selected ) ? selected[ 0 ] || null : selected;
+        };
+    }
+}
+
+export function renderOoUiElement( $element ) {
+    return new OO.ui.Element( { $element } );
+}
+
+export function getWindowManager() {
+    // Define custom dialog sizes
+    OO.ui.WindowManager.static.sizes.instantDiffs = {
+        width: 1200,
+    };
+
+    const manager = new OO.ui.WindowManager();
+    $( document.body ).append( manager.$element );
+    return manager;
+}
+
+/**
+ * Add some properties to the inheritor class that the (ES5)
+ * {@link https://www.mediawiki.org/wiki/OOjs/Inheritance OOUI inheritance mechanism} uses. It
+ * partly replicates the operations made in
+ * {@link https://doc.wikimedia.org/oojs/master/OO.html#.inheritClass OO.inheritClass}.
+ * @author {@link https://github.com/jwbth Jack who built the house}
+ *
+ * @param {Function} targetClass Inheritor class.
+ * @returns {Function}
+ */
+export function tweakUserOoUiClass( targetClass ) {
+    const originClass = Object.getPrototypeOf( targetClass );
+    OO.initClass( originClass );
+    targetClass.static = Object.create( originClass.static );
+    Object.keys( targetClass )
+        .filter( ( key ) => key !== 'static' )
+        .forEach( ( key ) => {
+            targetClass.static[ key ] = targetClass[ key ];
+        } );
+    targetClass.parent = targetClass.super = originClass;
+    return targetClass;
+}
+
 /******* ELEMENTS *******/
 
 export function addClick( node, handler, useAltKey = true ) {
@@ -682,20 +732,6 @@ export function embed( node, container, insertMethod = 'appendTo' ) {
     }
 }
 
-export function renderOoUiElement( $element ) {
-    return new OO.ui.Element( { $element } );
-}
-
-export function applyOoUiPolyfill() {
-    // "findFirstSelectedItem" method was added in the MediaWiki 1.39 / wmf.23
-    if ( !isFunction( OO.ui.RadioSelectWidget.prototype.findFirstSelectedItem ) ) {
-        OO.ui.RadioSelectWidget.prototype.findFirstSelectedItem = function () {
-            const selected = this.findSelectedItems();
-            return Array.isArray( selected ) ? selected[ 0 ] || null : selected;
-        };
-    }
-}
-
 export function getPlaceholderClasses( modifiers = [] ) {
     const classes = [ 'instantDiffs-panel-placeholder' ];
     modifiers.forEach( modifier => classes.push( `instantDiffs-panel-placeholder--${ modifier }` ) );
@@ -707,17 +743,6 @@ export function getPlaceholderClasses( modifiers = [] ) {
 
 export function renderPlaceholder() {
     return $( '<span>' ).addClass( getPlaceholderClasses() );
-}
-
-export function getWindowManager() {
-    // Define custom dialog sizes
-    OO.ui.WindowManager.static.sizes.instantDiffs = {
-        width: 1200,
-    };
-
-    const manager = new OO.ui.WindowManager();
-    $( document.body ).append( manager.$element );
-    return manager;
 }
 
 export function renderLabel( params ) {

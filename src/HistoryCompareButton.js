@@ -5,7 +5,7 @@ import DialogButton from './DialogButton';
 
 /**
  * Class representing a button that opens a diff dialog on the history page.
- * @extends {import('./DialogButton').default}
+ * @augments {import('./DialogButton').default}
  */
 class HistoryCompareButton extends DialogButton {
     /**

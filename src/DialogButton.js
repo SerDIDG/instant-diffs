@@ -5,7 +5,7 @@ import Dialog from './Dialog';
 
 /**
  * Class representing a button that opens a diff dialog.
- * @extends {import('./Button').default}
+ * @augments {import('./Button').default}
  */
 class DialogButton extends Button {
     /**
