@@ -1,6 +1,6 @@
 {
     "name": "instant-diffs",
-    "version": "2.0.0-b.7",
+    "version": "2.0.0-b.8",
     "description": "A JavaScript tool that enhances MediaWiki diff links with interactive functionality.",
     "keywords": [
         "wikipedia",
@@ -22,7 +22,11 @@
         "url": "git+https://github.com/SerDIDG/instant-diffs.git"
     },
     "license": "(MIT OR CC-BY-SA-4.0)",
-    "author": "Serhio Magpie",
+    "author": {
+        "name": "Serhio Magpie",
+        "email": "serdidg@gmail.com",
+        "url": "https://screensider.com"
+    },
     "main": "src/app.js",
     "scripts": {
         "start": "node esbuild.config.mjs --start",

@@ -40,6 +40,7 @@ instantDiffs.config = {
             'oojs-ui.styles.icons-interactions',
             'oojs-ui.styles.icons-editing-core',
             'oojs-ui.styles.icons-editing-advanced',
+            'oojs-ui.styles.icons-user',
             'oojs-ui.styles.icons-layout',
         ],
         content: [

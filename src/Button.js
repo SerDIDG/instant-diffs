@@ -1,10 +1,17 @@
 import * as utils from './utils';
 
+/**
+ * Class representing a button.
+ */
 class Button {
     options = {};
     node;
 
-    constructor(options) {
+    /**
+     * Create a button instance.
+     * @param {object} [options] configuration options
+     */
+    constructor( options ) {
         this.options = {
             node: null,
             tag: 'button',
@@ -69,14 +76,27 @@ class Button {
         utils.addClick( this.node, this.options.handler.bind( this ), this.options.useAltKey );
     }
 
+    /******* ACTIONS *******/
+
+    /**
+     * Append a button to the specified node.
+     * @param {HTMLElement} container
+     * @param {string} [insertMethod]
+     */
     embed( container, insertMethod ) {
         utils.embed( this.node, container, insertMethod );
     }
 
+    /**
+     * Remove a button from the DOM.
+     */
     remove() {
         this.node.remove();
     }
 
+    /**
+     * Toggle a buttons pending state that shows a loading cursor.
+     */
     pending( value ) {
         this.node.classList.toggle( 'instantDiffs-link--pending', value );
     }

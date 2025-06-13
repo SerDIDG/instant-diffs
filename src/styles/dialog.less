@@ -3,18 +3,18 @@
 /*** DIALOG ***/
 
 .instantDiffs-dialog {
-    // /* Enable click to close on the overlay */
-    .oo-ui-window-overlay {
-        z-index: -1;
-        inset: 0 0 0 0;
-    }
-
     // /* [Fix] Set top indent for the dialogs because of the fixed header on the some skins  */
     &.oo-ui-window-active {
         .oo-ui-windowManager-modal > & {
             top: var(--instantDiffs-dialog-top);
         }
     }
+}
+
+.instantDiffs-dialog-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
 }
 
 /*** EXTERNAL TOOLS ***/

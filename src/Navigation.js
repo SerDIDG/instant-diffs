@@ -15,11 +15,34 @@ import './styles/navigation.less';
  * Class representing a diff navigation bar.
  */
 class Navigation {
+    /**
+     * @type {import('./Diff').default}
+     */
     diff;
+
+    /**
+     * @type {object}
+     */
     page = {};
+
+    /**
+     * @type {object}
+     */
     pageParams = {};
+
+    /**
+     * @type {object}
+     */
     options = {};
+
+    /**
+     * @type {object}
+     */
     nodes = {};
+
+    /**
+     * @type {object}
+     */
     buttons = {};
 
     /**
@@ -43,7 +66,6 @@ class Navigation {
         this.options = {
             type: null,
             typeVariant: null,
-            initiatorDiff: null,
             links: [],
             ...options,
         };
@@ -77,8 +99,11 @@ class Navigation {
         this.renderMenuLinks();
     }
 
-    /*** NAVIGATION ***/
+    /******* NAVIGATION *******/
 
+    /**
+     * Render a snapshot buttons group that navigate between links on the page.
+     */
     renderSnapshotLinks() {
         const items = [];
 
@@ -97,8 +122,15 @@ class Navigation {
         this.nodes.$left.append( this.buttons.snapshotGroup.$element );
     }
 
+    /**
+     * Render a main navigation group that navigate between diffs or revisions.
+     */
     renderNavigationLinks() {
         const items = [];
+
+        const buttonOptions = {
+            icon: null,
+        };
 
         // Link to the previous diff
         this.buttons.prev = this.renderPrevLink();
@@ -106,7 +138,7 @@ class Navigation {
 
         // Link that switch between revision and diff
         if ( ![ 'page' ].includes( this.options.typeVariant ) ) {
-            this.buttons.switch = this.renderSwitchLink();
+            this.buttons.switch = this.renderSwitchLink( buttonOptions );
             items.push( this.buttons.switch );
         }
 
@@ -119,40 +151,55 @@ class Navigation {
         this.nodes.$center.append( this.buttons.navigationGroup.$element );
     }
 
-    /*** MENU ***/
-
+    /**
+     * Render a context buttons group.
+     */
     renderMenuLinks() {
         const items = [];
 
-        // Icon button parameters
-        const iconParams = {
+        const buttonOptions = {
             invisibleLabel: true,
         };
 
         // Back to the initiator diff link
-        if ( this.options.initiatorDiff ) {
-            this.buttons.initiatorDiff = this.renderBackLink( iconParams );
+        if ( this.diff.getInitiatorDiff() ) {
+            this.buttons.initiatorDiff = this.renderBackLink( buttonOptions );
             items.push( this.buttons.initiatorDiff );
         }
 
         // [FlaggedRevisions] Link to all unpatrolled changes
         if ( this.options.links.$pending?.length > 0 ) {
-            this.buttons.pending = this.renderPendingLink( iconParams );
+            this.buttons.pending = this.renderPendingLink( buttonOptions );
             items.push( this.buttons.pending );
         }
 
-        // Menu button parameters
-        const buttonParams = {
+        // Render dropdown button
+        this.buttons.menuDropdown = this.renderMenuDropdown();
+        items.push( this.buttons.menuDropdown );
+
+        // Render group
+        this.buttons.menuGroup = new OoUi.ButtonGroupWidget( { items } );
+        this.nodes.$right.append( this.buttons.menuGroup.$element );
+    }
+
+    /******* MENU *******/
+
+    /**
+     * Render a menu dropdown.
+     * @returns {OO.ui.PopupButtonWidget} a OO.ui.PopupButtonWidget instance
+     */
+    renderMenuDropdown() {
+        const buttonOptions = {
             framed: false,
             classes: [ 'instantDiffs-button--link' ],
         };
         if ( !utils.defaults( 'showMenuIcons' ) ) {
-            buttonParams.icon = null;
+            buttonOptions.icon = null;
         }
 
         // Render menu groups
-        this.buttons.menuMobile = this.renderMenuMobileGroup( buttonParams );
-        this.buttons.menuGroup = this.renderMenuGroup( buttonParams );
+        this.buttons.menuMobile = this.renderMenuMobileGroup( buttonOptions );
+        this.buttons.menuGroup = this.renderMenuGroup( buttonOptions );
 
         const groupsElements = [
             this.buttons.menuMobile.$element.get( 0 ),
@@ -160,7 +207,9 @@ class Navigation {
         ];
 
         // Dropdown menu
-        this.buttons.menuDropdown = new OoUi.PopupButtonWidget( {
+        return new OoUi.PopupButtonWidget( {
+            // FixMe: fix navigation using keyboard's tab key when a popup embed to the dialog overlay
+            //$overlay: this.diff.getOverlay(),
             icon: 'menu',
             label: utils.msg( 'goto-links' ),
             title: utils.msg( 'goto-links' ),
@@ -177,21 +226,21 @@ class Navigation {
                 align: 'backwards',
             },
         } );
-        items.push( this.buttons.menuDropdown );
-
-        // Render group
-        this.buttons.menuGroup = new OoUi.ButtonGroupWidget( { items } );
-        this.nodes.$right.append( this.buttons.menuGroup.$element );
     }
 
-    renderMenuGroup( buttonParams ) {
+    /**
+     * Render a main dropdown context buttons group.
+     * @param {object} [buttonOptions] button configuration options
+     * @returns {OO.ui.ButtonGroupWidget} a OO.ui.ButtonGroupWidget instance
+     */
+    renderMenuGroup( buttonOptions ) {
         const items = [];
 
         // Copy a link to the clipboard
         this.buttons.copy = new OoUi.ButtonWidget( {
             label: utils.msg( 'copy-link' ),
             icon: 'link',
-            ...buttonParams,
+            ...buttonOptions,
         } );
         this.buttons.copyHelper = new Button( {
             node: this.buttons.copy.$button.get( 0 ),
@@ -203,7 +252,7 @@ class Navigation {
         this.buttons.copyWiki = new OoUi.ButtonWidget( {
             label: utils.msg( 'copy-wikilink' ),
             icon: 'wikiText',
-            ...buttonParams,
+            ...buttonOptions,
         } );
         this.buttons.copyWikiHelper = new Button( {
             node: this.buttons.copyWiki.$button.get( 0 ),
@@ -217,49 +266,30 @@ class Navigation {
             icon: 'articleRedirect',
             href: utils.getTypeHref( this.options.type, this.page ),
             target: utils.getTarget( true ),
-            ...buttonParams,
+            ...buttonOptions,
         } );
         items.push( this.buttons.pageType );
 
+        // Page-specific links
         if ( !utils.isEmpty( this.page.title ) ) {
             // Link to the page
-            this.buttons.page = new OoUi.ButtonWidget( {
-                label: utils.msg( 'goto-page' ),
-                icon: 'article',
-                href: this.page.href,
-                target: utils.getTarget( true ),
-                ...buttonParams,
-            } );
+            this.buttons.page = this.renderPageLink( buttonOptions );
             items.push( this.buttons.page );
 
-            // Link to the history
-            this.buttons.history = new OoUi.ButtonWidget( {
-                label: utils.msg( 'goto-history' ),
-                icon: 'history',
-                href: mw.util.getUrl( this.page.title, { action: 'history' } ),
-                target: utils.getTarget( true ),
-                ...buttonParams,
-            } );
-            items.push( this.buttons.history );
-
             // Link to the talk page
-            if ( !this.page.mwTitle.isTalkPage() ) {
-                this.buttons.talkPage = new OoUi.ButtonWidget( {
-                    label: utils.msg( 'goto-talkpage' ),
-                    icon: 'speechBubbles',
-                    href: this.page.mwTitle.getTalkPage().getUrl(),
-                    target: utils.getTarget( true ),
-                    ...buttonParams,
-                } );
-                items.push( this.buttons.talkPage );
-            }
+            this.buttons.talkPage = this.renderTalkPageLink( buttonOptions );
+            items.push( this.buttons.talkPage );
+
+            // Link to the history
+            this.buttons.history = this.renderHistoryLink( buttonOptions );
+            items.push( this.buttons.history );
         }
 
         // Open Instant Diffs settings
         this.buttons.settings = new OoUi.ButtonWidget( {
             label: utils.msg( 'goto-settings' ),
             icon: 'settings',
-            ...buttonParams,
+            ...buttonOptions,
         } );
         this.buttons.settingsHelper = new Button( {
             node: this.buttons.settings.$button.get( 0 ),
@@ -271,10 +301,10 @@ class Navigation {
         items.push( utils.renderOoUiElement( $( '<hr>' ) ) );
 
         // Link to the Instant Diffs docs and current running version
-        this.buttons.id = this.renderIDLink( buttonParams );
+        this.buttons.id = this.renderIDLink( buttonOptions );
         items.push( this.buttons.id );
 
-        // Group
+        // Render group
         return new OoUi.ButtonGroupWidget( {
             items,
             classes: [
@@ -284,24 +314,29 @@ class Navigation {
         } );
     };
 
-    renderMenuMobileGroup( buttonParams ) {
+    /**
+     * Render a mobile specific dropdown context buttons group.
+     * @param {object} [buttonOptions] button configuration options
+     * @returns {OO.ui.ButtonGroupWidget} a OO.ui.ButtonGroupWidget instance
+     */
+    renderMenuMobileGroup( buttonOptions ) {
         const items = [];
 
         // Back to the initiator diff link
-        if ( this.options.initiatorDiff ) {
-            this.buttons.mobileInitiatorDiff = this.renderBackLink( buttonParams );
+        if ( this.diff.getInitiatorDiff() ) {
+            this.buttons.mobileInitiatorDiff = this.renderBackLink( buttonOptions );
             items.push( this.buttons.mobileInitiatorDiff );
         }
 
         // [FlaggedRevisions] Link to all unpatrolled changes
         if ( this.options.links.$pending?.length > 0 ) {
-            this.buttons.mobilePending = this.renderPendingLink( buttonParams );
+            this.buttons.mobilePending = this.renderPendingLink( buttonOptions );
             items.push( this.buttons.mobilePending );
         }
 
         // Link that switch between revision and diff
         if ( ![ 'page', 'compare' ].includes( this.options.typeVariant ) ) {
-            this.buttons.mobileWwitch = this.renderSwitchLink( buttonParams );
+            this.buttons.mobileWwitch = this.renderSwitchLink( buttonOptions );
             items.push( this.buttons.mobileWwitch );
         }
 
@@ -310,25 +345,33 @@ class Navigation {
             items.push( utils.renderOoUiElement( $( '<hr>' ) ) );
         }
 
-        // Group
+        // Render group
         return new OoUi.ButtonGroupWidget( {
             items: items,
-            classes: [ 'instantDiffs-buttons-group--vertical', 'instantDiffs-buttons-group--mobile' ],
+            classes: [
+                'instantDiffs-buttons-group--vertical',
+                'instantDiffs-buttons-group--mobile',
+                utils.defaults( 'showMenuIcons' ) ? 'has-icons' : null,
+            ],
         } );
     };
 
-    /*** LINKS ***/
+    /******* LINKS *******/
 
+    /**
+     * Render a snapshot button that navigates to the previous link on the page.
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
     renderSnapshotPrevLink() {
         const link = id.local.snapshot.getPreviousLink();
 
         const button = new OoUi.ButtonWidget( {
             label: utils.msg( 'goto-snapshot-prev' ),
             title: utils.msg( 'goto-snapshot-prev' ),
-            invisibleLabel: true,
-            icon: 'doubleChevronStart',
             href: link ? link.href : null,
             target: utils.getTarget( true ),
+            invisibleLabel: true,
+            icon: 'doubleChevronStart',
             disabled: !link,
         } );
 
@@ -342,16 +385,20 @@ class Navigation {
         return button;
     }
 
+    /**
+     * Render a snapshot button that navigates to the next link on the page.
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
     renderSnapshotNextLink() {
         const link = id.local.snapshot.getNextLink();
 
         const button = new OoUi.ButtonWidget( {
             label: utils.msg( 'goto-snapshot-next' ),
             title: utils.msg( 'goto-snapshot-next' ),
-            invisibleLabel: true,
-            icon: 'doubleChevronEnd',
             href: link ? link.href : null,
             target: utils.getTarget( true ),
+            invisibleLabel: true,
+            icon: 'doubleChevronEnd',
             disabled: !link,
         } );
 
@@ -365,6 +412,10 @@ class Navigation {
         return button;
     }
 
+    /**
+     * Render a button that navigates to the previous diff or revision.
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
     renderPrevLink() {
         const link = this.options.links.$prev;
         const diffOldId = mw.config.get( 'wgDiffOldId' );
@@ -406,6 +457,10 @@ class Navigation {
         return button;
     }
 
+    /**
+     * Render a button that navigates to the next diff or revision.
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
     renderNextLink() {
         const link = this.options.links.$next;
         const diffNewId = mw.config.get( 'wgDiffNewId' );
@@ -446,16 +501,21 @@ class Navigation {
         return button;
     }
 
-    renderSwitchLink( params ) {
+    /**
+     * Render a button that switches view between diff or revision.
+     * @param {object} [options] button configuration options
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
+    renderSwitchLink( options ) {
         const type = this.options.type === 'revision' ? 'diff' : 'revision';
 
         const button = new OoUi.ButtonWidget( {
             label: utils.msg( `goto-view-${ type }` ),
             href: utils.getTypeHref( type, this.page ),
             target: utils.getTarget( true ),
-            framed: true,
+            icon: 'specialPages',
             classes: [ 'instantDiffs-button--switch' ],
-            ...params,
+            ...options,
         } );
 
         new Link( button.$button.get( 0 ), {
@@ -465,18 +525,22 @@ class Navigation {
         return button;
     }
 
-    renderPendingLink( params ) {
+    /**
+     * Render a button that switches to the diff between the last patrolled revision and the current unpatrolled one.
+     * The button appears only if the FlaggedRevs extension is installed and the page has unpatrolled edits.
+     * @param {object} [options] button configuration options
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
+    renderPendingLink( options ) {
         const link = this.options.links.$pending;
 
         const button = new OoUi.ButtonWidget( {
             label: utils.msg( 'goto-view-pending' ),
             href: link.attr( 'href' ),
             target: utils.getTarget( true ),
-            framed: true,
             icon: 'info',
-            invisibleLabel: false,
             classes: [ 'instantDiffs-button--pending' ],
-            ...params,
+            ...options,
         } );
 
         new Link( button.$button.get( 0 ), {
@@ -487,18 +551,21 @@ class Navigation {
         return button;
     }
 
-    renderBackLink( params ) {
-        const initiator = this.options.initiatorDiff;
+    /**
+     * Render a button that navigates to the previous view.
+     * @param {object} [options] button configuration options
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
+    renderBackLink( options ) {
+        const initiator = this.diff.getInitiatorDiff();
 
         const button = new OoUi.ButtonWidget( {
             label: utils.msg( `goto-back-${ initiator.getType() }` ),
             href: utils.getTypeHref( initiator.getType(), initiator.getPage(), initiator.getPageParams() ),
             target: utils.getTarget( true ),
-            framed: true,
             icon: 'newline',
-            invisibleLabel: false,
             classes: [ 'instantDiffs-button--back' ],
-            ...params,
+            ...options,
         } );
 
         new Link( button.$button.get( 0 ), {
@@ -508,28 +575,100 @@ class Navigation {
         return button;
     }
 
-    renderIDLink( params ) {
+    /**
+     * Render a button that navigates to the page.
+     * @param {object} [options] button configuration options
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
+    renderPageLink( options ) {
+        const href = this.page.mwTitle.isTalkPage()
+            ? this.page.mwTitle.getSubjectPage().getUrl()
+            : this.page.href;
+
+        const iconSet = {
+            2: 'userAvatar',
+            3: 'userAvatar',
+            default: 'article',
+        };
+
+        return new OoUi.ButtonWidget( {
+            label: utils.msg( 'goto-page' ),
+            href: href,
+            target: utils.getTarget( true ),
+            icon: iconSet[ this.page.mwTitle.getNamespaceId() ] || iconSet.default,
+            ...options,
+        } );
+    }
+
+    /**
+     * Render a button that navigates to the talk page.
+     * @param {object} [options] button configuration options
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
+    renderTalkPageLink( options ) {
+        const href = this.page.mwTitle.isTalkPage()
+            ? this.page.href
+            : this.page.mwTitle.getTalkPage().getUrl();
+
+        const iconSet = {
+            2: 'userTalk',
+            3: 'userTalk',
+            default: 'speechBubbles',
+        };
+
+        return new OoUi.ButtonWidget( {
+            label: utils.msg( 'goto-talkpage' ),
+            href: href,
+            target: utils.getTarget( true ),
+            icon: iconSet[ this.page.mwTitle.getNamespaceId() ] || iconSet.default,
+            ...options,
+        } );
+    }
+
+    /**
+     * Render a button that navigates to the page history.
+     * @param {object} [options] button configuration options
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
+    renderHistoryLink( options ) {
+        return new OoUi.ButtonWidget( {
+            label: utils.msg( 'goto-history' ),
+            icon: 'history',
+            href: mw.util.getUrl( this.page.title, { action: 'history' } ),
+            target: utils.getTarget( true ),
+            ...options,
+        } );
+    }
+
+    /**
+     * Render a button that shows a current version of the Instant Diffs and navigates to the homepage.
+     * @param {object} [options] button configuration options
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
+    renderIDLink( options ) {
         const label = $( `
 			<span class="name">${ utils.msg( 'name' ) }</span>
 			<span class="version">v.${ id.config.version }</span>
 		` );
 
-        params = {
+        options = {
             label: label,
             href: utils.getOrigin( `/wiki/${ id.config.link }` ),
             target: utils.getTarget( true ),
-            framed: true,
             classes: [],
-            ...params,
+            ...options,
         };
 
-        params.classes.push( 'instantDiffs-button--link-id' );
+        options.classes.push( 'instantDiffs-button--link-id' );
 
-        return new OoUi.ButtonWidget( params );
+        return new OoUi.ButtonWidget( options );
     }
 
-    /*** LINK ACTIONS ***/
+    /******* LINK ACTIONS *******/
 
+    /**
+     * Action that copies a link to the edit or revision to the clipboard.
+     */
     actionCopyLink() {
         // Hide menu dropdown
         this.toggleMenuDropdown( false );
@@ -544,6 +683,9 @@ class Navigation {
         utils.clipboardWrite( href );
     }
 
+    /**
+     * Action that copies a formatted wikilink to the edit or revision to the clipboard.
+     */
     actionCopyWikilink() {
         // Hide menu dropdown
         this.toggleMenuDropdown( false );
@@ -560,6 +702,9 @@ class Navigation {
         utils.clipboardWrite( href );
     }
 
+    /**
+     * Action that opens the Settings Dialog.
+     */
     actionOpenSettings() {
         if ( id.local.settings && id.local.settings.isLoading ) return;
 
@@ -577,16 +722,22 @@ class Navigation {
         $.when( id.local.settings.load() ).always( () => this.buttons.settingsHelper.pending( false ) );
     }
 
+    /**
+     * Event that emits after the Settings Dialog opens.
+     */
     onSettingsOpen() {
         // Hide menu dropdown
         this.toggleMenuDropdown( false );
     }
 
+    /**
+     * Event that emits after the Settings Dialog closes.
+     */
     onSettingsClose() {
         this.diff.focus();
     }
 
-    /*** ACTIONS ***/
+    /******* ACTIONS *******/
 
     /**
      * Toggle a menu dropdown visibility.
@@ -616,6 +767,16 @@ class Navigation {
             ...params,
         };
         this.nodes.$container.toggleClass( 'is-sticky', params.top > 0 );
+    }
+
+    /**
+     * Detach a navigation bar from the DOM.
+     */
+    detach() {
+        // Hide menu dropdown
+        this.toggleMenuDropdown( false );
+
+        this.nodes.$container.detach();
     }
 }
 

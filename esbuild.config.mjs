@@ -34,7 +34,7 @@ const banner = `/**
  * Instant Diffs
  *
  * Version: ${ pkg.version }
- * Author: ${ pkg.author }
+ * Author: ${ pkg.author.name }
  * Licenses: ${ pkg.license }
  * Documentation: ${ pkg.homepage }
  */`;

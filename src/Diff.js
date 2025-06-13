@@ -367,7 +367,6 @@ Diff.prototype.renderNavigation = function () {
     this.navigation = new Navigation( this, this.page, this.pageParams, {
         type: this.options.type,
         typeVariant: this.options.typeVariant,
-        initiatorDiff: this.options.initiatorDiff,
         links: this.links,
     } );
     this.navigation.embed( this.nodes.$container, 'prependTo' );
@@ -441,8 +440,17 @@ Diff.prototype.getDiffTable = function () {
     return this.nodes.$table;
 };
 
+Diff.prototype.getOverlay = function () {
+    return this.options.initiatorDialog?.getOverlay();
+};
+
+Diff.prototype.getInitiatorDiff = function () {
+    return this.options.initiatorDiff;
+};
+
 Diff.prototype.detach = function () {
     mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).fire( this );
+    this.navigation.detach();
     this.nodes.$container.detach();
 };
 
