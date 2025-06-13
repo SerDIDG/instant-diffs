@@ -1,7 +1,3 @@
-import $ from 'jquery';
-import mw from 'mediawiki';
-import OoUi from 'oojs-ui';
-
 import id from './id';
 import * as utils from './utils';
 
@@ -118,7 +114,7 @@ class Navigation {
         }
 
         // Render group
-        this.buttons.snapshotGroup = new OoUi.ButtonGroupWidget( { items } );
+        this.buttons.snapshotGroup = new OO.ui.ButtonGroupWidget( { items } );
         this.nodes.$left.append( this.buttons.snapshotGroup.$element );
     }
 
@@ -147,7 +143,7 @@ class Navigation {
         items.push( this.buttons.next );
 
         // Render group
-        this.buttons.navigationGroup = new OoUi.ButtonGroupWidget( { items } );
+        this.buttons.navigationGroup = new OO.ui.ButtonGroupWidget( { items } );
         this.nodes.$center.append( this.buttons.navigationGroup.$element );
     }
 
@@ -178,7 +174,7 @@ class Navigation {
         items.push( this.buttons.menuDropdown );
 
         // Render group
-        this.buttons.menuGroup = new OoUi.ButtonGroupWidget( { items } );
+        this.buttons.menuGroup = new OO.ui.ButtonGroupWidget( { items } );
         this.nodes.$right.append( this.buttons.menuGroup.$element );
     }
 
@@ -207,7 +203,7 @@ class Navigation {
         ];
 
         // Dropdown menu
-        return new OoUi.PopupButtonWidget( {
+        return new OO.ui.PopupButtonWidget( {
             // FixMe: fix navigation using keyboard's tab key when a popup embed to the dialog overlay
             //$overlay: this.diff.getOverlay(),
             icon: 'menu',
@@ -237,7 +233,7 @@ class Navigation {
         const items = [];
 
         // Copy a link to the clipboard
-        this.buttons.copy = new OoUi.ButtonWidget( {
+        this.buttons.copy = new OO.ui.ButtonWidget( {
             label: utils.msg( 'copy-link' ),
             icon: 'link',
             ...buttonOptions,
@@ -249,7 +245,7 @@ class Navigation {
         items.push( this.buttons.copy );
 
         // Copy a wikilink to the clipboard
-        this.buttons.copyWiki = new OoUi.ButtonWidget( {
+        this.buttons.copyWiki = new OO.ui.ButtonWidget( {
             label: utils.msg( 'copy-wikilink' ),
             icon: 'wikiText',
             ...buttonOptions,
@@ -261,7 +257,7 @@ class Navigation {
         items.push( this.buttons.copyWiki );
 
         // Link to the revision or to the edit
-        this.buttons.pageType = new OoUi.ButtonWidget( {
+        this.buttons.pageType = new OO.ui.ButtonWidget( {
             label: utils.msg( `goto-${ this.options.type }` ),
             icon: 'articleRedirect',
             href: utils.getTypeHref( this.options.type, this.page ),
@@ -286,7 +282,7 @@ class Navigation {
         }
 
         // Open Instant Diffs settings
-        this.buttons.settings = new OoUi.ButtonWidget( {
+        this.buttons.settings = new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-settings' ),
             icon: 'settings',
             ...buttonOptions,
@@ -305,7 +301,7 @@ class Navigation {
         items.push( this.buttons.id );
 
         // Render group
-        return new OoUi.ButtonGroupWidget( {
+        return new OO.ui.ButtonGroupWidget( {
             items,
             classes: [
                 'instantDiffs-buttons-group--vertical',
@@ -346,7 +342,7 @@ class Navigation {
         }
 
         // Render group
-        return new OoUi.ButtonGroupWidget( {
+        return new OO.ui.ButtonGroupWidget( {
             items: items,
             classes: [
                 'instantDiffs-buttons-group--vertical',
@@ -365,7 +361,7 @@ class Navigation {
     renderSnapshotPrevLink() {
         const link = id.local.snapshot.getPreviousLink();
 
-        const button = new OoUi.ButtonWidget( {
+        const button = new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-snapshot-prev' ),
             title: utils.msg( 'goto-snapshot-prev' ),
             href: link ? link.href : null,
@@ -392,7 +388,7 @@ class Navigation {
     renderSnapshotNextLink() {
         const link = id.local.snapshot.getNextLink();
 
-        const button = new OoUi.ButtonWidget( {
+        const button = new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-snapshot-next' ),
             title: utils.msg( 'goto-snapshot-next' ),
             href: link ? link.href : null,
@@ -441,7 +437,7 @@ class Navigation {
             iconBefore: document.dir === 'ltr' ? '←' : '→',
         } );
 
-        const button = new OoUi.ButtonWidget( {
+        const button = new OO.ui.ButtonWidget( {
             label: $label,
             href: href,
             target: utils.getTarget( true ),
@@ -485,7 +481,7 @@ class Navigation {
             iconAfter: document.dir === 'ltr' ? '→' : '←',
         } );
 
-        const button = new OoUi.ButtonWidget( {
+        const button = new OO.ui.ButtonWidget( {
             label: $label,
             href: href,
             target: utils.getTarget( true ),
@@ -509,7 +505,7 @@ class Navigation {
     renderSwitchLink( options ) {
         const type = this.options.type === 'revision' ? 'diff' : 'revision';
 
-        const button = new OoUi.ButtonWidget( {
+        const button = new OO.ui.ButtonWidget( {
             label: utils.msg( `goto-view-${ type }` ),
             href: utils.getTypeHref( type, this.page ),
             target: utils.getTarget( true ),
@@ -534,7 +530,7 @@ class Navigation {
     renderPendingLink( options ) {
         const link = this.options.links.$pending;
 
-        const button = new OoUi.ButtonWidget( {
+        const button = new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-view-pending' ),
             href: link.attr( 'href' ),
             target: utils.getTarget( true ),
@@ -559,7 +555,7 @@ class Navigation {
     renderBackLink( options ) {
         const initiator = this.diff.getInitiatorDiff();
 
-        const button = new OoUi.ButtonWidget( {
+        const button = new OO.ui.ButtonWidget( {
             label: utils.msg( `goto-back-${ initiator.getType() }` ),
             href: utils.getTypeHref( initiator.getType(), initiator.getPage(), initiator.getPageParams() ),
             target: utils.getTarget( true ),
@@ -591,7 +587,7 @@ class Navigation {
             default: 'article',
         };
 
-        return new OoUi.ButtonWidget( {
+        return new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-page' ),
             href: href,
             target: utils.getTarget( true ),
@@ -616,7 +612,7 @@ class Navigation {
             default: 'speechBubbles',
         };
 
-        return new OoUi.ButtonWidget( {
+        return new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-talkpage' ),
             href: href,
             target: utils.getTarget( true ),
@@ -631,7 +627,7 @@ class Navigation {
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderHistoryLink( options ) {
-        return new OoUi.ButtonWidget( {
+        return new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-history' ),
             icon: 'history',
             href: mw.util.getUrl( this.page.title, { action: 'history' } ),
@@ -661,7 +657,7 @@ class Navigation {
 
         options.classes.push( 'instantDiffs-button--link-id' );
 
-        return new OoUi.ButtonWidget( options );
+        return new OO.ui.ButtonWidget( options );
     }
 
     /******* LINK ACTIONS *******/

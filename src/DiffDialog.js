@@ -1,7 +1,3 @@
-import $ from 'jquery';
-import OO from 'oojs';
-import OoUi from 'oojs-ui';
-
 import * as utils from './utils';
 
 /**
@@ -13,7 +9,7 @@ function DiffLabel() {
     } );
 }
 
-OO.inheritClass( DiffLabel, OoUi.LabelWidget );
+OO.inheritClass( DiffLabel, OO.ui.LabelWidget );
 
 DiffLabel.static.tagName = 'div';
 
@@ -28,7 +24,7 @@ export function DiffDialog( dialog ) {
     } );
 }
 
-OO.inheritClass( DiffDialog, OoUi.MessageDialog );
+OO.inheritClass( DiffDialog, OO.ui.MessageDialog );
 
 DiffDialog.static.name = 'Instant Diffs Dialog';
 DiffDialog.static.size = 'instantDiffs';
@@ -73,7 +69,7 @@ DiffDialog.prototype.getSetupProcess = function ( data ) {
 DiffDialog.prototype.getUpdateProcess = function ( data ) {
     data = data || {};
 
-    return new OoUi.Process()
+    return new OO.ui.Process()
         .next( function () {
             this.title.setLabel(
                 data.title !== undefined ? data.title : this.constructor.static.title,

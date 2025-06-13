@@ -67,12 +67,6 @@ const config = {
             watch: true,
         } ),
         replace( strings ),
-        globalExternals( {
-            mediawiki: 'mw',
-            jquery: '$',
-            oojs: 'OO',
-            'oojs-ui': 'OO.ui',
-        } ),
         ImportGlob(),
         lessLoader(),
     ],

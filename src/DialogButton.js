@@ -1,5 +1,3 @@
-import $ from 'jquery';
-
 import id from './id';
 
 import Button from './Button';

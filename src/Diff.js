@@ -1,6 +1,3 @@
-import $ from 'jquery';
-import mw from 'mediawiki';
-
 import id from './id';
 import * as utils from './utils';
 

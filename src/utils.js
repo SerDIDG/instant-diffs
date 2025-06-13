@@ -1,7 +1,3 @@
-import $ from 'jquery';
-import mw from 'mediawiki';
-import OoUi from 'oojs-ui';
-
 import id from './id';
 
 import Button from './Button';
@@ -687,13 +683,13 @@ export function embed( node, container, insertMethod = 'appendTo' ) {
 }
 
 export function renderOoUiElement( $element ) {
-    return new OoUi.Element( { $element } );
+    return new OO.ui.Element( { $element } );
 }
 
 export function applyOoUiPolyfill() {
     // "findFirstSelectedItem" method was added in the MediaWiki 1.39 / wmf.23
-    if ( !isFunction( OoUi.RadioSelectWidget.prototype.findFirstSelectedItem ) ) {
-        OoUi.RadioSelectWidget.prototype.findFirstSelectedItem = function () {
+    if ( !isFunction( OO.ui.RadioSelectWidget.prototype.findFirstSelectedItem ) ) {
+        OO.ui.RadioSelectWidget.prototype.findFirstSelectedItem = function () {
             const selected = this.findSelectedItems();
             return Array.isArray( selected ) ? selected[ 0 ] || null : selected;
         };
@@ -715,11 +711,11 @@ export function renderPlaceholder() {
 
 export function getWindowManager() {
     // Define custom dialog sizes
-    OoUi.WindowManager.static.sizes.instantDiffs = {
+    OO.ui.WindowManager.static.sizes.instantDiffs = {
         width: 1200,
     };
 
-    const manager = new OoUi.WindowManager();
+    const manager = new OO.ui.WindowManager();
     $( document.body ).append( manager.$element );
     return manager;
 }
