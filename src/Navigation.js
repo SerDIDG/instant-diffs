@@ -582,9 +582,9 @@ class Navigation {
 
         return new OO.ui.ButtonWidget( {
             label: utils.msg( `goto-${ this.options.type }` ),
-            icon: 'articleRedirect',
             href: utils.getTypeHref( this.page, {}, hrefOptions ),
             target: utils.getTarget( true ),
+            icon: 'articleRedirect',
             ...options,
         } );
     }
@@ -647,9 +647,9 @@ class Navigation {
     renderHistoryLink( options ) {
         return new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-history' ),
-            icon: 'history',
             href: mw.util.getUrl( this.page.title, { action: 'history' } ),
             target: utils.getTarget( true ),
+            icon: 'history',
             ...options,
         } );
     }

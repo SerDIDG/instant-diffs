@@ -13,15 +13,22 @@ const pkg = JSON.parse(
     await readFile( new URL( './package.json', import.meta.url ) ),
 );
 
+// Get a script's version
+const version = process.argv.includes( '--dev' ) ? pkg.version : pkg.version.split( '+' ).shift();
+
 // String to replace in the files
 const strings = {
     include: /\.js$/,
-    __version__: pkg.version,
+    __version__: version,
     __origin__: 'https://mediawiki.org',
-    __styles__: '/w/index.php?title=User:Serhio_Magpie/instantDiffs.test.css&action=raw&ctype=text/css',
+    __styles__: '/w/index.php?title=User:Serhio_Magpie/instantDiffs.css&action=raw&ctype=text/css',
     __messages__: '/w/index.php?title=User:Serhio_Magpie/instantDiffs-i18n/$lang.js&action=raw&ctype=text/javascript',
     __debug__: process.argv.includes( '--start' ),
 };
+
+if ( process.argv.includes( '--dev' ) ) {
+    strings.__styles__ = '/w/index.php?title=User:Serhio_Magpie/instantDiffs.test.css&action=raw&ctype=text/css';
+}
 
 if ( process.argv.includes( '--start' ) ) {
     strings.__origin__ = 'http://localhost:8000';
@@ -33,7 +40,7 @@ if ( process.argv.includes( '--start' ) ) {
 const banner = `/**
  * Instant Diffs
  *
- * Version: ${ pkg.version }
+ * Version: ${ version }
  * Author: ${ pkg.author.name }
  * Licenses: ${ pkg.license }
  * Documentation: ${ pkg.homepage }

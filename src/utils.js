@@ -43,10 +43,20 @@ export function isToggleKey( event ) {
 
 /******* COMMON *******/
 
+/**
+ * Adds an origin prefix to the href.
+ * @param {string} path
+ * @returns {string}
+ */
 export function getOrigin( path ) {
     return `${ id.config.origin }${ path }`;
 }
 
+/**
+ * Filters list from the unavailable dependencies.
+ * @param {array} data
+ * @returns {array}
+ */
 export function getDependencies( data ) {
     return data.filter( item => {
         const state = mw.loader.getState( item );
@@ -54,17 +64,33 @@ export function getDependencies( data ) {
     } );
 }
 
+/**
+ * Checks if a script is allowed to execute on the certain pages.
+ * @returns {boolean}
+ */
 export function isAllowed() {
     return id.config.include.actions.includes( mw.config.get( 'wgAction' ) ) &&
         !id.config.exclude.pages.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) );
 }
 
+/**
+ * Calls a console object method with a script's prefix attached before the message.
+ * @param {string} type
+ * @param {string} message
+ * @param {array} [data]
+ */
 export function log( type, message, data = [] ) {
     const logger = console[ type ];
     if ( !logger ) return;
     logger( `${ msg( 'name' ) }: ${ message }.`, ...data );
 }
 
+/**
+ * Logs a time difference between start and end.
+ * @param {string} name
+ * @param {number} start
+ * @param {number} end
+ */
 export function logTimer( name, start, end ) {
     let diff = end - start;
     if ( diff < 1000 ) {
@@ -75,28 +101,23 @@ export function logTimer( name, start, end ) {
     log( 'info', `${ name }: ${ diff }` );
 }
 
+/**
+ * Checks if a given breakpoint matched in the window.matchMedia.
+ * @param {string} breakpoint
+ * @returns {boolean}
+ */
 export function isBreakpoint( breakpoint ) {
     breakpoint = id.config.breakpoints[ breakpoint ];
     return breakpoint ? window.matchMedia( breakpoint ) : false;
 }
 
-export function getSpecialPageAliases( data, name ) {
-    const namespace = 'Special';
-    const localNamespace = mw.config.get( 'wgFormattedNamespaces' )[ '-1' ];
-    const nameParts = name.split( ':' );
-    const localName = data[ name ];
-    const localNameParts = localName.split( ':' );
-
-    // Collect aliases variants
-    nameParts[ 0 ] = localNamespace;
-    localNameParts[ 0 ] = namespace;
-
-    const values = [ name, localName, nameParts.join( ':' ), localNameParts.join( ':' ) ];
-    return [ ...new Set( values ) ];
-}
-
 /******* DEFAULTS *******/
 
+/**
+ * Gets a setting option stored in the config.
+ * @param {string|undefined} key for specific option, or undefined for the option's object
+ * @returns {*|object} a specific option, or the option's object
+ */
 export function defaults( key ) {
     return key ? id.defaults[ key ] : id.defaults;
 }
@@ -626,6 +647,21 @@ export function getMWDiffLineTitle( item ) {
 
     const title = item.$title.attr( 'title' );
     return !isEmpty( title ) ? title : item.$title.text();
+}
+
+export function getSpecialPageAliases( data, name ) {
+    const namespace = 'Special';
+    const localNamespace = mw.config.get( 'wgFormattedNamespaces' )[ '-1' ];
+    const nameParts = name.split( ':' );
+    const localName = data[ name ];
+    const localNameParts = localName.split( ':' );
+
+    // Collect aliases variants
+    nameParts[ 0 ] = localNamespace;
+    localNameParts[ 0 ] = namespace;
+
+    const values = [ name, localName, nameParts.join( ':' ), localNameParts.join( ':' ) ];
+    return [ ...new Set( values ) ];
 }
 
 /******* OOUI *******/
