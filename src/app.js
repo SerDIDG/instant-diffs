@@ -40,7 +40,7 @@ function processChangelistPage() {
 
 function processContributionsPage() {
     // Fill empty links
-    const $contributionsLines = $( '.mw-contributions-list .mw-changeslist-links > span:first-child' );
+    const $contributionsLines = $( '.mw-contributions-list .mw-changeslist-links:not(.mw-pager-tools) > span:first-child' );
     $contributionsLines.each( ( i, node ) => {
         const $node = $( node );
         if ( $node.find( 'a' ).length === 0 ) {
