@@ -83,7 +83,7 @@ export class DiffDialog extends OO.ui.MessageDialog {
     }
 
     focus( ...args ) {
-        super.focus( ...args );
+        super.focus?.( ...args );
 
         this.$content.trigger( 'focus' );
     }
