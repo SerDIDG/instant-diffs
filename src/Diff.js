@@ -24,6 +24,10 @@ class Diff {
      */
     mwConfg = {
         'thanks-confirmation-required': true,
+        wgTitle: null,
+        wgPageName: null,
+        wgNamespaceNumber: null,
+        wgRevisionId: null,
         wgDiffOldId: null,
         wgDiffNewId: null,
     };
@@ -329,6 +333,13 @@ class Diff {
         if ( utils.isEmpty( this.page.section ) && $toSectionLinks.length > 0 ) {
             const section = utils.getHashFromUrl( $toSectionLinks.prop( 'href' ) );
             this.page = utils.extendPage( this.page, { section } );
+        }
+
+        // Save the title values to the mw.config
+        if ( this.page.mwTitle ) {
+            this.mwConfg.wgTitle = this.page.mwTitle.getMainText();
+            this.mwConfg.wgPageName = this.page.mwTitle.getPrefixedDb();
+            this.mwConfg.wgNamespaceNumber = this.page.mwTitle.getNamespaceId();
         }
     }
 

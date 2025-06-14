@@ -333,11 +333,11 @@ export class SettingsDialog extends OO.ui.ProcessDialog {
     onLinksFormatChoose() {
         const linkFormat = this.inputs.linksFormat.findFirstSelectedItem()?.getData();
 
-        const params = {
-            minify: linkFormat === 'minify',
+        const options = {
             relative: false,
+            minify: linkFormat === 'minify',
         };
-        const $help = this.getLinksFormatExample( params );
+        const $help = this.getLinksFormatExample( options );
         this.fields.linksFormat.$help.empty().append( $help );
 
         // Update the Wikilink field help text
@@ -348,28 +348,28 @@ export class SettingsDialog extends OO.ui.ProcessDialog {
         const linkFormat = this.inputs.linksFormat.findFirstSelectedItem()?.getData();
         const wikilinkFormat = this.inputs.wikilinksFormat.findFirstSelectedItem()?.getData();
 
-        const params = {
+        const options = {
+            relative: false,
+            minify: linkFormat === 'minify',
             wikilink: true,
             wikilinkPreset: wikilinkFormat,
-            minify: linkFormat === 'minify',
-            relative: false,
         };
-        const $help = this.getLinksFormatExample( params );
+        const $help = this.getLinksFormatExample( options );
         this.fields.wikilinksFormat.$help.empty().append( $help );
     };
 
-    getLinksFormatExample( params ) {
+    getLinksFormatExample( options ) {
         const title = utils.msg( 'wikilink-example-title' );
-        const diff = utils.getDiffHref( { title, oldid: '12345', diff: 'prev' }, {}, params );
-        const revision = utils.getRevisionHref( { title, oldid: '12345' }, {}, params );
-        const page = utils.getRevisionHref( { title, curid: '12345' }, {}, params );
+        const diff = utils.getTypeHref( { title, oldid: '12345', diff: 'prev' }, {}, { ...options, type: 'diff' } );
+        const revision = utils.getTypeHref( { title, oldid: '12345' }, {}, { ...options, type: 'revision' } );
+        const page = utils.getTypeHref( { title, curid: '12345' }, {}, { ...options, type: 'page' } );
         return $( `
-        <ul class="instantDiffs-list--settings">
-            <li><i>${ diff }</i></li>
-            <li><i>${ revision }</i></li>
-            <li><i>${ page }</i></li>
-        </ul>
-    ` );
+            <ul class="instantDiffs-list--settings">
+                <li><i>${ diff }</i></li>
+                <li><i>${ revision }</i></li>
+                <li><i>${ page }</i></li>
+            </ul>
+        ` );
     };
 
     /******* SAVE PROCESS ******/

@@ -4,18 +4,39 @@ import Button from './Button';
 
 /******* BASIC TYPES *******/
 
+/**
+ * Checks if a string is empty.
+ * @param {*} str
+ * @returns {boolean}
+ */
 export function isEmpty( str ) {
     return !str || str.length === 0;
 }
 
+/**
+ * Checks if a value is a boolean.
+ * @param {*} value
+ * @returns {boolean}
+ */
 export function isBoolean( value ) {
     return typeof value === 'boolean';
 }
 
+/**
+ * Checks if a value is a function.
+ * @param {*} value
+ * @returns {boolean}
+ */
 export function isFunction( value ) {
     return typeof value === 'function';
 }
 
+/**
+ * Checks whether the event is a click or a keypress of Enter or Space.
+ * Used to make links and buttons accessible via both mouse and keyboard navigation.
+ * @param {MouseEvent|KeyboardEvent} event
+ * @returns {boolean}
+ */
 export function isToggleKey( event ) {
     return event.type === 'click' || ( event.type === 'keypress' && [ 'Enter', 'Space' ].includes( event.code ) );
 }
@@ -238,14 +259,17 @@ export function isRevisionHidden( data ) {
     return data && data.slots?.main?.texthidden;
 }
 
-export function getWikilink( page, pageParams, params ) {
-    pageParams = $.extend( {}, pageParams );
-    params = $.extend( {
+export function getWikilink( page, pageParams, options ) {
+    pageParams = { ...pageParams };
+    options = {
+        href: null,
+        type: 'diff',
+        minify: false,
+        relative: true,
         wikilink: true,
         wikilinkPreset: 'special',
-        type: 'diff',
-        href: null,
-    }, params );
+        ...options,
+    };
 
     // Get diff \ oldid params
     let attr = null;
@@ -260,25 +284,26 @@ export function getWikilink( page, pageParams, params ) {
     }
 
     // Get preset
-    const preset = id.config.wikilinkPresets[ params.wikilinkPreset ] || id.config.wikilinkPresets.special;
+    const preset = id.config.wikilinkPresets[ options.wikilinkPreset ] || id.config.wikilinkPresets.special;
 
     // Format wikilink
-    const wikilink = preset[ params.type ];
+    const wikilink = preset[ options.type ];
     return wikilink
         .replace( '$1', attr )
-        .replace( '$href', params.href )
-        .replace( '$msg', msg( `wikilink-${ params.type }` ) );
+        .replace( '$href', options.href )
+        .replace( '$msg', msg( `wikilink-${ options.type }` ) );
 }
 
-export function getHref( page, pageParams, params ) {
-    pageParams = $.extend( {}, pageParams );
-    params = $.extend( {
+export function getHref( page, pageParams, options ) {
+    pageParams = { ...pageParams };
+    options = {
+        type: 'diff',
+        relative: true,
+        minify: false,
         wikilink: false,
         wikilinkPreset: null,
-        type: null,
-        minify: false,
-        relative: true,
-    }, params );
+        ...options,
+    };
 
     // Get url with the current origin
     let url;
@@ -290,81 +315,83 @@ export function getHref( page, pageParams, params ) {
     }
 
     // Minify href
-    if ( params.minify ) {
+    if ( options.minify ) {
         url.pathname = '';
         url.searchParams.delete( 'title' );
     }
 
     // Get relative or absolute href
-    params.href = decodeURIComponent( params.relative ? ( url.pathname + url.search + url.hash ) : url.toString() );
+    options.href = decodeURIComponent( options.relative ? ( url.pathname + url.search + url.hash ) : url.toString() );
 
     // Get wikilink
-    if ( params.wikilink ) {
-        return getWikilink( page, pageParams, params );
+    if ( options.wikilink ) {
+        return getWikilink( page, pageParams, options );
     }
 
-    return params.href;
+    return options.href;
 }
 
-export function getDiffHref( page, pageParams, params ) {
-    pageParams = $.extend( {}, pageParams );
-    params = $.extend( params, { type: 'diff' } );
+export function getTypeHref( page, pageParams, options ) {
+    pageParams = { ...pageParams };
+    options = {
+        type: 'diff',
+        typeVariant: null,
+        ...options,
+    };
 
-    // Minify url in cases where provided id and diff / oldid = prev
-    if ( isValidID( page.oldid ) && isValidID( page.diff ) ) {
-        pageParams.oldid = page.oldid;
-        pageParams.diff = page.diff;
-    } else if ( isValidID( page.oldid ) ) {
-        if ( isValidDir( page.diff ) && page.diff !== 'prev' ) {
+    // Validate options
+    if ( options.typeVariant === 'page' ) {
+        options.type = 'page';
+    }
+
+    // Validate page params for diffs
+    if ( options.type === 'diff' ) {
+        if ( isEmpty( pageParams.diff ) && isValidDir( pageParams.direction ) ) {
+            pageParams.diff = pageParams.direction;
+        }
+
+        if ( isValidID( page.oldid ) && isValidID( page.diff ) ) {
             pageParams.oldid = page.oldid;
             pageParams.diff = page.diff;
-        } else if ( isValidDir( page.direction ) && page.direction !== 'prev' ) {
+        } else if ( isValidID( page.oldid ) ) {
+            if ( isValidDir( page.diff ) && page.diff !== 'prev' ) {
+                pageParams.oldid = page.oldid;
+                pageParams.diff = page.diff;
+            } else {
+                pageParams.diff = page.oldid;
+            }
+        } else if ( isValidID( page.diff ) ) {
+            if ( isValidDir( page.oldid ) && page.oldid !== 'prev' ) {
+                pageParams.oldid = page.diff;
+                pageParams.diff = page.oldid;
+            } else {
+                pageParams.diff = page.diff;
+            }
+        }
+    }
+
+    // Validate page params for revisions
+    if ( options.type === 'revision' ) {
+        if ( isEmpty( pageParams.direction ) && isValidDir( pageParams.diff ) ) {
+            pageParams.direction = pageParams.diff;
+        }
+
+        if ( isValidID( page.revid ) ) {
+            pageParams.oldid = page.revid;
+        } else if ( isValidID( page.oldid ) ) {
             pageParams.oldid = page.oldid;
-            pageParams.diff = page.direction;
-        } else {
-            pageParams.diff = page.oldid;
+            if ( isValidDir( page.direction ) && page.direction === 'next' ) {
+                pageParams.direction = page.direction;
+            }
         }
-    } else if ( isValidID( page.diff ) ) {
-        if ( isValidDir( page.oldid ) && page.oldid !== 'prev' ) {
-            pageParams.oldid = page.diff;
-            pageParams.diff = page.oldid;
-        } else if ( isValidDir( page.direction ) && page.direction !== 'prev' ) {
-            pageParams.oldid = page.diff;
-            pageParams.diff = page.direction;
-        } else {
-            pageParams.diff = page.diff;
-        }
-    } else if ( isValidID( page.curid ) ) {
-        params.type = 'page';
+    }
+
+    // Validate page params for pages
+    if ( options.type === 'page' ) {
         pageParams.curid = page.curid;
     }
 
-    return getHref( page, pageParams, params );
-}
-
-export function getRevisionHref( page, pageParams, params ) {
-    pageParams = $.extend( {}, pageParams );
-    params = $.extend( params, { type: 'revision' } );
-
-    if ( isValidID( page.revid ) ) {
-        pageParams.oldid = page.revid;
-    } else if ( isValidID( page.oldid ) ) {
-        pageParams.oldid = page.oldid;
-        if ( isValidDir( page.direction ) && page.direction === 'next' ) {
-            pageParams.direction = page.direction;
-        }
-    } else if ( isValidID( page.curid ) ) {
-        params.type = 'page';
-        pageParams.curid = page.curid;
-    }
-
-    return getHref( page, pageParams, params );
-}
-
-export function getTypeHref( type, page, pageParams, params ) {
-    return type === 'revision'
-        ? getRevisionHref( page, pageParams, params )
-        : getDiffHref( page, pageParams, params );
+    return getHref( page, pageParams, options );
 }
 
 export function getSplitSpecialUrl( title ) {
@@ -639,39 +666,6 @@ export function tweakUserOoUiClass( targetClass ) {
 
 /******* ELEMENTS *******/
 
-export function addClick( node, handler, useAltKey = true ) {
-    const callback = ( event ) => {
-        if ( event ) {
-            // Prevent default behavior for Space\Enter buttons
-            if ( !isToggleKey( event ) || event.button || event.ctrlKey ) return;
-
-            event.preventDefault();
-
-            // Open a link in the current tab if an alt key is pressed
-            if ( useAltKey && event.altKey && !isEmpty( node.href ) ) {
-                window.location.href = node.href;
-                return;
-            }
-        }
-        handler( event );
-    };
-
-    // Add a title that indicates about alternative click action
-    if ( useAltKey && !isEmpty( node.href ) ) {
-        if ( isEmpty( node.dataset.altTitle ) ) {
-            node.dataset.altTitle = node.title;
-        }
-        node.dataset.altTitle = `${ node.dataset.altTitle } ${ msg( 'alt-click' ) }`.trim();
-        node.dataset.origTitle = node.title;
-
-        node.addEventListener( 'mouseenter', () => ( node.title = node.dataset.altTitle ) );
-        node.addEventListener( 'mouseleave', () => ( node.title = node.dataset.origTitle ) );
-    }
-
-    node.addEventListener( 'click', callback );
-    node.addEventListener( 'keypress', callback );
-}
-
 export function clipboardWrite( text, callback ) {
     if ( isEmpty( text ) ) return;
 
@@ -700,6 +694,40 @@ export function clipboardWrite( text, callback ) {
 
         successful ? success() : error();
     }
+}
+
+export function addClick( node, handler, useAltKey = true ) {
+    const callback = ( event ) => {
+        if ( event ) {
+            // Prevent default behavior for Space\Enter buttons
+            if ( !isToggleKey( event ) || event.button || event.ctrlKey ) return;
+
+            event.preventDefault();
+
+            // Open a link in the current tab if the alt key is pressed
+            if ( useAltKey && event.altKey && !isEmpty( node.href ) ) {
+                window.location.href = node.href;
+                return;
+            }
+        }
+        handler( event );
+    };
+
+    // Add a title that indicates about alternative click action
+    if ( useAltKey && !isEmpty( node.href ) ) {
+        if ( isEmpty( node.dataset.altTitle ) ) {
+            node.dataset.altTitle = node.title;
+        }
+        node.dataset.altTitle = `${ node.dataset.altTitle } ${ msg( 'alt-click' ) }`.trim();
+        node.dataset.origTitle = node.title;
+
+        // Set alt title temporary to increase compatibility with the other scripts
+        node.addEventListener( 'mouseenter', () => ( node.title = node.dataset.altTitle ) );
+        node.addEventListener( 'mouseleave', () => ( node.title = node.dataset.origTitle ) );
+    }
+
+    node.addEventListener( 'click', callback );
+    node.addEventListener( 'keypress', callback );
 }
 
 export function embed( node, container, insertMethod = 'appendTo' ) {

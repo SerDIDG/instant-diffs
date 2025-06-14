@@ -255,14 +255,8 @@ class Navigation {
         items.push( this.buttons.copyWiki );
 
         // Link to the revision or to the edit
-        this.buttons.pageType = new OO.ui.ButtonWidget( {
-            label: utils.msg( `goto-${ this.options.type }` ),
-            icon: 'articleRedirect',
-            href: utils.getTypeHref( this.options.type, this.page ),
-            target: utils.getTarget( true ),
-            ...buttonOptions,
-        } );
-        items.push( this.buttons.pageType );
+        this.buttons.type = this.renderTypeLink( buttonOptions );
+        items.push( this.buttons.type );
 
         // Page-specific links
         if ( !utils.isEmpty( this.page.title ) ) {
@@ -424,7 +418,7 @@ class Navigation {
                 oldid: diffOldId,
                 direction: 'prev',
             };
-            href = utils.getRevisionHref( page, this.pageParams );
+            href = utils.getTypeHref( page, this.pageParams, { type: 'revision' } );
         } else if ( link?.length > 0 ) {
             href = link.attr( 'href' );
         }
@@ -467,7 +461,7 @@ class Navigation {
                     oldid: diffNewId,
                     direction: 'next',
                 };
-                href = utils.getRevisionHref( page, this.pageParams );
+                href = utils.getTypeHref( page, this.pageParams, { type: 'revision' } );
             } else {
                 href = link.attr( 'href' );
             }
@@ -502,10 +496,11 @@ class Navigation {
      */
     renderSwitchLink( options ) {
         const type = this.options.type === 'revision' ? 'diff' : 'revision';
+        const hrefOptions = { type };
 
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( `goto-view-${ type }` ),
-            href: utils.getTypeHref( type, this.page ),
+            href: utils.getTypeHref( this.page, {}, hrefOptions ),
             target: utils.getTarget( true ),
             icon: 'specialPages',
             classes: [ 'instantDiffs-button--switch' ],
@@ -553,9 +548,14 @@ class Navigation {
     renderBackLink( options ) {
         const initiator = this.diff.getInitiatorDiff();
 
+        const hrefOptions = {
+            type: initiator.getType(),
+            typeVariant: initiator.getTypeVariant(),
+        };
+
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( `goto-back-${ initiator.getType() }` ),
-            href: utils.getTypeHref( initiator.getType(), initiator.getPage(), initiator.getPageParams() ),
+            href: utils.getTypeHref( initiator.getPage(), initiator.getPageParams(), hrefOptions ),
             target: utils.getTarget( true ),
             icon: 'newline',
             classes: [ 'instantDiffs-button--back' ],
@@ -567,6 +567,26 @@ class Navigation {
         } );
 
         return button;
+    }
+
+    /**
+     * Render a button that navigates to the diff or to the revision.
+     * @param {object} [options] button configuration options
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
+    renderTypeLink( options ) {
+        const hrefOptions = {
+            type: this.options.type,
+            typeVariant: this.options.typeVariant,
+        };
+
+        return new OO.ui.ButtonWidget( {
+            label: utils.msg( `goto-${ this.options.type }` ),
+            icon: 'articleRedirect',
+            href: utils.getTypeHref( this.page, {}, hrefOptions ),
+            target: utils.getTarget( true ),
+            ...options,
+        } );
     }
 
     /**
@@ -667,11 +687,13 @@ class Navigation {
         // Hide menu dropdown
         this.toggleMenuDropdown( false );
 
-        const params = {
-            minify: utils.defaults( 'linksFormat' ) === 'minify',
+        const options = {
+            type: this.options.type,
+            typeVariant: this.options.typeVariant,
             relative: false,
+            minify: utils.defaults( 'linksFormat' ) === 'minify',
         };
-        const href = utils.getTypeHref( this.options.type, this.page, {}, params );
+        const href = utils.getTypeHref( this.page, {}, options );
 
         // Copy href to the clipboard
         utils.clipboardWrite( href );
@@ -684,13 +706,15 @@ class Navigation {
         // Hide menu dropdown
         this.toggleMenuDropdown( false );
 
-        const params = {
+        const options = {
+            type: this.options.type,
+            typeVariant: this.options.typeVariant,
+            relative: false,
+            minify: utils.defaults( 'linksFormat' ) === 'minify',
             wikilink: true,
             wikilinkPreset: utils.defaults( 'wikilinksFormat' ),
-            minify: utils.defaults( 'linksFormat' ) === 'minify',
-            relative: false,
         };
-        const href = utils.getTypeHref( this.options.type, this.page, {}, params );
+        const href = utils.getTypeHref( this.page, {}, options );
 
         // Copy href to the clipboard
         utils.clipboardWrite( href );

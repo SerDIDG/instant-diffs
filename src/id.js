@@ -141,12 +141,15 @@ instantDiffs.config = {
     // MediaWiki config
     mwConfigBackup: [
         'thanks-confirmation-required',
+        'wgTitle',
+        'wgPageName',
         'wgArticleId',
+        'wgPageContentModel',
+        'wgNamespaceNumber',
         'wgCurRevisionId',
         'wgRevisionId',
         'wgDiffOldId',
         'wgDiffNewId',
-        'wgPageContentModel',
     ],
     skinBodyClasses: {
         'vector-2022': [ 'mw-body', 'vector-body' ],
