@@ -346,8 +346,8 @@ export function getTypeHref( page, pageParams, options ) {
 
     // Validate page params for diffs
     if ( options.type === 'diff' ) {
-        if ( isEmpty( pageParams.diff ) && isValidDir( pageParams.direction ) ) {
-            pageParams.diff = pageParams.direction;
+        if ( isEmpty( page.diff ) && isValidDir( page.direction ) ) {
+            page.diff = page.direction;
         }
 
         if ( isValidID( page.oldid ) && isValidID( page.diff ) ) {
@@ -372,8 +372,8 @@ export function getTypeHref( page, pageParams, options ) {
 
     // Validate page params for revisions
     if ( options.type === 'revision' ) {
-        if ( isEmpty( pageParams.direction ) && isValidDir( pageParams.diff ) ) {
-            pageParams.direction = pageParams.diff;
+        if ( isEmpty( page.direction ) && isValidDir( page.diff ) ) {
+            page.direction = page.diff;
         }
 
         if ( isValidID( page.revid ) ) {

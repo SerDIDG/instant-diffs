@@ -495,7 +495,7 @@ class Navigation {
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderSwitchLink( options ) {
-        const type = this.options.type === 'revision' ? 'diff' : 'revision';
+        const type = this.options.type === 'diff' ? 'revision' : 'diff';
         const hrefOptions = { type };
 
         const button = new OO.ui.ButtonWidget( {
