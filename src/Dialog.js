@@ -12,7 +12,7 @@ import './styles/dialog.less';
  */
 class Dialog {
     /**
-     * @type {import('./Link').default}
+     * @type {import('./Link').default|import('./DialogButton').default}
      */
     link;
 
@@ -77,7 +77,7 @@ class Dialog {
 
     /**
      * Create a diff dialog.
-     * @param {import('./Link').default} link a Link instance
+     * @param {import('./Link').default|import('./DialogButton').default} link a Link or a DialogButton instance
      * @param {object} [options] configuration options
      */
     constructor( link, options ) {
@@ -86,7 +86,7 @@ class Dialog {
 
     /**
      * Setup configuration options.
-     * @param {import('./Link').default} link a Link instance
+     * @param {import('./Link').default|import('./DialogButton').default} link a Link or a DialogButton instance
      * @param {object} [options] configuration options
      */
     process( link, options ) {

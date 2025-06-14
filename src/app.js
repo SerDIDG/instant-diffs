@@ -177,7 +177,12 @@ function onRequestLocalizedTitlesDone( data ) {
 }
 
 function getMessages() {
-    return [ 'en', mw.config.get( 'wgUserLanguage' ) ]
+    /**
+     * @type {string}
+     */
+    const userLanguage = mw.config.get( 'wgUserLanguage' );
+
+    return [ 'en', userLanguage ]
         .filter( ( value, index, self ) => {
             return self.indexOf( value ) === index && !id.i18n[ value ];
         } )

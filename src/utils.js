@@ -520,7 +520,11 @@ export function extendPage( page, params = {} ) {
 /******* MW *******/
 
 export function getMobileServer() {
+    /**
+     * @type {string}
+     */
     const server = mw.config.get( 'wgServer' );
+
     const prefix = new RegExp( `^//www\\.` ).test( server ) ? 'www.' : '';
 
     const language = mw.config.get( 'wgContentLanguage' );
@@ -564,6 +568,16 @@ export function restoreMWConfig( data ) {
     } );
 }
 
+/**
+ * Checks if a link matches a given selectors preset.
+ * @param {HTMLElement} node
+ * @param {object} [preset]
+ * @param {array} [preset.id]
+ * @param {array} [preset.hasClass]
+ * @param {array} [preset.hasChild]
+ * @param {array} [preset.closestTo]
+ * @returns {boolean}
+ */
 export function isMWLink( node, preset ) {
     let isConfirmed = false;
 

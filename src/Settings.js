@@ -189,7 +189,7 @@ class Settings {
 
     /**
      * Save user options.
-     * @returns {Promise}
+     * @returns {Promise|boolean}
      */
     save( settings ) {
         // Update settings stored in the Local Storage

@@ -11,7 +11,7 @@ import './styles/links.less';
  */
 class Link {
     /**
-     * @type {HTMLElement}
+     * @type {HTMLLinkElement}
      */
     node;
 
@@ -73,7 +73,7 @@ class Link {
 
     /**
      * Create a link instance.
-     * @param {HTMLElement} node a link node
+     * @param {HTMLLinkElement} node a link node
      * @param {object} [options] configuration options
      */
     constructor( node, options ) {
