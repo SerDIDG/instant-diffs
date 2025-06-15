@@ -249,6 +249,7 @@ instantDiffs.config = {
             '#mw-fr-revision-tag-edit',
             '.mw-fr-pending-changes-table',
             '#mw-revision-nav',                                         // [[Special:PermanentLink]]
+            '.mw-pt-translate-header',                                  // Page header added by the Translate extension
         ],
     },
     mwLinkDiffOnly: {

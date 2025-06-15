@@ -710,6 +710,7 @@ class Link {
 
     /**
      * Toggle a pending loader cursor visibility.
+     * @param {boolean} value
      */
     toggleLoader( value ) {
         if ( this.action.button ) {
@@ -721,6 +722,7 @@ class Link {
 
     /**
      * Toggle a spinner loader visibility.
+     * @param {boolean} value
      */
     toggleSpinner( value ) {
         const classes = utils.getPlaceholderClasses( [ 'loader', this.options.type ] );
@@ -751,7 +753,7 @@ class Link {
 
     /**
      * Get a link's node.
-     * @returns {HTMLElement}
+     * @returns {HTMLLinkElement}
      */
     getNode() {
         return this.node;
