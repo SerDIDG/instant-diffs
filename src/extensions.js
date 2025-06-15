@@ -69,7 +69,7 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
     }
 
     // Add hook listener to process newly added links
-    mw.hook( `${  id.config.prefix }.link.renderSuccess` ).add( ( link ) => {
+    mw.hook( `${ id.config.prefix }.link.renderSuccess` ).add( ( link ) => {
         if ( !link ) return;
         renderLink( link );
     } );
@@ -77,7 +77,7 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
 
 /******* [[:en:User:Cacycle/wikEdDiff]] *******/
 
-mw.hook( `${  id.config.prefix }.diff.beforeDetach` ).add( ( diff ) => {
+mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).add( ( diff ) => {
     if ( !diff ) return;
 
     // Reset diff table linking

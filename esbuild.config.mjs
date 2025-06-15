@@ -32,7 +32,7 @@ if ( process.argv.includes( '--dev' ) ) {
 
 if ( process.argv.includes( '--start' ) ) {
     strings.__origin__ = 'http://localhost:8000';
-    strings.__styles__ = '/bundle.css';
+    strings.__styles__ = '/instantDiffs.css';
     strings.__messages__ = '/i18n/$lang.js';
 }
 
@@ -54,7 +54,7 @@ const config = {
     logLevel: 'info',
     entryPoints: [ 'src/app.js' ],
     bundle: true,
-    outfile: 'dist/bundle.js',
+    outfile: 'dist/instantDiffs.js',
     format: 'iife',
     banner: {
         js: banner,

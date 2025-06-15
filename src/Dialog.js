@@ -90,6 +90,9 @@ class Dialog {
      * @param {object} [options] configuration options
      */
     process( link, options ) {
+        // Track on dialog process start time
+        id.timers.dialogProcesStart = Date.now();
+
         this.link = link;
         this.options = {
             initiatorDiff: null,
@@ -349,6 +352,14 @@ class Dialog {
 
         // Refresh the dialog content height
         this.dialog.updateSize();
+
+        // Track on dialog process end time
+        id.timers.dialogProcesEnd = Date.now();
+
+        // Log timers for the dialog process
+        if ( utils.defaults( 'logTimers' ) ) {
+            utils.logTimer( 'dialog process time', id.timers.dialogProcesStart, id.timers.dialogProcesEnd );
+        }
     }
 
     /**

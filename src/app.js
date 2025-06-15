@@ -1,4 +1,5 @@
 import id from './id';
+import { config, local, timers } from './config';
 import * as utils from './utils';
 
 import './styles/app.less';
@@ -247,7 +248,7 @@ function app() {
     if ( id.isRunning ) {
         utils.notifyError( 'error-prepare-version', null, {
             type: 'version',
-            message: `loaded: ${ id.config.version }, current: ${ id.config.version }`,
+            message: `loaded: ${ id.config.version }, concurrent: ${ config.version }`,
         }, true );
         return;
     }
@@ -256,6 +257,9 @@ function app() {
 
     // Export to global scope
     id.utils = utils;
+    id.config = config;
+    id.local = local;
+    id.timers = timers;
     id.api = { Button, DialogButton, HistoryCompareButton, Dialog, Diff, Link };
     id.settings ||= {};
     id.settings = $.extend( {}, id.config.settings, id.settings );

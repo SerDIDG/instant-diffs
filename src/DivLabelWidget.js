@@ -14,6 +14,6 @@ class DivLabelWidget extends OO.ui.LabelWidget {
     }
 }
 
-utils.tweakUserOoUiClass( DivLabelWidget  );
+utils.tweakUserOoUiClass( DivLabelWidget );
 
 export default DivLabelWidget;
