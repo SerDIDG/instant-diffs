@@ -115,7 +115,7 @@ export function isBreakpoint( breakpoint ) {
 
 /**
  * Gets a setting option stored in the config.
- * @param {string|undefined} key for specific option, or undefined for the option's object
+ * @param {string} [key] for specific option, or undefined for the option's object
  * @returns {*|object} a specific option, or the option's object
  */
 export function defaults( key ) {
@@ -754,9 +754,13 @@ export function addClick( node, handler, useAltKey = true ) {
 
             event.preventDefault();
 
-            // Open a link in the current tab if the alt key is pressed
+            // Simulate link default behavior if the alt key is pressed
             if ( useAltKey && event.altKey && !isEmpty( node.href ) ) {
-                window.location.href = node.href;
+                if ( node.target === '_blank' ) {
+                    window.open(node.href, '_blank').focus();
+                } else {
+                    window.location.href = node.href;
+                }
                 return;
             }
         }

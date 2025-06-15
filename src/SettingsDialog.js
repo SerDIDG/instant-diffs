@@ -193,7 +193,7 @@ export class SettingsDialog extends OO.ui.ProcessDialog {
 
         // Show diff info in the revisions
         this.inputs.showRevisionInfo = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'openInNewTab' ),
+            selected: utils.defaults( 'showRevisionInfo' ),
         } );
         this.fields.showRevisionInfo = new OO.ui.FieldLayout( this.inputs.showRevisionInfo, {
             label: utils.msg( 'settings-show-revision-info' ),
