@@ -115,7 +115,7 @@ export function isBreakpoint( breakpoint ) {
 
 /**
  * Gets a setting option stored in the config.
- * @param {string|undefined} key for specific option, or undefined for the option's object
+ * @param {string} [key] for specific option, or undefined for the option's object
  * @returns {*|object} a specific option, or the option's object
  */
 export function defaults( key ) {
@@ -692,6 +692,22 @@ export function getWindowManager() {
 }
 
 /**
+ * Get exported context of the module's package files. Partial recreation of the original function.
+ * {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/refs/heads/master/resources/src/startup/mediawiki.loader.js#613}
+ * @param {string} moduleName Module name from the registry
+ * @param {string} relativePath Path of the file this is scoped to. Used for relative paths.
+ * @return {Function}
+ */
+export function getModuleExport( moduleName, relativePath ) {
+    const moduleObj = mw.loader.moduleRegistry[ moduleName ];
+    const relativeParts = relativePath.match( /^((?:\.\.?\/)+)(.*)$/ );
+    if ( relativeParts ) {
+        relativePath = `resources/src/${ moduleName }/${ relativeParts[ 2 ] }`;
+    }
+    return moduleObj?.packageExports[ relativePath ];
+}
+
+/**
  * Add some properties to the inheritor class that the (ES5)
  * {@link https://www.mediawiki.org/wiki/OOjs/Inheritance OOUI inheritance mechanism} uses. It
  * partly replicates the operations made in
@@ -754,9 +770,13 @@ export function addClick( node, handler, useAltKey = true ) {
 
             event.preventDefault();
 
-            // Open a link in the current tab if the alt key is pressed
+            // Simulate link default behavior if the alt key is pressed
             if ( useAltKey && event.altKey && !isEmpty( node.href ) ) {
-                window.location.href = node.href;
+                if ( node.target === '_blank' ) {
+                    window.open(node.href, '_blank').focus();
+                } else {
+                    window.location.href = node.href;
+                }
                 return;
             }
         }

@@ -274,9 +274,6 @@ class Diff {
         // Collect missing data from the diff table before manipulations
         this.collectData();
 
-        // Process diff table
-        this.renderDiffTable();
-
         // Hide unsupported or unnecessary apps and element
         this.nodes.$wikiLambdaApp = this.nodes.$data
             .filter( '#ext-wikilambda-app' )
@@ -289,6 +286,9 @@ class Diff {
 
         // Set additional config variables
         mw.config.set( this.mwConfg );
+
+        // Process diff table
+        this.renderDiffTable();
     }
 
     collectData() {
@@ -344,13 +344,9 @@ class Diff {
     }
 
     renderDiffTable() {
-        // Hide unsupported or unnecessary element
-        this.nodes.$data
-            .filter( '.mw-revslider-container, .mw-diff-revision-history-links, .mw-diff-table-prefix, #mw-oldid' )
-            .addClass( 'instantDiffs-hidden' );
-        this.nodes.$data
-            .find( '.fr-diff-to-stable, #mw-fr-diff-dataform' )
-            .addClass( 'instantDiffs-hidden' );
+        // Find diff table tools container and pre-toggle visibility
+        this.nodes.$diffTablePrefix = this.nodes.$data.filter( '.mw-diff-table-prefix' );
+        this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', !utils.defaults( 'showInlineFormatToggle' ) );
 
         // Find table elements
         this.nodes.$frDiff = this.nodes.$data.filter( '#mw-fr-diff-headeritems' );
@@ -397,6 +393,15 @@ class Diff {
                 this.nodes.$table.addClass( 'instantDiffs-hidden' );
             }
         }
+
+        // Hide unsupported or unnecessary element
+        this.nodes.$data
+            .filter( '.mw-revslider-container, .mw-diff-revision-history-links,  #mw-oldid' )
+            .addClass( 'instantDiffs-hidden' );
+        this.nodes.$data
+            .find( '.fr-diff-to-stable, #mw-fr-diff-dataform' )
+            .addClass( 'instantDiffs-hidden' );
+
     }
 
     renderError() {
@@ -427,9 +432,41 @@ class Diff {
         $links.each( ( i, node ) => node.setAttribute( 'target', '_blank' ) );
     }
 
+    /******* RESTORE HELPERS *******/
+
+    restoreFunctionality() {
+        const diffTablePrefixTools = [];
+
+        // Restore resources/src/mediawiki.diff/inlineFormatToggle.js
+        if ( utils.defaults( 'showInlineFormatToggle' ) && this.options.type === 'diff' ) {
+            const isRendered = this.renderInlineFormatToggle();
+            diffTablePrefixTools.push( isRendered );
+        }
+
+        // Show diffTablePrefix if at least one tool was restored
+        this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', diffTablePrefixTools.length === 0 );
+    };
+
+    renderInlineFormatToggle() {
+        let isRendered = false;
+
+        const $inlineToggleSwitchLayout = this.nodes.$diffTablePrefix.find( '#mw-diffPage-inline-toggle-switch-layout' );
+        const inlineFormatToggle = utils.getModuleExport( 'mediawiki.diff', './inlineFormatToggle.js' );
+
+        try {
+            isRendered = true;
+            inlineFormatToggle( $inlineToggleSwitchLayout );
+        } catch ( e ) {}
+
+        return isRendered;
+    }
+
     /******* ACTIONS *******/
 
     fire() {
+        // Try to restore all original functionality
+        this.restoreFunctionality();
+
         // Fire diff table hook
         if (
             this.options.type !== 'revision' ||
