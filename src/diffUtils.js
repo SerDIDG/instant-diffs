@@ -44,9 +44,6 @@ export function restoreInlineFormatToggle( $container ) {
  * @param {jQuery} $container
  */
 export function restoreRollbackLink( $container ) {
-    // Support both 1 or "1" (T54542)
-    if ( Number( mw.user.options.get( 'showrollbackconfirmation' ) ) !== 1 ) return;
-
     // Make rollback link confirmable
     $container.confirmable( {
         i18n: {
