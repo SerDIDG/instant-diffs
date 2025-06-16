@@ -5,7 +5,7 @@ import * as utils from './utils';
  * Class representing a SettingsDialog.
  * @augments OO.ui.ProcessDialog
  */
-export class SettingsDialog extends OO.ui.ProcessDialog {
+class SettingsDialog extends OO.ui.ProcessDialog {
     static name = 'Instant Diffs Settings Dialog';
     static title = utils.msg( 'settings-title' );
     static actions = [
@@ -459,3 +459,5 @@ export class SettingsDialog extends OO.ui.ProcessDialog {
 }
 
 utils.tweakUserOoUiClass( SettingsDialog );
+
+export default SettingsDialog;

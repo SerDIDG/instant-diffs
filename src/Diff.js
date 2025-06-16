@@ -1,7 +1,9 @@
 import id from './id';
 import * as utils from './utils';
+import * as diffUtils from './diffUtils';
 
 import Navigation from './Navigation';
+import { restoreInlineFormatToggle } from './diffUtils';
 
 class Diff {
     /**
@@ -292,8 +294,8 @@ class Diff {
     }
 
     collectData() {
-        const $fromLinks = this.nodes.$data.find( '#mw-diff-otitle1 strong > a, #mw-diff-otitle4 > a' );
-        const $toLinks = this.nodes.$data.find( '#mw-diff-ntitle1 strong > a, #mw-diff-ntitle4 > a' );
+        const $fromLinks = this.nodes.$data.find( '#mw-diff-otitle1 strong > a, #differences-prevlink' );
+        const $toLinks = this.nodes.$data.find( '#mw-diff-ntitle1 strong > a, #differences-nextlink' );
 
         // Get diff and oldid values
         // FixMe: request via api action=revisions
@@ -371,11 +373,17 @@ class Diff {
         // Clear whitespaces after detaching links
         const leftTitle4 = this.nodes.$table.find( '#mw-diff-otitle4' );
         if ( leftTitle4.length > 0 ) {
-            leftTitle4.text( leftTitle4.text().trim() );
+            leftTitle4.contents().each( ( i, node ) => {
+                if ( node.nodeType !== 3 ) return;
+                node.remove();
+            } );
         }
         const rightTitle4 = this.nodes.$table.find( '#mw-diff-ntitle4' );
         if ( rightTitle4.length > 0 ) {
-            rightTitle4.text( rightTitle4.text().trim() );
+            rightTitle4.contents().each( ( i, node ) => {
+                if ( node.nodeType !== 3 ) return;
+                node.remove();
+            } );
         }
 
         // Show or hide diff info table in the revisions
@@ -432,34 +440,24 @@ class Diff {
         $links.each( ( i, node ) => node.setAttribute( 'target', '_blank' ) );
     }
 
-    /******* RESTORE HELPERS *******/
-
     restoreFunctionality() {
         const diffTablePrefixTools = [];
 
-        // Restore resources/src/mediawiki.diff/inlineFormatToggle.js
+        // Restore inline format toggle button
         if ( utils.defaults( 'showInlineFormatToggle' ) && this.options.type === 'diff' ) {
-            const isRendered = this.renderInlineFormatToggle();
+            const isRendered = diffUtils.restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
             diffTablePrefixTools.push( isRendered );
         }
 
         // Show diffTablePrefix if at least one tool was restored
         this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', diffTablePrefixTools.length === 0 );
+
+        // Restore rollback and patrol links scripts
+        utils.executeModuleScript( 'mediawiki.misc-authed-curate' );
+
+        // Restore rollback link
+        diffUtils.restoreRollbackLink( this.nodes.$body );
     };
-
-    renderInlineFormatToggle() {
-        let isRendered = false;
-
-        const $inlineToggleSwitchLayout = this.nodes.$diffTablePrefix.find( '#mw-diffPage-inline-toggle-switch-layout' );
-        const inlineFormatToggle = utils.getModuleExport( 'mediawiki.diff', './inlineFormatToggle.js' );
-
-        try {
-            isRendered = true;
-            inlineFormatToggle( $inlineToggleSwitchLayout );
-        } catch ( e ) {}
-
-        return isRendered;
-    }
 
     /******* ACTIONS *******/
 
