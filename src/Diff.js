@@ -1,7 +1,9 @@
 import id from './id';
 import * as utils from './utils';
+import * as diffUtils from './diffUtils';
 
 import Navigation from './Navigation';
+import { restoreInlineFormatToggle } from './diffUtils';
 
 class Diff {
     /**
@@ -274,9 +276,6 @@ class Diff {
         // Collect missing data from the diff table before manipulations
         this.collectData();
 
-        // Process diff table
-        this.renderDiffTable();
-
         // Hide unsupported or unnecessary apps and element
         this.nodes.$wikiLambdaApp = this.nodes.$data
             .filter( '#ext-wikilambda-app' )
@@ -289,11 +288,14 @@ class Diff {
 
         // Set additional config variables
         mw.config.set( this.mwConfg );
+
+        // Process diff table
+        this.renderDiffTable();
     }
 
     collectData() {
-        const $fromLinks = this.nodes.$data.find( '#mw-diff-otitle1 strong > a, #mw-diff-otitle4 > a' );
-        const $toLinks = this.nodes.$data.find( '#mw-diff-ntitle1 strong > a, #mw-diff-ntitle4 > a' );
+        const $fromLinks = this.nodes.$data.find( '#mw-diff-otitle1 strong > a, #differences-prevlink' );
+        const $toLinks = this.nodes.$data.find( '#mw-diff-ntitle1 strong > a, #differences-nextlink' );
 
         // Get diff and oldid values
         // FixMe: request via api action=revisions
@@ -344,13 +346,9 @@ class Diff {
     }
 
     renderDiffTable() {
-        // Hide unsupported or unnecessary element
-        this.nodes.$data
-            .filter( '.mw-revslider-container, .mw-diff-revision-history-links, .mw-diff-table-prefix, #mw-oldid' )
-            .addClass( 'instantDiffs-hidden' );
-        this.nodes.$data
-            .find( '.fr-diff-to-stable, #mw-fr-diff-dataform' )
-            .addClass( 'instantDiffs-hidden' );
+        // Find diff table tools container and pre-toggle visibility
+        this.nodes.$diffTablePrefix = this.nodes.$data.filter( '.mw-diff-table-prefix' );
+        this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', !utils.defaults( 'showInlineFormatToggle' ) );
 
         // Find table elements
         this.nodes.$frDiff = this.nodes.$data.filter( '#mw-fr-diff-headeritems' );
@@ -375,11 +373,17 @@ class Diff {
         // Clear whitespaces after detaching links
         const leftTitle4 = this.nodes.$table.find( '#mw-diff-otitle4' );
         if ( leftTitle4.length > 0 ) {
-            leftTitle4.text( leftTitle4.text().trim() );
+            leftTitle4.contents().each( ( i, node ) => {
+                if ( node.nodeType !== 3 ) return;
+                node.remove();
+            } );
         }
         const rightTitle4 = this.nodes.$table.find( '#mw-diff-ntitle4' );
         if ( rightTitle4.length > 0 ) {
-            rightTitle4.text( rightTitle4.text().trim() );
+            rightTitle4.contents().each( ( i, node ) => {
+                if ( node.nodeType !== 3 ) return;
+                node.remove();
+            } );
         }
 
         // Show or hide diff info table in the revisions
@@ -397,6 +401,15 @@ class Diff {
                 this.nodes.$table.addClass( 'instantDiffs-hidden' );
             }
         }
+
+        // Hide unsupported or unnecessary element
+        this.nodes.$data
+            .filter( '.mw-revslider-container, .mw-diff-revision-history-links,  #mw-oldid' )
+            .addClass( 'instantDiffs-hidden' );
+        this.nodes.$data
+            .find( '.fr-diff-to-stable, #mw-fr-diff-dataform' )
+            .addClass( 'instantDiffs-hidden' );
+
     }
 
     renderError() {
@@ -427,9 +440,31 @@ class Diff {
         $links.each( ( i, node ) => node.setAttribute( 'target', '_blank' ) );
     }
 
+    restoreFunctionality() {
+        const diffTablePrefixTools = [];
+
+        // Restore inline format toggle button
+        if ( utils.defaults( 'showInlineFormatToggle' ) && this.options.type === 'diff' ) {
+            const isRendered = diffUtils.restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
+            diffTablePrefixTools.push( isRendered );
+        }
+
+        // Show diffTablePrefix if at least one tool was restored
+        this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', diffTablePrefixTools.length === 0 );
+
+        // Restore rollback and patrol links scripts
+        utils.executeModuleScript( 'mediawiki.misc-authed-curate' );
+
+        // Restore rollback link
+        diffUtils.restoreRollbackLink( this.nodes.$body );
+    };
+
     /******* ACTIONS *******/
 
     fire() {
+        // Try to restore all original functionality
+        this.restoreFunctionality();
+
         // Fire diff table hook
         if (
             this.options.type !== 'revision' ||

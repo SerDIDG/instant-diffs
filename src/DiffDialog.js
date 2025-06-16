@@ -6,7 +6,7 @@ import DivLabelWidget from './DivLabelWidget';
  * Class representing a DiffDialog.
  * @augments OO.ui.MessageDialog
  */
-export class DiffDialog extends OO.ui.MessageDialog {
+class DiffDialog extends OO.ui.MessageDialog {
     static name = 'Instant Diffs Dialog';
     static size = 'instantDiffs';
     static actions = [
@@ -91,6 +91,12 @@ export class DiffDialog extends OO.ui.MessageDialog {
     onScroll( event ) {
         this.dialog.onScroll( event );
     }
+
+    getContainerElement() {
+        return this.container.$element;
+    }
 }
 
 utils.tweakUserOoUiClass( DiffDialog );
+
+export default DiffDialog;

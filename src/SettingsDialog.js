@@ -5,7 +5,7 @@ import * as utils from './utils';
  * Class representing a SettingsDialog.
  * @augments OO.ui.ProcessDialog
  */
-export class SettingsDialog extends OO.ui.ProcessDialog {
+class SettingsDialog extends OO.ui.ProcessDialog {
     static name = 'Instant Diffs Settings Dialog';
     static title = utils.msg( 'settings-title' );
     static actions = [
@@ -179,6 +179,26 @@ export class SettingsDialog extends OO.ui.ProcessDialog {
     };
 
     renderDialogFieldset() {
+        // Show inline format toggle button
+        this.inputs.showInlineFormatToggle = new OO.ui.CheckboxInputWidget( {
+            selected: utils.defaults( 'showInlineFormatToggle' ),
+        } );
+        this.fields.showInlineFormatToggle = new OO.ui.FieldLayout( this.inputs.showInlineFormatToggle, {
+            label: utils.msg( 'settings-show-inline-format-toggle' ),
+            align: 'inline',
+        } );
+        this.fields.showInlineFormatToggle.toggle( id.settings.showInlineFormatToggle );
+
+        // Show diff info in the revisions
+        this.inputs.showRevisionInfo = new OO.ui.CheckboxInputWidget( {
+            selected: utils.defaults( 'showRevisionInfo' ),
+        } );
+        this.fields.showRevisionInfo = new OO.ui.FieldLayout( this.inputs.showRevisionInfo, {
+            label: utils.msg( 'settings-show-revision-info' ),
+            align: 'inline',
+        } );
+        this.fields.showRevisionInfo.toggle( id.settings.showRevisionInfo );
+
         // Unhide revisions and diff content for administrators
         this.inputs.unHideDiffs = new OO.ui.CheckboxInputWidget( {
             selected: utils.defaults( 'unHideDiffs' ),
@@ -190,16 +210,6 @@ export class SettingsDialog extends OO.ui.ProcessDialog {
             helpInline: true,
         } );
         this.fields.unHideDiffs.toggle( id.settings.unHideDiffs );
-
-        // Show diff info in the revisions
-        this.inputs.showRevisionInfo = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'showRevisionInfo' ),
-        } );
-        this.fields.showRevisionInfo = new OO.ui.FieldLayout( this.inputs.showRevisionInfo, {
-            label: utils.msg( 'settings-show-revision-info' ),
-            align: 'inline',
-        } );
-        this.fields.showRevisionInfo.toggle( id.settings.showRevisionInfo );
 
         // Open links in the new tab
         this.inputs.openInNewTab = new OO.ui.CheckboxInputWidget( {
@@ -262,15 +272,17 @@ export class SettingsDialog extends OO.ui.ProcessDialog {
             label: utils.msg( 'settings-fieldset-dialog' ),
         } );
         this.layouts.dialog.addItems( [
-            this.fields.unHideDiffs,
+            this.fields.showInlineFormatToggle,
             this.fields.showRevisionInfo,
+            this.fields.unHideDiffs,
             this.fields.openInNewTab,
             this.fields.linksFormat,
             this.fields.wikilinksFormat,
         ] );
         this.layouts.dialog.toggle(
-            id.settings.unHideDiffs ||
+            id.settings.showInlineFormatToggle ||
             id.settings.showRevisionInfo ||
+            id.settings.unHideDiffs ||
             id.settings.openInNewTab ||
             id.settings.linksFormat ||
             id.settings.wikilinksFormat,
@@ -442,8 +454,10 @@ export class SettingsDialog extends OO.ui.ProcessDialog {
     }
 
     getBodyHeight() {
-        return 535;
+        return 520;
     }
 }
 
 utils.tweakUserOoUiClass( SettingsDialog );
+
+export default SettingsDialog;

@@ -270,10 +270,13 @@ function app() {
     id.timers.run = Date.now();
 
     // Bundle english language strings
-    import('../i18n/en.js');
+    require( '../i18n/en.js' );
+
+    // Pre-process english language strings
+    utils.processMessages();
 
     // Bundle extensions
-    import('./extensions.js');
+    require( './extensions.js' );
 
     // Load dependencies and prepare variables
     mw.loader.load( utils.getOrigin( id.config.dependencies.styles ), 'text/css' );

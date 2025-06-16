@@ -180,11 +180,11 @@ class Dialog {
     /**
      * Import and construct an instance of the DiffDialog.
      */
-    async construct() {
+    construct() {
         this.isConstructed = true;
 
         // Import a DiffDialog constructor
-        const { DiffDialog } = await import('./DiffDialog');
+        const DiffDialog = require( './DiffDialog' ).default;
 
         // Construct DiffDialog and attach it to the Window Managers
         this.dialog = new DiffDialog( this );
@@ -196,11 +196,11 @@ class Dialog {
 
     /**
      * Construct an instance of the Diff and request its content.
-     * @returns {Promise|undefined}
+     * @returns {Promise}
      */
-    async request() {
+    request() {
         if ( !this.isConstructed ) {
-            await this.construct();
+            this.construct();
         }
 
         this.isLoading = true;
@@ -351,7 +351,7 @@ class Dialog {
         this.diff.fire();
 
         // Refresh the dialog content height
-        this.dialog.updateSize();
+        this.redraw();
 
         // Track on dialog process end time
         id.timers.dialogProcesEnd = Date.now();
@@ -367,6 +367,21 @@ class Dialog {
      */
     focus() {
         this.dialog.focus();
+    }
+
+    /**
+     * Refresh the dialog content height.
+     */
+    redraw() {
+        if ( !this.isOpen ) return;
+
+        // Refresh the dialog content height
+        this.dialog.updateSize();
+
+        // Update diff content positions and sizes
+        this.diff.redraw( {
+            top: this.dialog.getContainerElement().scrollTop,
+        } );
     }
 
     /**

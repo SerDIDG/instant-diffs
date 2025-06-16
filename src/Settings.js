@@ -102,11 +102,11 @@ class Settings {
     /**
      * Import and construct an instance of the SettingsDialog.
      */
-    async construct() {
+    construct() {
         this.isConstructed = true;
 
         // Import a SettingsDialog constructor
-        const { SettingsDialog } = await import('./SettingsDialog');
+        const SettingsDialog = require( './SettingsDialog' ).default;
 
         // Construct SettingsDialog and attach it to the Window Managers
         this.dialog = new SettingsDialog( this );
@@ -118,14 +118,15 @@ class Settings {
 
     /**
      * Request user options.
-     * @returns {Promise|undefined}
+     * @returns {Promise|boolean}
      */
-    async request() {
+    request() {
         if ( !this.isConstructed ) {
-            await this.construct();
+            this.construct();
         }
         if ( id.local.mwIsAnon ) {
-            return this.open();
+            this.open();
+            return true;
         }
 
         this.isLoading = true;

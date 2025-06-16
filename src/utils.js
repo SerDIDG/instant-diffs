@@ -177,7 +177,7 @@ export function processMessages() {
     id.local.language = id.i18n[ language ] ? language : 'en';
     id.local.messages = id.i18n[ id.local.language ];
     if ( id.local.language !== 'en' ) {
-        id.local.messages = $.extend( {}, id.i18n.en, id.local.messages );
+        id.local.messages = { ...id.i18n.en, ...id.local.messages };
     }
 
     // Set strings key-value pairs
@@ -692,6 +692,27 @@ export function getWindowManager() {
 }
 
 /**
+ * Get exported context of the module's package files. Partial recreation of the original function.
+ * {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/refs/heads/master/resources/src/startup/mediawiki.loader.js#613}
+ * @param {string} moduleName Module name from the registry
+ * @param {string} relativePath Path of the file this is scoped to. Used for relative paths.
+ * @return {Function}
+ */
+export function getModuleExport( moduleName, relativePath ) {
+    const moduleObj = mw.loader.moduleRegistry[ moduleName ];
+    const relativeParts = relativePath.match( /^((?:\.\.?\/)+)(.*)$/ );
+    if ( relativeParts ) {
+        relativePath = `resources/src/${ moduleName }/${ relativeParts[ 2 ] }`;
+    }
+    return moduleObj?.packageExports[ relativePath ];
+}
+
+export function executeModuleScript( moduleName ) {
+    const moduleObj = mw.loader.moduleRegistry[ moduleName ];
+    return moduleObj?.script( $, jQuery, null, null );
+}
+
+/**
  * Add some properties to the inheritor class that the (ES5)
  * {@link https://www.mediawiki.org/wiki/OOjs/Inheritance OOUI inheritance mechanism} uses. It
  * partly replicates the operations made in
@@ -757,7 +778,7 @@ export function addClick( node, handler, useAltKey = true ) {
             // Simulate link default behavior if the alt key is pressed
             if ( useAltKey && event.altKey && !isEmpty( node.href ) ) {
                 if ( node.target === '_blank' ) {
-                    window.open(node.href, '_blank').focus();
+                    window.open( node.href, '_blank' ).focus();
                 } else {
                     window.location.href = node.href;
                 }
