@@ -3,7 +3,6 @@ import * as utils from './utils';
 import * as diffUtils from './diffUtils';
 
 import Navigation from './Navigation';
-import { restoreInlineFormatToggle } from './diffUtils';
 
 class Diff {
     /**
