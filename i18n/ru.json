@@ -13,16 +13,12 @@
     "revision-title-hidden": "Содержимое версии скрыто",
     "compare-label": "$1",
     "compare-title": "Сравнить выбранные версии ($1)",
-    "hint-alt-click": "(Alt+Click: перейти по ссылке)",
 
     "action-save": "Сохранить",
     "action-cancel": "Отменить",
     "action-close": "Закрыть",
     "action-reload": "Перезагрузить",
-
-    "dialog-title-empty": "[Без названия]",
-    "dialog-title-not-found": "[Не найдено]",
-    "unsupported-wikilambda": "Приложение WikiLambda в настоящее время не поддерживается.",
+    "hint-alt-click": "(Alt+Click: перейти по ссылке)",
 
     "goto-links": "Ссылки",
     "goto-snapshot-next": "Следующая ссылка на странице",
@@ -49,12 +45,15 @@
     "copy-link": "Скопировать ссылку",
     "copy-link-copied": "Ссылка скопирована в буфер обмена",
     "copy-link-error": "Не удалось скопировать ссылку",
-
     "copy-wikilink": "Скопировать вики-ссылку",
     "copy-wikilink-page": "страница",
     "copy-wikilink-diff": "правка",
     "copy-wikilink-revision": "версия",
     "copy-wikilink-example-title": "Заглавная страница",
+
+    "dialog-title-empty": "[Без названия]",
+    "dialog-title-not-found": "[Не найдено]",
+    "unsupported-wikilambda": "Приложение WikiLambda в настоящее время не поддерживается.",
 
     "settings-title": "Настройки Instant Diffs",
     "settings-saved": "Настройки успешно сохранены. Перезагрузите страницу, чтобы применить их.",
@@ -83,7 +82,7 @@
     "settings-show-menu-icons": "Показывать иконки в выпадающем меню окна Instant Diffs.",
     "settings-notify-errors": "Показывать всплывающие уведомления при критических ошибках.",
 
-    "error-wasted": "потрачено",
+    "error-wasted": "Непредвиденная ошибка.",
     "error-generic": "Что-то пошло не так: $4",
     "error-prepare-generic": "Не удалось подготовить конфигурацию: $4",
     "error-prepare-version": "Скрипт уже был запущен: $4",

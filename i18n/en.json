@@ -20,10 +20,6 @@
     "action-reload": "Reload",
     "hint-alt-click": "(Alt+Click: open the link)",
 
-    "dialog-title-empty": "[No title]",
-    "dialog-title-not-found": "[Not found]",
-    "unsupported-wikilambda": "WikiLambda app is not currently supported.",
-
     "goto-links": "Links",
     "goto-snapshot-next": "Next link on a page",
     "goto-snapshot-prev": "Previous link on a page",
@@ -49,12 +45,15 @@
     "copy-link": "Copy link",
     "copy-link-copied": "The link has been copied to the clipboard.",
     "copy-link-error": "Couldn't copy the link.",
-
     "copy-wikilink": "Copy wikilink",
     "copy-wikilink-page": "page",
     "copy-wikilink-diff": "diff",
     "copy-wikilink-revision": "revision",
     "copy-wikilink-example-title": "Main Page",
+
+    "dialog-title-empty": "[No title]",
+    "dialog-title-not-found": "[Not found]",
+    "unsupported-wikilambda": "WikiLambda app is not currently supported.",
 
     "settings-title": "Instant Diffs Settings",
     "settings-saved": "The settings have been saved successfully. Reload the page to apply them.",

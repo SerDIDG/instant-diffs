@@ -13,16 +13,12 @@
     "revision-title-hidden": "O conteúdo da revisão está oculto",
     "compare-label": "$1",
     "compare-title": "Comparar as versões selecionadas ($1)",
-    "hint-alt-click": "(Alt+clique: abrir o link)",
 
     "action-save": "Salvar",
     "action-cancel": "Cancelar",
     "action-close": "Fechar",
     "action-reload": "Recarregar",
-
-    "dialog-title-empty": "[Sem título]",
-    "dialog-title-not-found": "[Não encontrado]",
-    "unsupported-wikilambda": "O aplicativo WikiLambda atualmente não é suportado.",
+    "hint-alt-click": "(Alt+clique: abrir o link)",
 
     "goto-links": "Links",
     "goto-snapshot-next": "Próximo link na página",
@@ -49,12 +45,15 @@
     "copy-link": "Copiar link",
     "copy-link-copied": "O link foi copiado para a área de transferência.",
     "copy-link-error": "Não foi possível copiar o link.",
-
     "copy-wikilink": "Copiar wikilink",
     "copy-wikilink-page": "página",
     "copy-wikilink-diff": "diferença",
     "copy-wikilink-revision": "revisão",
     "copy-wikilink-example-title": "Página principal",
+
+    "dialog-title-empty": "[Sem título]",
+    "dialog-title-not-found": "[Não encontrado]",
+    "unsupported-wikilambda": "O aplicativo WikiLambda atualmente não é suportado.",
 
     "settings-title": "Configurações do Instant Diffs",
     "settings-saved": "As configurações foram salvas com sucesso. Recarregue a página para aplicá-las.",
@@ -83,7 +82,7 @@
     "settings-show-menu-icons": "Mostrar ícones no menu suspenso do diálogo Instant Diffs.",
     "settings-notify-errors": "Mostrar alertas popup para erros críticos.",
 
-    "error-wasted": "wasted",
+    "error-wasted": "Erro inesperado.",
     "error-generic": "Algo deu errado: $4",
     "error-prepare-generic": "Falha ao preparar a configuração: $4",
     "error-prepare-version": "O script já está em execução: $4",

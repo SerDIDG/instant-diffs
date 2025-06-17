@@ -13,16 +13,12 @@
     "revision-title-hidden": "Вміст версії приховано",
     "compare-label": "$1",
     "compare-title": "Порівняти вибрані версії ($1)",
-    "hint-alt-click": "(Alt+Click: відкрити посилання)",
 
     "action-save": "Зберегти",
     "action-cancel": "Відмінити",
     "action-close": "Закрити",
     "action-reload": "Перезавантажити",
-
-    "dialog-title-empty": "[Без назви]",
-    "dialog-title-not-found": "[Не знайдено]",
-    "unsupported-wikilambda": "Додаток WikiLambda наразі не підтримується.",
+    "hint-alt-click": "(Alt+Click: відкрити посилання)",
 
     "goto-links": "Дії",
     "goto-snapshot-next": "Наступне посилання на сторінці",
@@ -49,12 +45,15 @@
     "copy-link": "Скопіювати посилання",
     "copy-link-copied": "Посилання скопійовано до буферу обміну",
     "copy-link-error": "Не вдалося скопіювати посилання",
-
     "copy-wikilink": "Скопіювати вікі-посилання",
     "copy-wikilink-page": "сторінка",
     "copy-wikilink-diff": "редагування",
     "copy-wikilink-revision": "версія",
     "copy-wikilink-example-title": "Головна сторінка",
+
+    "dialog-title-empty": "[Без назви]",
+    "dialog-title-not-found": "[Не знайдено]",
+    "unsupported-wikilambda": "Додаток WikiLambda наразі не підтримується.",
 
     "settings-title": "Налаштування Instant Diffs",
     "settings-saved": "Налаштування успішно збережено. Перезавантажте сторінку, щоб застосувати їх.",
@@ -83,7 +82,7 @@
     "settings-show-menu-icons": "Показувати іконки у випадаючому меню вікна Instant Diffs.",
     "settings-notify-errors": "Показувати спливаючі повідомлення при критичних помилках.",
 
-    "error-wasted": "ганьба",
+    "error-wasted": "Несподівана помилка.",
     "error-generic": "Щось пішло не так: $4",
     "error-prepare-generic": "Не вдалося підготувати конфігурацію: $4",
     "error-prepare-version": "Скрипт вже був запущений: $4",

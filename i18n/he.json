@@ -14,16 +14,12 @@
     "revision-title-hidden": "תוכן הגרסה הוסתר",
     "compare-label": "$1",
     "compare-title": "השוואת הגרסאות שנבחרו ($1)",
-    "hint-alt-click": "(Alt+Click: מעבר ליעד הקישור)",
 
     "action-save": "שמור",
     "action-cancel": "ביטול",
     "action-close": "סגירה",
     "action-reload": "טען מחדש",
-
-    "dialog-title-empty": "[ללא כותרת]",
-    "dialog-title-not-found": "[לא נמצא]",
-    "unsupported-wikilambda": "האפליקציה WikiLambda אינה נתמכת כעת.",
+    "hint-alt-click": "(Alt+Click: מעבר ליעד הקישור)",
 
     "goto-links": "הקישורים",
     "goto-snapshot-next": "הקישור הבא בדף",
@@ -50,12 +46,15 @@
     "copy-link": "העתקת הקישור",
     "copy-link-copied": "הקישור הועתק ללוח ההעתקה",
     "copy-link-error": "נכשלה העתקת הקישור",
-
     "copy-wikilink": "העתקת קישור ויקי",
     "copy-wikilink-page": "דף",
     "copy-wikilink-diff": "הבדל",
     "copy-wikilink-revision": "גרסה",
     "copy-wikilink-example-title": "עמוד ראשי",
+
+    "dialog-title-empty": "[ללא כותרת]",
+    "dialog-title-not-found": "[לא נמצא]",
+    "unsupported-wikilambda": "האפליקציה WikiLambda אינה נתמכת כעת.",
 
     "settings-title": "הגדרות Instant Diffs",
     "settings-saved": "ההגדרות נשמרו בהצלחה. רעננו את הדף כדי להחיל את השינויים.",
@@ -84,7 +83,7 @@
     "settings-show-menu-icons": "הצגת סמלים בתפריט הנפתח של חלונית Instant Diffs.",
     "settings-notify-errors": "הצג התראות קופצות לשגיאות קריטיות.",
 
-    "error-wasted": "wasted",
+    "error-wasted": "שגיאה בלתי צפויה.",
     "error-generic": "משהו התקלקל בדרך: $4",
     "error-prepare-generic": "נכשלה הכנת ההגדרות: $4",
     "error-prepare-version": "הסקריפט כבר רץ: $4",

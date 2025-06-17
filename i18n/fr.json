@@ -13,16 +13,12 @@
     "revision-title-hidden": "Le contenu de la version est masqué",
     "compare-label": "$1",
     "compare-title": "Comparer les versions sélectionnées ($1)",
-    "hint-alt-click": "(Alt+clic : ouvrir le lien)",
 
     "action-save": "Enregistrer",
     "action-cancel": "Annuler",
     "action-close": "Fermer",
     "action-reload": "Recharger",
-
-    "dialog-title-empty": "[Aucun titre]",
-    "dialog-title-not-found": "[Introuvable]",
-    "unsupported-wikilambda": "L'application WikiLambda n'est pas encore prise en charge.",
+    "hint-alt-click": "(Alt+clic : ouvrir le lien)",
 
     "goto-links": "Liens",
     "goto-snapshot-next": "Lien suivant sur la page",
@@ -46,16 +42,18 @@
     "goto-talkpage": "Discussion",
     "goto-settings": "Paramètres",
 
-
     "copy-link": "Copier le lien",
     "copy-link-copied": "Le lien a été copié dans le presse-papiers.",
     "copy-link-error": "Impossible de copier le lien.",
-
     "copy-wikilink": "Copier le lien wiki",
     "copy-wikilink-page": "page",
     "copy-wikilink-diff": "différence",
     "copy-wikilink-revision": "révision",
     "copy-wikilink-example-title": "Page principale",
+
+    "dialog-title-empty": "[Aucun titre]",
+    "dialog-title-not-found": "[Introuvable]",
+    "unsupported-wikilambda": "L'application WikiLambda n'est pas encore prise en charge.",
 
     "settings-title": "Paramètres d’Instant Diffs",
     "settings-saved": "Les paramètres ont été enregistrés avec succès. Rechargez la page pour les appliquer.",
@@ -84,7 +82,7 @@
     "settings-show-menu-icons": "Afficher les icônes dans le menu déroulant de la boîte de dialogue Instant Diffs.",
     "settings-notify-errors": "Afficher des alertes contextuelles pour les erreurs critiques.",
 
-    "error-wasted": "wasted",
+    "error-wasted": "Erreur inattendue.",
     "error-generic": "Une erreur est survenue : $4",
     "error-prepare-generic": "Impossible de préparer la configuration : $4",
     "error-prepare-version": "Le script est déjà en cours d’exécution : $4",
