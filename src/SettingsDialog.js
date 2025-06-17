@@ -1,6 +1,5 @@
 import id from './id';
 import * as utils from './utils';
-import { getTemplate } from './utils';
 
 /**
  * Class representing a SettingsDialog.
@@ -96,6 +95,11 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.stackLayout = new OO.ui.StackLayout( {
             items: [ this.panelEdit, this.panelFinish ],
         } );
+
+        // Process links target
+        this.processLinksTaget( this.stackLayout.$element );
+
+        // Append stackLayout to the dialog
         this.$body.append( this.stackLayout.$element );
     };
 
@@ -112,6 +116,11 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             return new OO.ui.Process( () => this.processActionReload() );
         }
         return super.getActionProcess( action );
+    }
+
+    processLinksTaget( $container ) {
+        const $links = $container.find( 'a:not(.jquery-confirmable-element)' );
+        $links.each( ( i, node ) => node.setAttribute( 'target', '_blank' ) );
     }
 
     /******* FIELDS ******/
@@ -136,7 +145,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.fields.showPageLink = new OO.ui.FieldLayout( this.inputs.showPageLink, {
             label: utils.msg( 'settings-show-page-link' ),
             align: 'inline',
-            help: utils.msg( 'settings-show-page-link-help' ),
+            help: utils.msgDom( 'settings-show-page-link-help' ),
             helpInline: true,
         } );
         this.fields.showPageLink.toggle( id.settings.showPageLink );
@@ -207,7 +216,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.fields.unHideDiffs = new OO.ui.FieldLayout( this.inputs.unHideDiffs, {
             label: utils.msg( 'settings-unhide-diffs' ),
             align: 'inline',
-            help: utils.msg( 'settings-unhide-diffs-help' ),
+            help: utils.msgDom( 'settings-unhide-diffs-help' ),
             helpInline: true,
         } );
         this.fields.unHideDiffs.toggle( id.settings.unHideDiffs );

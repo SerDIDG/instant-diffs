@@ -152,11 +152,15 @@ export function processDefaults() {
 /******* MESSAGES *******/
 
 export function msg() {
-    const params = Array.from( arguments );
-    if ( !isEmpty( params[ 0 ] ) ) {
-        params[ 0 ] = getMsgKey( params[ 0 ] );
-    }
-    return mw.msg.apply( mw.msg, params );
+    return mw.msg.apply( mw.msg, getMsgParams( arguments ) );
+}
+
+export function msgParse() {
+    return mw.message.apply( mw.message, getMsgParams( arguments ) ).parse();
+}
+
+export function msgDom() {
+    return mw.message.apply( mw.message, getMsgParams( arguments ) ).parseDom();
 }
 
 export function isMessageExists( str ) {
@@ -191,6 +195,13 @@ export function processMessages() {
 
 export function getMsgKey( str ) {
     return `${ id.config.messagePrefix }-${ str }`;
+}
+
+export function getMsgParams( params ) {
+    if ( !isEmpty( params[ 0 ] ) ) {
+        params[ 0 ] = getMsgKey( params[ 0 ] );
+    }
+    return params;
 }
 
 export function getErrorMessage( str, page, error ) {

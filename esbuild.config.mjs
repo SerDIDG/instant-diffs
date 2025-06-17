@@ -1,17 +1,15 @@
 import { readFile } from 'fs/promises';
 import * as esbuild from 'esbuild';
-import { copy } from 'esbuild-plugin-copy';
 import { replace } from 'esbuild-plugin-replace';
-import { globalExternals } from '@fal-works/esbuild-plugin-global-externals';
 import { lessLoader } from 'esbuild-plugin-less';
-import ImportGlobPlugin from 'esbuild-plugin-import-glob';
-
-const ImportGlob = ImportGlobPlugin.default;
 
 // Read package.json
 const pkg = JSON.parse(
     await readFile( new URL( './package.json', import.meta.url ) ),
 );
+
+// Folder where bundle will saving
+const output = 'dist';
 
 // Get a script's version
 const version = process.argv.includes( '--dev' ) ? pkg.version : pkg.version.split( '+' ).shift();
@@ -19,6 +17,7 @@ const version = process.argv.includes( '--dev' ) ? pkg.version : pkg.version.spl
 // String to replace in the files
 const strings = {
     include: /\.js$/,
+    __output__: output,
     __version__: version,
     __origin__: 'https://mediawiki.org',
     __styles__: '/w/index.php?title=User:Serhio_Magpie/instantDiffs.css&action=raw&ctype=text/css',
@@ -54,7 +53,7 @@ const config = {
     logLevel: 'info',
     entryPoints: [ 'src/app.js' ],
     bundle: true,
-    outfile: 'dist/instantDiffs.js',
+    outfile: `${ output }/instantDiffs.js`,
     format: 'iife',
     banner: {
         js: banner,
@@ -65,16 +64,7 @@ const config = {
         css: footer,
     },
     plugins: [
-        copy( {
-            resolveFrom: 'cwd',
-            assets: {
-                from: [ './i18n/*' ],
-                to: [ './dist/i18n' ],
-            },
-            watch: true,
-        } ),
         replace( strings ),
-        ImportGlob(),
         lessLoader(),
     ],
 };
@@ -100,7 +90,7 @@ if ( process.argv.includes( '--start' ) ) {
         .then( async ( ctx ) => {
             await ctx.watch();
             await ctx.serve( {
-                servedir: 'dist',
+                servedir: output,
                 onRequest: ( { remoteAddress, method, path, status, timeInMS } ) => {
                     console.info( remoteAddress, status, `"${ method } ${ path }" [${ timeInMS }ms]` );
                 },
