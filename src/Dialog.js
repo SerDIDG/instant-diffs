@@ -281,8 +281,10 @@ class Dialog {
             this.dialog.update( options ).then( this.onUpdate.bind( this ) );
         } else {
             // Save document scroll top position before the dialog opens.
-            this.document.scrollTop = window.scrollY;
+            this.document.scrollableRoot = OO.ui.Element.static.getRootScrollableElement( document.body );
+            this.document.scrollTop = this.document.scrollableRoot.scrollTop;
 
+            // Open a dialog window throw the windows manager
             this.windowInstance = this.manager.openWindow( this.dialog, options );
             this.windowInstance.opened.then( this.onOpen.bind( this ) );
             this.windowInstance.closed.then( this.onClose.bind( this ) );
@@ -328,8 +330,9 @@ class Dialog {
         }
 
         // Restore document scroll top position after the dialog closes.
-        // The built-in OOjs UI implementation has some flaws when the dialog switches to the revision view.
-        window.scrollTo( { top: this.document.scrollTop } );
+        // In the revision view, some module dependencies cause the page
+        // to scroll to the top after loading, for some reason.
+        this.document.scrollableRoot.scrollTop = this.document.scrollTop;
     }
 
     /**
