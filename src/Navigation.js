@@ -6,6 +6,7 @@ import Link from './Link';
 import Settings from './Settings';
 
 import './styles/navigation.less';
+import { getTemplate } from './utils';
 
 /**
  * Class representing a diff navigation bar.
@@ -645,9 +646,9 @@ class Navigation {
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderIDLink( options ) {
-        const label = $( `
-			<span class="name">${ utils.msg( 'name' ) }</span>
-			<span class="version">v.${ id.config.version }</span>
+        const label = utils.getTemplate( `\
+			<span class="name">${ utils.msg( 'name' ) }</span>\
+			<span class="version">v.${ id.config.version }</span>\
 		` );
 
         options = {

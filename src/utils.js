@@ -895,6 +895,16 @@ export function embed( node, container, insertMethod = 'appendTo' ) {
     }
 }
 
+/**
+ * Convert template literal to the jQuery object.
+ * @param {string} template
+ * @return {jQuery}
+ */
+export function getTemplate( template ) {
+    template = template.replace( /\s{2,}/g, ' ' ).trim();
+    return $( template );
+}
+
 export function getPlaceholderClasses( modifiers = [] ) {
     const classes = [ 'instantDiffs-panel-placeholder' ];
     modifiers.forEach( modifier => classes.push( `instantDiffs-panel-placeholder--${ modifier }` ) );
@@ -937,9 +947,9 @@ export function renderLabel( params ) {
         .filter( item => !isEmpty( item ) )
         .join( '' );
 
-    return $( `
-        <span class="instantDiffs-label instantDiffs-label--long">${ long }</span>
-        <span class="instantDiffs-label instantDiffs-label--short">${ short }</span>
+    return getTemplate( `\
+        <span class="instantDiffs-label instantDiffs-label--long">${ long }</span>\
+        <span class="instantDiffs-label instantDiffs-label--short">${ short }</span>\
     ` );
 }
 

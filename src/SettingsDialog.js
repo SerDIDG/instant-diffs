@@ -1,5 +1,6 @@
 import id from './id';
 import * as utils from './utils';
+import { getTemplate } from './utils';
 
 /**
  * Class representing a SettingsDialog.
@@ -375,12 +376,12 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         const diff = utils.getTypeHref( { title, diff: '12345', type: 'diff' }, {}, options );
         const revision = utils.getTypeHref( { title, oldid: '12345', type: 'revision' }, {}, options );
         const page = utils.getTypeHref( { title, curid: '12345', type: 'revision', typeVariant: 'page' }, {}, options );
-        return $( `
-            <ul class="instantDiffs-list--settings">
-                <li><i>${ diff }</i></li>
-                <li><i>${ revision }</i></li>
-                <li><i>${ page }</i></li>
-            </ul>
+        return utils.getTemplate( `\
+            <ul class="instantDiffs-list--settings">\
+                <li><i>${ diff }</i></li>\
+                <li><i>${ revision }</i></li>\
+                <li><i>${ page }</i></li>\
+            </ul>\
         ` );
     };
 
