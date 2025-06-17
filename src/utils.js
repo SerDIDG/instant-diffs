@@ -165,7 +165,7 @@ export function msgDom() {
         if ( node.tagName !== 'A' ) return;
 
         const href = node.getAttribute( 'href' );
-        if ( isEmpty( href ) || !/^\/wiki\//.test( href ) ) return;
+        if ( isEmpty( href ) || !/^\/(wiki|w)\//.test( href ) ) return;
 
         const url = new URL( href, id.config.origin );
         node.setAttribute( 'href', url.toString() )
