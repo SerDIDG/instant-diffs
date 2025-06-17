@@ -8,20 +8,20 @@
     "name": "Instant Diffs",
 
     "diff-title": "Différence entre les versions",
-    "diff-title-admin": "La différence entre les versions est masquée",
+    "diff-title-hidden": "La différence entre les versions est masquée",
     "revision-title": "Contenu de la version",
-    "revision-title-admin": "Le contenu de la version est masqué",
-    "compare": "$1",
+    "revision-title-hidden": "Le contenu de la version est masqué",
+    "compare-label": "$1",
     "compare-title": "Comparer les versions sélectionnées ($1)",
-    "alt-click": "(Alt+clic : ouvrir le lien)",
+    "hint-alt-click": "(Alt+clic : ouvrir le lien)",
 
-    "save": "Enregistrer",
-    "cancel": "Annuler",
-    "close": "Fermer",
-    "reload": "Recharger",
+    "action-save": "Enregistrer",
+    "action-cancel": "Annuler",
+    "action-close": "Fermer",
+    "action-reload": "Recharger",
 
-    "title-empty": "[Aucun titre]",
-    "title-not-found": "[Introuvable]",
+    "dialog-title-empty": "[Aucun titre]",
+    "dialog-title-not-found": "[Introuvable]",
     "unsupported-wikilambda": "L'application WikiLambda n'est pas encore prise en charge.",
 
     "goto-links": "Liens",
@@ -52,10 +52,10 @@
     "copy-link-error": "Impossible de copier le lien.",
 
     "copy-wikilink": "Copier le lien wiki",
-    "wikilink-page": "page",
-    "wikilink-diff": "différence",
-    "wikilink-revision": "révision",
-    "wikilink-example-title": "Page principale",
+    "copy-wikilink-page": "page",
+    "copy-wikilink-diff": "différence",
+    "copy-wikilink-revision": "révision",
+    "copy-wikilink-example-title": "Page principale",
 
     "settings-title": "Paramètres d’Instant Diffs",
     "settings-saved": "Les paramètres ont été enregistrés avec succès. Rechargez la page pour les appliquer.",
@@ -99,7 +99,7 @@
     "error-diff-missingcontent": "Version masquée",
     "error-diff-nosuchrevid": "Version introuvable",
     "error-dependencies-generic": "Échec du chargement des dépendances : $4",
-    "error-dependencies-parse": "Échec du chargement des dépendances de la page « $3 » : $4",
+    "error-dependencies-page": "Échec du chargement des dépendances de la page « $3 » : $4",
     "error-setting-request": "Échec du chargement des options utilisateur : $4",
     "error-setting-save": "Échec de l’enregistrement des options utilisateur"
 }

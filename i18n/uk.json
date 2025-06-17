@@ -8,20 +8,20 @@
     "name": "Instant Diffs",
 
     "diff-title": "Різниця версій",
-    "diff-title-admin": "Різниця версій прихована",
+    "diff-title-hidden": "Різниця версій прихована",
     "revision-title": "Вміст версії",
-    "revision-title-admin": "Вміст версії приховано",
-    "compare": "$1",
+    "revision-title-hidden": "Вміст версії приховано",
+    "compare-label": "$1",
     "compare-title": "Порівняти вибрані версії ($1)",
-    "alt-click": "(Alt+Click: відкрити посилання)",
+    "hint-alt-click": "(Alt+Click: відкрити посилання)",
 
-    "save": "Зберегти",
-    "cancel": "Відмінити",
-    "close": "Закрити",
-    "reload": "Перезавантажити",
+    "action-save": "Зберегти",
+    "action-cancel": "Відмінити",
+    "action-close": "Закрити",
+    "action-reload": "Перезавантажити",
 
-    "title-empty": "[Без назви]",
-    "title-not-found": "[Не знайдено]",
+    "dialog-title-empty": "[Без назви]",
+    "dialog-title-not-found": "[Не знайдено]",
     "unsupported-wikilambda": "Додаток WikiLambda наразі не підтримується.",
 
     "goto-links": "Дії",
@@ -51,10 +51,10 @@
     "copy-link-error": "Не вдалося скопіювати посилання",
 
     "copy-wikilink": "Скопіювати вікі-посилання",
-    "wikilink-page": "сторінка",
-    "wikilink-diff": "редагування",
-    "wikilink-revision": "версія",
-    "wikilink-example-title": "Головна сторінка",
+    "copy-wikilink-page": "сторінка",
+    "copy-wikilink-diff": "редагування",
+    "copy-wikilink-revision": "версія",
+    "copy-wikilink-example-title": "Головна сторінка",
 
     "settings-title": "Налаштування Instant Diffs",
     "settings-saved": "Налаштування успішно збережено. Перезавантажте сторінку, щоб застосувати їх.",
@@ -98,7 +98,7 @@
     "error-diff-missingcontent": "Версію приховано",
     "error-diff-nosuchrevid": "Версію не знайдено",
     "error-dependencies-generic": "Не вдалося завантажити залежності: $4",
-    "error-dependencies-parse": "Не вдалося завантажити залежності сторінки «$3»: $4",
+    "error-dependencies-page": "Не вдалося завантажити залежності сторінки «$3»: $4",
     "error-setting-request": "Не вдалося завантажити налаштування користувача: $4",
     "error-setting-save": "Не вдалося зберегти налаштування користувача"
 }

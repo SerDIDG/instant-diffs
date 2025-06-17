@@ -8,20 +8,20 @@
     "name": "Instant Diffs",
 
     "diff-title": "Unterschied zwischen Versionen",
-    "diff-title-admin": "Unterschied zwischen Versionen ist ausgeblendet",
+    "diff-title-hidden": "Unterschied zwischen Versionen ist ausgeblendet",
     "revision-title": "Versionsinhalt",
-    "revision-title-admin": "Versionsinhalt ist ausgeblendet",
-    "compare": "$1",
+    "revision-title-hidden": "Versionsinhalt ist ausgeblendet",
+    "compare-label": "$1",
     "compare-title": "Gewählte Versionen vergleichen ($1)",
-    "alt-click": "(Alt+Klick: Link öffnen)",
+    "hint-alt-click": "(Alt+Klick: Link öffnen)",
 
-    "save": "Speichern",
-    "cancel": "Abbrechen",
-    "close": "Schließen",
-    "reload": "Neu laden",
+    "action-save": "Speichern",
+    "action-cancel": "Abbrechen",
+    "action-close": "Schließen",
+    "action-reload": "Neu laden",
 
-    "title-empty": "[Kein Titel]",
-    "title-not-found": "[Nicht gefunden]",
+    "dialog-title-empty": "[Kein Titel]",
+    "dialog-title-not-found": "[Nicht gefunden]",
     "unsupported-wikilambda": "Die WikiLambda-Anwendung wird derzeit nicht unterstützt.",
 
     "goto-links": "Links",
@@ -51,10 +51,10 @@
     "copy-link-error": "Link konnte nicht kopiert werden.",
 
     "copy-wikilink": "Wikilink kopieren",
-    "wikilink-page": "Seite",
-    "wikilink-diff": "Unterschied",
-    "wikilink-revision": "Version",
-    "wikilink-example-title": "Hauptseite",
+    "copy-wikilink-page": "Seite",
+    "copy-wikilink-diff": "Unterschied",
+    "copy-wikilink-revision": "Version",
+    "copy-wikilink-example-title": "Hauptseite",
 
     "settings-title": "Instant Diffs-Einstellungen",
     "settings-saved": "Die Einstellungen wurden erfolgreich gespeichert. Laden Sie die Seite neu, um sie anzuwenden.",
@@ -98,7 +98,7 @@
     "error-diff-missingcontent": "Version ist versteckt",
     "error-diff-nosuchrevid": "Version nicht gefunden",
     "error-dependencies-generic": "Abhängigkeiten konnten nicht geladen werden: $4",
-    "error-dependencies-parse": "Seitendependenzen konnten nicht geladen werden „$3“: $4",
+    "error-dependencies-page": "Seitendependenzen konnten nicht geladen werden „$3“: $4",
     "error-setting-request": "Benutzereinstellungen konnten nicht geladen werden: $4",
     "error-setting-save": "Benutzereinstellungen konnten nicht gespeichert werden"
 }

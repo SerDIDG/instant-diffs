@@ -351,7 +351,7 @@ export function getWikilink( page, pageParams, options ) {
     return wikilink
         .replace( '$1', attr )
         .replace( '$href', options.href )
-        .replace( '$msg', msg( `wikilink-${ options.type }` ) );
+        .replace( '$msg', msg( `copy-wikilink-${ options.type }` ) );
 }
 
 export function getHref( page, pageParams, options ) {
@@ -874,7 +874,7 @@ export function addClick( node, handler, useAltKey = true ) {
         if ( isEmpty( node.dataset.altTitle ) ) {
             node.dataset.altTitle = node.title;
         }
-        node.dataset.altTitle = `${ node.dataset.altTitle } ${ msg( 'alt-click' ) }`.trim();
+        node.dataset.altTitle = `${ node.dataset.altTitle } ${ msg( 'hint-alt-click' ) }`.trim();
         node.dataset.origTitle = node.title;
 
         // Set alt title temporary to increase compatibility with the other scripts

@@ -12,7 +12,7 @@ class DiffDialog extends OO.ui.MessageDialog {
     static actions = [
         {
             action: 'close',
-            label: utils.msg( 'close' ),
+            label: utils.msg( 'action-close' ),
         },
     ];
 

@@ -8,20 +8,20 @@
     "name": "Instant Diffs",
 
     "diff-title": "Разница версий",
-    "diff-title-admin": "Разница версий скрыта",
+    "diff-title-hidden": "Разница версий скрыта",
     "revision-title": "Содержимое версии",
-    "revision-title-admin": "Содержимое версии скрыто",
-    "compare": "$1",
+    "revision-title-hidden": "Содержимое версии скрыто",
+    "compare-label": "$1",
     "compare-title": "Сравнить выбранные версии ($1)",
-    "alt-click": "(Alt+Click: перейти по ссылке)",
+    "hint-alt-click": "(Alt+Click: перейти по ссылке)",
 
-    "save": "Сохранить",
-    "cancel": "Отменить",
-    "close": "Закрыть",
-    "reload": "Перезагрузить",
+    "action-save": "Сохранить",
+    "action-cancel": "Отменить",
+    "action-close": "Закрыть",
+    "action-reload": "Перезагрузить",
 
-    "title-empty": "[Без названия]",
-    "title-not-found": "[Не найдено]",
+    "dialog-title-empty": "[Без названия]",
+    "dialog-title-not-found": "[Не найдено]",
     "unsupported-wikilambda": "Приложение WikiLambda в настоящее время не поддерживается.",
 
     "goto-links": "Ссылки",
@@ -51,10 +51,10 @@
     "copy-link-error": "Не удалось скопировать ссылку",
 
     "copy-wikilink": "Скопировать вики-ссылку",
-    "wikilink-page": "страница",
-    "wikilink-diff": "правка",
-    "wikilink-revision": "версия",
-    "wikilink-example-title": "Заглавная страница",
+    "copy-wikilink-page": "страница",
+    "copy-wikilink-diff": "правка",
+    "copy-wikilink-revision": "версия",
+    "copy-wikilink-example-title": "Заглавная страница",
 
     "settings-title": "Настройки Instant Diffs",
     "settings-saved": "Настройки успешно сохранены. Перезагрузите страницу, чтобы применить их.",
@@ -98,7 +98,7 @@
     "error-diff-missingcontent": "Версия скрыта",
     "error-diff-nosuchrevid": "Версия не найдена",
     "error-dependencies-generic": "Не удалось загрузить зависимости: $4",
-    "error-dependencies-parse": "Не удалось загрузить зависимости страницы «$3»: $4",
+    "error-dependencies-page": "Не удалось загрузить зависимости страницы «$3»: $4",
     "error-setting-request": "Не удалось загрузить настройки пользователя: $4",
     "error-setting-save": "Не удалось сохранить настройки пользователя"
 }

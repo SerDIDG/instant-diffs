@@ -8,20 +8,20 @@
     "name": "Instant Diffs",
     
     "diff-title": "Diferencia entre revisiones",
-    "diff-title-admin": "La diferencia entre revisiones está oculta",
+    "diff-title-hidden": "La diferencia entre revisiones está oculta",
     "revision-title": "Contenido de la revisión",
-    "revision-title-admin": "El contenido de la revisión está oculto",
-    "compare": "$1",
+    "revision-title-hidden": "El contenido de la revisión está oculto",
+    "compare-label": "$1",
     "compare-title": "Comparar revisiones seleccionadas ($1)",
-    "alt-click": "(Alt+clic: abrir el enlace)",
+    "hint-alt-click": "(Alt+clic: abrir el enlace)",
     
-    "save": "Guardar",
-    "cancel": "Cancelar",
-    "close": "Cerrar",
-    "reload": "Recargar",
+    "action-save": "Guardar",
+    "action-cancel": "Cancelar",
+    "action-close": "Cerrar",
+    "action-reload": "Recargar",
 
-    "title-empty": "[Sin título]",
-    "title-not-found": "[No encontrado]",
+    "dialog-title-empty": "[Sin título]",
+    "dialog-title-not-found": "[No encontrado]",
     "unsupported-wikilambda": "La aplicación WikiLambda no es compatible actualmente.",
 
     "goto-links": "Enlaces",
@@ -51,10 +51,10 @@
     "copy-link-error": "No se pudo copiar el enlace.",
 
     "copy-wikilink": "Copiar wikienlace",
-    "wikilink-page": "página",
-    "wikilink-diff": "diferencia",
-    "wikilink-revision": "revisión",
-    "wikilink-example-title": "Página principal",
+    "copy-wikilink-page": "página",
+    "copy-wikilink-diff": "diferencia",
+    "copy-wikilink-revision": "revisión",
+    "copy-wikilink-example-title": "Página principal",
 
     "settings-title": "Configuración de Instant Diffs",
     "settings-saved": "La configuración se ha guardado correctamente. Recarga la página para aplicarla.",
@@ -98,7 +98,7 @@
     "error-diff-missingcontent": "Revisión oculta",
     "error-diff-nosuchrevid": "Revisión no encontrada",
     "error-dependencies-generic": "No se pudieron cargar las dependencias: $4",
-    "error-dependencies-parse": "No se pudieron cargar las dependencias de la página \"$3\": $4",
+    "error-dependencies-page": "No se pudieron cargar las dependencias de la página \"$3\": $4",
     "error-setting-request": "No se pudieron cargar las opciones del usuario: $4",
     "error-setting-save": "No se pudieron guardar las opciones del usuario"
 }

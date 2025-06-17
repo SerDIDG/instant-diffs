@@ -8,20 +8,20 @@
     "name": "Instant Diffs",
 
     "diff-title": "Diferença entre revisões",
-    "diff-title-admin": "A diferença entre revisões está oculta",
+    "diff-title-hidden": "A diferença entre revisões está oculta",
     "revision-title": "Conteúdo da revisão",
-    "revision-title-admin": "O conteúdo da revisão está oculto",
-    "compare": "$1",
+    "revision-title-hidden": "O conteúdo da revisão está oculto",
+    "compare-label": "$1",
     "compare-title": "Comparar as versões selecionadas ($1)",
-    "alt-click": "(Alt+clique: abrir o link)",
+    "hint-alt-click": "(Alt+clique: abrir o link)",
 
-    "save": "Salvar",
-    "cancel": "Cancelar",
-    "close": "Fechar",
-    "reload": "Recarregar",
+    "action-save": "Salvar",
+    "action-cancel": "Cancelar",
+    "action-close": "Fechar",
+    "action-reload": "Recarregar",
 
-    "title-empty": "[Sem título]",
-    "title-not-found": "[Não encontrado]",
+    "dialog-title-empty": "[Sem título]",
+    "dialog-title-not-found": "[Não encontrado]",
     "unsupported-wikilambda": "O aplicativo WikiLambda atualmente não é suportado.",
 
     "goto-links": "Links",
@@ -51,10 +51,10 @@
     "copy-link-error": "Não foi possível copiar o link.",
 
     "copy-wikilink": "Copiar wikilink",
-    "wikilink-page": "página",
-    "wikilink-diff": "diferença",
-    "wikilink-revision": "revisão",
-    "wikilink-example-title": "Página principal",
+    "copy-wikilink-page": "página",
+    "copy-wikilink-diff": "diferença",
+    "copy-wikilink-revision": "revisão",
+    "copy-wikilink-example-title": "Página principal",
 
     "settings-title": "Configurações do Instant Diffs",
     "settings-saved": "As configurações foram salvas com sucesso. Recarregue a página para aplicá-las.",
@@ -98,7 +98,7 @@
     "error-diff-missingcontent": "Revisão oculta",
     "error-diff-nosuchrevid": "Revisão não encontrada",
     "error-dependencies-generic": "Falha ao carregar dependências: $4",
-    "error-dependencies-parse": "Falha ao carregar dependências da página \"$3\": $4",
+    "error-dependencies-page": "Falha ao carregar dependências da página \"$3\": $4",
     "error-setting-request": "Falha ao carregar as opções do usuário: $4",
     "error-setting-save": "Falha ao salvar as opções do usuário"
 }

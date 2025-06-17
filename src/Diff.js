@@ -133,7 +133,7 @@ class Diff {
         } else {
             params.message = error;
         }
-        utils.notifyError( 'error-dependencies-parse', this.page, params, true );
+        utils.notifyError( 'error-dependencies-page', this.page, params, true );
     }
 
     onRequestPageDependenciesDone( data ) {
@@ -517,8 +517,8 @@ class Diff {
     }
 
     getPageTitleText() {
-        if ( this.error ) return utils.msg( 'title-not-found' );
-        if ( utils.isEmpty( this.page.title ) ) return utils.msg( 'title-empty' );
+        if ( this.error ) return utils.msg( 'dialog-title-not-found' );
+        if ( utils.isEmpty( this.page.title ) ) return utils.msg( 'dialog-title-empty' );
         return this.page.titleText;
     }
 

@@ -527,7 +527,7 @@ class Link {
 
         // Indicate about hidden revisions
         if ( this.page.isHidden ) {
-            title = `${ title }-admin`;
+            title = `${ title }-hidden`;
         }
 
         return utils.msg( title );

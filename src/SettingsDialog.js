@@ -12,19 +12,19 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         {
             action: 'save',
             modes: 'edit',
-            label: utils.msg( 'save' ),
+            label: utils.msg( 'action-save' ),
             flags: [ 'primary', 'progressive' ],
         },
         {
             action: 'reload',
             modes: 'finish',
-            label: utils.msg( 'reload' ),
+            label: utils.msg( 'action-reload' ),
             flags: [ 'primary', 'progressive' ],
         },
         {
             modes: [ 'edit', 'finish' ],
-            label: utils.msg( 'close' ),
-            title: utils.msg( 'close' ),
+            label: utils.msg( 'action-close' ),
+            title: utils.msg( 'action-close' ),
             invisibleLabel: true,
             icon: 'close',
             flags: [ 'safe', 'close' ],
@@ -381,7 +381,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     };
 
     getLinksFormatExample( options ) {
-        const title = utils.msg( 'wikilink-example-title' );
+        const title = utils.msg( 'copy-wikilink-example-title' );
         const diff = utils.getTypeHref( { title, diff: '12345', type: 'diff' }, {}, options );
         const revision = utils.getTypeHref( { title, oldid: '12345', type: 'revision' }, {}, options );
         const page = utils.getTypeHref( { title, curid: '12345', type: 'revision', typeVariant: 'page' }, {}, options );

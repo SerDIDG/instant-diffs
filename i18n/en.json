@@ -8,20 +8,20 @@
     "name": "Instant Diffs",
 
     "diff-title": "Difference between revisions",
-    "diff-title-admin": "Difference between revisions is hidden",
+    "diff-title-hidden": "Difference between revisions is hidden",
     "revision-title": "Revision content",
-    "revision-title-admin": "Revision content is hidden",
-    "compare": "$1",
+    "revision-title-hidden": "Revision content is hidden",
+    "compare-label": "$1",
     "compare-title": "Compare selected revisions ($1)",
-    "alt-click": "(Alt+Click: open the link)",
 
-    "save": "Save",
-    "cancel": "Cancel",
-    "close": "Close",
-    "reload": "Reload",
+    "action-save": "Save",
+    "action-cancel": "Cancel",
+    "action-close": "Close",
+    "action-reload": "Reload",
+    "hint-alt-click": "(Alt+Click: open the link)",
 
-    "title-empty": "[No title]",
-    "title-not-found": "[Not found]",
+    "dialog-title-empty": "[No title]",
+    "dialog-title-not-found": "[Not found]",
     "unsupported-wikilambda": "WikiLambda app is not currently supported.",
 
     "goto-links": "Links",
@@ -51,10 +51,10 @@
     "copy-link-error": "Couldn't copy the link.",
 
     "copy-wikilink": "Copy wikilink",
-    "wikilink-page": "page",
-    "wikilink-diff": "diff",
-    "wikilink-revision": "revision",
-    "wikilink-example-title": "Main Page",
+    "copy-wikilink-page": "page",
+    "copy-wikilink-diff": "diff",
+    "copy-wikilink-revision": "revision",
+    "copy-wikilink-example-title": "Main Page",
 
     "settings-title": "Instant Diffs Settings",
     "settings-saved": "The settings have been saved successfully. Reload the page to apply them.",
@@ -83,7 +83,7 @@
     "settings-show-menu-icons": "Show icons in the Instant Diffs dialog dropdown menu.",
     "settings-notify-errors": "Show popup alerts for critical errors.",
 
-    "error-wasted": "wasted",
+    "error-wasted": "Unexpected error.",
     "error-generic": "Something went wrong: $4",
     "error-prepare-generic": "Failed to prepare configuration: $4",
     "error-prepare-version": "An instance of the script is already running: $4",
@@ -98,7 +98,7 @@
     "error-diff-missingcontent": "Revision is hidden",
     "error-diff-nosuchrevid": "Revision not found",
     "error-dependencies-generic": "Failed to load dependencies: $4",
-    "error-dependencies-parse": "Failed to load page dependencies \"$3\": $4",
+    "error-dependencies-page": "Failed to load page dependencies \"$3\": $4",
     "error-setting-request": "Failed to load user options: $4",
     "error-setting-save": "Failed to save user options"
 }
