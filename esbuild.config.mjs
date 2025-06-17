@@ -9,7 +9,8 @@ const pkg = JSON.parse(
 );
 
 // Folder where bundle will saving
-const output = 'dist';
+const outdir = 'dist';
+const outfile = 'instantDiffs' + ( process.argv.includes( '--dev' ) ? '.test' : '' );
 
 // Get a script's version
 const version = process.argv.includes( '--dev' ) ? pkg.version : pkg.version.split( '+' ).shift();
@@ -17,22 +18,18 @@ const version = process.argv.includes( '--dev' ) ? pkg.version : pkg.version.spl
 // String to replace in the files
 const strings = {
     include: /\.js$/,
-    __output__: output,
+    __outdir__: outdir,
     __version__: version,
     __origin__: 'https://mediawiki.org',
-    __styles__: '/w/index.php?title=User:Serhio_Magpie/instantDiffs.css&action=raw&ctype=text/css',
+    __styles__: `/w/index.php?title=User:Serhio_Magpie/${ outfile }.css&action=raw&ctype=text/css`,
     __messages__: '/w/index.php?title=User:Serhio_Magpie/instantDiffs-i18n/$lang.js&action=raw&ctype=text/javascript',
     __debug__: process.argv.includes( '--start' ),
 };
 
-if ( process.argv.includes( '--dev' ) ) {
-    strings.__styles__ = '/w/index.php?title=User:Serhio_Magpie/instantDiffs.test.css&action=raw&ctype=text/css';
-}
-
 if ( process.argv.includes( '--start' ) ) {
     strings.__origin__ = 'http://localhost:8000';
-    strings.__styles__ = '/instantDiffs.css';
-    strings.__messages__ = '/i18n/$lang.js';
+    strings.__styles__ = `/${ outfile }.css`;
+    strings.__messages__ = '/instantDiffs-i18n/$lang.js';
 }
 
 // Prepend a banner and footer
@@ -53,7 +50,7 @@ const config = {
     logLevel: 'info',
     entryPoints: [ 'src/app.js' ],
     bundle: true,
-    outfile: `${ output }/instantDiffs.js`,
+    outfile: `${ outdir }/${ outfile }.js`,
     format: 'iife',
     banner: {
         js: banner,
@@ -90,7 +87,7 @@ if ( process.argv.includes( '--start' ) ) {
         .then( async ( ctx ) => {
             await ctx.watch();
             await ctx.serve( {
-                servedir: output,
+                servedir: outdir,
                 onRequest: ( { remoteAddress, method, path, status, timeInMS } ) => {
                     console.info( remoteAddress, status, `"${ method } ${ path }" [${ timeInMS }ms]` );
                 },

@@ -270,7 +270,7 @@ function app() {
     id.timers.run = Date.now();
 
     // Bundle english language strings
-    require( `../${ id.config.output }/instantDiffs-i18n/en.js` );
+    require( `../${ id.config.outdir }/instantDiffs-i18n/en.js` );
 
     // Pre-process english language strings
     utils.processMessages();

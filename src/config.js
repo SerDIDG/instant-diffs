@@ -6,7 +6,7 @@ export const config = {
     version: '__version__',
     link: 'Instant_Diffs',
     discussion: 'Talk:Instant_Diffs',
-    output: '__output__',
+    outdir: '__outdir__',
     origin: '__origin__',
     prefix: 'instantDiffs',
     messagePrefix: 'instant-diffs',
