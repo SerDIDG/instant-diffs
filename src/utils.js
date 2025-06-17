@@ -356,13 +356,14 @@ export function getTypeHref( page, pageParams, options ) {
     pageParams = { ...pageParams };
     options = {
         type: 'diff',
-        typeVariant: null,
         ...options,
     };
 
     // Validate options
-    if ( options.typeVariant === 'page' ) {
+    if ( page.type === 'revision' && page.typeVariant === 'page' ) {
         options.type = 'page';
+    } else {
+        options.type = page.type;
     }
 
     // Validate page params for diffs
@@ -374,6 +375,8 @@ export function getTypeHref( page, pageParams, options ) {
         if ( isValidID( page.oldid ) && isValidID( page.diff ) ) {
             pageParams.oldid = page.oldid;
             pageParams.diff = page.diff;
+        } else if ( isValidID( page.revid ) ) {
+            pageParams.diff = page.revid;
         } else if ( isValidID( page.oldid ) ) {
             if ( isValidDir( page.diff ) && page.diff !== 'prev' ) {
                 pageParams.oldid = page.oldid;
@@ -510,6 +513,72 @@ export function getRevisionSection( revision ) {
         sectionMatch = revision.comment.match( id.config.sectionRegExp );
     }
     return sectionMatch && sectionMatch[ 1 ] || null;
+}
+
+export function validatePage( page ) {
+    // Validate components
+    if ( [ 0, '0', 'current' ].includes( page.diff ) ) {
+        page.diff = 'cur';
+    }
+    if ( !isValidDir( page.direction ) ) {
+        page.direction = 'prev';
+    }
+
+    // Check if a page type is a revision
+    if ( isValidID( page.oldid ) && isEmpty( page.diff ) ) {
+        page.isValid = true
+        page.type = 'revision';
+        return page;
+    }
+
+    // Check if a page type is a diff
+    if ( isValidID( page.diff ) || isValidID( page.oldid ) ) {
+        page.isValid = true
+        page.type = 'diff';
+
+        // Swap parameters if oldid is a direction and a title is empty
+        if ( isEmpty( page.title ) && isValidDir( page.oldid ) ) {
+            const dir = page.oldid;
+            page.oldid = page.diff;
+            page.diff = dir;
+        }
+
+        // Swap parameters if oldid is empty: special pages do not have a page title attribute
+        if ( isEmpty( page.oldid ) ) {
+            page.oldid = page.diff;
+            page.diff = page.direction;
+        }
+
+        // Fix a tenet bug
+        if (
+            isValidID( page.oldid ) &&
+            isValidID( page.diff ) &&
+            parseInt( page.oldid ) > parseInt( page.diff )
+        ) {
+            const diff = page.oldid;
+            page.oldid = page.diff;
+            page.diff = diff;
+        }
+        return page;
+    }
+
+    // Check if a page type is a diff
+    if ( !isEmpty( page.title ) && isValidDir( page.diff ) ) {
+        page.isValid = true
+        page.type = 'diff';
+        return page;
+    }
+
+    // Check if a page type is a lastest revision
+    if ( isValidID( page.curid ) ) {
+        page.isValid = true
+        page.type = 'revision';
+        page.typeVariant = 'page';
+        return page;
+    }
+
+    page.isValid = false;
+    return page;
 }
 
 export function extendPage( page, params = {} ) {

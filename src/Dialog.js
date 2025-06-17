@@ -8,7 +8,7 @@ import Snapshot from './Snapshot';
 import './styles/dialog.less';
 
 /**
- * Class representing a diff dialog.
+ * Class representing a Dialog.
  */
 class Dialog {
     /**
@@ -76,8 +76,25 @@ class Dialog {
     isLoading = false;
 
     /**
-     * Create a diff dialog.
-     * @param {import('./Link').default|import('./DialogButton').default} link a Link or a DialogButton instance
+     * Get or construct a Dialog instance.
+     * @param {import('./Link').default|import('./DialogButton').default} link a Link, or a DialogButton instance
+     * @param {object} [options] configuration options
+     * @returns {import('./Dialog').default|undefined}
+     * @static
+     */
+    static getInstance( link, options ) {
+        if ( id.local.dialog && id.local.dialog.isLoading ) return;
+        if ( !id.local.dialog ) {
+            id.local.dialog = new Dialog( link, options );
+        } else {
+            id.local.dialog.process( link, options );
+        }
+        return id.local.dialog;
+    }
+
+    /**
+     * Create a Dialog.
+     * @param {import('./Link').default|import('./DialogButton').default} link a Link, or a DialogButton instance
      * @param {object} [options] configuration options
      */
     constructor( link, options ) {
@@ -86,7 +103,7 @@ class Dialog {
 
     /**
      * Setup configuration options.
-     * @param {import('./Link').default|import('./DialogButton').default} link a Link or a DialogButton instance
+     * @param {import('./Link').default|import('./DialogButton').default} link a Link, or a DialogButton instance
      * @param {object} [options] configuration options
      */
     process( link, options ) {
@@ -96,8 +113,8 @@ class Dialog {
         this.link = link;
         this.options = {
             initiatorDiff: null,
-            onOpen: function () {},
-            onClose: function () {},
+            onOpen: () => {},
+            onClose: () => {},
             ...options,
         };
 
@@ -205,6 +222,7 @@ class Dialog {
 
         this.isLoading = true;
         this.error = null;
+        this.previousDiff = this.diff;
 
         // When the Diff is about to change, restore the mw.config to the initial state
         if ( this.mwConfigBackup ) {
@@ -217,14 +235,12 @@ class Dialog {
         // Construct the Diff options
         const page = this.link.getPage();
         const options = {
-            type: this.link.getType(),
-            typeVariant: this.link.getTypeVariant(),
             initiatorDiff: this.options.initiatorDiff,
-            initiatorDialog: this,
+            onFocus: () => this.focus(),
+            onResize: () => this.redraw(),
         };
 
         // Load the Diff content
-        this.previousDiff = this.diff;
         this.diff = new Diff( page, options );
         return $.when( this.diff.load() )
             .then( this.onRequestSuccess.bind( this ) )
@@ -390,14 +406,6 @@ class Dialog {
      */
     getDiff() {
         return this.diff;
-    }
-
-    /**
-     * Get a dialog overlay element.
-     * @returns {jQuery}
-     */
-    getOverlay() {
-        return this.dialog.$overlay;
     }
 
     /**

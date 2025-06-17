@@ -80,7 +80,7 @@ instantDiffs.i18n.en = {
     'settings-fieldset-dialog': 'Dialog',
     'settings-unhide-diffs': 'Display hidden revision content and diff info without additional steps.',
     'settings-unhide-diffs-help': 'The "suppressrevision" user right is required to view revision content.',
-    'settings-show-inline-format-toggle': 'Show the inline format toggle button in the diffs.',
+    'settings-show-diff-tools': 'Show additional diff tools, such as the Inline format toggle.',
     'settings-show-revision-info': 'Show change information when viewing a revision.',
     'settings-open-in-new-tab': 'Open links inside the Instant Diffs dialog in a new tab.',
     'settings-links-format': 'Link format for the copy action',

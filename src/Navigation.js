@@ -51,17 +51,11 @@ class Navigation {
     constructor( diff, page, pageParams, options ) {
         this.diff = diff;
 
-        this.page = {
-            ...page,
-        };
+        this.page = { ...page };
 
-        this.pageParams = {
-            ...pageParams,
-        };
+        this.pageParams = { ...pageParams };
 
         this.options = {
-            type: null,
-            typeVariant: null,
             links: [],
             ...options,
         };
@@ -131,7 +125,7 @@ class Navigation {
         items.push( this.buttons.prev );
 
         // Link that switch between revision and diff
-        if ( ![ 'page' ].includes( this.options.typeVariant ) ) {
+        if ( ![ 'page' ].includes( this.page.typeVariant ) ) {
             this.buttons.switch = this.renderSwitchLink( buttonOptions );
             items.push( this.buttons.switch );
         }
@@ -202,8 +196,6 @@ class Navigation {
 
         // Dropdown menu
         return new OO.ui.PopupButtonWidget( {
-            // FixMe: fix navigation using keyboard's tab key when a popup embed to the dialog overlay
-            //$overlay: this.diff.getOverlay(),
             icon: 'menu',
             label: utils.msg( 'goto-links' ),
             title: utils.msg( 'goto-links' ),
@@ -323,7 +315,7 @@ class Navigation {
         }
 
         // Link that switch between revision and diff
-        if ( ![ 'page', 'compare' ].includes( this.options.typeVariant ) ) {
+        if ( ![ 'page', 'compare' ].includes( this.page.typeVariant ) ) {
             this.buttons.mobileWwitch = this.renderSwitchLink( buttonOptions );
             items.push( this.buttons.mobileWwitch );
         }
@@ -412,20 +404,21 @@ class Navigation {
         // For a diff, we show a comparison between two revisions,
         // so there will be no link to navigate to a comparison between nothing and revision.
         let href = null;
-        if ( this.options.type === 'revision' && utils.isValidID( diffOldId ) ) {
+        if ( this.page.type === 'revision' && utils.isValidID( diffOldId ) ) {
             const page = {
+                type: 'revision',
                 title: this.page.title,
                 oldid: diffOldId,
                 direction: 'prev',
             };
-            href = utils.getTypeHref( page, this.pageParams, { type: 'revision' } );
+            href = utils.getTypeHref( page, this.pageParams );
         } else if ( link?.length > 0 ) {
             href = link.attr( 'href' );
         }
 
         const $label = utils.renderLabel( {
             short: utils.msg( 'goto-prev' ),
-            long: utils.msg( `goto-prev-${ this.options.type }` ),
+            long: utils.msg( `goto-prev-${ this.page.type }` ),
             iconBefore: document.dir === 'ltr' ? '←' : '→',
         } );
 
@@ -455,13 +448,14 @@ class Navigation {
 
         let href = null;
         if ( link?.length > 0 ) {
-            if ( this.options.type === 'revision' && utils.isValidID( diffNewId ) ) {
+            if ( this.page.type === 'revision' && utils.isValidID( diffNewId ) ) {
                 const page = {
+                    type: 'revision',
                     title: this.page.title,
                     oldid: diffNewId,
                     direction: 'next',
                 };
-                href = utils.getTypeHref( page, this.pageParams, { type: 'revision' } );
+                href = utils.getTypeHref( page, this.pageParams );
             } else {
                 href = link.attr( 'href' );
             }
@@ -469,7 +463,7 @@ class Navigation {
 
         const $label = utils.renderLabel( {
             short: utils.msg( 'goto-next' ),
-            long: utils.msg( `goto-next-${ this.options.type }` ),
+            long: utils.msg( `goto-next-${ this.page.type }` ),
             iconAfter: document.dir === 'ltr' ? '→' : '←',
         } );
 
@@ -495,12 +489,12 @@ class Navigation {
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderSwitchLink( options ) {
-        const type = this.options.type === 'diff' ? 'revision' : 'diff';
-        const hrefOptions = { type };
+        const page = { ...this.page };
+        page.type = page.type === 'diff' ? 'revision' : 'diff';
 
         const button = new OO.ui.ButtonWidget( {
-            label: utils.msg( `goto-view-${ type }` ),
-            href: utils.getTypeHref( this.page, {}, hrefOptions ),
+            label: utils.msg( `goto-view-${ page.type }` ),
+            href: utils.getTypeHref( page ),
             target: utils.getTarget( true ),
             icon: 'specialPages',
             classes: [ 'instantDiffs-button--switch' ],
@@ -547,15 +541,11 @@ class Navigation {
      */
     renderBackLink( options ) {
         const initiator = this.diff.getInitiatorDiff();
-
-        const hrefOptions = {
-            type: initiator.getType(),
-            typeVariant: initiator.getTypeVariant(),
-        };
+        const page = initiator.getPage();
 
         const button = new OO.ui.ButtonWidget( {
-            label: utils.msg( `goto-back-${ initiator.getType() }` ),
-            href: utils.getTypeHref( initiator.getPage(), initiator.getPageParams(), hrefOptions ),
+            label: utils.msg( `goto-back-${ page.type }` ),
+            href: utils.getTypeHref( page, initiator.getPageParams() ),
             target: utils.getTarget( true ),
             icon: 'newline',
             classes: [ 'instantDiffs-button--back' ],
@@ -575,14 +565,9 @@ class Navigation {
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderTypeLink( options ) {
-        const hrefOptions = {
-            type: this.options.type,
-            typeVariant: this.options.typeVariant,
-        };
-
         return new OO.ui.ButtonWidget( {
-            label: utils.msg( `goto-${ this.options.type }` ),
-            href: utils.getTypeHref( this.page, {}, hrefOptions ),
+            label: utils.msg( `goto-${ this.page.type }` ),
+            href: utils.getTypeHref( this.page ),
             target: utils.getTarget( true ),
             icon: 'articleRedirect',
             ...options,
@@ -688,8 +673,6 @@ class Navigation {
         this.toggleMenuDropdown( false );
 
         const options = {
-            type: this.options.type,
-            typeVariant: this.options.typeVariant,
             relative: false,
             minify: utils.defaults( 'linksFormat' ) === 'minify',
         };
@@ -707,8 +690,6 @@ class Navigation {
         this.toggleMenuDropdown( false );
 
         const options = {
-            type: this.options.type,
-            typeVariant: this.options.typeVariant,
             relative: false,
             minify: utils.defaults( 'linksFormat' ) === 'minify',
             wikilink: true,
@@ -724,20 +705,17 @@ class Navigation {
      * Action that opens the Settings Dialog.
      */
     actionOpenSettings() {
-        if ( id.local.settings && id.local.settings.isLoading ) return;
-
         const options = {
             onOpen: this.onSettingsOpen.bind( this ),
             onClose: this.onSettingsClose.bind( this ),
         };
-        if ( !id.local.settings ) {
-            id.local.settings = new Settings( options );
-        } else {
-            id.local.settings.process( options );
-        }
+
+        const dialog = Settings.getInstance( options );
+        if ( !dialog ) return;
 
         this.buttons.settingsHelper.pending( true );
-        $.when( id.local.settings.load() ).always( () => this.buttons.settingsHelper.pending( false ) );
+        $.when( dialog.load() )
+            .always( () => this.buttons.settingsHelper.pending( false ) );
     }
 
     /**

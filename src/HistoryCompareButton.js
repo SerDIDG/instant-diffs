@@ -9,16 +9,6 @@ import DialogButton from './DialogButton';
  */
 class HistoryCompareButton extends DialogButton {
     /**
-     * @type {string}
-     */
-    type = 'diff';
-
-    /**
-     * @type {string}
-     */
-    typeVariant = 'compare';
-
-    /**
      * Event that emits after the Diff Dialog opens.
      */
     onDialogOpen() {
@@ -41,6 +31,7 @@ class HistoryCompareButton extends DialogButton {
      * @returns {object}
      */
     getPage() {
+        this.page.type = 'diff';
         this.page.title = id.local.titleText;
 
         this.page.$oldid = $( '#mw-history-compare input[name="oldid"]:checked' );

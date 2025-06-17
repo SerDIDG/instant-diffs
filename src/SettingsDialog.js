@@ -180,14 +180,14 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
     renderDialogFieldset() {
         // Show inline format toggle button
-        this.inputs.showInlineFormatToggle = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'showInlineFormatToggle' ),
+        this.inputs.showDiffTools = new OO.ui.CheckboxInputWidget( {
+            selected: utils.defaults( 'showDiffTools' ),
         } );
-        this.fields.showInlineFormatToggle = new OO.ui.FieldLayout( this.inputs.showInlineFormatToggle, {
-            label: utils.msg( 'settings-show-inline-format-toggle' ),
+        this.fields.showDiffTools = new OO.ui.FieldLayout( this.inputs.showDiffTools, {
+            label: utils.msg( 'settings-show-diff-tools' ),
             align: 'inline',
         } );
-        this.fields.showInlineFormatToggle.toggle( id.settings.showInlineFormatToggle );
+        this.fields.showDiffTools.toggle( id.settings.showDiffTools );
 
         // Show diff info in the revisions
         this.inputs.showRevisionInfo = new OO.ui.CheckboxInputWidget( {
@@ -272,7 +272,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             label: utils.msg( 'settings-fieldset-dialog' ),
         } );
         this.layouts.dialog.addItems( [
-            this.fields.showInlineFormatToggle,
+            this.fields.showDiffTools,
             this.fields.showRevisionInfo,
             this.fields.unHideDiffs,
             this.fields.openInNewTab,
@@ -280,7 +280,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             this.fields.wikilinksFormat,
         ] );
         this.layouts.dialog.toggle(
-            id.settings.showInlineFormatToggle ||
+            id.settings.showDiffTools ||
             id.settings.showRevisionInfo ||
             id.settings.unHideDiffs ||
             id.settings.openInNewTab ||
@@ -372,9 +372,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
     getLinksFormatExample( options ) {
         const title = utils.msg( 'wikilink-example-title' );
-        const diff = utils.getTypeHref( { title, oldid: '12345', diff: 'prev' }, {}, { ...options, type: 'diff' } );
-        const revision = utils.getTypeHref( { title, oldid: '12345' }, {}, { ...options, type: 'revision' } );
-        const page = utils.getTypeHref( { title, curid: '12345' }, {}, { ...options, type: 'page' } );
+        const diff = utils.getTypeHref( { title, oldid: '12345', diff: 'prev', type: 'diff' }, {}, options );
+        const revision = utils.getTypeHref( { title, oldid: '12345', type: 'revision' }, {}, options );
+        const page = utils.getTypeHref( { title, curid: '12345', type: 'revision', typeVariant: 'page' }, {}, options );
         return $( `
             <ul class="instantDiffs-list--settings">
                 <li><i>${ diff }</i></li>

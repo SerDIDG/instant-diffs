@@ -262,9 +262,9 @@ function app() {
     id.timers = timers;
     id.api = { Button, DialogButton, HistoryCompareButton, Dialog, Diff, Link };
     id.settings ||= {};
-    id.settings = $.extend( {}, id.config.settings, id.settings );
+    id.settings = { ...id.config.settings, ...id.settings };
     id.defaults ||= {};
-    id.defaults = $.extend( {}, id.config.defaults, id.defaults );
+    id.defaults = { ...id.config.defaults, ...id.defaults };
 
     // Track on run start time
     id.timers.run = Date.now();
