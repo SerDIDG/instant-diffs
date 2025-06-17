@@ -83,7 +83,7 @@ export const config = {
         markWatchedLine: true,
         unHideDiffs: true,
         openInNewTab: true,
-        showDiffTools: true,
+        showDiffTools: false,
         showRevisionInfo: true,
         linksFormat: 'full',
         wikilinksFormat: 'special',

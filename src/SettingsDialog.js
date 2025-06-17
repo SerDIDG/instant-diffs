@@ -372,7 +372,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
     getLinksFormatExample( options ) {
         const title = utils.msg( 'wikilink-example-title' );
-        const diff = utils.getTypeHref( { title, oldid: '12345', diff: 'prev', type: 'diff' }, {}, options );
+        const diff = utils.getTypeHref( { title, diff: '12345', type: 'diff' }, {}, options );
         const revision = utils.getTypeHref( { title, oldid: '12345', type: 'revision' }, {}, options );
         const page = utils.getTypeHref( { title, curid: '12345', type: 'revision', typeVariant: 'page' }, {}, options );
         return $( `

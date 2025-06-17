@@ -56,6 +56,11 @@ class Dialog {
     mwConfigBackup;
 
     /**
+     * @type {object}
+     */
+    document = {};
+
+    /**
      * @type {boolean}
      */
     isDependenciesLoaded = false;
@@ -275,6 +280,9 @@ class Dialog {
         if ( this.isOpen ) {
             this.dialog.update( options ).then( this.onUpdate.bind( this ) );
         } else {
+            // Save document scroll top position before the dialog opens.
+            this.document.scrollTop = window.scrollY;
+
             this.windowInstance = this.manager.openWindow( this.dialog, options );
             this.windowInstance.opened.then( this.onOpen.bind( this ) );
             this.windowInstance.closed.then( this.onClose.bind( this ) );
@@ -318,6 +326,10 @@ class Dialog {
         if ( utils.isFunction( this.initiator.options.onClose ) ) {
             this.initiator.options.onClose( this );
         }
+
+        // Restore document scroll top position after the dialog closes.
+        // The built-in OOjs UI implementation has some flaws when the dialog switches to the revision view.
+        window.scrollTo( { top: this.document.scrollTop } );
     }
 
     /**

@@ -41,7 +41,7 @@ export function restoreInlineFormatToggle( $container ) {
 /**
  * Restore and implement a rollback link behavior. Partially copied from the MediaWiki Core:
  * {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/refs/heads/master/resources/src/mediawiki.misc-authed-curate/rollback.js}
- @param {jQuery} $container
+ * @param {jQuery} $container
  */
 export function restoreRollbackLink( $container ) {
     // Make rollback link confirmable

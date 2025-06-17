@@ -588,8 +588,8 @@ class Link {
     openDialog() {
         const options = {
             initiatorDiff: this.options.initiatorDiff,
-            onOpen: this.onDialogOpen.bind( this ),
-            onClose: this.onDialogClose.bind( this ),
+            onOpen: () => this.onDialogOpen(),
+            onClose: () => this.onDialogClose(),
         };
 
         const dialog = Dialog.getInstance( this, options );

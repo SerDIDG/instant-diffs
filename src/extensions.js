@@ -4,7 +4,7 @@ import * as utils from './utils';
 /******* [[commons:User:JWBTH/CD]] *******/
 
 mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
-    if ( !cd || !id ) return;
+    if ( !cd ) return;
 
     const renderLink = ( link ) => {
         if ( !link.isProcessed || !link.config.showPageLink || link.cd ) return;

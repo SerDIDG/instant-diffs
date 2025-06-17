@@ -262,6 +262,24 @@ export function getTarget( isInDialog ) {
     return defaults( 'openInNewTab' ) && isInDialog ? '_blank' : '_self';
 }
 
+export function getParamFromUrl( param, href ) {
+    try {
+        const url = new URL( href );
+        return url.searchParams.get( param );
+    } catch ( e ) {
+        return null;
+    }
+}
+
+export function getComponentFromUrl( param, href ) {
+    try {
+        const url = new URL( href );
+        return url[ param ];
+    } catch ( e ) {
+        return null;
+    }
+}
+
 /******* DIFF \ REVISION *******/
 
 export function isValidID( value ) {
@@ -453,33 +471,6 @@ export function getSplitSpecialUrl( title ) {
     return page;
 }
 
-export function getTitleFromUrl( href ) {
-    try {
-        const url = new URL( href );
-        return url.searchParams.get( 'title' );
-    } catch ( e ) {
-        return null;
-    }
-}
-
-export function getOldidFromUrl( href ) {
-    try {
-        const url = new URL( href );
-        return url.searchParams.get( 'oldid' );
-    } catch ( e ) {
-        return null;
-    }
-}
-
-export function getHashFromUrl( href ) {
-    try {
-        const url = new URL( href );
-        return url.hash;
-    } catch ( e ) {
-        return null;
-    }
-}
-
 export function getCompareTitle( compare ) {
     if ( compare.torevid ) {
         return compare.totitle;
@@ -526,14 +517,14 @@ export function validatePage( page ) {
 
     // Check if a page type is a revision
     if ( isValidID( page.oldid ) && isEmpty( page.diff ) ) {
-        page.isValid = true
+        page.isValid = true;
         page.type = 'revision';
         return page;
     }
 
     // Check if a page type is a diff
     if ( isValidID( page.diff ) || isValidID( page.oldid ) ) {
-        page.isValid = true
+        page.isValid = true;
         page.type = 'diff';
 
         // Swap parameters if oldid is a direction and a title is empty
@@ -564,14 +555,14 @@ export function validatePage( page ) {
 
     // Check if a page type is a diff
     if ( !isEmpty( page.title ) && isValidDir( page.diff ) ) {
-        page.isValid = true
+        page.isValid = true;
         page.type = 'diff';
         return page;
     }
 
     // Check if a page type is a lastest revision
     if ( isValidID( page.curid ) ) {
-        page.isValid = true
+        page.isValid = true;
         page.type = 'revision';
         page.typeVariant = 'page';
         return page;

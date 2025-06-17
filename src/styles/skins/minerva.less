@@ -111,9 +111,17 @@
 }
 
 .instantDiffs-line {
-    // /* [Fix] Display other styles that were loaded from dependencies after the InstantDiffs dialog opens. */
+    // /* [Fix] Reset the minoredit styles that were loaded from dependencies after the InstantDiffs dialog opens. */
     .minoredit {
         font-size: inherit;
+    }
+
+    &:not(.instantDiffs-line--history) {
+        .minoredit {
+            margin-right: 0.5em;
+            padding: 0;
+            background: transparent;
+        }
     }
 }
 

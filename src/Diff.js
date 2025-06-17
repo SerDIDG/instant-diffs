@@ -300,13 +300,13 @@ class Diff {
         // Get diff and oldid values
         // FixMe: request via api action=revisions
         if ( $fromLinks.length > 0 ) {
-            const oldid = utils.getOldidFromUrl( $fromLinks.prop( 'href' ) );
+            const oldid = utils.getParamFromUrl( 'oldid', $fromLinks.prop( 'href' ) );
             if ( utils.isValidID( oldid ) ) {
                 this.mwConfg.wgDiffOldId = oldid;
             }
         }
         if ( $toLinks.length > 0 ) {
-            const diff = utils.getOldidFromUrl( $toLinks.prop( 'href' ) );
+            const diff = utils.getParamFromUrl( 'oldid', $toLinks.prop( 'href' ) );
             if ( utils.isValidID( diff ) ) {
                 this.mwConfg.wgDiffNewId = diff;
                 this.mwConfg.wgRevisionId = diff;
@@ -326,14 +326,14 @@ class Diff {
         // Get page title
         const $links = $toLinks.add( $fromLinks );
         if ( utils.isEmpty( this.page.title ) && $links.length > 0 ) {
-            const title = utils.getTitleFromUrl( $links.prop( 'href' ) ) || $links.prop( 'title' );
+            const title = utils.getParamFromUrl( 'title', $links.prop( 'href' ) ) || $links.prop( 'title' );
             this.page = utils.extendPage( this.page, { title } );
         }
 
         // Populate section name
         const $toSectionLinks = this.nodes.$data.find( '#mw-diff-ntitle3 .autocomment a' );
         if ( utils.isEmpty( this.page.section ) && $toSectionLinks.length > 0 ) {
-            const section = utils.getHashFromUrl( $toSectionLinks.prop( 'href' ) );
+            const section = utils.getComponentFromUrl( 'hash', $toSectionLinks.prop( 'href' ) );
             this.page = utils.extendPage( this.page, { section } );
         }
 
