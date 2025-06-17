@@ -160,7 +160,17 @@ export function msgParse() {
 }
 
 export function msgDom() {
-    return mw.message.apply( mw.message, getMsgParams( arguments ) ).parseDom();
+    const dom = mw.message.apply( mw.message, getMsgParams( arguments ) ).parseDom();
+    dom.each( ( i, node ) => {
+        if ( node.tagName !== 'A' ) return;
+
+        const href = node.getAttribute( 'href' );
+        if ( isEmpty( href ) || !/^\/wiki\//.test( href ) ) return;
+
+        const url = new URL( href, id.config.origin );
+        node.setAttribute( 'href', url.toString() )
+    } );
+    return dom;
 }
 
 export function isMessageExists( str ) {

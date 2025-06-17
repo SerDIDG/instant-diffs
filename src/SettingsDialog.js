@@ -97,7 +97,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         } );
 
         // Process links target
-        this.processLinksTaget( this.stackLayout.$element );
+        this.processLinksAttr( this.stackLayout.$element );
 
         // Append stackLayout to the dialog
         this.$body.append( this.stackLayout.$element );
@@ -118,7 +118,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         return super.getActionProcess( action );
     }
 
-    processLinksTaget( $container ) {
+    processLinksAttr( $container ) {
         const $links = $container.find( 'a:not(.jquery-confirmable-element)' );
         $links.each( ( i, node ) => node.setAttribute( 'target', '_blank' ) );
     }
