@@ -311,7 +311,7 @@ function ready() {
     id.timers.ready = Date.now();
 
     // Fire the ready state hook
-    mw.hook( `${ id.config.prefix }.ready` ).fire( instantDiffs );
+    mw.hook( `${ id.config.prefix }.ready` ).fire( id );
 
     // Add process hook listeners
     mw.hook( 'wikipage.content' ).add( processContent );
