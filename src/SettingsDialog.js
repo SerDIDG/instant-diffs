@@ -12,19 +12,19 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         {
             action: 'save',
             modes: 'edit',
-            label: utils.msg( 'save' ),
+            label: utils.msg( 'action-save' ),
             flags: [ 'primary', 'progressive' ],
         },
         {
             action: 'reload',
             modes: 'finish',
-            label: utils.msg( 'reload' ),
+            label: utils.msg( 'action-reload' ),
             flags: [ 'primary', 'progressive' ],
         },
         {
             modes: [ 'edit', 'finish' ],
-            label: utils.msg( 'close' ),
-            title: utils.msg( 'close' ),
+            label: utils.msg( 'action-close' ),
+            title: utils.msg( 'action-close' ),
             invisibleLabel: true,
             icon: 'close',
             flags: [ 'safe', 'close' ],
@@ -95,6 +95,11 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.stackLayout = new OO.ui.StackLayout( {
             items: [ this.panelEdit, this.panelFinish ],
         } );
+
+        // Process links target
+        this.processLinksAttr( this.stackLayout.$element );
+
+        // Append stackLayout to the dialog
         this.$body.append( this.stackLayout.$element );
     };
 
@@ -111,6 +116,11 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             return new OO.ui.Process( () => this.processActionReload() );
         }
         return super.getActionProcess( action );
+    }
+
+    processLinksAttr( $container ) {
+        const $links = $container.find( 'a:not(.jquery-confirmable-element)' );
+        $links.each( ( i, node ) => node.setAttribute( 'target', '_blank' ) );
     }
 
     /******* FIELDS ******/
@@ -135,7 +145,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.fields.showPageLink = new OO.ui.FieldLayout( this.inputs.showPageLink, {
             label: utils.msg( 'settings-show-page-link' ),
             align: 'inline',
-            help: utils.msg( 'settings-show-page-link-help' ),
+            help: utils.msgDom( 'settings-show-page-link-help' ),
             helpInline: true,
         } );
         this.fields.showPageLink.toggle( id.settings.showPageLink );
@@ -180,14 +190,14 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
     renderDialogFieldset() {
         // Show inline format toggle button
-        this.inputs.showInlineFormatToggle = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'showInlineFormatToggle' ),
+        this.inputs.showDiffTools = new OO.ui.CheckboxInputWidget( {
+            selected: utils.defaults( 'showDiffTools' ),
         } );
-        this.fields.showInlineFormatToggle = new OO.ui.FieldLayout( this.inputs.showInlineFormatToggle, {
-            label: utils.msg( 'settings-show-inline-format-toggle' ),
+        this.fields.showDiffTools = new OO.ui.FieldLayout( this.inputs.showDiffTools, {
+            label: utils.msg( 'settings-show-diff-tools' ),
             align: 'inline',
         } );
-        this.fields.showInlineFormatToggle.toggle( id.settings.showInlineFormatToggle );
+        this.fields.showDiffTools.toggle( id.settings.showDiffTools );
 
         // Show diff info in the revisions
         this.inputs.showRevisionInfo = new OO.ui.CheckboxInputWidget( {
@@ -206,7 +216,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.fields.unHideDiffs = new OO.ui.FieldLayout( this.inputs.unHideDiffs, {
             label: utils.msg( 'settings-unhide-diffs' ),
             align: 'inline',
-            help: utils.msg( 'settings-unhide-diffs-help' ),
+            help: utils.msgDom( 'settings-unhide-diffs-help' ),
             helpInline: true,
         } );
         this.fields.unHideDiffs.toggle( id.settings.unHideDiffs );
@@ -272,7 +282,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             label: utils.msg( 'settings-fieldset-dialog' ),
         } );
         this.layouts.dialog.addItems( [
-            this.fields.showInlineFormatToggle,
+            this.fields.showDiffTools,
             this.fields.showRevisionInfo,
             this.fields.unHideDiffs,
             this.fields.openInNewTab,
@@ -280,7 +290,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             this.fields.wikilinksFormat,
         ] );
         this.layouts.dialog.toggle(
-            id.settings.showInlineFormatToggle ||
+            id.settings.showDiffTools ||
             id.settings.showRevisionInfo ||
             id.settings.unHideDiffs ||
             id.settings.openInNewTab ||
@@ -371,16 +381,16 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     };
 
     getLinksFormatExample( options ) {
-        const title = utils.msg( 'wikilink-example-title' );
-        const diff = utils.getTypeHref( { title, oldid: '12345', diff: 'prev' }, {}, { ...options, type: 'diff' } );
-        const revision = utils.getTypeHref( { title, oldid: '12345' }, {}, { ...options, type: 'revision' } );
-        const page = utils.getTypeHref( { title, curid: '12345' }, {}, { ...options, type: 'page' } );
-        return $( `
-            <ul class="instantDiffs-list--settings">
-                <li><i>${ diff }</i></li>
-                <li><i>${ revision }</i></li>
-                <li><i>${ page }</i></li>
-            </ul>
+        const title = utils.msg( 'copy-wikilink-example-title' );
+        const diff = utils.getTypeHref( { title, diff: '12345', type: 'diff' }, {}, options );
+        const revision = utils.getTypeHref( { title, oldid: '12345', type: 'revision' }, {}, options );
+        const page = utils.getTypeHref( { title, curid: '12345', type: 'revision', typeVariant: 'page' }, {}, options );
+        return utils.getTemplate( `\
+            <ul class="instantDiffs-list--settings">\
+                <li><i>${ diff }</i></li>\
+                <li><i>${ revision }</i></li>\
+                <li><i>${ page }</i></li>\
+            </ul>\
         ` );
     };
 

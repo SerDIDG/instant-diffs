@@ -1,4 +1,5 @@
 import id from './id';
+import * as utils from './utils';
 
 import Button from './Button';
 import Dialog from './Dialog';
@@ -8,16 +9,6 @@ import Dialog from './Dialog';
  * @augments {import('./Button').default}
  */
 class DialogButton extends Button {
-    /**
-     * @type {string}
-     */
-    type;
-
-    /**
-     * @type {string}
-     */
-    typeVariant;
-
     /**
      * @type {object}
      */
@@ -30,8 +21,8 @@ class DialogButton extends Button {
     constructor( options ) {
         super( {
             ...options,
-            handler: () => this.openDialog(),
             ariaHaspopup: true,
+            handler: () => this.openDialog(),
         } );
     }
 
@@ -39,20 +30,17 @@ class DialogButton extends Button {
      * Open the Diff Dialog.
      */
     openDialog() {
-        if ( id.local.dialog && id.local.dialog.isLoading ) return;
-
         const options = {
             onOpen: () => this.onDialogOpen(),
             onClose: () => this.onDialogClose(),
         };
-        if ( !id.local.dialog ) {
-            id.local.dialog = new Dialog( this, options );
-        } else {
-            id.local.dialog.process( this, options );
-        }
+
+        const dialog = Dialog.getInstance( this, options );
+        if ( !dialog ) return;
 
         this.pending( true );
-        $.when( id.local.dialog.load() ).always( () => this.pending( false ) );
+        $.when( dialog.load() )
+            .always( () => this.pending( false ) );
     }
 
     /**
@@ -66,26 +54,14 @@ class DialogButton extends Button {
     onDialogClose() {}
 
     /**
-     * Get type.
-     * @returns {string}
-     */
-    getType() {
-        return this.type;
-    }
-
-    /**
-     * Get type variant.
-     * @returns {string}
-     */
-    getTypeVariant() {
-        return this.typeVariant;
-    }
-
-    /**
      * Get page.
      * @returns {object}
      */
     getPage() {
+        // Validate page object
+        this.page = utils.validatePage( this.page );
+        this.page = utils.extendPage( this.page );
+
         return this.page;
     }
 }

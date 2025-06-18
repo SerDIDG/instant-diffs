@@ -6,6 +6,7 @@ ehthumbs.db
 Thumbs.db
 env.json
 package-lock.json
+i18nList.json
 node_modules
 bower_components
 dist

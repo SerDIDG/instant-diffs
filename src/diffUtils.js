@@ -1,5 +1,6 @@
 import id from './id';
 import * as utils from './utils';
+import { isValidID } from './utils';
 
 /******* COMMON *******/
 
@@ -24,6 +25,12 @@ function showNotification( message, type ) {
 
 export function restoreInlineFormatToggle( $container ) {
     let isRendered = false;
+    if (
+        $container.length === 0 &&
+        mw.loader.getState( 'mediawiki.diff' ) !== 'ready'
+    ) {
+        return isRendered;
+    }
 
     const $inlineToggleSwitchLayout = $container.find( '#mw-diffPage-inline-toggle-switch-layout' );
     const inlineFormatToggle = utils.getModuleExport( 'mediawiki.diff', './inlineFormatToggle.js' );
@@ -34,6 +41,35 @@ export function restoreInlineFormatToggle( $container ) {
     } catch ( e ) {}
 
     return isRendered;
+}
+
+/******* VISUAL EDITOR / DIFFS *******/
+
+export function restoreVisualDiffs( $container ) {
+    if (
+        $container.length === 0 ||
+        !utils.isValidID( mw.config.get( 'wgDiffOldId' ) ) ||
+        !utils.isValidID( mw.config.get( 'wgDiffNewId' ) ) ||
+        mw.loader.getState( 'ext.visualEditor.diffPage.init' ) !== 'ready'
+    ) {
+        return false;
+    }
+
+    let $diffModeContainer = $container.find( '.ve-init-mw-diffPage-diffMode' );
+    if ( $diffModeContainer.length > 0 ) return true;
+
+    // Structure
+    $diffModeContainer = $( '<div>' ).addClass( 've-init-mw-diffPage-diffMode' );
+
+    // Append before inline toggle container if exists
+    const $inlineToggleContainer = $container.find( '.mw-diffPage-inlineToggle-container' );
+    if ( $inlineToggleContainer.length > 0 ) {
+        $inlineToggleContainer.before( $diffModeContainer );
+    } else {
+        $container.append( $diffModeContainer );
+    }
+
+    return true;
 }
 
 /******* ROLLBACK *******/

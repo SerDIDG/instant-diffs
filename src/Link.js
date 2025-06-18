@@ -79,15 +79,13 @@ class Link {
     constructor( node, options ) {
         this.node = node;
         this.options = {
-            type: null,                     // diff | revision | null
-            typeVariant: null,
             behavior: 'default',            // default | basic | event
             insertMethod: 'insertAfter',
             initiatorLink: null,
             initiatorDialog: null,
             initiatorDiff: null,
-            onOpen: function () {},
-            onClose: function () {},
+            onOpen: () => {},
+            onClose: () => {},
             ...options,
         };
 
@@ -195,24 +193,14 @@ class Link {
             this.page.curid = this.page.curid.split( '|' ).shift();
         }
 
-        // Validate components
-        if ( [ 0, '0', 'current' ].includes( this.page.diff ) ) {
-            this.page.diff = 'cur';
-        }
-        if ( !utils.isValidDir( this.page.direction ) ) {
-            this.page.direction = 'prev';
-        }
-
         // Populate the page title from the watchlist line entry for edge cases
         // Link minifiers like [[:ru:User:Stjn/minilink.js]] often remove titles from links
         if ( utils.isEmpty( this.page.title ) && this.mw.hasLine ) {
             this.page.title = this.mw.title;
         }
 
-        // Validate page params
-        this.page.isValid = this.validate();
-
-        // Extend page object
+        // Validate page object
+        this.page = utils.validatePage( this.page );
         this.page = utils.extendPage( this.page );
 
         switch ( this.options.behavior ) {
@@ -232,59 +220,6 @@ class Link {
                 this.renderRequest();
                 break;
         }
-    }
-
-    validate() {
-        // Prepare a request for a revision
-        if ( utils.isValidID( this.page.oldid ) && utils.isEmpty( this.page.diff ) ) {
-            this.options.type = 'revision';
-            return true;
-        }
-
-        // Prepare a compare by given ids
-        if ( utils.isValidID( this.page.diff ) || utils.isValidID( this.page.oldid ) ) {
-            this.options.type = 'diff';
-
-            // Swap parameters if oldid is a direction and a title is empty
-            if ( utils.isEmpty( this.page.title ) && utils.isValidDir( this.page.oldid ) ) {
-                const dir = this.page.oldid;
-                this.page.oldid = this.page.diff;
-                this.page.diff = dir;
-            }
-
-            // Swap parameters if oldid is empty: special pages do not have a page title attribute
-            if ( utils.isEmpty( this.page.oldid ) ) {
-                this.page.oldid = this.page.diff;
-                this.page.diff = this.page.direction;
-            }
-
-            // Fix a tenet bug
-            if (
-                utils.isValidID( this.page.oldid ) &&
-                utils.isValidID( this.page.diff ) &&
-                parseInt( this.page.oldid ) > parseInt( this.page.diff )
-            ) {
-                const diff = this.page.oldid;
-                this.page.oldid = this.page.diff;
-                this.page.diff = diff;
-            }
-            return true;
-        }
-
-        // Prepare a compare by given title and direction
-        if ( !utils.isEmpty( this.page.title ) && utils.isValidDir( this.page.diff ) ) {
-            this.options.type = 'diff';
-            return true;
-        }
-
-        // Prepare a page by given curid
-        if ( utils.isValidID( this.page.curid ) ) {
-            this.options.type = 'revision';
-            this.options.typeVariant = 'page';
-            return true;
-        }
-
-        return false;
     }
 
     /******* OBSERVER *******/
@@ -324,7 +259,7 @@ class Link {
     }
 
     request() {
-        switch ( this.options.type ) {
+        switch ( this.page.type ) {
             case 'revision':
                 this.requestRevision();
                 break;
@@ -503,7 +438,7 @@ class Link {
     }
 
     renderBasic() {
-        if ( !this.page.isValid || ( this.mw.isDiffOnly && this.options.type !== 'diff' ) ) return;
+        if ( !this.page.isValid || ( this.mw.isDiffOnly && this.page.type !== 'diff' ) ) return;
 
         this.renderSuccess();
     }
@@ -592,14 +527,14 @@ class Link {
 
         // Indicate about hidden revisions
         if ( this.page.isHidden ) {
-            title = `${ title }-admin`;
+            title = `${ title }-hidden`;
         }
 
         return utils.msg( title );
     }
 
     renderLinkAction() {
-        const title = this.getLinkTitle( `${ this.options.type }-title` );
+        const title = this.getLinkTitle( `${ this.page.type }-title` );
 
         if ( !utils.defaults( 'showLink' ) ) {
             return this.mutateLinkAction( title );
@@ -611,17 +546,17 @@ class Link {
         }
 
         this.action.button = this.renderAction( {
-            label: utils.getLabel( this.options.type ),
+            label: utils.getLabel( this.page.type ),
             title: title,
             classes: classes,
-            modifiers: [ this.options.type ],
+            modifiers: [ this.page.type ],
             handler: this.openDialog.bind( this ),
             ariaHaspopup: true,
         } );
     }
 
     mutateLinkAction( title ) {
-        const classes = [ 'instantDiffs-link', `instantDiffs-link--${ this.options.type }`, `is-${ this.options.insertMethod }` ];
+        const classes = [ 'instantDiffs-link', `instantDiffs-link--${ this.page.type }`, `is-${ this.options.insertMethod }` ];
         if ( this.page.isHidden ) {
             classes.push( 'instantDiffs-link--error' );
         }
@@ -651,21 +586,18 @@ class Link {
     /******* DIALOG *******/
 
     openDialog() {
-        if ( id.local.dialog && id.local.dialog.isLoading ) return;
-
         const options = {
             initiatorDiff: this.options.initiatorDiff,
-            onOpen: this.onDialogOpen.bind( this ),
-            onClose: this.onDialogClose.bind( this ),
+            onOpen: () => this.onDialogOpen(),
+            onClose: () => this.onDialogClose(),
         };
-        if ( !id.local.dialog ) {
-            id.local.dialog = new Dialog( this, options );
-        } else {
-            id.local.dialog.process( this, options );
-        }
+
+        const dialog = Dialog.getInstance( this, options );
+        if ( !dialog ) return;
 
         this.toggleLoader( true );
-        $.when( id.local.dialog.load() ).always( () => this.toggleLoader( false ) );
+        $.when( dialog.load() )
+            .always( () => this.toggleLoader( false ) );
     }
 
     onDialogOpen() {
@@ -725,7 +657,7 @@ class Link {
      * @param {boolean} value
      */
     toggleSpinner( value ) {
-        const classes = utils.getPlaceholderClasses( [ 'loader', this.options.type ] );
+        const classes = utils.getPlaceholderClasses( [ 'loader', this.page.type ] );
 
         if ( value ) {
             this.node.classList.add( ...classes );
@@ -765,22 +697,6 @@ class Link {
      */
     getInitiatorLink() {
         return this.options.initiatorLink || this;
-    }
-
-    /**
-     * Get type.
-     * @returns {string}
-     */
-    getType() {
-        return this.options.type;
-    }
-
-    /**
-     * Get type variant.
-     * @returns {string}
-     */
-    getTypeVariant() {
-        return this.options.typeVariant;
     }
 
     /**

@@ -27,10 +27,6 @@
     }
 
     @media (max-width: @max-width-breakpoint-mobile) {
-        .mw-diff-table-prefix {
-            display: none;
-        }
-
         // /* [Fix] Override fixed positioning for the edit contributor block on mobile. */
         #mw-diff-ntitle2 {
             height: auto;
@@ -111,9 +107,17 @@
 }
 
 .instantDiffs-line {
-    // /* [Fix] Display other styles that were loaded from dependencies after the InstantDiffs dialog opens. */
+    // /* [Fix] Reset the minoredit styles that were loaded from dependencies after the InstantDiffs dialog opens. */
     .minoredit {
         font-size: inherit;
+    }
+
+    &:not(.instantDiffs-line--history) {
+        .minoredit {
+            margin-right: 0.5em;
+            padding: 0;
+            background: transparent;
+        }
     }
 }
 

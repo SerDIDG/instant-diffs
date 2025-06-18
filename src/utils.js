@@ -82,7 +82,10 @@ export function isAllowed() {
 export function log( type, message, data = [] ) {
     const logger = console[ type ];
     if ( !logger ) return;
-    logger( `${ msg( 'name' ) }: ${ message }.`, ...data );
+    if ( !/\.$/.test( message ) ) {
+        message = `${ message }.`;
+    }
+    logger( `${ msg( 'name' ) }: ${ message }`, ...data );
 }
 
 /**
@@ -152,11 +155,25 @@ export function processDefaults() {
 /******* MESSAGES *******/
 
 export function msg() {
-    const params = Array.from( arguments );
-    if ( !isEmpty( params[ 0 ] ) ) {
-        params[ 0 ] = getMsgKey( params[ 0 ] );
-    }
-    return mw.msg.apply( mw.msg, params );
+    return mw.msg.apply( mw.msg, getMsgParams( arguments ) );
+}
+
+export function msgParse() {
+    return mw.message.apply( mw.message, getMsgParams( arguments ) ).parse();
+}
+
+export function msgDom() {
+    const dom = mw.message.apply( mw.message, getMsgParams( arguments ) ).parseDom();
+    dom.each( ( i, node ) => {
+        if ( node.tagName !== 'A' ) return;
+
+        const href = node.getAttribute( 'href' );
+        if ( isEmpty( href ) || !/^\/(wiki|w)\//.test( href ) ) return;
+
+        const url = new URL( href, id.config.origin );
+        node.setAttribute( 'href', url.toString() )
+    } );
+    return dom;
 }
 
 export function isMessageExists( str ) {
@@ -191,6 +208,13 @@ export function processMessages() {
 
 export function getMsgKey( str ) {
     return `${ id.config.messagePrefix }-${ str }`;
+}
+
+export function getMsgParams( params ) {
+    if ( !isEmpty( params[ 0 ] ) ) {
+        params[ 0 ] = getMsgKey( params[ 0 ] );
+    }
+    return params;
 }
 
 export function getErrorMessage( str, page, error ) {
@@ -262,6 +286,24 @@ export function getTarget( isInDialog ) {
     return defaults( 'openInNewTab' ) && isInDialog ? '_blank' : '_self';
 }
 
+export function getParamFromUrl( param, href ) {
+    try {
+        const url = new URL( href );
+        return url.searchParams.get( param );
+    } catch ( e ) {
+        return null;
+    }
+}
+
+export function getComponentFromUrl( param, href ) {
+    try {
+        const url = new URL( href );
+        return url[ param ];
+    } catch ( e ) {
+        return null;
+    }
+}
+
 /******* DIFF \ REVISION *******/
 
 export function isValidID( value ) {
@@ -312,7 +354,7 @@ export function getWikilink( page, pageParams, options ) {
     return wikilink
         .replace( '$1', attr )
         .replace( '$href', options.href )
-        .replace( '$msg', msg( `wikilink-${ options.type }` ) );
+        .replace( '$msg', msg( `copy-wikilink-${ options.type }` ) );
 }
 
 export function getHref( page, pageParams, options ) {
@@ -356,13 +398,14 @@ export function getTypeHref( page, pageParams, options ) {
     pageParams = { ...pageParams };
     options = {
         type: 'diff',
-        typeVariant: null,
         ...options,
     };
 
     // Validate options
-    if ( options.typeVariant === 'page' ) {
+    if ( page.type === 'revision' && page.typeVariant === 'page' ) {
         options.type = 'page';
+    } else {
+        options.type = page.type;
     }
 
     // Validate page params for diffs
@@ -374,6 +417,8 @@ export function getTypeHref( page, pageParams, options ) {
         if ( isValidID( page.oldid ) && isValidID( page.diff ) ) {
             pageParams.oldid = page.oldid;
             pageParams.diff = page.diff;
+        } else if ( isValidID( page.revid ) ) {
+            pageParams.diff = page.revid;
         } else if ( isValidID( page.oldid ) ) {
             if ( isValidDir( page.diff ) && page.diff !== 'prev' ) {
                 pageParams.oldid = page.oldid;
@@ -450,33 +495,6 @@ export function getSplitSpecialUrl( title ) {
     return page;
 }
 
-export function getTitleFromUrl( href ) {
-    try {
-        const url = new URL( href );
-        return url.searchParams.get( 'title' );
-    } catch ( e ) {
-        return null;
-    }
-}
-
-export function getOldidFromUrl( href ) {
-    try {
-        const url = new URL( href );
-        return url.searchParams.get( 'oldid' );
-    } catch ( e ) {
-        return null;
-    }
-}
-
-export function getHashFromUrl( href ) {
-    try {
-        const url = new URL( href );
-        return url.hash;
-    } catch ( e ) {
-        return null;
-    }
-}
-
 export function getCompareTitle( compare ) {
     if ( compare.torevid ) {
         return compare.totitle;
@@ -510,6 +528,72 @@ export function getRevisionSection( revision ) {
         sectionMatch = revision.comment.match( id.config.sectionRegExp );
     }
     return sectionMatch && sectionMatch[ 1 ] || null;
+}
+
+export function validatePage( page ) {
+    // Validate components
+    if ( [ 0, '0', 'current' ].includes( page.diff ) ) {
+        page.diff = 'cur';
+    }
+    if ( !isValidDir( page.direction ) ) {
+        page.direction = 'prev';
+    }
+
+    // Check if a page type is a revision
+    if ( isValidID( page.oldid ) && isEmpty( page.diff ) ) {
+        page.isValid = true;
+        page.type = 'revision';
+        return page;
+    }
+
+    // Check if a page type is a diff
+    if ( isValidID( page.diff ) || isValidID( page.oldid ) ) {
+        page.isValid = true;
+        page.type = 'diff';
+
+        // Swap parameters if oldid is a direction and a title is empty
+        if ( isEmpty( page.title ) && isValidDir( page.oldid ) ) {
+            const dir = page.oldid;
+            page.oldid = page.diff;
+            page.diff = dir;
+        }
+
+        // Swap parameters if oldid is empty: special pages do not have a page title attribute
+        if ( isEmpty( page.oldid ) ) {
+            page.oldid = page.diff;
+            page.diff = page.direction;
+        }
+
+        // Fix a tenet bug
+        if (
+            isValidID( page.oldid ) &&
+            isValidID( page.diff ) &&
+            parseInt( page.oldid ) > parseInt( page.diff )
+        ) {
+            const diff = page.oldid;
+            page.oldid = page.diff;
+            page.diff = diff;
+        }
+        return page;
+    }
+
+    // Check if a page type is a diff
+    if ( !isEmpty( page.title ) && isValidDir( page.diff ) ) {
+        page.isValid = true;
+        page.type = 'diff';
+        return page;
+    }
+
+    // Check if a page type is a lastest revision
+    if ( isValidID( page.curid ) ) {
+        page.isValid = true;
+        page.type = 'revision';
+        page.typeVariant = 'page';
+        return page;
+    }
+
+    page.isValid = false;
+    return page;
 }
 
 export function extendPage( page, params = {} ) {
@@ -585,6 +669,22 @@ export function restoreMWConfig( data ) {
     id.config.mwConfigBackup.forEach( key => {
         if ( typeof data[ key ] !== 'undefined' ) {
             mw.config.set( key, data[ key ] );
+        }
+    } );
+}
+
+export function backupMWUserOptions() {
+    const data = {};
+    id.config.mwUserOptionsBackup.forEach( key => {
+        data[ key ] = mw.user.options.get( key );
+    } );
+    return data;
+}
+
+export function restoreMWUserOptions( data ) {
+    id.config.mwUserOptionsBackup.forEach( key => {
+        if ( typeof data[ key ] !== 'undefined' ) {
+            mw.user.options.set( key, data[ key ] );
         }
     } );
 }
@@ -793,7 +893,7 @@ export function addClick( node, handler, useAltKey = true ) {
         if ( isEmpty( node.dataset.altTitle ) ) {
             node.dataset.altTitle = node.title;
         }
-        node.dataset.altTitle = `${ node.dataset.altTitle } ${ msg( 'alt-click' ) }`.trim();
+        node.dataset.altTitle = `${ node.dataset.altTitle } ${ msg( 'hint-alt-click' ) }`.trim();
         node.dataset.origTitle = node.title;
 
         // Set alt title temporary to increase compatibility with the other scripts
@@ -833,6 +933,16 @@ export function embed( node, container, insertMethod = 'appendTo' ) {
             container.append( element );
             break;
     }
+}
+
+/**
+ * Convert template literal to the jQuery object.
+ * @param {string} template
+ * @return {jQuery}
+ */
+export function getTemplate( template ) {
+    template = template.replace( /\s{2,}/g, ' ' ).trim();
+    return $( template );
 }
 
 export function getPlaceholderClasses( modifiers = [] ) {
@@ -877,9 +987,9 @@ export function renderLabel( params ) {
         .filter( item => !isEmpty( item ) )
         .join( '' );
 
-    return $( `
-        <span class="instantDiffs-label instantDiffs-label--long">${ long }</span>
-        <span class="instantDiffs-label instantDiffs-label--short">${ short }</span>
+    return getTemplate( `\
+        <span class="instantDiffs-label instantDiffs-label--long">${ long }</span>\
+        <span class="instantDiffs-label instantDiffs-label--short">${ short }</span>\
     ` );
 }
 

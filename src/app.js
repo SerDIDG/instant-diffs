@@ -78,7 +78,7 @@ function processHistoryPage() {
         const $button = $container.find( '.mw-history-compareselectedversions-button' );
 
         new HistoryCompareButton( {
-            label: utils.msg( 'compare', id.config.labels.diff ),
+            label: utils.msg( 'compare-label', id.config.labels.diff ),
             title: utils.msg( 'compare-title', id.config.name ),
             classes: [ 'mw-ui-button', 'cdx-button', 'instantDiffs-button--compare' ],
             insertMethod: 'insertAfter',
@@ -262,15 +262,15 @@ function app() {
     id.timers = timers;
     id.api = { Button, DialogButton, HistoryCompareButton, Dialog, Diff, Link };
     id.settings ||= {};
-    id.settings = $.extend( {}, id.config.settings, id.settings );
+    id.settings = { ...id.config.settings, ...id.settings };
     id.defaults ||= {};
-    id.defaults = $.extend( {}, id.config.defaults, id.defaults );
+    id.defaults = { ...id.config.defaults, ...id.defaults };
 
     // Track on run start time
     id.timers.run = Date.now();
 
     // Bundle english language strings
-    require( '../i18n/en.js' );
+    require( `../${ id.config.outdir }/instantDiffs-i18n/en.js` );
 
     // Pre-process english language strings
     utils.processMessages();

@@ -109,6 +109,7 @@ class Button {
 
     /**
      * Toggle a buttons pending state that shows a loading cursor.
+     * @param {boolean} value
      */
     pending( value ) {
         this.node.classList.toggle( 'instantDiffs-link--pending', value );

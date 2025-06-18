@@ -12,7 +12,7 @@ class DiffDialog extends OO.ui.MessageDialog {
     static actions = [
         {
             action: 'close',
-            label: utils.msg( 'close' ),
+            label: utils.msg( 'action-close' ),
         },
     ];
 
@@ -90,6 +90,10 @@ class DiffDialog extends OO.ui.MessageDialog {
 
     onScroll( event ) {
         this.dialog.onScroll( event );
+    }
+
+    getBodyHeight() {
+        return 'auto';
     }
 
     getContainerElement() {

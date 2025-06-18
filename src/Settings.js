@@ -4,7 +4,7 @@ import * as utils from './utils';
 import './styles/settings.less';
 
 /**
- * Class representing a settings dialog.
+ * Class representing a Settings dialog.
  */
 class Settings {
     /**
@@ -33,18 +33,34 @@ class Settings {
     isLoading = false;
 
     /**
-     * Create a settings dialog.
+     * Get or construct a Settings dialog instance.
+     * @param {object} [options] configuration options
+     * @returns {import('./Settings').default|undefined}
+     * @static
+     */
+    static getInstance( options ) {
+        if ( id.local.settings && id.local.settings.isLoading ) return;
+        if ( !id.local.settings ) {
+            id.local.settings = new Settings( options );
+        } else {
+            id.local.settings.setup( options );
+        }
+        return id.local.settings;
+    }
+
+    /**
+     * Create a Settings dialog.
      * @param {object} [options] configuration options
      */
     constructor( options ) {
-        this.process.apply( this, arguments );
+        this.setup.apply( this, arguments );
     }
 
     /**
      * Setup configuration options.
      * @param {object} [options] configuration options
      */
-    process( options ) {
+    setup( options ) {
         this.options = {
             onOpen: () => {},
             onClose: () => {},

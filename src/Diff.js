@@ -3,7 +3,11 @@ import * as utils from './utils';
 import * as diffUtils from './diffUtils';
 
 import Navigation from './Navigation';
+import { restoreVisualDiffs } from './diffUtils';
 
+/**
+ * Class representing a Diff.
+ */
 class Diff {
     /**
      * @type {object}
@@ -25,13 +29,20 @@ class Diff {
      */
     mwConfg = {
         'thanks-confirmation-required': true,
-        wgTitle: null,
-        wgPageName: null,
-        wgNamespaceNumber: null,
-        wgRevisionId: null,
-        wgDiffOldId: null,
-        wgDiffNewId: null,
+        wgTitle: false,
+        wgPageName: false,
+        wgRelevantPageName: false,
+        wgNamespaceNumber: false,
+        wgRevisionId: false,
+        wgDiffOldId: false,
+        wgDiffNewId: false,
+        wgCanonicalSpecialPageName: false,
     };
+
+    /**
+     * @type {object}
+     */
+    mwUserOptions = {};
 
     /**
      * @type {object}
@@ -57,42 +68,31 @@ class Diff {
      * Create a diff instance.
      * @param {object} page a page object
      * @param {object} [options] configuration options
+     * @param {import('./Diff').default} [options.initiatorDiff] a Diff instance
+     * @param {Function} [options.onFocus]
+     * @param {Function} [options.onResize]
      */
     constructor( page, options ) {
         this.page = { ...page };
 
         this.options = {
-            type: 'diff',
-            typeVariant: null,
             initiatorDiff: null,
-            initiatorDialog: null,
+            onFocus: () => {},
+            onResize: () => {},
             ...options,
         };
 
         this.pageParams = {
             action: 'render',
-            diffonly: this.options.type === 'diff' ? 1 : 0,
+            diffonly: this.page.type === 'diff' ? 1 : 0,
             unhide: utils.defaults( 'unHideDiffs' ) ? 1 : 0,
             uselang: id.local.language,
         };
-
-        // Validate page object
-        if ( [ 0, '0', 'current' ].includes( this.page.diff ) ) {
-            this.page.diff = 'cur';
-        }
-        if ( !utils.isValidDir( this.page.direction ) ) {
-            this.page.direction = 'prev';
-        }
-        this.page = utils.extendPage( this.page );
     }
 
     load() {
         if ( this.isLoading ) return;
-
-        if ( this.options.type === 'revision' ) {
-            this.requestPageDependencies();
-        }
-
+        this.requestPageDependencies();
         return this.request();
     }
 
@@ -132,7 +132,7 @@ class Diff {
         } else {
             params.message = error;
         }
-        utils.notifyError( 'error-dependencies-parse', this.page, params, true );
+        utils.notifyError( 'error-dependencies-page', this.page, params, true );
     }
 
     onRequestPageDependenciesDone( data ) {
@@ -146,7 +146,7 @@ class Diff {
         let dependencies = [ ...parse.modulestyles, ...parse.modulescripts, ...parse.modules ];
 
         // Get dependencies by type
-        const typeDependencies = id.config.dependencies[ this.options.type ];
+        const typeDependencies = id.config.dependencies[ this.page.type ];
         if ( typeDependencies ) {
             // Set common dependencies
             if ( typeDependencies[ '*' ] ) {
@@ -190,8 +190,8 @@ class Diff {
         this.isLoading = false;
 
         this.error = {
-            type: this.options.type,
-            code: this.options.type === 'revision' && !utils.isEmpty( this.page.curid ) ? 'curid' : 'generic',
+            type: this.page.type,
+            code: this.page.type === 'revision' && !utils.isEmpty( this.page.curid ) ? 'curid' : 'generic',
         };
 
         if ( data?.error ) {
@@ -223,7 +223,7 @@ class Diff {
     render() {
         const classes = [
             'instantDiffs-dialog-content',
-            `instantDiffs-dialog-content--${ this.options.type }`,
+            `instantDiffs-dialog-content--${ this.page.type }`,
             'mw-body-content',
             `mw-content-${ document.dir }`,
         ];
@@ -287,6 +287,7 @@ class Diff {
 
         // Set additional config variables
         mw.config.set( this.mwConfg );
+        mw.user.options.set( this.mwUserOptions );
 
         // Process diff table
         this.renderDiffTable();
@@ -299,19 +300,19 @@ class Diff {
         // Get diff and oldid values
         // FixMe: request via api action=revisions
         if ( $fromLinks.length > 0 ) {
-            const oldid = utils.getOldidFromUrl( $fromLinks.prop( 'href' ) );
+            const oldid = Number( utils.getParamFromUrl( 'oldid', $fromLinks.prop( 'href' ) ) );
             if ( utils.isValidID( oldid ) ) {
                 this.mwConfg.wgDiffOldId = oldid;
             }
         }
         if ( $toLinks.length > 0 ) {
-            const diff = utils.getOldidFromUrl( $toLinks.prop( 'href' ) );
+            const diff = Number( utils.getParamFromUrl( 'oldid', $toLinks.prop( 'href' ) ) );
             if ( utils.isValidID( diff ) ) {
                 this.mwConfg.wgDiffNewId = diff;
                 this.mwConfg.wgRevisionId = diff;
 
                 // Set actual revision id for the copy actions, etc.
-                if ( this.options.typeVariant !== 'page' ) {
+                if ( this.page.typeVariant !== 'page' ) {
                     this.page.revid = diff;
                 }
 
@@ -325,14 +326,14 @@ class Diff {
         // Get page title
         const $links = $toLinks.add( $fromLinks );
         if ( utils.isEmpty( this.page.title ) && $links.length > 0 ) {
-            const title = utils.getTitleFromUrl( $links.prop( 'href' ) ) || $links.prop( 'title' );
+            const title = utils.getParamFromUrl( 'title', $links.prop( 'href' ) ) || $links.prop( 'title' );
             this.page = utils.extendPage( this.page, { title } );
         }
 
         // Populate section name
         const $toSectionLinks = this.nodes.$data.find( '#mw-diff-ntitle3 .autocomment a' );
         if ( utils.isEmpty( this.page.section ) && $toSectionLinks.length > 0 ) {
-            const section = utils.getHashFromUrl( $toSectionLinks.prop( 'href' ) );
+            const section = utils.getComponentFromUrl( 'hash', $toSectionLinks.prop( 'href' ) );
             this.page = utils.extendPage( this.page, { section } );
         }
 
@@ -341,13 +342,21 @@ class Diff {
             this.mwConfg.wgTitle = this.page.mwTitle.getMainText();
             this.mwConfg.wgPageName = this.page.mwTitle.getPrefixedDb();
             this.mwConfg.wgNamespaceNumber = this.page.mwTitle.getNamespaceId();
+            this.mwConfg.wgRelevantPageName = this.page.mwTitle.getPrefixedDb();
+        }
+
+        // Save additional user options dependent of a page type
+        if ( this.page.type !== 'diff' ) {
+            this.mwUserOptions[ 'visualeditor-diffmode-historical' ] = 'source';
         }
     }
 
     renderDiffTable() {
         // Find diff table tools container and pre-toggle visibility
         this.nodes.$diffTablePrefix = this.nodes.$data.filter( '.mw-diff-table-prefix' );
-        this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', !utils.defaults( 'showInlineFormatToggle' ) );
+        if ( this.page.type !== 'diff' || !utils.defaults( 'showDiffTools' ) ) {
+            this.nodes.$diffTablePrefix.addClass( 'instantDiffs-hidden' );
+        }
 
         // Find table elements
         this.nodes.$frDiff = this.nodes.$data.filter( '#mw-fr-diff-headeritems' );
@@ -357,7 +366,7 @@ class Diff {
         this.nodes.$pendingLink = this.nodes.$frDiff
             .find( '.fr-diff-to-stable a' )
             .detach();
-        if ( this.options.type === 'diff' ) {
+        if ( this.page.type === 'diff' ) {
             this.links.$pending = this.nodes.$pendingLink;
         }
 
@@ -386,7 +395,7 @@ class Diff {
         }
 
         // Show or hide diff info table in the revisions
-        if ( this.options.type === 'revision' ) {
+        if ( this.page.type === 'revision' ) {
             if ( utils.defaults( 'showRevisionInfo' ) ) {
                 // Hide the left side of the table and left only related to the revision info
                 this.nodes.$frDiff.find( '.fr-diff-ratings td:nth-child(2n-1)' ).addClass( 'instantDiffs-hidden' );
@@ -426,8 +435,8 @@ class Diff {
 
     renderNavigation() {
         this.navigation = new Navigation( this, this.page, this.pageParams, {
-            type: this.options.type,
-            typeVariant: this.options.typeVariant,
+            type: this.page.type,
+            typeVariant: this.page.typeVariant,
             links: this.links,
         } );
         this.navigation.embed( this.nodes.$container, 'prependTo' );
@@ -440,23 +449,29 @@ class Diff {
     }
 
     restoreFunctionality() {
+        if ( this.error ) return;
+
+        // Restore diff format toggle buttons
         const diffTablePrefixTools = [];
 
-        // Restore inline format toggle button
-        if ( utils.defaults( 'showInlineFormatToggle' ) && this.options.type === 'diff' ) {
-            const isRendered = diffUtils.restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
-            diffTablePrefixTools.push( isRendered );
+        if ( this.page.type === 'diff' && utils.defaults( 'showDiffTools' ) ) {
+            const hasInlineToggle = diffUtils.restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
+            if ( hasInlineToggle ) diffTablePrefixTools.push( hasInlineToggle );
+
+            const hasVisualDiffs = diffUtils.restoreVisualDiffs( this.nodes.$diffTablePrefix );
+            if ( hasVisualDiffs ) diffTablePrefixTools.push( hasVisualDiffs );
         }
 
-        // Show diffTablePrefix if at least one tool was restored
-        this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', diffTablePrefixTools.length === 0 );
+        // Show diffTablePrefix if at least one tool was restored and visible
+        const hasVisibleChild = this.nodes.$diffTablePrefix.children( ':visible' ).length > 0;
+        this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', ( !hasVisibleChild || diffTablePrefixTools.length === 0 ) );
 
         // Restore rollback and patrol links scripts
         utils.executeModuleScript( 'mediawiki.misc-authed-curate' );
 
         // Restore rollback link
         diffUtils.restoreRollbackLink( this.nodes.$body );
-    };
+    }
 
     /******* ACTIONS *******/
 
@@ -465,14 +480,9 @@ class Diff {
         this.restoreFunctionality();
 
         // Fire diff table hook
-        if (
-            this.options.type !== 'revision' ||
-            ( this.options.type === 'revision' && utils.defaults( 'showRevisionInfo' ) )
-        ) {
-            const $diffTable = this.getDiffTable();
-            if ( $diffTable?.length > 0 ) {
-                mw.hook( 'wikipage.diff' ).fire( $diffTable );
-            }
+        const $diffTable = this.getDiffTable();
+        if ( this.page.type === 'diff' && $diffTable?.length > 0 ) {
+            mw.hook( 'wikipage.diff' ).fire( $diffTable );
         }
 
         // Fire general content hook
@@ -486,28 +496,26 @@ class Diff {
     }
 
     focus() {
-        this.options.initiatorDialog?.focus();
+        if ( utils.isFunction( this.options.onFocus ) ) {
+            this.options.onFocus();
+        }
     }
 
     redraw( params ) {
-        this.navigation.redraw( params );
+        this.navigation?.redraw( params );
     }
 
-    getType() {
-        return this.options.type;
-    }
-
-    getTypeVariant() {
-        return this.options.typeVariant;
-    }
-
+    /**
+     * Get page.
+     * @returns {object}
+     */
     getPage() {
         return this.page;
     }
 
     getPageTitleText() {
-        if ( this.error ) return utils.msg( 'title-not-found' );
-        if ( utils.isEmpty( this.page.title ) ) return utils.msg( 'title-empty' );
+        if ( this.error ) return utils.msg( 'dialog-title-not-found' );
+        if ( utils.isEmpty( this.page.title ) ) return utils.msg( 'dialog-title-empty' );
         return this.page.titleText;
     }
 
@@ -523,18 +531,14 @@ class Diff {
         return this.nodes.$table;
     }
 
-    getOverlay() {
-        return this.options.initiatorDialog?.getOverlay();
-    }
-
     getInitiatorDiff() {
         return this.options.initiatorDiff;
     }
 
     detach() {
         mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).fire( this );
-        this.navigation.detach();
-        this.nodes.$container.detach();
+        this.navigation?.detach();
+        this.getContainer().detach();
     }
 }
 
