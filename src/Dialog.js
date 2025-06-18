@@ -378,6 +378,11 @@ class Dialog {
      */
     onScroll( event ) {
         // Update diff content positions and sizes
+        if ( this.previousDiff instanceof Diff ) {
+            this.previousDiff.redraw( {
+                top: event.target.scrollTop,
+            } );
+        }
         this.diff.redraw( {
             top: event.target.scrollTop,
         } );
@@ -392,6 +397,7 @@ class Dialog {
         // Detach previous Diff if exists
         if ( this.previousDiff instanceof Diff ) {
             this.previousDiff.detach();
+            this.previousDiff = null;
         }
 
         // Fire the Diff hooks

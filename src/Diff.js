@@ -518,7 +518,7 @@ class Diff {
     }
 
     redraw( params ) {
-        this.navigation.redraw( params );
+        this.navigation?.redraw( params );
     }
 
     /**
