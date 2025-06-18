@@ -60,11 +60,6 @@ class Diff {
     navigation;
 
     /**
-     * @type {ResizeObserver}
-     */
-    resizeObserver;
-
-    /**
      * @type {boolean}
      */
     isLoading = false;
@@ -479,21 +474,9 @@ class Diff {
         diffUtils.restoreRollbackLink( this.nodes.$body );
     }
 
-    onResizeObserve( entries ) {
-        if ( entries.length === 0 ) return;
-        if ( utils.isFunction( this.options.onResize ) ) {
-            this.options.onResize();
-        }
-    }
-
     /******* ACTIONS *******/
 
     fire() {
-        // Init resize observer
-        const debounce = mw.util.debounce( this.onResizeObserve.bind( this ), 300 );
-        this.resizeObserver = new ResizeObserver( debounce );
-        this.resizeObserver.observe( this.getContainer().get( 0 ) );
-
         // Try to restore all original functionality
         this.restoreFunctionality();
 
@@ -555,7 +538,6 @@ class Diff {
 
     detach() {
         mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).fire( this );
-        this.resizeObserver?.disconnect();
         this.navigation?.detach();
         this.getContainer().detach();
     }

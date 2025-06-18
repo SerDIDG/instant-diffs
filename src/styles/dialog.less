@@ -9,6 +9,15 @@
             top: var(--instantDiffs-dialog-top);
         }
     }
+
+    // Pin the dialog body to the top of the viewport to prevent navigation jumps
+    @media (min-width: @min-width-breakpoint-tablet) {
+        .oo-ui-windowManager-modal:not(.oo-ui-windowManager-size-full) > & {
+            > .oo-ui-window-frame {
+                height: 100% !important;
+            }
+        }
+    }
 }
 
 .instantDiffs-dialog-overlay {
