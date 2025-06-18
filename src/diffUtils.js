@@ -1,5 +1,6 @@
 import id from './id';
 import * as utils from './utils';
+import { isValidID } from './utils';
 
 /******* COMMON *******/
 
@@ -47,6 +48,8 @@ export function restoreInlineFormatToggle( $container ) {
 export function restoreVisualDiffs( $container ) {
     if (
         $container.length === 0 ||
+        !utils.isValidID( mw.config.get( 'wgDiffOldId' ) ) ||
+        !utils.isValidID( mw.config.get( 'wgDiffNewId' ) ) ||
         mw.loader.getState( 'ext.visualEditor.diffPage.init' ) !== 'ready'
     ) {
         return false;

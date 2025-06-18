@@ -449,9 +449,11 @@ class Diff {
     }
 
     restoreFunctionality() {
-        const diffTablePrefixTools = [];
+        if ( this.error ) return;
 
         // Restore diff format toggle buttons
+        const diffTablePrefixTools = [];
+
         if ( this.page.type === 'diff' && utils.defaults( 'showDiffTools' ) ) {
             const hasInlineToggle = diffUtils.restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
             if ( hasInlineToggle ) diffTablePrefixTools.push( hasInlineToggle );

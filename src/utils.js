@@ -82,7 +82,10 @@ export function isAllowed() {
 export function log( type, message, data = [] ) {
     const logger = console[ type ];
     if ( !logger ) return;
-    logger( `${ msg( 'name' ) }: ${ message }.`, ...data );
+    if ( !/\.$/.test( message ) ) {
+        message = `${ message }.`;
+    }
+    logger( `${ msg( 'name' ) }: ${ message }`, ...data );
 }
 
 /**
