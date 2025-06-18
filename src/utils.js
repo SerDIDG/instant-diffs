@@ -670,6 +670,22 @@ export function restoreMWConfig( data ) {
     } );
 }
 
+export function backupMWUserOptions() {
+    const data = {};
+    id.config.mwUserOptionsBackup.forEach( key => {
+        data[ key ] = mw.user.options.get( key );
+    } );
+    return data;
+}
+
+export function restoreMWUserOptions( data ) {
+    id.config.mwUserOptionsBackup.forEach( key => {
+        if ( typeof data[ key ] !== 'undefined' ) {
+            mw.user.options.set( key, data[ key ] );
+        }
+    } );
+}
+
 /**
  * Checks if a link matches a given selectors preset.
  * @param {HTMLElement} node

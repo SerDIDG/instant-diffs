@@ -35,13 +35,14 @@ export const config = {
             'oojs-ui.styles.icons-layout',
         ],
         content: [
+            'jquery.confirmable',
             'mediawiki.diff',
             'mediawiki.diff.styles',
             'mediawiki.interface.helpers.styles',
             'mediawiki.misc-authed-curate',
+            'ext.visualEditor.diffPage.init',
             'ext.flaggedRevs.basic',
             'ext.thanks.corethank',
-            'jquery.confirmable',
         ],
         settings: [
             'oojs',
@@ -145,6 +146,12 @@ export const config = {
         'wgRevisionId',
         'wgDiffOldId',
         'wgDiffNewId',
+        'wgRelevantPageName',
+        'wgRelevantArticleId',
+        'wgCanonicalSpecialPageName',
+    ],
+    mwUserOptionsBackup: [
+        'visualeditor-diffmode-historical',
     ],
     skinBodyClasses: {
         'vector-2022': [ 'mw-body', 'vector-body' ],

@@ -3,6 +3,7 @@ import * as utils from './utils';
 import * as diffUtils from './diffUtils';
 
 import Navigation from './Navigation';
+import { restoreVisualDiffs } from './diffUtils';
 
 /**
  * Class representing a Diff.
@@ -30,11 +31,18 @@ class Diff {
         'thanks-confirmation-required': true,
         wgTitle: null,
         wgPageName: null,
+        wgRelevantPageName: null,
         wgNamespaceNumber: null,
         wgRevisionId: null,
         wgDiffOldId: null,
         wgDiffNewId: null,
+        wgCanonicalSpecialPageName: false,
     };
+
+    /**
+     * @type {object}
+     */
+    mwUserOptions = {};
 
     /**
      * @type {object}
@@ -288,6 +296,7 @@ class Diff {
 
         // Set additional config variables
         mw.config.set( this.mwConfg );
+        mw.user.options.set( this.mwUserOptions );
 
         // Process diff table
         this.renderDiffTable();
@@ -300,13 +309,13 @@ class Diff {
         // Get diff and oldid values
         // FixMe: request via api action=revisions
         if ( $fromLinks.length > 0 ) {
-            const oldid = utils.getParamFromUrl( 'oldid', $fromLinks.prop( 'href' ) );
+            const oldid = Number( utils.getParamFromUrl( 'oldid', $fromLinks.prop( 'href' ) ) );
             if ( utils.isValidID( oldid ) ) {
                 this.mwConfg.wgDiffOldId = oldid;
             }
         }
         if ( $toLinks.length > 0 ) {
-            const diff = utils.getParamFromUrl( 'oldid', $toLinks.prop( 'href' ) );
+            const diff = Number( utils.getParamFromUrl( 'oldid', $toLinks.prop( 'href' ) ) );
             if ( utils.isValidID( diff ) ) {
                 this.mwConfg.wgDiffNewId = diff;
                 this.mwConfg.wgRevisionId = diff;
@@ -342,6 +351,12 @@ class Diff {
             this.mwConfg.wgTitle = this.page.mwTitle.getMainText();
             this.mwConfg.wgPageName = this.page.mwTitle.getPrefixedDb();
             this.mwConfg.wgNamespaceNumber = this.page.mwTitle.getNamespaceId();
+            this.mwConfg.wgRelevantPageName = this.page.mwTitle.getPrefixedDb();
+        }
+
+        // Save additional user options dependent of a page type
+        if ( this.page.type !== 'diff' ) {
+            this.mwUserOptions[ 'visualeditor-diffmode-historical' ] = 'source';
         }
     }
 
@@ -443,10 +458,13 @@ class Diff {
     restoreFunctionality() {
         const diffTablePrefixTools = [];
 
-        // Restore inline format toggle button
-        if ( utils.defaults( 'showDiffTools' ) && this.page.type === 'diff' ) {
-            const isRendered = diffUtils.restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
-            diffTablePrefixTools.push( isRendered );
+        // Restore diff format toggle buttons
+        if ( this.page.type === 'diff' && utils.defaults( 'showDiffTools' ) ) {
+            const hasInlineToggle = diffUtils.restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
+            if ( hasInlineToggle ) diffTablePrefixTools.push( hasInlineToggle );
+
+            const hasVisualDiffs = diffUtils.restoreVisualDiffs( this.nodes.$diffTablePrefix );
+            if ( hasVisualDiffs ) diffTablePrefixTools.push( hasVisualDiffs );
         }
 
         // Show diffTablePrefix if at least one tool was restored
@@ -478,14 +496,9 @@ class Diff {
         this.restoreFunctionality();
 
         // Fire diff table hook
-        if (
-            this.page.type !== 'revision' ||
-            ( this.page.type === 'revision' && utils.defaults( 'showRevisionInfo' ) )
-        ) {
-            const $diffTable = this.getDiffTable();
-            if ( $diffTable?.length > 0 ) {
-                mw.hook( 'wikipage.diff' ).fire( $diffTable );
-            }
+        const $diffTable = this.getDiffTable();
+        if ( this.page.type === 'diff' && $diffTable?.length > 0 ) {
+            mw.hook( 'wikipage.diff' ).fire( $diffTable );
         }
 
         // Fire general content hook

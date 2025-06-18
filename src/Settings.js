@@ -43,7 +43,7 @@ class Settings {
         if ( !id.local.settings ) {
             id.local.settings = new Settings( options );
         } else {
-            id.local.settings.process( options );
+            id.local.settings.setup( options );
         }
         return id.local.settings;
     }
@@ -53,14 +53,14 @@ class Settings {
      * @param {object} [options] configuration options
      */
     constructor( options ) {
-        this.process.apply( this, arguments );
+        this.setup.apply( this, arguments );
     }
 
     /**
      * Setup configuration options.
      * @param {object} [options] configuration options
      */
-    process( options ) {
+    setup( options ) {
         this.options = {
             onOpen: () => {},
             onClose: () => {},

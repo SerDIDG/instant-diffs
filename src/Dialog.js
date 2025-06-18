@@ -58,6 +58,11 @@ class Dialog {
     /**
      * @type {object}
      */
+    mwUserOptionsBackup;
+
+    /**
+     * @type {object}
+     */
     document = {};
 
     /**
@@ -92,7 +97,7 @@ class Dialog {
         if ( !id.local.dialog ) {
             id.local.dialog = new Dialog( link, options );
         } else {
-            id.local.dialog.process( link, options );
+            id.local.dialog.setup( link, options );
         }
         return id.local.dialog;
     }
@@ -103,7 +108,7 @@ class Dialog {
      * @param {object} [options] configuration options
      */
     constructor( link, options ) {
-        this.process.apply( this, arguments );
+        this.setup.apply( this, arguments );
     }
 
     /**
@@ -111,7 +116,7 @@ class Dialog {
      * @param {import('./Link').default|import('./DialogButton').default} link a Link, or a DialogButton instance
      * @param {object} [options] configuration options
      */
-    process( link, options ) {
+    setup( link, options ) {
         // Track on dialog process start time
         id.timers.dialogProcesStart = Date.now();
 
@@ -236,6 +241,12 @@ class Dialog {
         if ( !this.mwConfigBackup ) {
             this.mwConfigBackup = utils.backupMWConfig();
         }
+        if ( this.mwUserOptionsBackup ) {
+            utils.restoreMWUserOptions( this.mwUserOptionsBackup );
+        }
+        if ( !this.mwUserOptionsBackup ) {
+            this.mwUserOptionsBackup = utils.backupMWUserOptions();
+        }
 
         // Construct the Diff options
         const page = this.link.getPage();
@@ -269,7 +280,7 @@ class Dialog {
     }
 
     /**
-     * Save the Diff Dialog.
+     * Open the Diff Dialog.
      */
     open() {
         const options = {
@@ -314,9 +325,14 @@ class Dialog {
             this.diff = null;
         }
 
+        // Restore the mw.config to the initial state
         if ( this.mwConfigBackup ) {
             utils.restoreMWConfig( this.mwConfigBackup );
             this.mwConfigBackup = null;
+        }
+        if ( this.mwUserOptionsBackup ) {
+            utils.restoreMWUserOptions( this.mwUserOptionsBackup );
+            this.mwUserOptionsBackup = null;
         }
 
         if ( utils.isFunction( this.options.onClose ) ) {
