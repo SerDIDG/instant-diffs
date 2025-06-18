@@ -29,13 +29,13 @@ class Diff {
      */
     mwConfg = {
         'thanks-confirmation-required': true,
-        wgTitle: null,
-        wgPageName: null,
-        wgRelevantPageName: null,
-        wgNamespaceNumber: null,
-        wgRevisionId: null,
-        wgDiffOldId: null,
-        wgDiffNewId: null,
+        wgTitle: false,
+        wgPageName: false,
+        wgRelevantPageName: false,
+        wgNamespaceNumber: false,
+        wgRevisionId: false,
+        wgDiffOldId: false,
+        wgDiffNewId: false,
         wgCanonicalSpecialPageName: false,
     };
 
