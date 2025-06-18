@@ -92,6 +92,10 @@ class DiffDialog extends OO.ui.MessageDialog {
         this.dialog.onScroll( event );
     }
 
+    getBodyHeight() {
+        return 'auto';
+    }
+
     getContainerElement() {
         return this.container.$element;
     }
