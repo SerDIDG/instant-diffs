@@ -65,7 +65,7 @@
     "settings-highlight-line": "Підсвічувати рядки у списках спостереження та подібних списках при відкритті вікна Instant Diffs через відповідне посилання.",
     "settings-mark-watched-line": "Позначати зміни як переглянуті в списках спостереження при відкритті вікна Instant Diffs.",
     "settings-fieldset-dialog": "Вікно",
-    "settings-show-diff-tools": "Показати додаткові інструменти для перегляду змін, зокрема перемикач формату «Лінійно».",
+    "settings-show-diff-tools": "Показувати додаткові інструменти для перегляду змін, зокрема перемикач формату «Лінійно».",
     "settings-show-revision-info": "Показувати інформацію про зміни під час перегляду версії.",
     "settings-unhide-diffs": "Показувати вміст прихованих версій без додаткових дій.",
     "settings-unhide-diffs-help": "Щоб переглянути вміст версії потрібне [[mw:Special:MyLanguage/Help:RevisionDelete|право користувача]] «suppressrevision».",
