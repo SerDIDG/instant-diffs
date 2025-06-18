@@ -92,11 +92,7 @@ class Diff {
 
     load() {
         if ( this.isLoading ) return;
-
-        if ( this.page.type === 'revision' ) {
-            this.requestPageDependencies();
-        }
-
+        this.requestPageDependencies();
         return this.request();
     }
 
