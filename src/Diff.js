@@ -363,7 +363,9 @@ class Diff {
     renderDiffTable() {
         // Find diff table tools container and pre-toggle visibility
         this.nodes.$diffTablePrefix = this.nodes.$data.filter( '.mw-diff-table-prefix' );
-        this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', !utils.defaults( 'showDiffTools' ) );
+        if ( this.page.type !== 'diff' || !utils.defaults( 'showDiffTools' ) ) {
+            this.nodes.$diffTablePrefix.addClass( 'instantDiffs-hidden' );
+        }
 
         // Find table elements
         this.nodes.$frDiff = this.nodes.$data.filter( '#mw-fr-diff-headeritems' );
