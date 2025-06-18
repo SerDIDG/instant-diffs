@@ -462,8 +462,9 @@ class Diff {
             if ( hasVisualDiffs ) diffTablePrefixTools.push( hasVisualDiffs );
         }
 
-        // Show diffTablePrefix if at least one tool was restored
-        this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', diffTablePrefixTools.length === 0 );
+        // Show diffTablePrefix if at least one tool was restored and visible
+        const hasVisibleChild = this.nodes.$diffTablePrefix.children( ':visible' ).length > 0;
+        this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', ( !hasVisibleChild || diffTablePrefixTools.length === 0 ) );
 
         // Restore rollback and patrol links scripts
         utils.executeModuleScript( 'mediawiki.misc-authed-curate' );
