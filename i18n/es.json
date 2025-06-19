@@ -56,7 +56,8 @@
     "unsupported-wikilambda": "La aplicación WikiLambda no es compatible actualmente.",
 
     "settings-title": "Configuración de Instant Diffs",
-    "settings-saved": "La configuración se ha guardado correctamente. Recarga la página para aplicarla.",
+    "settings-saved": "La configuración se ha guardado correctamente.\nRecarga la página para aplicarla.",
+    "settings-saved-icon": "Icono de marca de verificación",
     "settings-fieldset-links": "Enlaces",
     "settings-show-link": "Mostrar botón de acción",
     "settings-show-link-help": "Muestra un botón de acción (❖) después del enlace para abrir el diálogo de Instant Diffs. De lo contrario, la acción de clic se añade directamente al enlace. Aún puedes abrir el enlace en la pestaña actual presionando Alt+Clic.",

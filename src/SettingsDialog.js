@@ -80,7 +80,11 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.renderGeneralFieldset();
 
         // Combine fieldsets into the panel
-        this.panelEdit = new OO.ui.PanelLayout( { padded: true, expanded: false } );
+        this.panelEdit = new OO.ui.PanelLayout( {
+            classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--edit' ],
+            padded: true,
+            expanded: false,
+        } );
         this.panelEdit.$element.append(
             this.layouts.links.$element,
             this.layouts.dialog.$element,
@@ -88,8 +92,17 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         );
 
         // Render finish panel
-        this.panelFinish = new OO.ui.PanelLayout( { padded: true, expanded: false } );
-        this.panelFinish.$element.append( $( `<p>${ utils.msg( 'settings-saved' ) }</p>` ) );
+        // Icon: [[:File:Eo circle light-green checkmark.svg]] by Emoji One contributors and [[User:IagoQns]]
+        const $finishContent = $( `\
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Eo_circle_light-green_checkmark.svg" alt="${ utils.msg( 'settings-saved-icon' ) }">\
+            <h5>${ utils.msg( 'settings-saved' ) }</h5>\
+        ` );
+        this.panelFinish = new OO.ui.PanelLayout( {
+            classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--finish' ],
+            padded: true,
+            expanded: false,
+        } );
+        this.panelFinish.$element.append( $finishContent );
 
         // Render switchable layout
         this.stackLayout = new OO.ui.StackLayout( {

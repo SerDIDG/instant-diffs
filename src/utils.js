@@ -125,17 +125,30 @@ export function defaults( key ) {
     return key ? id.defaults[ key ] : id.defaults;
 }
 
-export function setDefaults( data, save ) {
-    id.defaults = $.extend( {}, id.defaults, data );
+/**
+ * Applies the setting options to the ID's singleton and saves to the Local Storage,
+ * and if second parameter is true, also saves to the local User Options.
+ * @param {object} settings the setting options data
+ * @param {boolean} [saveUserOptions] save the setting options to the local User Options
+ */
+export function setDefaults( settings, saveUserOptions ) {
+    id.defaults = { ...id.defaults, ...settings };
 
-    // Temporary save defaults to the local User Options
-    if ( save && !id.local.mwIsAnon ) {
+    // Save defaults in the Local Storage
+    mw.storage.setObject( `${ id.config.prefix }-settings`, id.defaults );
+
+    // Save defaults to the local User Options
+    if ( saveUserOptions && !id.local.mwIsAnon ) {
         try {
             mw.user.options.set( id.config.settingsPrefix, JSON.stringify( id.defaults ) );
         } catch ( e ) {}
     }
 }
 
+/**
+ * Gets the setting options firstly from the Local Storage and sets,
+ * then from the local User Options and sets.
+ */
 export function processDefaults() {
     // Set settings stored in the Local Storage
     try {
@@ -171,7 +184,7 @@ export function msgDom() {
         if ( isEmpty( href ) || !/^\/(wiki|w)\//.test( href ) ) return;
 
         const url = new URL( href, id.config.origin );
-        node.setAttribute( 'href', url.toString() )
+        node.setAttribute( 'href', url.toString() );
     } );
     return dom;
 }

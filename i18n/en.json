@@ -56,7 +56,8 @@
     "unsupported-wikilambda": "WikiLambda app is not currently supported.",
 
     "settings-title": "Instant Diffs Settings",
-    "settings-saved": "The settings have been saved successfully. Reload the page to apply them.",
+    "settings-saved": "The settings have been saved successfully.\nReload the page to apply them.",
+    "settings-saved-icon": "Checkmark icon",
     "settings-fieldset-links": "Links",
     "settings-show-link": "Show action link",
     "settings-show-link-help": "Displays an action button (❖) after the link to open the Instant Diffs dialog. Otherwise, the click action is added directly to the link. You can still open the link in the current tab by pressing Alt+Click.",

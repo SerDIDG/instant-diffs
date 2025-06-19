@@ -56,7 +56,8 @@
     "unsupported-wikilambda": "L'app WikiLambda non è attualmente supportata.",
 
     "settings-title": "Impostazioni di Instant Diffs",
-    "settings-saved": "Le impostazioni sono state salvate correttamente. Ricarica la pagina per applicarle.",
+    "settings-saved": "Le impostazioni sono state salvate correttamente.\nRicarica la pagina per applicarle.",
+    "settings-saved-icon": "Icona del segno di spunta",
     "settings-fieldset-links": "Collegamenti",
     "settings-show-link": "Mostra pulsante azione",
     "settings-show-link-help": "Visualizza un pulsante di azione (❖) dopo il collegamento per aprire la finestra di Instant Diffs. In caso contrario, l'azione di clic viene aggiunta direttamente al collegamento. Puoi comunque aprire il collegamento nella scheda corrente premendo Alt+Clic.",
