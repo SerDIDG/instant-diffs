@@ -1,6 +1,8 @@
 import id from './id';
 import * as utils from './utils';
 
+const { h } = utils;
+
 /**
  * Class representing a SettingsDialog.
  * @augments OO.ui.ProcessDialog
@@ -93,16 +95,17 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
         // Render finish panel
         // Icon: [[:File:Eo circle light-green checkmark.svg]] by Emoji One contributors and [[User:IagoQns]]
-        const $finishContent = utils.getTemplate( `\
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Eo_circle_light-green_checkmark.svg" alt="${ utils.msg( 'settings-saved-icon' ) }">\
-            <h5>${ utils.msg( 'settings-saved' ) }</h5>\
-        ` );
+        const finishContent = utils.renderSuccessBox( {
+            content: utils.msg( 'settings-saved' ),
+            image: '/6/6f/Eo_circle_light-green_checkmark.svg',
+            alt: utils.msg( 'settings-saved-icon' ),
+        } );
         this.panelFinish = new OO.ui.PanelLayout( {
             classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--finish' ],
             padded: true,
             expanded: false,
         } );
-        this.panelFinish.$element.append( $finishContent );
+        this.panelFinish.$element.append( finishContent );
 
         // Render switchable layout
         this.stackLayout = new OO.ui.StackLayout( {
@@ -398,13 +401,11 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         const diff = utils.getTypeHref( { title, diff: '12345', type: 'diff' }, {}, options );
         const revision = utils.getTypeHref( { title, oldid: '12345', type: 'revision' }, {}, options );
         const page = utils.getTypeHref( { title, curid: '12345', type: 'revision', typeVariant: 'page' }, {}, options );
-        return utils.getTemplate( `\
-            <ul class="instantDiffs-list--settings">\
-                <li><i>${ diff }</i></li>\
-                <li><i>${ revision }</i></li>\
-                <li><i>${ page }</i></li>\
-            </ul>\
-        ` );
+        return h( 'ul.instantDiffs-list--settings',
+            h( 'li', h( 'i', diff ) ),
+            h( 'li', h( 'i', revision ) ),
+            h( 'li', h( 'i', page ) ),
+        );
     };
 
     /******* SAVE PROCESS ******/

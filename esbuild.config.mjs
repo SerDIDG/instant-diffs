@@ -40,6 +40,8 @@ const banner = `/**
  * Author: ${ pkg.author.name }
  * Licenses: ${ pkg.license }
  * Documentation: ${ pkg.homepage }
+ *
+ * For license information please see: https://mediawiki.org/wiki/User:Serhio_Magpie/instantDiffs.js.LEGAL.txt
  */
  /* <nowiki> */`;
 
@@ -50,6 +52,7 @@ const config = {
     logLevel: 'info',
     entryPoints: [ 'src/app.js' ],
     bundle: true,
+    treeShaking: true,
     outfile: `${ outdir }/${ outfile }.js`,
     format: 'iife',
     banner: {
@@ -73,6 +76,7 @@ if ( process.argv.includes( '--build' ) ) {
             ...config,
             minify: true,
             sourcemap: false,
+            legalComments: 'external',
         } );
 }
 
