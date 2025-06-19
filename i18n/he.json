@@ -57,7 +57,8 @@
     "unsupported-wikilambda": "האפליקציה WikiLambda אינה נתמכת כעת.",
 
     "settings-title": "הגדרות Instant Diffs",
-    "settings-saved": "ההגדרות נשמרו בהצלחה. רעננו את הדף כדי להחיל את השינויים.",
+    "settings-saved": "ההגדרות נשמרו בהצלחה.\nרעננו את הדף כדי להחיל את השינויים.",
+    "settings-saved-icon": "סמל סימון",
     "settings-fieldset-links": "קישורים",
     "settings-show-link": "הצג כפתור פעולה",
     "settings-show-link-help": "מציג כפתור פעולה (❖) לאחר הקישור לפתיחת חלון Instant Diffs. אחרת, הפעולה מתבצעת ישירות דרך הקישור. עדיין ניתן לפתוח את הקישור בטאב הנוכחי עם Alt+Click.",

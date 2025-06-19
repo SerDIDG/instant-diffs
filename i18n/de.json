@@ -56,7 +56,8 @@
     "unsupported-wikilambda": "Die WikiLambda-Anwendung wird derzeit nicht unterstützt.",
 
     "settings-title": "Instant Diffs-Einstellungen",
-    "settings-saved": "Die Einstellungen wurden erfolgreich gespeichert. Laden Sie die Seite neu, um sie anzuwenden.",
+    "settings-saved": "Die Einstellungen wurden erfolgreich gespeichert.\nLaden Sie die Seite neu, um sie anzuwenden.",
+    "settings-saved-icon": "Häkchen-Symbol",
     "settings-fieldset-links": "Links",
     "settings-show-link": "Aktionsschaltfläche anzeigen",
     "settings-show-link-help": "Zeigt nach dem Link eine Aktionsschaltfläche (❖) an, um den Instant-Diffs-Dialog zu öffnen. Andernfalls wird die Klickaktion direkt dem Link hinzugefügt. Sie können den Link weiterhin im aktuellen Tab öffnen, indem Sie Alt+Klick drücken.",

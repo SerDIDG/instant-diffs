@@ -10,6 +10,7 @@ function replaceEntitiesInI18n( string ) {
         .replace( /&rlm;/g, '\u200f' )
         .replace( /&lrm;/g, '\u200e' );
 }
+
 function hideText( text, regexp, hidden ) {
     return text.replace( regexp, ( s ) => '\x01' + hidden.push( s ) + '\x02' );
 }

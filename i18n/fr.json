@@ -56,7 +56,8 @@
     "unsupported-wikilambda": "L'application WikiLambda n'est pas encore prise en charge.",
 
     "settings-title": "Paramètres d’Instant Diffs",
-    "settings-saved": "Les paramètres ont été enregistrés avec succès. Rechargez la page pour les appliquer.",
+    "settings-saved": "Les paramètres ont été enregistrés avec succès.\nRechargez la page pour les appliquer.",
+    "settings-saved-icon": "Icône de coche",
     "settings-fieldset-links": "Liens",
     "settings-show-link": "Afficher le bouton d’action",
     "settings-show-link-help": "Affiche un bouton d’action (❖) après le lien pour ouvrir la fenêtre Instant Diffs. Sinon, l’action de clic est ajoutée directement au lien. Vous pouvez toujours ouvrir le lien dans l’onglet actuel en appuyant sur Alt+Clic.",

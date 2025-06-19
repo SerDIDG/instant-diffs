@@ -7,6 +7,28 @@
     }
 }
 
+.instantDiffs-settings-panel {
+    &--finish {
+        min-height: 100%;
+        padding-bottom: 25%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: pre-wrap;
+        text-align: center;
+
+        img {
+            width: 64px;
+            aspect-ratio: 1/1;
+            border: none;
+            font-size: 0;
+        }
+    }
+}
+
 /* Reset list styles for a list hint element */
 /* Use more specific selector because mobile Minerva loads unscoped ".ns-special ul" */
 /* 1.42857143em is a size of the OOUI checkbox/radio */

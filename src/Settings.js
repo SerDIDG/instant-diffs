@@ -209,10 +209,10 @@ class Settings {
      * @returns {Promise|boolean}
      */
     save( settings ) {
-        // Update settings stored in the Local Storage
-        mw.storage.setObject( `${ id.config.prefix }-settings`, settings );
+        // Update settings stored in the Local Storage and in the local User Options
+        utils.setDefaults( settings, true );
 
-        // Guest settings stored only in the Local Storage
+        // Guest settings can be stored only in the Local Storage
         if ( id.local.mwIsAnon ) return true;
 
         // Check if the Global Preferences extension is available
