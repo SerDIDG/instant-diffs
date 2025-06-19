@@ -429,7 +429,7 @@ class Diff {
     }
 
     renderWarning( $content ) {
-        const $box = utils.renderBox( { $content, type: 'warning' } );
+        const $box = utils.renderMessageBox( { $content, type: 'warning' } );
         utils.embed( $box, this.nodes.$body );
     }
 

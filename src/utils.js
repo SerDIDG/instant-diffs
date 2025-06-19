@@ -1,6 +1,6 @@
-import id from './id';
+import hyperscript from 'hyperscript';
 
-import Button from './Button';
+import id from './id';
 
 /******* BASIC TYPES *******/
 
@@ -244,7 +244,7 @@ export function getErrorMessage( str, page, error ) {
 }
 
 export function notifyError( str, page, error, silent ) {
-    silent = !isBoolean( silent ) ? defaults( 'notifyErrors' ) : silent;
+    silent = !isBoolean( silent ) ? !defaults( 'notifyErrors' ) : silent;
 
     // Silent all errors if a document is hidden or in the process of unloading
     if ( id.isUnloading ) return;
@@ -259,22 +259,13 @@ export function notifyError( str, page, error, silent ) {
     }
 
     if ( typeof mw !== 'undefined' && mw.notify ) {
-        const $container = $( '<div>' )
-            .addClass( 'instantDiffs-notification' );
-        const $label = $( '<div>' )
-            .addClass( 'instantDiffs-notification-label' )
-            .appendTo( $container );
-        const $link = new Button( {
-            label: msg( 'name' ),
-            href: getOrigin( `/wiki/${ id.config.link }` ),
-            target: '_blank',
-            container: $label,
-        } );
-        const $message = $( '<div>' )
-            .text( message )
-            .appendTo( $container );
-
-        mw.notify( $container, { type: 'error', tag: `${ id.config.prefix }-${ error.type }` } );
+        const content = h( 'div.instantDiffs-notification',
+            h( 'div.instantDiffs-notification-label',
+                h( 'a', { href: getOrigin( `/wiki/${ id.config.link }` ), target: '_blank' }, msg( 'name' ) ),
+            ),
+            ht( message ),
+        );
+        mw.notify( content, { type: 'error', tag: `${ id.config.prefix }-${ error.type }` } );
     }
 
     log( 'error', message, [ page, error ] );
@@ -755,11 +746,9 @@ export function getMWDiffLine( item ) {
 
 export function getMWDiffLineTitle( item ) {
     const selector = id.config.mwLineTitle.selector.join( ',' );
-    item.$title = item.$line.find( selector );
-    if ( item.$title?.length === 0 ) return;
-
-    const title = item.$title.attr( 'title' );
-    return !isEmpty( title ) ? title : item.$title.text();
+    const node = item.line.querySelector( selector );
+    if ( !node ) return;
+    return !isEmpty( node.title ) ? node.title : node.innerText;
 }
 
 export function getSpecialPageAliases( data, name ) {
@@ -850,6 +839,41 @@ export function tweakUserOoUiClass( targetClass ) {
 
 /******* ELEMENTS *******/
 
+export function h( tag, props = {}, ...children ) {
+    Object.keys( props ).forEach( ( key ) => {
+        let value = props[ key ];
+        if ( isEmpty( value ) ) return;
+
+        switch ( key ) {
+            case 'id':
+                tag = `${ tag }#${ value.trim() }`;
+                delete props[ key ];
+                break;
+
+            case 'class':
+                value = Array.isArray( value )
+                    ? value.map( entry => entry.trim() ).join( '.' )
+                    : value.trim().replace( /\s+/g, '.' );
+                tag = `${ tag }.${ value }`;
+                delete props[ key ];
+                break;
+        }
+    } );
+    return hyperscript( tag, props, ...children );
+}
+
+export function ht( text ) {
+    return document.createTextNode( text );
+}
+
+export function hf( ...children ) {
+    const fragment = new DocumentFragment();
+    for ( const child of children ) {
+        fragment.append( child );
+    }
+    return fragment;
+}
+
 export function clipboardWrite( text, callback ) {
     if ( isEmpty( text ) ) return;
 
@@ -868,13 +892,12 @@ export function clipboardWrite( text, callback ) {
             .then( success )
             .catch( error );
     } else {
-        const $textarea = $( '<textarea>' )
-            .val( text )
-            .appendTo( document.body )
-            .select();
+        const textarea = h( 'textarea', { value: text } );
+        document.body.append( textarea );
+        textarea.select();
 
         const successful = document.execCommand( 'copy' );
-        $textarea.remove();
+        textarea.remove();
 
         successful ? success() : error();
     }
@@ -948,16 +971,6 @@ export function embed( node, container, insertMethod = 'appendTo' ) {
     }
 }
 
-/**
- * Convert template literal to the jQuery object.
- * @param {string} template
- * @return {jQuery}
- */
-export function getTemplate( template ) {
-    template = template.replace( /\s{2,}/g, ' ' ).trim();
-    return $( template );
-}
-
 export function getPlaceholderClasses( modifiers = [] ) {
     const classes = [ 'instantDiffs-panel-placeholder' ];
     modifiers.forEach( modifier => classes.push( `instantDiffs-panel-placeholder--${ modifier }` ) );
@@ -972,54 +985,74 @@ export function renderPlaceholder() {
 }
 
 export function renderLabel( params ) {
-    params = $.extend( {
+    params = {
         short: null,
         long: null,
         iconBefore: null,
         iconAfter: null,
-    }, params );
+        ...params,
+    };
 
     if ( !isEmpty( params.short ) ) {
-        params.short = `<span>${ params.short }</span>`;
+        params.short = h( 'span', params.short );
     }
     if ( !isEmpty( params.long ) ) {
-        params.long = `<span>${ params.long }</span>`;
+        params.long = h( 'span', params.long );
     }
     if ( !isEmpty( params.iconBefore ) ) {
-        params.iconBefore = `<i>${ params.iconBefore }</i>`;
+        params.iconBefore = h( 'i', params.iconBefore );
     }
     if ( !isEmpty( params.iconAfter ) ) {
-        params.iconAfter = `<i>${ params.iconAfter }</i>`;
+        params.iconAfter = h( 'i', params.iconAfter );
     }
 
     const short = [ params.iconBefore, params.short, params.iconAfter ]
-        .filter( item => !isEmpty( item ) )
-        .join( '' );
+        .filter( entry => !isEmpty( entry ) )
+        .map( entry => entry.cloneNode( true ) );
 
     const long = [ params.iconBefore, params.long, params.iconAfter ]
-        .filter( item => !isEmpty( item ) )
-        .join( '' );
+        .filter( entry => !isEmpty( entry ) )
+        .map( entry => entry.cloneNode( true ) );
 
-    return getTemplate( `\
-        <span class="instantDiffs-label instantDiffs-label--long">${ long }</span>\
-        <span class="instantDiffs-label instantDiffs-label--short">${ short }</span>\
-    ` );
+    return hf(
+        h( 'div.instantDiffs-label.instantDiffs-label--long', ...long ),
+        h( 'div.instantDiffs-label.instantDiffs-label--short', ...short ),
+    );
 }
 
-export function renderBox( params ) {
-    params = $.extend( {
+export function renderMessageBox( params ) {
+    params = {
         $content: null,
         type: 'notice',
-    }, params );
+        ...params,
+    };
 
-    const $icon = $( '<span>' )
-        .addClass( 'cdx-message__icon' );
+    return h( 'div', {
+            class: [
+                'cdx-message',
+                'cdx-message--block',
+                `cdx-message--${ params.type }`,
+                'plainlinks',
+            ],
+        },
+        h( 'span.cdx-message__icon' ),
+        h( 'div.cdx-message__content', params.$content.get( 0 ) ),
+    );
+}
 
-    const $content = $( '<div>' )
-        .addClass( 'cdx-message__content' )
-        .append( params.$content );
+export function renderSuccessBox( params ) {
+    params = {
+        content: null,
+        image: null,
+        alt: null,
+        ...params,
+    };
 
-    return $( '<div>' )
-        .addClass( [ 'cdx-message', 'cdx-message--block', `cdx-message--${ params.type }`, 'plainlinks' ] )
-        .append( [ $icon, $content ] );
+    return h( 'div.instantDiffs-success-box',
+        h( 'img', {
+            src: `${ id.config.commonsAssetsPath }${ params.image }`,
+            alt: params.alt,
+        } ),
+        h( 'h5', params.content ),
+    );
 }

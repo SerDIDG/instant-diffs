@@ -6,6 +6,8 @@ import Button from './Button';
 
 import './styles/links.less';
 
+const { h, ht } = utils;
+
 /**
  * Class representing a link.
  */
@@ -114,8 +116,8 @@ class Link {
             this.mw.line = utils.getMWDiffLine( this.mw );
             if ( this.mw.line ) {
                 this.mw.hasLine = true;
-                this.mw.$line = $( this.mw.line ).addClass( 'instantDiffs-line' );
                 this.mw.title = utils.getMWDiffLineTitle( this.mw );
+                this.mw.line.classList.add( 'instantDiffs-line' );
             }
         }
 
@@ -165,10 +167,10 @@ class Link {
 
         if ( id.local.specialPagesSearchRegExp.test( urlParts.title ) ) {
             // Get components from splitting url title
-            this.page = $.extend( this.page, utils.getSplitSpecialUrl( urlParts.title ) );
+            this.page = { ...this.page, ...utils.getSplitSpecialUrl( urlParts.title ) };
         } else if ( id.local.specialPagesPathRegExp.test( urlParts.pathname ) ) {
             // Get components from splitting url pathname
-            this.page = $.extend( this.page, utils.getSplitSpecialUrl( urlParts.pathnameNormalized ) );
+            this.page = { ...this.page, ...utils.getSplitSpecialUrl( urlParts.pathnameNormalized ) };
         } else {
             // Get components from url search parameters
             const components = [ 'title', 'curid', 'oldid', 'diff', 'direction' ];
@@ -459,13 +461,14 @@ class Link {
                     messageName = `error-${ this.error.type }-generic`;
                 }
             }
-            const message = utils.getErrorMessage( messageName, this.page, this.error );
 
-            this.nodes.$error = $( '<span>' )
-                .text( utils.getLabel( 'error' ) )
-                .attr( 'title', message )
-                .addClass( [ 'item', 'error', 'error-info' ] )
-                .appendTo( this.nodes.inner );
+            this.nodes.error = h( 'span', {
+                    class: [ 'item', 'error', 'error-info' ],
+                    title: utils.getErrorMessage( messageName, this.page, this.error ),
+                },
+                ht( utils.getLabel( 'error' ) ),
+            );
+            this.nodes.inner.append( this.nodes.error );
 
             this.embed( this.node, this.options.insertMethod );
         }
@@ -496,12 +499,13 @@ class Link {
     }
 
     renderWrapper() {
-        this.nodes.container = this.nodes.inner = document.createElement( 'span' );
-        this.nodes.container.classList.add( ...[ 'instantDiffs-panel', 'nowrap', 'noprint' ] );
+        this.nodes.container = h( 'span', { class: [ 'instantDiffs-panel', 'nowrap', 'noprint' ] },
+            this.nodes.inner = h( 'span' ),
+        );
     }
 
     renderAction( params ) {
-        params = $.extend( {
+        params = {
             tag: 'a',
             label: null,
             title: null,
@@ -511,7 +515,8 @@ class Link {
             classes: [],
             modifiers: [],
             container: this.nodes.inner,
-        }, params );
+            ...params,
+        };
 
         params.classes = [ 'item', 'text', 'instantDiffs-action', ...params.classes ];
         params.modifiers.forEach( modifier => params.classes.push( `instantDiffs-action--${ modifier }` ) );
@@ -602,7 +607,7 @@ class Link {
 
     onDialogOpen() {
         if ( this.mw.hasLine && this.config.highlightLine ) {
-            this.mw.$line.addClass( 'instantDiffs-line--highlight' );
+            this.mw.line.classList.add( 'instantDiffs-line--highlight' );
         }
 
         if ( utils.isFunction( this.options.onOpen ) ) {
@@ -617,15 +622,14 @@ class Link {
     onDialogClose() {
         if ( this.mw.hasLine ) {
             if ( this.config.highlightLine ) {
-                this.mw.$line.removeClass( 'instantDiffs-line--highlight' );
+                this.mw.line.classList.remove( 'instantDiffs-line--highlight' );
             }
             if (
                 this.config.markWatchedLine &&
                 id.config.changeLists.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) )
             ) {
-                this.mw.$line
-                    .removeClass( id.config.mwLine.unseen )
-                    .addClass( id.config.mwLine.seen );
+                this.mw.line.classList.remove( ...id.config.mwLine.unseen );
+                this.mw.line.classList.add( ...id.config.mwLine.seen );
             }
         }
 

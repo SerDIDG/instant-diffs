@@ -6,7 +6,8 @@ import Link from './Link';
 import Settings from './Settings';
 
 import './styles/navigation.less';
-import { getTemplate } from './utils';
+
+const { h, hf, ht } = utils;
 
 /**
  * Class representing a diff navigation bar.
@@ -417,14 +418,14 @@ class Navigation {
             href = link.attr( 'href' );
         }
 
-        const $label = utils.renderLabel( {
+        const label = utils.renderLabel( {
             short: utils.msg( 'goto-prev' ),
             long: utils.msg( `goto-prev-${ this.page.type }` ),
             iconBefore: document.dir === 'ltr' ? '←' : '→',
         } );
 
         const button = new OO.ui.ButtonWidget( {
-            label: $label,
+            label: $( label ),
             href: href,
             target: utils.getTarget( true ),
             disabled: !href,
@@ -462,14 +463,14 @@ class Navigation {
             }
         }
 
-        const $label = utils.renderLabel( {
+        const label = utils.renderLabel( {
             short: utils.msg( 'goto-next' ),
             long: utils.msg( `goto-next-${ this.page.type }` ),
             iconAfter: document.dir === 'ltr' ? '→' : '←',
         } );
 
         const button = new OO.ui.ButtonWidget( {
-            label: $label,
+            label: $( label ),
             href: href,
             target: utils.getTarget( true ),
             disabled: !href,
@@ -646,13 +647,14 @@ class Navigation {
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderIDLink( options ) {
-        const label = utils.getTemplate( `\
-			<span class="name">${ utils.msg( 'name' ) }</span>\
-			<span class="version">v.${ id.config.version }</span>\
-		` );
+        const label = hf(
+            h( 'span.name', utils.msg( 'name' ) ),
+            ht( ' ' ),
+            h( 'span.version', id.config.version ),
+        );
 
         options = {
-            label: label,
+            label: $( label ),
             href: utils.getOrigin( `/wiki/${ id.config.link }` ),
             target: utils.getTarget( true ),
             classes: [],

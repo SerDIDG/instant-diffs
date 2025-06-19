@@ -134,6 +134,9 @@ export const config = {
         },
     },
 
+    // Path
+    commonsAssetsPath: 'https://upload.wikimedia.org/wikipedia/commons',
+
     // MediaWiki config
     mwConfigBackup: [
         'thanks-confirmation-required',

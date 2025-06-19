@@ -17,7 +17,7 @@
     z-index: -1;
 }
 
-/******* EXTERNAL TOOLS *******/
+/******* TOOLS *******/
 
 .instantDiffs-dialog-tools {
     display: flex;
@@ -51,6 +51,11 @@
 
     #mw-fr-revisiontag-old {
         margin-bottom: 1em;
+    }
+
+    // /* Set a min height for the diff tools so they don't jump while loading */
+    .mw-diff-table-prefix {
+        min-height: 2rem;
     }
 
     // /* Reset styles for the rollback link */
