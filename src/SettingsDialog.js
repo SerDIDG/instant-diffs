@@ -93,7 +93,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
         // Render finish panel
         // Icon: [[:File:Eo circle light-green checkmark.svg]] by Emoji One contributors and [[User:IagoQns]]
-        const $finishContent = $( `\
+        const $finishContent = utils.getTemplate( `\
             <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Eo_circle_light-green_checkmark.svg" alt="${ utils.msg( 'settings-saved-icon' ) }">\
             <h5>${ utils.msg( 'settings-saved' ) }</h5>\
         ` );
