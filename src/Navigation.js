@@ -650,7 +650,7 @@ class Navigation {
         const label = hf(
             h( 'span.name', utils.msg( 'name' ) ),
             ht( ' ' ),
-            h( 'span.version', id.config.version ),
+            h( 'span.version', `v.${ id.config.version }` ),
         );
 
         options = {
