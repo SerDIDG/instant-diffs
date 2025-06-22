@@ -15,7 +15,7 @@
     ],
     "homepage": "https://www.mediawiki.org/wiki/Instant_Diffs",
     "bugs": {
-        "url": "https://www.mediawiki.org/wiki/Talk:Instant_Diffs"
+        "url": "https://github.com/SerDIDG/instant-diffs/issues"
     },
     "repository": {
         "type": "git",
