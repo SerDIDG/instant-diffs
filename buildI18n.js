@@ -99,7 +99,7 @@ fs.readdirSync( './i18n/' )
 
                 // The same with suspicious strings containing what seems like the "javascript:" prefix or
                 // one of the "on..." attributes.
-                let test = sanitized.replace( /&\w+;|\s+/g, '' );
+                const test = sanitized.replace( /&\w+;|\s+/g, '' );
                 if ( /javascript:/i.test( test ) || /\bon\w+\s*=/i.test( sanitized ) ) {
                     warning( `Suspicious code found in ${ keyword( filename ) } at the late stage: ${ keyword( sanitized ) }. The string has been removed altogether.` );
                     delete strings[ stringName ];
@@ -150,6 +150,6 @@ instantDiffs.i18n['${ lang }'] = ${ jsonText };
 
 const i18nListText = JSON.stringify( Object.keys( i18n ), null, '\t' ) + '\n';
 fs.mkdirSync( 'data', { recursive: true } );
-fs.writeFileSync( 'data/i18nList.json', i18nListText );
+fs.writeFileSync( 'dist/instantDiffs-i18n.json', i18nListText );
 
 console.log('Internationalization files have been built successfully.');

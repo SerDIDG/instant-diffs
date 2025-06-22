@@ -79,7 +79,7 @@ function processHistoryPage() {
 
         new HistoryCompareButton( {
             label: utils.msg( 'compare-label', id.config.labels.diff ),
-            title: utils.msg( 'compare-title', id.config.name ),
+            title: utils.msg( 'compare-title', utils.msg( 'script-name' ) ),
             classes: [ 'mw-ui-button', 'cdx-button', 'instantDiffs-button--compare' ],
             insertMethod: 'insertAfter',
             container: $button,

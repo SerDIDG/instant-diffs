@@ -648,7 +648,7 @@ class Navigation {
      */
     renderIDLink( options ) {
         const label = hf(
-            h( 'span.name', utils.msg( 'name' ) ),
+            h( 'span.name', utils.msg( 'script-name' ) ),
             ht( ' ' ),
             h( 'span.version', `v.${ id.config.version }` ),
         );
@@ -748,7 +748,7 @@ class Navigation {
 
     /**
      * Append a navigation bar to the specified node.
-     * @param {HTMLElement} container
+     * @param {Element} container
      * @param {string} [insertMethod]
      */
     embed( container, insertMethod ) {

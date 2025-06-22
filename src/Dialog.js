@@ -447,7 +447,7 @@ class Dialog {
 
     /**
      * Check if a node contains in the dialog.
-     * @param {HTMLElement} node
+     * @param {Element} node
      * @returns {boolean}
      */
     isParent( node ) {

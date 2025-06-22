@@ -2,7 +2,6 @@
  * Configuration.
  */
 export const config = {
-    name: 'Instant Diffs',
     version: '__version__',
     link: 'Instant_Diffs',
     discussion: 'Talk:Instant_Diffs',

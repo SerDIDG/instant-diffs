@@ -19,9 +19,9 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
 
         link.cd.button = link.renderAction( {
             label: utils.getLabel( 'page' ),
-            title: utils.msg( 'goto-cd' ),
+            title: utils.msg( 'comment-title' ),
             href: link.cd.href,
-            modifiers: [ 'page', 'message' ],
+            modifiers: [ 'page', 'comment' ],
         } );
     };
 

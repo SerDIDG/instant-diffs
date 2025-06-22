@@ -5,7 +5,8 @@
         ]
     },
 
-    "name": "Instant Diffs",
+    "script-name": "Instant Diffs",
+    "script-name-short": "ID",
 
     "diff-title": "Różnice między wersjami",
     "diff-title-hidden": "Różnice między wersjami są ukryte",
@@ -13,6 +14,8 @@
     "revision-title-hidden": "Zawartość wersji jest ukryta",
     "compare-label": "$1",
     "compare-title": "Porównaj wybrane wersje ($1)",
+    "page-title": "Przejdź do strony",
+    "comment-title": "Przejdź do wiadomości",
 
     "action-save": "Zapisz",
     "action-cancel": "Anuluj",
@@ -34,10 +37,10 @@
     "goto-prev-revision": "Poprzednia wersja",
     "goto-next-revision": "Następna wersja",
     "goto-back-revision": "Wstecz",
-    "goto-cd": "Przejdź do wiadomości",
     "goto-diff": "Przejdź do edycji",
     "goto-revision": "Przejdź do wersji",
     "goto-page": "Przejdź do strony",
+    "goto-comment": "Przejdź do wiadomości",
     "goto-history": "Wyświetl historię",
     "goto-talkpage": "Dyskusja",
     "goto-settings": "Ustawienia",
@@ -69,7 +72,7 @@
     "settings-show-diff-tools": "Pokaż dodatkowe narzędzia różnic, takie jak przełącznik formatu liniowego.",
     "settings-show-revision-info": "Pokaż informacje o zmianach podczas przeglądania wersji.",
     "settings-unhide-diffs": "Wyświetl ukrytą zawartość wersji i informacji o różnicach bez dodatkowych kroków.",
-    "settings-unhide-diffs-help": "Aby wyświetlić zawartość wersji, wymagane jest [[mw:Special:MyLanguage/Help:RevisionDelete|uprawnienie użytkownika]] „suppressrevision”.",
+    "settings-unhide-diffs-help": "Aby wyświetlić zawartość wersji, wymagane jest [[mw:Special:MyLanguage/Help:RevisionDelete|uprawnienie użytkownika]] „$1”.",
     "settings-open-in-new-tab": "Otwórz linki w oknie Instant Diffs w nowej karcie.",
     "settings-links-format": "Format linku do skopiowania",
     "settings-links-format-full": "Pełny adres URL z tytułem strony",

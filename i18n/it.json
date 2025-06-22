@@ -5,7 +5,8 @@
         ]
     },
 
-    "name": "Instant Diffs",
+    "script-name": "Instant Diffs",
+    "script-name-short": "ID",
 
     "diff-title": "Differenze tra le versioni",
     "diff-title-hidden": "La differenza tra le versioni è nascosta",
@@ -13,6 +14,8 @@
     "revision-title-hidden": "Il contenuto della versione è nascosto",
     "compare-label": "$1",
     "compare-title": "Confronta versioni selezionate ($1)",
+    "page-title": "Vai alla pagina",
+    "comment-title": "Vai al messaggio",
 
     "action-save": "Salva",
     "action-cancel": "Annulla",
@@ -34,10 +37,10 @@
     "goto-prev-revision": "Revisione precedente",
     "goto-next-revision": "Revisione successiva",
     "goto-back-revision": "Indietro",
-    "goto-cd": "Vai al messaggio",
     "goto-diff": "Vai alla modifica",
     "goto-revision": "Vai alla versione",
     "goto-page": "Vai alla pagina",
+    "goto-comment": "Vai al messaggio",
     "goto-history": "Cronologia",
     "goto-talkpage": "Discussione",
     "goto-settings": "Impostazioni",
@@ -69,7 +72,7 @@
     "settings-show-diff-tools": "Mostra strumenti aggiuntivi per le differenze, come l'interruttore del formato in linea.",
     "settings-show-revision-info": "Mostra le informazioni sulle modifiche durante la visualizzazione di una revisione.",
     "settings-unhide-diffs": "Mostra il contenuto delle revisioni nascoste e le informazioni sui diff senza passaggi aggiuntivi.",
-    "settings-unhide-diffs-help": "Per visualizzare il contenuto della revisione è necessario il [[mw:Special:MyLanguage/Help:RevisionDelete|diritto utente]] \"suppressrevision\".",
+    "settings-unhide-diffs-help": "Per visualizzare il contenuto della revisione è necessario il [[mw:Special:MyLanguage/Help:RevisionDelete|diritto utente]] \"$1\".",
     "settings-open-in-new-tab": "Apri i collegamenti all'interno di Instant Diffs in una nuova scheda.",
     "settings-links-format": "Formato del collegamento per l'azione di copia",
     "settings-links-format-full": "URL completo con titolo della pagina",

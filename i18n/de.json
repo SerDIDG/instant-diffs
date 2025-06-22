@@ -5,7 +5,8 @@
         ]
     },
     
-    "name": "Instant Diffs",
+    "script-name": "Instant Diffs",
+    "script-name-short": "ID",
 
     "diff-title": "Unterschied zwischen Versionen",
     "diff-title-hidden": "Unterschied zwischen Versionen ist ausgeblendet",
@@ -13,6 +14,8 @@
     "revision-title-hidden": "Versionsinhalt ist ausgeblendet",
     "compare-label": "$1",
     "compare-title": "Gewählte Versionen vergleichen ($1)",
+    "page-title": "Zur Seite springen",
+    "comment-title": "Zur Nachricht springen",
 
     "action-save": "Speichern",
     "action-cancel": "Abbrechen",
@@ -34,10 +37,10 @@
     "goto-prev-revision": "Ältere Version",
     "goto-next-revision": "Neuere Version",
     "goto-back-revision": "Zurück",
-    "goto-cd": "Zur Nachricht springen",
     "goto-diff": "Zur Bearbeitung springen",
     "goto-revision": "Zur Version springen",
     "goto-page": "Zur Seite springen",
+    "goto-comment": "Zur Nachricht springen",
     "goto-history": "Versionsgeschichte",
     "goto-talkpage": "Diskussion",
     "goto-settings": "Einstellungen",
@@ -69,7 +72,7 @@
     "settings-show-diff-tools": "Zusätzliche Unterschiede-Werkzeuge anzeigen, wie den Inline-Format-Umschalter.",
     "settings-show-revision-info": "Änderungsinformationen beim Anzeigen einer Version anzeigen.",
     "settings-unhide-diffs": "Verborgenen Versionsinhalt und Diff-Informationen ohne zusätzliche Schritte anzeigen.",
-    "settings-unhide-diffs-help": "Zum Anzeigen des Revisionsinhalts ist das [[mw:Special:MyLanguage/Help:RevisionDelete|Benutzerrecht]] „suppressrevision“ erforderlich.",
+    "settings-unhide-diffs-help": "Zum Anzeigen des Revisionsinhalts ist das [[mw:Special:MyLanguage/Help:RevisionDelete|Benutzerrecht]] „$1“ erforderlich.",
     "settings-open-in-new-tab": "Links im Instant-Diffs-Dialog in einem neuen Tab öffnen.",
     "settings-links-format": "Linkformat für die Kopieraktion",
     "settings-links-format-full": "Vollständige URL mit Seitentitel",

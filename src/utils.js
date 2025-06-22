@@ -85,7 +85,7 @@ export function log( type, message, data = [] ) {
     if ( !/\.$/.test( message ) ) {
         message = `${ message }.`;
     }
-    logger( `${ msg( 'name' ) }: ${ message }`, ...data );
+    logger( `${ msg( 'script-name' ) }: ${ message }`, ...data );
 }
 
 /**
@@ -261,7 +261,7 @@ export function notifyError( str, page, error, silent ) {
     if ( typeof mw !== 'undefined' && mw.notify ) {
         const content = h( 'div.instantDiffs-notification',
             h( 'div.instantDiffs-notification-label',
-                h( 'a', { href: getOrigin( `/wiki/${ id.config.link }` ), target: '_blank' }, msg( 'name' ) ),
+                h( 'a', { href: getOrigin( `/wiki/${ id.config.link }` ), target: '_blank' }, msg( 'script-name' ) ),
             ),
             ht( message ),
         );
@@ -695,7 +695,7 @@ export function restoreMWUserOptions( data ) {
 
 /**
  * Checks if a link matches a given selectors preset.
- * @param {HTMLElement} node
+ * @param {Element} node
  * @param {object} [preset]
  * @param {array} [preset.id]
  * @param {array} [preset.hasClass]

@@ -10,7 +10,7 @@ class Button {
     options = {};
 
     /**
-     * @type {HTMLElement}
+     * @type {Element}
      */
     node;
 
@@ -93,7 +93,7 @@ class Button {
 
     /**
      * Append a button to the specified node.
-     * @param {HTMLElement} container
+     * @param {Element} container
      * @param {string} [insertMethod]
      */
     embed( container, insertMethod ) {
@@ -117,7 +117,7 @@ class Button {
 
     /**
      * Get a button node.
-     * @returns {HTMLElement}
+     * @returns {Element}
      */
     getContainer() {
         return this.node;

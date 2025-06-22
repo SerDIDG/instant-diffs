@@ -232,7 +232,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.fields.unHideDiffs = new OO.ui.FieldLayout( this.inputs.unHideDiffs, {
             label: utils.msg( 'settings-unhide-diffs' ),
             align: 'inline',
-            help: utils.msgDom( 'settings-unhide-diffs-help' ),
+            help: utils.msgDom( 'settings-unhide-diffs-help', 'suppressrevision' ),
             helpInline: true,
         } );
         this.fields.unHideDiffs.toggle( id.settings.unHideDiffs );

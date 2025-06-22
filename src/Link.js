@@ -13,7 +13,7 @@ const { h, ht } = utils;
  */
 class Link {
     /**
-     * @type {HTMLLinkElement}
+     * @type {Element}
      */
     node;
 
@@ -75,7 +75,7 @@ class Link {
 
     /**
      * Create a link instance.
-     * @param {HTMLLinkElement} node a link node
+     * @param {Element} node a link node
      * @param {object} [options] configuration options
      */
     constructor( node, options ) {
@@ -582,6 +582,7 @@ class Link {
     renderPageAction() {
         this.page.button = this.renderAction( {
             label: utils.getLabel( 'page' ),
+            //title: utils.msg( 'page-title' ),
             title: this.page.titleTextSection || this.page.titleText,
             href: this.page.href,
             modifiers: [ 'page' ],
@@ -672,7 +673,7 @@ class Link {
 
     /**
      * Append a link's panel bar to the specified node.
-     * @param {HTMLElement} container
+     * @param {Element} container
      * @param {string} [insertMethod]
      */
     embed( container, insertMethod ) {
@@ -681,7 +682,7 @@ class Link {
 
     /**
      * Get a link's panel bar node.
-     * @returns {HTMLElement}
+     * @returns {Element}
      */
     getContainer() {
         return this.nodes.container;
@@ -689,7 +690,7 @@ class Link {
 
     /**
      * Get a link's node.
-     * @returns {HTMLLinkElement}
+     * @returns {Element}
      */
     getNode() {
         return this.node;

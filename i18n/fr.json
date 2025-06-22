@@ -5,7 +5,8 @@
         ]
     },
     
-    "name": "Instant Diffs",
+    "script-name": "Instant Diffs",
+    "script-name-short": "ID",
 
     "diff-title": "Différence entre les versions",
     "diff-title-hidden": "La différence entre les versions est masquée",
@@ -13,6 +14,8 @@
     "revision-title-hidden": "Le contenu de la version est masqué",
     "compare-label": "$1",
     "compare-title": "Comparer les versions sélectionnées ($1)",
+    "page-title": "Aller à la page",
+    "comment-title": "Aller au message",
 
     "action-save": "Enregistrer",
     "action-cancel": "Annuler",
@@ -34,10 +37,10 @@
     "goto-prev-revision": "Révision précédente",
     "goto-next-revision": "Révision suivante",
     "goto-back-revision": "Retour",
-    "goto-cd": "Aller au message",
     "goto-diff": "Aller à la modification",
     "goto-revision": "Aller à la version",
     "goto-page": "Aller à la page",
+    "goto-comment": "Aller au message",
     "goto-history": "Voir l’historique",
     "goto-talkpage": "Discussion",
     "goto-settings": "Paramètres",
@@ -69,7 +72,7 @@
     "settings-show-diff-tools": "Afficher des outils supplémentaires de comparaison, comme l’option de format en ligne.",
     "settings-show-revision-info": "Afficher les informations sur les modifications lors de la consultation d'une révision.",
     "settings-unhide-diffs": "Afficher le contenu caché des révisions et les informations de diff sans étapes supplémentaires.",
-    "settings-unhide-diffs-help": "Pour afficher le contenu de la révision, le [[mw:Special:MyLanguage/Help:RevisionDelete|droit utilisateur]] « suppressrevision » est requis.",
+    "settings-unhide-diffs-help": "Pour afficher le contenu de la révision, le [[mw:Special:MyLanguage/Help:RevisionDelete|droit utilisateur]] « $1 » est requis.",
     "settings-open-in-new-tab": "Ouvrir les liens du dialogue Instant Diffs dans un nouvel onglet.",
     "settings-links-format": "Format du lien pour l’action de copie",
     "settings-links-format-full": "URL complète avec le titre de la page",

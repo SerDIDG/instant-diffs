@@ -5,7 +5,8 @@
         ]
     },
 
-    "name": "Instant Diffs",
+    "script-name": "Instant Diffs",
+    "script-name-short": "ID",
 
     "diff-title": "Різниця версій",
     "diff-title-hidden": "Різниця версій прихована",
@@ -13,6 +14,8 @@
     "revision-title-hidden": "Вміст версії приховано",
     "compare-label": "$1",
     "compare-title": "Порівняти вибрані версії ($1)",
+    "page-title": "Перейти до сторінки",
+    "comment-title": "Перейти до повідомлення",
 
     "action-save": "Зберегти",
     "action-cancel": "Відмінити",
@@ -34,10 +37,10 @@
     "goto-prev-revision": "Попередня версія",
     "goto-next-revision": "Наступна версія",
     "goto-back-revision": "Повернутися",
-    "goto-cd": "Перейти до повідомлення",
     "goto-diff": "Перейти до редагування",
     "goto-revision": "Перейти до версії",
     "goto-page": "Перейти до сторінки",
+    "goto-comment": "Перейти до повідомлення",
     "goto-history": "Переглянути історію",
     "goto-talkpage": "Обговорення",
     "goto-settings": "Налаштування",
@@ -69,7 +72,7 @@
     "settings-show-diff-tools": "Показувати додаткові інструменти для перегляду змін, зокрема перемикач формату «Лінійно».",
     "settings-show-revision-info": "Показувати інформацію про зміни під час перегляду версії.",
     "settings-unhide-diffs": "Показувати вміст прихованих версій без додаткових дій.",
-    "settings-unhide-diffs-help": "Щоб переглянути вміст версії потрібне [[mw:Special:MyLanguage/Help:RevisionDelete|право користувача]] «suppressrevision».",
+    "settings-unhide-diffs-help": "Щоб переглянути вміст версії потрібне [[mw:Special:MyLanguage/Help:RevisionDelete|право користувача]] «$1».",
     "settings-open-in-new-tab": "Відкривати посилання у вікні Instant Diffs в новій вкладці.",
     "settings-links-format": "Формат посилань для копіювання",
     "settings-links-format-full": "Повне посилання з назвою сторінки",

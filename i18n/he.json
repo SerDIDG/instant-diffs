@@ -6,7 +6,8 @@
         ]
     },
 
-    "name": "Instant Diffs",
+    "script-name": "Instant Diffs",
+    "script-name-short": "ID",
 
     "diff-title": "השוואת הגרסאות",
     "diff-title-hidden": "השוואת הגרסאות הוסתרה",
@@ -14,6 +15,8 @@
     "revision-title-hidden": "תוכן הגרסה הוסתר",
     "compare-label": "$1",
     "compare-title": "השוואת הגרסאות שנבחרו ($1)",
+    "page-title": "מעבר לדף",
+    "comment-title": "מעבר להודעה",
 
     "action-save": "שמור",
     "action-cancel": "ביטול",
@@ -35,10 +38,10 @@
     "goto-prev-revision": "גרסה קודמת",
     "goto-next-revision": "גרסה חדשה יותר",
     "goto-back-revision": "חזרה",
-    "goto-cd": "מעבר להודעה",
     "goto-diff": "מעבר לעריכה",
     "goto-revision": "מעבר לגרסה",
     "goto-page": "מעבר לדף",
+    "goto-comment": "מעבר להודעה",
     "goto-history": "היסטוריית הגרסאות",
     "goto-talkpage": "דיון",
     "goto-settings": "הגדרות",
@@ -70,7 +73,7 @@
     "settings-show-diff-tools": "הצג כלים נוספים להשוואת גרסאות, כגון מתג תצוגת שורת קוד.",
     "settings-show-revision-info": "הצג מידע על השינויים בעת צפייה בגרסה.",
     "settings-unhide-diffs": "הצג תוכן גרסאות מוסתר ומידע על שינויים ללא שלבים נוספים.",
-    "settings-unhide-diffs-help": "כדי להציג את תוכן הגרסה נדרשת [[mw:Special:MyLanguage/Help:RevisionDelete|הרשאת משתמש]] בשם \"suppressrevision\".",
+    "settings-unhide-diffs-help": "כדי להציג את תוכן הגרסה נדרשת [[mw:Special:MyLanguage/Help:RevisionDelete|הרשאת משתמש]] בשם \"$1\".",
     "settings-open-in-new-tab": "פתח קישורים בחלון Instant Diffs בטאב חדש.",
     "settings-links-format": "פורמט קישור לפעולת העתקה",
     "settings-links-format-full": "קישור מלא עם כותרת העמוד",
