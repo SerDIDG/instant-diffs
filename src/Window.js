@@ -8,7 +8,7 @@ import Snapshot from './Snapshot';
 import './styles/window.less';
 
 /**
- * Class representing a Dialog container.
+ * Class representing a Window container.
  */
 class Window {
     /**

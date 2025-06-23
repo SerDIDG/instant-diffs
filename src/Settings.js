@@ -114,9 +114,6 @@ class Settings {
         this.isLoading = false;
         this.isDependenciesLoaded = true;
 
-        if ( !this.isConstructed ) {
-            this.construct();
-        }
         this.open();
     }
 
@@ -234,6 +231,10 @@ class Settings {
      */
     open() {
         if ( this.isOpen ) return;
+
+        if ( !this.isConstructed ) {
+            this.construct();
+        }
 
         this.windowInstance = this.manager.openWindow( this.dialog );
         this.windowInstance.opened.then( this.onOpen.bind( this ) );
