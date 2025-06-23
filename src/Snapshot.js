@@ -4,8 +4,8 @@ import * as utils from './utils';
 import Link from './Link';
 
 /**
- * Class meant to collect current links on the page to navigate between them in the Diff Dialog.
- * Should be constructed only when the Diff Dialog opens.
+ * Class meant to collect current links on the page to navigate between them in the Window dialog.
+ * Should be constructed only when the Window dialog opens.
  */
 class Snapshot {
     /**

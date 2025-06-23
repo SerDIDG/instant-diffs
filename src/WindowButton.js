@@ -1,14 +1,13 @@
-import id from './id';
 import * as utils from './utils';
 
 import Button from './Button';
-import Dialog from './Dialog';
+import Window from './Window';
 
 /**
- * Class representing a button that opens a diff dialog.
+ * Class representing a button that opens a Window dialog.
  * @augments {import('./Button').default}
  */
-class DialogButton extends Button {
+class WindowButton extends Button {
     /**
      * @type {object}
      */
@@ -27,7 +26,7 @@ class DialogButton extends Button {
     }
 
     /**
-     * Open the Diff Dialog.
+     * Open the Window dialog.
      */
     openDialog() {
         const options = {
@@ -35,21 +34,21 @@ class DialogButton extends Button {
             onClose: () => this.onDialogClose(),
         };
 
-        const dialog = Dialog.getInstance( this, options );
-        if ( !dialog ) return;
+        const window = Window.getInstance( this, options );
+        if ( !window ) return;
 
         this.pending( true );
-        $.when( dialog.load() )
+        $.when( window.load() )
             .always( () => this.pending( false ) );
     }
 
     /**
-     * Event that emits after the Diff Dialog opens.
+     * Event that emits after the Window dialog opens.
      */
     onDialogOpen() {}
 
     /**
-     * Event that emits after the Diff Dialog closes.
+     * Event that emits after the Window dialog closes.
      */
     onDialogClose() {}
 
@@ -66,4 +65,4 @@ class DialogButton extends Button {
     }
 }
 
-export default DialogButton;
+export default WindowButton;

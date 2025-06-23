@@ -705,7 +705,7 @@ class Navigation {
     }
 
     /**
-     * Action that opens the Settings Dialog.
+     * Action that opens the Settings dialog.
      */
     actionOpenSettings() {
         const options = {
@@ -713,16 +713,16 @@ class Navigation {
             onClose: this.onSettingsClose.bind( this ),
         };
 
-        const dialog = Settings.getInstance( options );
-        if ( !dialog ) return;
+        const settings = Settings.getInstance( options );
+        if ( !settings ) return;
 
         this.buttons.settingsHelper.pending( true );
-        $.when( dialog.load() )
+        $.when( settings.load() )
             .always( () => this.buttons.settingsHelper.pending( false ) );
     }
 
     /**
-     * Event that emits after the Settings Dialog opens.
+     * Event that emits after the Settings dialog opens.
      */
     onSettingsOpen() {
         // Hide menu dropdown
@@ -730,7 +730,7 @@ class Navigation {
     }
 
     /**
-     * Event that emits after the Settings Dialog closes.
+     * Event that emits after the Settings dialog closes.
      */
     onSettingsClose() {
         this.diff.focus();

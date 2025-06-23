@@ -71,7 +71,7 @@ class Settings {
     /******* DEPENDENCIES *******/
 
     /**
-     * Request a settings dialog dependencies.
+     * Request a Settings dialog dependencies.
      * @returns {Promise|boolean}
      */
     load() {
@@ -123,15 +123,15 @@ class Settings {
     /******* DIALOG *******/
 
     /**
-     * Import and construct an instance of the SettingsDialog.
+     * Import and construct an instance of the Settings dialog.
      */
     construct() {
         this.isConstructed = true;
 
-        // Import a SettingsDialog constructor
+        // Import the Settings dialog constructor
         const SettingsDialog = require( './SettingsDialog' ).default;
 
-        // Construct SettingsDialog and attach it to the Window Managers
+        // Construct the Settings dialog and attach it to the Window Managers
         this.dialog = new SettingsDialog( this );
         this.manager = utils.getWindowManager();
         this.manager.addWindows( [ this.dialog ] );
@@ -230,7 +230,7 @@ class Settings {
     /******* ACTIONS *******/
 
     /**
-     * Open the Settings Dialog.
+     * Open the Settings dialog.
      */
     open() {
         if ( this.isOpen ) return;
@@ -241,7 +241,7 @@ class Settings {
     }
 
     /**
-     * Event that emits after the Settings Dialog opens.
+     * Event that emits after the Settings dialog opens.
      */
     onOpen() {
         this.isOpen = true;
@@ -251,7 +251,7 @@ class Settings {
     }
 
     /**
-     * Event that emits after the Settings Dialog closes.
+     * Event that emits after the Settings dialog closes.
      */
     onClose() {
         this.isOpen = false;

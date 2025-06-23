@@ -1,15 +1,15 @@
 import id from './id';
 import * as utils from './utils';
 
-import DialogButton from './DialogButton';
+import WindowButton from './WindowButton';
 
 /**
- * Class representing a button that opens a diff dialog on the history page.
- * @augments {import('./DialogButton').default}
+ * Class representing a button that opens a Window dialog on the history page.
+ * @augments {import('./WindowButton').default}
  */
-class HistoryCompareButton extends DialogButton {
+class HistoryCompareButton extends WindowButton {
     /**
-     * Event that emits after the Diff Dialog opens.
+     * Event that emits after the Window dialog opens.
      */
     onDialogOpen() {
         if ( !utils.defaults( 'highlightLine' ) ) return;
@@ -18,7 +18,7 @@ class HistoryCompareButton extends DialogButton {
     }
 
     /**
-     * Event that emits after the Diff Dialog closes.
+     * Event that emits after the Window dialog closes.
      */
     onDialogClose() {
         if ( !utils.defaults( 'highlightLine' ) ) return;

@@ -1,5 +1,5 @@
 # Instant Diffs ![lic](https://img.shields.io/github/license/SerDIDG/instant-diffs)
-<img align="right" width="128" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Instant_Diffs_logo.svg/256px-Instant_Diffs_logo.svg.png" />
+<img align="right" width="128" alt="Logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Instant_Diffs_logo.svg/256px-Instant_Diffs_logo.svg.png" />
 
 **Instant Diffs** (**ID**) is a JavaScript tool that enhances [MediaWiki](https://www.mediawiki.org) diff links with interactive functionality — dynamically loaded content via [AJAX](https://en.wikipedia.org/wiki/Ajax_(programming)) technology in dialog windows, enables users to interact with diffs and revisions directly within the page, rather than being redirected to a separate page. These features are integrated not only into all core interface pages where revision diffs are linked but also into user-contributed content. The minimal required version of MediaWiki is [1.35](https://www.mediawiki.org/wiki/MediaWiki_1.35), but it is highly recommended to upgrade to at least [1.39](https://www.mediawiki.org/wiki/MediaWiki_1.39) LTS.
 

@@ -3,11 +3,11 @@ import * as utils from './utils';
 import DivLabelWidget from './DivLabelWidget';
 
 /**
- * Class representing a DiffDialog.
+ * Class representing a WindowDialog.
  * @augments OO.ui.MessageDialog
  */
-class DiffDialog extends OO.ui.MessageDialog {
-    static name = 'Instant Diffs Dialog';
+class WindowDialog extends OO.ui.MessageDialog {
+    static name = 'Instant Diffs Window';
     static size = 'instantDiffs';
     static actions = [
         {
@@ -17,20 +17,20 @@ class DiffDialog extends OO.ui.MessageDialog {
     ];
 
     /**
-     * @type {import('./Dialog').default}
+     * @type {import('./Window').default}
      */
-    dialog;
+    window;
 
     /**
-     * Create a DiffDialog instance.
-     * @param {import('./Dialog').default} dialog a Dialog instance
+     * Create a WindowDialog instance.
+     * @param {import('./Window').default} window a Window instance
      */
-    constructor( dialog ) {
+    constructor( window ) {
         super( {
-            classes: [ 'instantDiffs-dialog' ],
+            classes: [ 'instantDiffs-window' ],
         } );
 
-        this.dialog = dialog;
+        this.window = window;
     }
 
     initialize( ...args ) {
@@ -45,7 +45,7 @@ class DiffDialog extends OO.ui.MessageDialog {
         // Close the dialog when clicking outside of it
         this.$clickOverlay = $( '<div>' )
             .on( 'click', () => this.close() )
-            .addClass( 'instantDiffs-dialog-overlay' )
+            .addClass( 'instantDiffs-window-overlay' )
             .appendTo( this.$element );
 
         // Set a content scroll event
@@ -89,7 +89,7 @@ class DiffDialog extends OO.ui.MessageDialog {
     }
 
     onScroll( event ) {
-        this.dialog.onScroll( event );
+        this.window.onScroll( event );
     }
 
     getBodyHeight() {
@@ -101,6 +101,6 @@ class DiffDialog extends OO.ui.MessageDialog {
     }
 }
 
-utils.tweakUserOoUiClass( DiffDialog );
+utils.tweakUserOoUiClass( WindowDialog );
 
-export default DiffDialog;
+export default WindowDialog;

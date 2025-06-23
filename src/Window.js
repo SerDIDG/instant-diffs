@@ -5,14 +5,14 @@ import Link from './Link';
 import Diff from './Diff';
 import Snapshot from './Snapshot';
 
-import './styles/dialog.less';
+import './styles/window.less';
 
 /**
  * Class representing a Dialog container.
  */
-class Dialog {
+class Window {
     /**
-     * @type {import('./Link').default|import('./DialogButton').default}
+     * @type {import('./Link').default|import('./WindowButton').default}
      */
     link;
 
@@ -86,25 +86,25 @@ class Dialog {
     isLoading = false;
 
     /**
-     * Get or construct a Dialog instance.
-     * @param {import('./Link').default|import('./DialogButton').default} link a Link, or a DialogButton instance
+     * Get or construct a Window instance.
+     * @param {import('./Link').default|import('./WindowButton').default} link a Link instance, or a WindowButton instance
      * @param {object} [options] configuration options
-     * @returns {import('./Dialog').default|undefined}
+     * @returns {import('./Window').default|undefined}
      * @static
      */
     static getInstance( link, options ) {
-        if ( id.local.dialog && id.local.dialog.isLoading ) return;
-        if ( !id.local.dialog ) {
-            id.local.dialog = new Dialog( link, options );
+        if ( id.local.window && id.local.window.isLoading ) return;
+        if ( !id.local.window ) {
+            id.local.window = new Window( link, options );
         } else {
-            id.local.dialog.setup( link, options );
+            id.local.window.setup( link, options );
         }
-        return id.local.dialog;
+        return id.local.window;
     }
 
     /**
      * Create a Dialog.
-     * @param {import('./Link').default|import('./DialogButton').default} link a Link, or a DialogButton instance
+     * @param {import('./Link').default|import('./WindowButton').default} link a Link, or a WindowButton instance
      * @param {object} [options] configuration options
      */
     constructor( link, options ) {
@@ -113,7 +113,7 @@ class Dialog {
 
     /**
      * Setup configuration options.
-     * @param {import('./Link').default|import('./DialogButton').default} link a Link, or a DialogButton instance
+     * @param {import('./Link').default|import('./WindowButton').default} link a Link, or a WindowButton instance
      * @param {object} [options] configuration options
      */
     setup( link, options ) {
@@ -152,7 +152,7 @@ class Dialog {
     /******* DEPENDENCIES *******/
 
     /**
-     * Request a diff dialog dependencies.
+     * Request a Window dialog dependencies.
      * @returns {Promise|undefined}
      */
     load() {
@@ -175,7 +175,7 @@ class Dialog {
      * @returns {array}
      */
     getDependencies() {
-        return utils.getDependencies( [ ...id.config.dependencies.dialog, ...id.config.dependencies.content ] );
+        return utils.getDependencies( [ ...id.config.dependencies.window, ...id.config.dependencies.content ] );
     }
 
     /**
@@ -205,16 +205,16 @@ class Dialog {
     /******* DIALOG *******/
 
     /**
-     * Import and construct an instance of the DiffDialog.
+     * Import and construct an instance of the Window dialog.
      */
     construct() {
         this.isConstructed = true;
 
-        // Import a DiffDialog constructor
-        const DiffDialog = require( './DiffDialog' ).default;
+        // Import the Window dialog constructor
+        const WindowDialog = require( '././WindowDialog' ).default;
 
-        // Construct DiffDialog and attach it to the Window Managers
-        this.dialog = new DiffDialog( this );
+        // Construct the Window dialog and attach it to the Window Managers
+        this.dialog = new WindowDialog( this );
         this.manager = utils.getWindowManager();
         this.manager.addWindows( [ this.dialog ] );
     }
@@ -280,7 +280,7 @@ class Dialog {
     }
 
     /**
-     * Open the Diff Dialog.
+     * Open the Window dialog.
      */
     open() {
         const options = {
@@ -303,7 +303,7 @@ class Dialog {
     }
 
     /**
-     * Event that emits after the Diff Dialog opens.
+     * Event that emits after the Window dialog opens.
      */
     onOpen() {
         this.isOpen = true;
@@ -315,7 +315,7 @@ class Dialog {
     }
 
     /**
-     * Event that emits after the Diff Dialog closes.
+     * Event that emits after the Window dialog closes.
      */
     onClose() {
         this.isOpen = false;
@@ -352,7 +352,7 @@ class Dialog {
     }
 
     /**
-     * Event that emits after the Diff Dialog updates.
+     * Event that emits after the Window dialog updates.
      */
     onUpdate() {
         this.fire();
@@ -374,7 +374,7 @@ class Dialog {
     }
 
     /**
-     * Event that emits after the Diff Dialog scrolls.
+     * Event that emits after the Window dialog scrolls.
      */
     onScroll( event ) {
         // Update diff content positions and sizes
@@ -455,4 +455,4 @@ class Dialog {
     }
 }
 
-export default Dialog;
+export default Window;

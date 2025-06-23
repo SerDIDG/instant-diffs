@@ -276,8 +276,8 @@ export function getLabel( type ) {
     return typeof label === 'object' ? label[ document.dir ] : label;
 }
 
-export function getTarget( isInDialog ) {
-    return defaults( 'openInNewTab' ) && isInDialog ? '_blank' : '_self';
+export function getTarget( isInWindow ) {
+    return defaults( 'openInNewTab' ) && isInWindow ? '_blank' : '_self';
 }
 
 export function getParamFromUrl( param, href ) {

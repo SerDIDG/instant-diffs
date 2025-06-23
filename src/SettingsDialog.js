@@ -8,7 +8,7 @@ const { h } = utils;
  * @augments OO.ui.ProcessDialog
  */
 class SettingsDialog extends OO.ui.ProcessDialog {
-    static name = 'Instant Diffs Settings Dialog';
+    static name = 'Instant Diffs Settings';
     static title = utils.msg( 'settings-title' );
     static actions = [
         {
@@ -159,7 +159,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         } );
         this.fields.showPageLink.toggle( id.settings.showPageLink );
 
-        // Highlight list lines when Diff Dialog opens
+        // Highlight list lines when Window dialog opens
         this.inputs.highlightLine = new OO.ui.CheckboxInputWidget( {
             selected: utils.defaults( 'highlightLine' ),
         } );
@@ -169,7 +169,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         } );
         this.fields.highlightLine.toggle( id.settings.highlightLine );
 
-        // Mark watched lines when Diff Dialog opens
+        // Mark watched lines when Window dialog opens
         this.inputs.markWatchedLine = new OO.ui.CheckboxInputWidget( {
             selected: utils.defaults( 'markWatchedLine' ),
         } );

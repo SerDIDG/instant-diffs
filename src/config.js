@@ -21,7 +21,7 @@ export const config = {
             'mediawiki.notification',
             'mediawiki.Title',
         ],
-        dialog: [
+        window: [
             'oojs',
             'oojs-ui',
             'oojs-ui.styles.icons-movement',
@@ -296,7 +296,7 @@ export const local = {
     language: null,
     messages: {},
 
-    dialog: null,
+    window: null,
     settings: null,
     snapshot: null,
 

@@ -3,7 +3,6 @@ import * as utils from './utils';
 import * as diffUtils from './diffUtils';
 
 import Navigation from './Navigation';
-import { restoreVisualDiffs } from './diffUtils';
 
 /**
  * Class representing a Diff.
@@ -222,8 +221,8 @@ class Diff {
 
     render() {
         const classes = [
-            'instantDiffs-dialog-content',
-            `instantDiffs-dialog-content--${ this.page.type }`,
+            'instantDiffs-window-content',
+            `instantDiffs-window-content--${ this.page.type }`,
             'mw-body-content',
             `mw-content-${ document.dir }`,
         ];
@@ -237,11 +236,11 @@ class Diff {
             .addClass( classes );
 
         this.nodes.$tools = $( '<div>' )
-            .addClass( 'instantDiffs-dialog-tools' )
+            .addClass( 'instantDiffs-window-tools' )
             .appendTo( this.nodes.$container );
 
         this.nodes.$body = $( '<div>' )
-            .addClass( 'instantDiffs-dialog-body' )
+            .addClass( 'instantDiffs-window-body' )
             .appendTo( this.nodes.$container );
 
         if ( this.error ) {
