@@ -144,6 +144,9 @@ class Settings {
      * @returns {Promise|boolean}
      */
     request() {
+        // Guest settings can be stored only in the Local Storage
+        if ( id.local.mwIsAnon ) return $.Deferred().resolve();
+
         this.isLoading = true;
 
         const params = {
@@ -175,7 +178,9 @@ class Settings {
         utils.setDefaults( settings, true );
 
         // Guest settings can be stored only in the Local Storage
-        if ( id.local.mwIsAnon ) return true;
+        if ( id.local.mwIsAnon ) return $.Deferred().resolve();
+
+        this.isLoading = true;
 
         // Check if the Global Preferences extension is available
         const dependencies = utils.getDependencies( [ 'ext.GlobalPreferences.global' ] );
@@ -191,8 +196,6 @@ class Settings {
      * @returns {Promise}
      */
     saveLocal( settings ) {
-        this.isLoading = true;
-
         const params = [
             `${ id.config.settingsPrefix }-settings`,
             JSON.stringify( settings ),
@@ -207,8 +210,6 @@ class Settings {
      * @returns {Promise}
      */
     saveGlobal( settings ) {
-        this.isLoading = true;
-
         const params = {
             action: 'globalpreferences',
             optionname: `${ id.config.settingsPrefix }-settings`,

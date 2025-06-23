@@ -437,7 +437,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.pushPending();
 
         // Update input values
-        for ( const [ key, input ] of Object.entries( this.inputs ) ) {
+        for ( const input of Object.values( this.inputs ) ) {
             input.setDisabled( true );
         }
 
@@ -474,6 +474,10 @@ class SettingsDialog extends OO.ui.ProcessDialog {
      * @param {object} [data]
      */
     onActionRequestSuccess( data ) {
+        if ( id.local.mwIsAnon ) {
+            return this.update();
+        }
+
         // Render error if the userinfo request is completely failed
         const options = data?.query?.userinfo?.options;
         if ( !options ) {
