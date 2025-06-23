@@ -103,5 +103,5 @@
     "error-dependencies-generic": "Impossibile caricare le dipendenze: $4",
     "error-dependencies-page": "Impossibile caricare le dipendenze della pagina \"$3\": $4",
     "error-setting-request": "Impossibile caricare le opzioni utente: $4",
-    "error-setting-save": "Impossibile salvare le opzioni utente"
+    "error-setting-save": "Impossibile salvare le opzioni utente: $4"
 }

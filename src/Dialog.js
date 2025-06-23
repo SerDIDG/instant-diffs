@@ -8,7 +8,7 @@ import Snapshot from './Snapshot';
 import './styles/dialog.less';
 
 /**
- * Class representing a Dialog.
+ * Class representing a Dialog container.
  */
 class Dialog {
     /**
@@ -189,7 +189,7 @@ class Dialog {
             type: 'dependencies',
             message: error && error.message ? error.message : null,
         };
-        utils.notifyError( 'error-dependencies-generic', null, this.error );
+        utils.notifyError( 'error-dependencies-generic', this.error );
     };
 
     /**

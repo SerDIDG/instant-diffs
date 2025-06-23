@@ -103,5 +103,5 @@
     "error-dependencies-generic": "Nie udało się załadować zależności: $4",
     "error-dependencies-page": "Nie udało się załadować zależności strony „$3”: $4",
     "error-setting-request": "Nie udało się załadować ustawień użytkownika: $4",
-    "error-setting-save": "Nie udało się zapisać ustawień użytkownika"
+    "error-setting-save": "Nie udało się zapisać ustawień użytkownika: $4"
 }

@@ -4,7 +4,7 @@ import * as utils from './utils';
 import './styles/settings.less';
 
 /**
- * Class representing a Settings dialog.
+ * Class representing a Settings container.
  */
 class Settings {
     /**
@@ -72,13 +72,14 @@ class Settings {
 
     /**
      * Request a settings dialog dependencies.
-     * @returns {Promise|undefined}
+     * @returns {Promise|boolean}
      */
     load() {
-        if ( this.isLoading ) return;
+        if ( this.isLoading ) return false;
 
         if ( this.isDependenciesLoaded ) {
-            return this.request();
+            this.open();
+            return true;
         }
 
         this.isLoading = true;
@@ -96,11 +97,13 @@ class Settings {
     onLoadError( error ) {
         this.isLoading = false;
         this.isDependenciesLoaded = false;
+
         this.error = {
             type: 'dependencies',
             message: error?.message,
         };
-        utils.notifyError( 'error-dependencies-generic', null, this.error );
+
+        utils.notifyError( 'error-dependencies-generic', this.error );
     }
 
     /**
@@ -110,7 +113,11 @@ class Settings {
     onLoadSuccess() {
         this.isLoading = false;
         this.isDependenciesLoaded = true;
-        return this.request();
+
+        if ( !this.isConstructed ) {
+            this.construct();
+        }
+        this.open();
     }
 
     /******* DIALOG *******/
@@ -137,16 +144,7 @@ class Settings {
      * @returns {Promise|boolean}
      */
     request() {
-        if ( !this.isConstructed ) {
-            this.construct();
-        }
-        if ( id.local.mwIsAnon ) {
-            this.open();
-            return true;
-        }
-
         this.isLoading = true;
-        this.error = null;
 
         const params = {
             action: 'query',
@@ -158,50 +156,14 @@ class Settings {
         };
         return id.local.mwApi
             .post( params )
-            .then( this.onRequestSuccess.bind( this ) )
-            .fail( this.onRequestError.bind( this ) );
+            .always( this.onRequestResponse.bind( this ) );
     };
 
     /**
-     * Event that emits after user options request failed.
-     * @param {object} [error]
-     * @param {object} [data]
+     * Event that emits after user options request returned response.
      */
-    onRequestError( error, data ) {
+    onRequestResponse() {
         this.isLoading = false;
-
-        this.error = {
-            type: 'settings',
-            message: error,
-        };
-        if ( data?.error ) {
-            this.error.code = data.error.code;
-            this.error.message = data.error.info;
-        }
-        utils.notifyError( 'error-setting-request', null, this.error );
-
-        this.open();
-    }
-
-    /**
-     * Event that emits after user options request successive.
-     * @param {object} [data]
-     */
-    onRequestSuccess( data ) {
-        this.isLoading = false;
-
-        // Render error if the userinfo request is completely failed
-        const options = data?.query?.userinfo?.options;
-        if ( !options ) {
-            return this.onRequestError();
-        }
-
-        try {
-            const settings = JSON.parse( options[ `${ id.config.settingsPrefix }-settings` ] );
-            utils.setDefaults( settings, true );
-        } catch ( e ) {}
-
-        this.open();
     }
 
     /**
@@ -229,11 +191,15 @@ class Settings {
      * @returns {Promise}
      */
     saveLocal( settings ) {
+        this.isLoading = true;
+
         const params = [
             `${ id.config.settingsPrefix }-settings`,
             JSON.stringify( settings ),
         ];
-        return id.local.mwApi.saveOption.apply( id.local.mwApi, params );
+
+        return id.local.mwApi.saveOption.apply( id.local.mwApi, params )
+            .always( this.onSaveResponse.bind( this ) );
     }
 
     /**
@@ -241,12 +207,23 @@ class Settings {
      * @returns {Promise}
      */
     saveGlobal( settings ) {
+        this.isLoading = true;
+
         const params = {
             action: 'globalpreferences',
             optionname: `${ id.config.settingsPrefix }-settings`,
             optionvalue: JSON.stringify( settings ),
         };
-        return id.local.mwApi.postWithEditToken( params );
+
+        return id.local.mwApi.postWithEditToken( params )
+            .always( this.onSaveResponse.bind( this ) );
+    }
+
+    /**
+     * Event that emits after save request returned response.
+     */
+    onSaveResponse() {
+        this.isLoading = false;
     }
 
     /******* ACTIONS *******/
@@ -256,8 +233,6 @@ class Settings {
      */
     open() {
         if ( this.isOpen ) return;
-
-        this.dialog.update();
 
         this.windowInstance = this.manager.openWindow( this.dialog );
         this.windowInstance.opened.then( this.onOpen.bind( this ) );

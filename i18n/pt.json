@@ -103,5 +103,5 @@
     "error-dependencies-generic": "Falha ao carregar dependências: $4",
     "error-dependencies-page": "Falha ao carregar dependências da página \"$3\": $4",
     "error-setting-request": "Falha ao carregar as opções do usuário: $4",
-    "error-setting-save": "Falha ao salvar as opções do usuário"
+    "error-setting-save": "Falha ao salvar as opções do usuário: $4"
 }

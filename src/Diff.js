@@ -132,7 +132,7 @@ class Diff {
         } else {
             params.message = error;
         }
-        utils.notifyError( 'error-dependencies-page', this.page, params, true );
+        utils.notifyError( 'error-dependencies-page', params, this.page, true );
     }
 
     onRequestPageDependenciesDone( data ) {
@@ -198,7 +198,7 @@ class Diff {
             this.error.code = data.error.code;
             this.error.message = data.error.info;
         }
-        utils.notifyError( `error-${ this.error.type }-${ this.error.code }`, this.page, this.error );
+        utils.notifyError( `error-${ this.error.type }-${ this.error.code }`, this.error, this.page );
 
         this.render();
         mw.hook( `${ id.config.prefix }.diff.renderError` ).fire( this );

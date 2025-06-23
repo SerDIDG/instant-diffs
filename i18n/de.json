@@ -103,5 +103,5 @@
     "error-dependencies-generic": "Abhängigkeiten konnten nicht geladen werden: $4",
     "error-dependencies-page": "Seitendependenzen konnten nicht geladen werden „$3“: $4",
     "error-setting-request": "Benutzereinstellungen konnten nicht geladen werden: $4",
-    "error-setting-save": "Benutzereinstellungen konnten nicht gespeichert werden"
+    "error-setting-save": "Benutzereinstellungen konnten nicht gespeichert werden: $4"
 }

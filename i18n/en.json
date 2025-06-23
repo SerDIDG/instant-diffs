@@ -103,5 +103,5 @@
     "error-dependencies-generic": "Failed to load dependencies: $4",
     "error-dependencies-page": "Failed to load page dependencies \"$3\": $4",
     "error-setting-request": "Failed to load user options: $4",
-    "error-setting-save": "Failed to save user options"
+    "error-setting-save": "Failed to save user options: $4"
 }

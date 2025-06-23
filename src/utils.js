@@ -176,17 +176,7 @@ export function msgParse() {
 }
 
 export function msgDom() {
-    const dom = mw.message.apply( mw.message, getMsgParams( arguments ) ).parseDom();
-    dom.each( ( i, node ) => {
-        if ( node.tagName !== 'A' ) return;
-
-        const href = node.getAttribute( 'href' );
-        if ( isEmpty( href ) || !/^\/(wiki|w)\//.test( href ) ) return;
-
-        const url = new URL( href, id.config.origin );
-        node.setAttribute( 'href', url.toString() );
-    } );
-    return dom;
+    return mw.message.apply( mw.message, getMsgParams( arguments ) ).parseDom();
 }
 
 export function isMessageExists( str ) {
@@ -230,7 +220,7 @@ export function getMsgParams( params ) {
     return params;
 }
 
-export function getErrorMessage( str, page, error ) {
+export function getErrorMessage( str, error, page ) {
     str = isMessageExists( str ) ? str : 'error-generic';
     page = $.extend( {}, page );
     error = $.extend( {}, error );
@@ -243,8 +233,8 @@ export function getErrorMessage( str, page, error ) {
     );
 }
 
-export function notifyError( str, page, error, silent ) {
-    silent = !isBoolean( silent ) ? !defaults( 'notifyErrors' ) : silent;
+export function notifyError( str, error, page, silent ) {
+    silent = isBoolean( silent ) ? silent : !defaults( 'notifyErrors' );
 
     // Silent all errors if a document is hidden or in the process of unloading
     if ( id.isUnloading ) return;
@@ -252,7 +242,7 @@ export function notifyError( str, page, error, silent ) {
         silent = true;
     }
 
-    const message = getErrorMessage( str, page, error );
+    const message = getErrorMessage( str, error, page );
     if ( silent ) {
         log( 'warn', message, [ page, error ] );
         return;

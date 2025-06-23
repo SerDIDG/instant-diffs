@@ -73,43 +73,16 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     initialize( ...args ) {
         super.initialize( ...args );
 
-        // Apply polyfills for older wikis
-        utils.applyOoUiPolyfill();
-
-        // Render fieldsets
-        this.renderLinksFieldset();
-        this.renderDialogFieldset();
-        this.renderGeneralFieldset();
-
-        // Combine fieldsets into the panel
-        this.panelEdit = new OO.ui.PanelLayout( {
-            classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--edit' ],
-            padded: true,
-            expanded: false,
-        } );
-        this.panelEdit.$element.append(
-            this.layouts.links.$element,
-            this.layouts.dialog.$element,
-            this.layouts.general.$element,
-        );
-
-        // Render finish panel
-        // Icon: [[:File:Eo circle light-green checkmark.svg]] by Emoji One contributors and [[User:IagoQns]]
-        const finishContent = utils.renderSuccessBox( {
-            content: utils.msg( 'settings-saved' ),
-            image: '/6/6f/Eo_circle_light-green_checkmark.svg',
-            alt: utils.msg( 'settings-saved-icon' ),
-        } );
-        this.panelFinish = new OO.ui.PanelLayout( {
-            classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--finish' ],
-            padded: true,
-            expanded: false,
-        } );
-        this.panelFinish.$element.append( finishContent );
+        // Render panels
+        this.panelEdit = this.renderEditPanel();
+        this.panelFinish = this.renderFinishPanel();
 
         // Render switchable layout
         this.stackLayout = new OO.ui.StackLayout( {
-            items: [ this.panelEdit, this.panelFinish ],
+            items: [
+                this.panelEdit,
+                this.panelFinish,
+            ],
         } );
 
         // Process links target
@@ -119,24 +92,44 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.$body.append( this.stackLayout.$element );
     };
 
-    getSetupProcess( ...args ) {
-        return super.getSetupProcess( ...args )
-            .next( () => this.actions.setMode( 'edit' ) );
-    };
+    /******* PANELS ******/
 
-    getActionProcess( action ) {
-        if ( action === 'save' ) {
-            return new OO.ui.Process( () => this.processActionSave() );
-        }
-        if ( action === 'reload' ) {
-            return new OO.ui.Process( () => this.processActionReload() );
-        }
-        return super.getActionProcess( action );
+    renderEditPanel() {
+        // Apply polyfills for older wikis
+        utils.applyOoUiPolyfill();
+
+        // Render fieldsets
+        this.renderLinksFieldset();
+        this.renderDialogFieldset();
+        this.renderGeneralFieldset();
+
+        // Combine fieldsets into the panel
+        return new OO.ui.PanelLayout( {
+            classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--edit' ],
+            padded: true,
+            expanded: false,
+            $content: [
+                this.layouts.links.$element,
+                this.layouts.dialog.$element,
+                this.layouts.general.$element,
+            ],
+        } );
     }
 
-    processLinksAttr( $container ) {
-        const $links = $container.find( 'a:not(.jquery-confirmable-element)' );
-        $links.each( ( i, node ) => node.setAttribute( 'target', '_blank' ) );
+    renderFinishPanel() {
+        // Icon: [[:File:Eo circle light-green checkmark.svg]] by Emoji One contributors and [[User:IagoQns]]
+        const content = utils.renderSuccessBox( {
+            content: utils.msg( 'settings-saved' ),
+            image: '/6/6f/Eo_circle_light-green_checkmark.svg',
+            alt: utils.msg( 'settings-saved-icon' ),
+        } );
+
+        return new OO.ui.PanelLayout( {
+            classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--finish' ],
+            padded: true,
+            expanded: false,
+            $content: content,
+        } );
     }
 
     /******* FIELDS ******/
@@ -408,6 +401,127 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         );
     };
 
+    /******* SETUP PROCESS *******/
+
+    getSetupProcess( data ) {
+        return super.getSetupProcess( data ).next( () => {
+            this.actions.setMode( 'edit' );
+            this.stackLayout.setItem( this.panelEdit );
+            this.processActionRequest();
+        } );
+    };
+
+    getActionProcess( action ) {
+        if ( action === 'save' ) {
+            return new OO.ui.Process( () => this.processActionSave() );
+        }
+        if ( action === 'reload' ) {
+            return new OO.ui.Process( () => this.processActionReload() );
+        }
+        return super.getActionProcess( action );
+    }
+
+    processLinksAttr( $container ) {
+        const $links = $container.find( 'a:not(.jquery-confirmable-element)' );
+        $links.each( ( i, node ) => node.setAttribute( 'target', '_blank' ) );
+    }
+
+    getBodyHeight() {
+        return 520;
+    }
+
+    /******* REQUEST PROCESS ******/
+
+    processActionRequest() {
+        // Show pending loader in the header
+        this.pushPending();
+
+        // Update input values
+        for ( const [ key, input ] of Object.entries( this.inputs ) ) {
+            input.setDisabled( true );
+        }
+
+        this.settings.request()
+            .then( this.onActionRequestSuccess.bind( this ) )
+            .fail( this.onActionRequestError.bind( this ) )
+            .always( () => this.popPending() );
+    }
+
+    /**
+     * Event that emits after user options request failed.
+     * @param {object} [error]
+     * @param {object} [data]
+     */
+    onActionRequestError( error, data ) {
+        const params = {
+            type: 'settings',
+            message: error,
+        };
+        if ( data?.error ) {
+            params.code = data.error.code;
+            params.message = data.error.info;
+        }
+
+        const errorMessage = new OO.ui.Error(
+            utils.getErrorMessage( 'error-setting-request', params ),
+            { recoverable: true },
+        );
+        this.showErrors( errorMessage );
+    }
+
+    /**
+     * Event that emits after user options request successive.
+     * @param {object} [data]
+     */
+    onActionRequestSuccess( data ) {
+        // Render error if the userinfo request is completely failed
+        const options = data?.query?.userinfo?.options;
+        if ( !options ) {
+            return this.onActionRequestError( null, data );
+        }
+
+        try {
+            const settings = JSON.parse( options[ `${ id.config.settingsPrefix }-settings` ] );
+            utils.setDefaults( settings, true );
+        } catch ( e ) {}
+
+        this.update();
+    }
+
+    /******* UPDATE PROCESS *******/
+
+    update() {
+        return this.getUpdateProcess().execute();
+    }
+
+    getUpdateProcess() {
+        return new OO.ui.Process( () => {
+            this.actions.setMode( 'edit' );
+            this.stackLayout.setItem( this.panelEdit );
+            this.processActionUpdate( utils.defaults() );
+        } );
+    }
+
+    processActionUpdate( settings ) {
+        // Hide pending loader in the header
+        this.popPending();
+
+        // Update input values
+        for ( const [ key, input ] of Object.entries( this.inputs ) ) {
+            input.setDisabled( false );
+
+            const setting = settings[ key ];
+            if ( typeof setting === 'undefined' ) return;
+
+            if ( input instanceof OO.ui.CheckboxInputWidget ) {
+                input.setSelected( setting );
+            }
+            if ( input instanceof OO.ui.RadioSelectWidget ) {
+                input.selectItemByData( setting );
+            }
+        }
+    }
+
     /******* SAVE PROCESS ******/
 
     processActionSave() {
@@ -424,61 +538,47 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             }
         }
 
-        return $.when( this.settings.save( settings ) )
-            .always( () => this.popPending() )
-            .done( () => this.onSaveActionSuccess() )
-            .fail( () => this.onSaveActionError() );
+        this.settings.save( settings )
+            .then( this.onActionSaveSuccess.bind( this ) )
+            .fail( this.onActionSaveError.bind( this ) )
+            .always( () => this.popPending() );
     }
 
-    onSaveActionSuccess() {
+    /**
+     * Event that emits after save request failed.
+     * @param {object} [error]
+     * @param {object} [data]
+     */
+    onActionSaveError( error, data ) {
+        const params = {
+            type: 'settings',
+            message: error,
+        };
+        if ( data?.error ) {
+            params.code = data.error.code;
+            params.message = data.error.info;
+        }
+
+        const errorMessage = new OO.ui.Error(
+            utils.getErrorMessage( 'error-setting-save', params ),
+            { recoverable: true },
+        );
+        this.showErrors( errorMessage );
+    }
+
+    /**
+     * Event that emits after save request successive.
+     */
+    onActionSaveSuccess() {
         this.actions.setMode( 'finish' );
         this.stackLayout.setItem( this.panelFinish );
     }
 
-    onSaveActionError() {
-        const error = new OO.ui.Error( utils.msg( 'error-setting-save' ) );
-        this.showErrors( error );
-    }
-
-    /******* UPDATE PROCESS *******/
-
-    update( data ) {
-        return this.getUpdateProcess( data ).execute();
-    }
-
-    getUpdateProcess() {
-        return new OO.ui.Process()
-            .next( () => {
-                this.actions.setMode( 'edit' );
-                this.stackLayout.setItem( this.panelEdit );
-                this.processActionUpdate( utils.defaults() );
-            }, this );
-    }
-
-    processActionUpdate( settings ) {
-        // Update input values
-        for ( const [ key, input ] of Object.entries( this.inputs ) ) {
-            const setting = settings[ key ];
-            if ( typeof setting === 'undefined' ) return;
-
-            if ( input instanceof OO.ui.CheckboxInputWidget ) {
-                input.setSelected( setting );
-            }
-            if ( input instanceof OO.ui.RadioSelectWidget ) {
-                input.selectItemByData( setting );
-            }
-        }
-    }
-
-    /******* ACTIONS *******/
+    /******* RELOAD PROCESS *******/
 
     processActionReload() {
         this.pushPending();
         window.location.reload();
-    }
-
-    getBodyHeight() {
-        return 520;
     }
 }
 

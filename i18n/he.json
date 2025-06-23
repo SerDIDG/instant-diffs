@@ -104,5 +104,5 @@
     "error-dependencies-generic": "נכשלה הטענת התלויות: $4",
     "error-dependencies-page": "נכשלה הטענת התלויות הדף \"$3\": $4",
     "error-setting-request": "טעינת ההגדרות נכשלה: $4",
-    "error-setting-save": "שמירת ההגדרות נכשלה"
+    "error-setting-save": "שמירת ההגדרות נכשלה: $4"
 }

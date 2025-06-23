@@ -102,6 +102,6 @@
     "error-diff-nosuchrevid": "Text added to the error messages {{msg-wm|Instant-diffs-error-diff-generic}}.",
     "error-dependencies-generic": "Generic error message.\n\n* $1: oldid.\n* $4: error info text.",
     "error-dependencies-page": "Generic error message.\n\n* $3: page name.\n* $4: error info text.",
-    "error-setting-request": "Text of an error notification. Used as an error message in the Settings dialog.\n\n* $1: oldid.\n* $4: error info text.",
-    "error-setting-save": "Text of an error notification. Used as an error message in the Settings dialog."
+    "error-setting-request": "Text of an error notification. Used as an error message in the Settings dialog.\n\n* $4: error info text.",
+    "error-setting-save": "Text of an error notification. Used as an error message in the Settings dialog.\n\n* $4: error info text."
 }

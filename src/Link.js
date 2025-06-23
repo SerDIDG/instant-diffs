@@ -316,7 +316,7 @@ class Link {
             this.error.message = data.error.info;
         } else {
             this.error.message = error;
-            utils.notifyError( `error-revision-${ this.error.code }`, this.page, this.error, true );
+            utils.notifyError( `error-revision-${ this.error.code }`, this.error, this.page, true );
         }
 
         this.renderError();
@@ -401,7 +401,7 @@ class Link {
             this.error.message = data.error.info;
         } else {
             this.error.message = error;
-            utils.notifyError( 'error-diff-generic', this.page, this.error, true );
+            utils.notifyError( 'error-diff-generic', this.error, this.page, true );
         }
 
         this.renderError();
@@ -464,7 +464,7 @@ class Link {
 
             this.nodes.error = h( 'span', {
                     class: [ 'item', 'error', 'error-info' ],
-                    title: utils.getErrorMessage( messageName, this.page, this.error ),
+                    title: utils.getErrorMessage( messageName, this.error, this.page ),
                 },
                 ht( utils.getLabel( 'error' ) ),
             );
