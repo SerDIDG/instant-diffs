@@ -58,6 +58,17 @@
         min-height: 2rem;
     }
 
+    // /* Fix overflow */
+    .mw-diffPage-inlineToggle-container {
+        .oo-ui-fieldLayout {
+            > .oo-ui-fieldLayout-body {
+                > .oo-ui-fieldLayout-field {
+                    width: auto;
+                }
+            }
+        }
+    }
+
     // /* Reset styles for the rollback link */
     table.diff {
         .mw-rollback-link {
