@@ -249,7 +249,7 @@ function app() {
         utils.notifyError( 'error-prepare-version', {
             type: 'version',
             message: `loaded: ${ id.config.version }, concurrent: ${ config.version }`,
-        }, true );
+        }, null, true );
         return;
     }
 
@@ -297,7 +297,7 @@ function ready() {
 
     // Check if the script is enabled on the mobile skin (Minerva)
     if ( mw.config.get( 'skin' ) === 'minerva' && !utils.defaults( 'enableMobile' ) ) {
-        utils.notifyError( 'error-prepare-mobile', { type: 'mobile' }, true );
+        utils.notifyError( 'error-prepare-mobile', { type: 'mobile' }, null, true );
         return;
     }
 
