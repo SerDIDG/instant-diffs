@@ -3,7 +3,7 @@ import * as utils from './utils';
 
 import Button from './Button';
 import Link from './Link';
-import Settings from './Settings';
+import settings from './Settings';
 
 import './styles/navigation.less';
 
@@ -712,9 +712,7 @@ class Navigation {
             onOpen: this.onSettingsOpen.bind( this ),
             onClose: this.onSettingsClose.bind( this ),
         };
-
-        const settings = Settings.getInstance( options );
-        if ( !settings ) return;
+        settings.setup( options );
 
         this.buttons.settingsHelper.pending( true );
         $.when( settings.load() )

@@ -13,6 +13,11 @@ class Settings {
     options = {};
 
     /**
+     * @type {Promise}
+     */
+    loadPromise;
+
+    /**
      * @type {boolean}
      */
     isDependenciesLoaded = false;
@@ -33,28 +38,14 @@ class Settings {
     isLoading = false;
 
     /**
-     * Get or construct a Settings dialog instance.
-     * @param {object} [options] configuration options
-     * @returns {import('./Settings').default|undefined}
-     * @static
+     * @type {boolean}
      */
-    static getInstance( options ) {
-        if ( id.local.settings && id.local.settings.isLoading ) return;
-        if ( !id.local.settings ) {
-            id.local.settings = new Settings( options );
-        } else {
-            id.local.settings.setup( options );
-        }
-        return id.local.settings;
-    }
+    isRequesting = false;
 
     /**
-     * Create a Settings dialog.
-     * @param {object} [options] configuration options
+     * @type {boolean}
      */
-    constructor( options ) {
-        this.setup.apply( this, arguments );
-    }
+    isSaving = false;
 
     /**
      * Setup configuration options.
@@ -75,7 +66,7 @@ class Settings {
      * @returns {Promise|boolean}
      */
     load() {
-        if ( this.isLoading ) return false;
+        if ( this.isLoading ) return this.loadPromise;
 
         if ( this.isDependenciesLoaded ) {
             this.open();
@@ -85,9 +76,11 @@ class Settings {
         this.isLoading = true;
         this.error = null;
 
-        return $.when( mw.loader.using( utils.getDependencies( id.config.dependencies.settings ) ) )
+        this.loadPromise = $.when( mw.loader.using( utils.getDependencies( id.config.dependencies.settings ) ) )
             .then( this.onLoadSuccess.bind( this ) )
             .fail( this.onLoadError.bind( this ) );
+
+        return this.loadPromise;
     }
 
     /**
@@ -134,6 +127,41 @@ class Settings {
         this.manager.addWindows( [ this.dialog ] );
     };
 
+    /**
+     * Open the Settings dialog.
+     */
+    open() {
+        if ( this.isOpen ) return;
+
+        if ( !this.isConstructed ) {
+            this.construct();
+        }
+
+        this.windowInstance = this.manager.openWindow( this.dialog );
+        this.windowInstance.opened.then( this.onOpen.bind( this ) );
+        this.windowInstance.closed.then( this.onClose.bind( this ) );
+    }
+
+    /**
+     * Event that emits after the Settings dialog opens.
+     */
+    onOpen() {
+        this.isOpen = true;
+        if ( utils.isFunction( this.options.onOpen ) ) {
+            this.options.onOpen( this );
+        }
+    }
+
+    /**
+     * Event that emits after the Settings dialog closes.
+     */
+    onClose() {
+        this.isOpen = false;
+        if ( utils.isFunction( this.options.onClose ) ) {
+            this.options.onClose( this );
+        }
+    }
+
     /******* USER OPTIONS *******/
 
     /**
@@ -144,7 +172,7 @@ class Settings {
         // Guest settings can be stored only in the Local Storage
         if ( id.local.mwIsAnon ) return $.Deferred().resolve();
 
-        this.isLoading = true;
+        this.isRequesting = true;
 
         const params = {
             action: 'query',
@@ -163,7 +191,7 @@ class Settings {
      * Event that emits after user options request returned response.
      */
     onRequestResponse() {
-        this.isLoading = false;
+        this.isRequesting = false;
     }
 
     /**
@@ -177,7 +205,7 @@ class Settings {
         // Guest settings can be stored only in the Local Storage
         if ( id.local.mwIsAnon ) return $.Deferred().resolve();
 
-        this.isLoading = true;
+        this.isSaving = true;
 
         // Check if the Global Preferences extension is available
         const dependencies = utils.getDependencies( [ 'ext.GlobalPreferences.global' ] );
@@ -221,45 +249,8 @@ class Settings {
      * Event that emits after save request returned response.
      */
     onSaveResponse() {
-        this.isLoading = false;
-    }
-
-    /******* ACTIONS *******/
-
-    /**
-     * Open the Settings dialog.
-     */
-    open() {
-        if ( this.isOpen ) return;
-
-        if ( !this.isConstructed ) {
-            this.construct();
-        }
-
-        this.windowInstance = this.manager.openWindow( this.dialog );
-        this.windowInstance.opened.then( this.onOpen.bind( this ) );
-        this.windowInstance.closed.then( this.onClose.bind( this ) );
-    }
-
-    /**
-     * Event that emits after the Settings dialog opens.
-     */
-    onOpen() {
-        this.isOpen = true;
-        if ( utils.isFunction( this.options.onOpen ) ) {
-            this.options.onOpen( this );
-        }
-    }
-
-    /**
-     * Event that emits after the Settings dialog closes.
-     */
-    onClose() {
-        this.isOpen = false;
-        if ( utils.isFunction( this.options.onClose ) ) {
-            this.options.onClose( this );
-        }
+        this.isSaving = false;
     }
 }
 
-export default Settings;
+export default new Settings();
