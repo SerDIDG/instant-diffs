@@ -436,7 +436,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             input.setDisabled( true );
         }
 
-       settings.request()
+        settings.request()
             .then( this.onActionRequestSuccess.bind( this ) )
             .fail( this.onActionRequestError.bind( this ) )
             .always( () => this.popPending() );

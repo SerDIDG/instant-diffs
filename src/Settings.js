@@ -139,7 +139,7 @@ class Settings {
      */
     onOpen() {
         this.isOpen = true;
-        this.emit('opened');
+        this.emit( 'opened' );
     }
 
     /**
@@ -147,7 +147,7 @@ class Settings {
      */
     onClose() {
         this.isOpen = false;
-        this.emit('closed');
+        this.emit( 'closed' );
     }
 
     /******* USER OPTIONS *******/
