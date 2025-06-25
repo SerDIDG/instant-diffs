@@ -236,7 +236,7 @@ class View {
         }
 
         // Show progress bar in the dialog
-        this.dialog.toggleProgressBar( true );
+        this.dialog.toggleProgress( true );
 
         // Construct the Diff instance
         this.request();
@@ -258,7 +258,6 @@ class View {
      */
     onClose() {
         this.isOpen = false;
-        this.isRequesting = false;
 
         if ( this.diff ) {
             this.diff.detach();
@@ -381,7 +380,10 @@ class View {
     onRequestSuccess() {
         this.isRequesting = false;
 
-        // Embed the Diff content
+        // The Diff can be detached from the DOM once the dialog closes
+        if ( !this.diff ) return;
+
+        // Embed the Diff's content to the dialog
         const options = {
             title: this.diff.getPageTitleText(),
             message: this.diff.getContainer(),

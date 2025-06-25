@@ -2,6 +2,7 @@ import * as utils from './utils';
 import { tweakUserOoUiClass } from './utils-oojs';
 
 import DivLabelWidget from './DivLabelWidget';
+import ViewProgressBar from './ViewProgrssBar';
 import view from './View';
 
 /**
@@ -17,16 +18,6 @@ class ViewDialog extends OO.ui.MessageDialog {
             label: utils.msg( 'action-close' ),
         },
     ];
-
-    /**
-     * @type {number}
-     */
-    progressBarDelay;
-
-    /**
-     * @type {number}
-     */
-    progressBarTime;
 
     /**
      * Create a ViewDialog instance.
@@ -53,11 +44,7 @@ class ViewDialog extends OO.ui.MessageDialog {
             .appendTo( this.$element );
 
         // Render progress bar loader
-        this.progressBar = new OO.ui.ProgressBarWidget( {
-            classes: [ 'instantDiffs-view-loader', 'is-transparent' ],
-            progress: false,
-            inline: true,
-        } );
+        this.progressBar = new ViewProgressBar();
         this.$content.prepend( this.progressBar.$element );
 
         // Set a content scroll event
@@ -91,7 +78,7 @@ class ViewDialog extends OO.ui.MessageDialog {
         return new OO.ui.Process()
             .next( () => {
                 // Hide progress bar
-                this.toggleProgressBar( false );
+                this.toggleProgress( false );
 
                 // Set content
                 this.title.setLabel(
@@ -118,7 +105,7 @@ class ViewDialog extends OO.ui.MessageDialog {
         return super.getTeardownProcess( data )
             .next( () => {
                 // Hide progress bar
-                this.toggleProgressBar( false );
+                this.toggleProgress( false );
             } );
     }
 
@@ -134,36 +121,8 @@ class ViewDialog extends OO.ui.MessageDialog {
         this.message.$element.toggleClass( 'is-transparent', !value );
     }
 
-    toggleProgressBar( value, instant ) {
-        this.progressBarDelay && clearTimeout( this.progressBarDelay );
-
-        if ( instant ) {
-            this.progressBar.toggle( value );
-            utils.onSchedule( () => this.progressBar.$element.toggleClass( 'is-transparent', !value ) );
-        }
-
-        if ( value === true ) {
-            this.progressBarTime = Date.now();
-            this.progressBar.toggle( true );
-            utils.onSchedule( () => this.progressBar.$element.removeClass( 'is-transparent' ) );
-        }
-
-        if ( value === false ) {
-            if ( !this.progressBar.isVisible() ) return;
-
-            const duration = this.calculateRemainingTime( this.progressBarTime, 1000 );
-            const fadeDuration = Math.max( duration - 150, 0 );
-            this.progressBarDelay = setTimeout( () => {
-                this.progressBar.$element.addClass( 'is-transparent' );
-                this.progressBarDelay = setTimeout( () => this.progressBar.toggle( false ), 150 );
-            }, fadeDuration );
-        }
-    }
-
-    calculateRemainingTime( startTime, duration = 1000 ) {
-        const elapsed = Date.now() - startTime;
-        const currentCycleTime = elapsed % duration;
-        return duration - currentCycleTime;
+    toggleProgress( ...args ) {
+        this.progressBar.toggleVisibility( ...args );
     }
 
     onScroll( event ) {
