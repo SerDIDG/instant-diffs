@@ -218,13 +218,19 @@ class View {
             this.construct();
         }
 
-        // Open a dialog window throw the windows manager
         if ( !this.isOpen ) {
             // Save document scroll top position before the dialog opens.
             this.document.scrollableRoot = OO.ui.Element.static.getRootScrollableElement( document.body );
             this.document.scrollTop = this.document.scrollableRoot.scrollTop;
 
-            this.windowInstance = this.manager.openWindow( this.dialog );
+            // Initial dialog options
+            const page = this.link.getPage();
+            const options = {
+                title: page.titleText || page.title,
+            };
+
+            // Open a dialog window through the windows manager
+            this.windowInstance = this.manager.openWindow( this.dialog, options );
             this.windowInstance.opened.then( this.onOpen.bind( this ) );
             this.windowInstance.closed.then( this.onClose.bind( this ) );
         }

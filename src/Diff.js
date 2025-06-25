@@ -4,6 +4,7 @@ import { executeModuleScript } from './utils-oojs';
 import { restoreInlineFormatToggle, restoreRollbackLink, restoreVisualDiffs } from './utils-diff';
 
 import Navigation from './Navigation';
+import { getErrorStatusText } from './utils';
 
 /**
  * Class representing a Diff.
@@ -214,11 +215,14 @@ class Diff {
         // Do nothing when request was programmatically aborted
         if ( error?.statusText === 'abort' ) return;
 
-        // Show notification popup
+        // Create error object
         this.error = {
             type: this.page.type,
-            code: this.page.type === 'revision' && !utils.isEmpty( this.page.curid ) ? 'curid' : 'generic',
+            code: this.page.typeVariant === 'page' ? 'curid' : 'generic',
+            message: utils.getErrorStatusText( error?.status ),
         };
+
+        // Show notification popup
         utils.notifyError( `error-${ this.error.type }-${ this.error.code }`, this.error, this.page );
 
         // Render content and fire hooks

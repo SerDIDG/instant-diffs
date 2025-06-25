@@ -86,8 +86,10 @@
     "settings-show-menu-icons": "Pokaż ikony w menu rozwijanym okna dialogowego Instant Diffs.",
     "settings-notify-errors": "Pokaż powiadomienia o krytycznych błędach.",
 
-    "error-wasted": "Nieoczekiwany błąd.",
     "error-generic": "Coś poszło nie tak: $4",
+    "error-server": "Błąd serwera, spróbuj ponownie później",
+    "error-offline": "Sprawdź swoje połączenie z internetem",
+    "error-wasted": "Nieoczekiwany błąd",
     "error-prepare-generic": "Nie udało się przygotować konfiguracji: $4",
     "error-prepare-version": "Skrypt już działa: $4",
     "error-prepare-mobile": "Skrypt został wyłączony w ustawieniach dla motywu mobilnego (Minerva)",

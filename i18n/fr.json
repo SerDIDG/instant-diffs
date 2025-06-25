@@ -86,8 +86,10 @@
     "settings-show-menu-icons": "Afficher les icônes dans le menu déroulant de la boîte de dialogue Instant Diffs.",
     "settings-notify-errors": "Afficher des alertes contextuelles pour les erreurs critiques.",
 
-    "error-wasted": "Erreur inattendue.",
     "error-generic": "Une erreur est survenue : $4",
+    "error-server": "Erreur du serveur, veuillez réessayer plus tard",
+    "error-offline": "Veuillez vérifier votre connexion Internet",
+    "error-wasted": "Erreur inattendue",
     "error-prepare-generic": "Impossible de préparer la configuration : $4",
     "error-prepare-version": "Le script est déjà en cours d’exécution : $4",
     "error-prepare-mobile": "Le script est désactivé dans les paramètres pour le thème mobile (Minerva)",

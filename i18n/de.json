@@ -86,8 +86,10 @@
     "settings-show-menu-icons": "Symbole im Dropdown-Menü des Instant-Diffs-Dialogs anzeigen.",
     "settings-notify-errors": "Popup-Benachrichtigungen für kritische Fehler anzeigen.",
 
-    "error-wasted": "Unerwarteter Fehler.",
     "error-generic": "Ein Fehler ist aufgetreten: $4",
+    "error-server": "Serverfehler, bitte versuchen Sie es später erneut",
+    "error-offline": "Bitte überprüfen Sie Ihre Internetverbindung",
+    "error-wasted": "Unerwarteter Fehler",
     "error-prepare-generic": "Konfiguration konnte nicht vorbereitet werden: $4",
     "error-prepare-version": "Skript läuft bereits: $4",
     "error-prepare-mobile": "Das Skript ist in den Einstellungen für das mobile Skin (Minerva) deaktiviert",

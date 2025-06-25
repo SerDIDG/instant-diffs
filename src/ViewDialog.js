@@ -19,6 +19,11 @@ class ViewDialog extends OO.ui.MessageDialog {
     ];
 
     /**
+     * @type {number}
+     */
+    progressBarDelay;
+
+    /**
      * Create a ViewDialog instance.
      */
     constructor() {
@@ -122,7 +127,7 @@ class ViewDialog extends OO.ui.MessageDialog {
     }
 
     toggleVisibility( value ) {
-        this.text.$element.toggleClass( 'is-transparent', !value );
+        this.message.$element.toggleClass( 'is-transparent', !value );
     }
 
     toggleProgressBar( value ) {

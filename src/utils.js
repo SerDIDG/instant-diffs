@@ -220,17 +220,35 @@ export function getMsgParams( params ) {
     return params;
 }
 
+export function getErrorStatusText( status ) {
+    if ( !Number.isInteger( status ) ) return;
+
+    if ( status === 0 ) {
+        return msg( 'error-offline' );
+    }
+    if ( status >= 400 && status < 500 ) {
+        return msg( 'error-revision-missing' );
+    }
+    if ( status > 500 ) {
+        return msg( 'error-server' );
+    }
+}
+
 export function getErrorMessage( str, error, page ) {
     str = isMessageExists( str ) ? str : 'error-generic';
     page = $.extend( {}, page );
     error = $.extend( {}, error );
-    return msg(
+    let message = msg(
         str,
         page.oldid || page.curid,
         page.diff,
         page.titleText || page.title,
         error.message || msg( 'error-wasted' ),
     );
+    if ( !/\.$/.test( message ) ) {
+        message = `${ message }.`;
+    }
+    return message;
 }
 
 export function notifyError( str, error, page, silent ) {

@@ -86,8 +86,10 @@
     "settings-show-menu-icons": "Show icons in the Instant Diffs dialog dropdown menu.",
     "settings-notify-errors": "Show popup alerts for critical errors.",
 
-    "error-wasted": "Unexpected error.",
     "error-generic": "Something went wrong: $4",
+    "error-server": "Server error, please try again later",
+    "error-offline": "Please check your internet connection",
+    "error-wasted": "Unexpected error",
     "error-prepare-generic": "Failed to prepare configuration: $4",
     "error-prepare-version": "An instance of the script is already running: $4",
     "error-prepare-mobile": "The script is disabled in the settings for the mobile skin (Minerva)",

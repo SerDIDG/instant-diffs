@@ -87,8 +87,10 @@
     "settings-show-menu-icons": "הצגת סמלים בתפריט הנפתח של חלונית Instant Diffs.",
     "settings-notify-errors": "הצג התראות קופצות לשגיאות קריטיות.",
 
-    "error-wasted": "שגיאה בלתי צפויה.",
     "error-generic": "משהו התקלקל בדרך: $4",
+    "error-server": "שגיאת שרת, נסה שוב מאוחר יותר",
+    "error-offline": "בדוק את חיבור האינטרנט שלך",
+    "error-wasted": "שגיאה בלתי צפויה",
     "error-prepare-generic": "נכשלה הכנת ההגדרות: $4",
     "error-prepare-version": "הסקריפט כבר רץ: $4",
     "error-prepare-mobile": "הסקריפט מושבת בהגדרות עבור ערכת העיצוב לנייד (Minerva)",
