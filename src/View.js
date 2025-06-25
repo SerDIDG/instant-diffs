@@ -364,13 +364,21 @@ class View {
 
         // Load the Diff content
         $.when( this.diff.load() )
-            .always( this.onRequestResponse.bind( this ) );
+            .then( this.onRequestSuccess.bind( this ) )
+            .fail( this.onRequestError.bind( this ) );
     }
 
     /**
      * Event that emits after the Diff request failed.
      */
-    onRequestResponse() {
+    onRequestError() {
+        this.isRequesting = false;
+    }
+
+    /**
+     * Event that emits after the Diff request successive.
+     */
+    onRequestSuccess() {
         this.isRequesting = false;
 
         // Embed the Diff content

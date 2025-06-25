@@ -24,6 +24,11 @@ class ViewDialog extends OO.ui.MessageDialog {
     progressBarDelay;
 
     /**
+     * @type {number}
+     */
+    progressBarTime;
+
+    /**
      * Create a ViewDialog instance.
      */
     constructor() {
@@ -53,7 +58,6 @@ class ViewDialog extends OO.ui.MessageDialog {
             progress: false,
             inline: true,
         } );
-        this.progressBar.toggle( false );
         this.$content.prepend( this.progressBar.$element );
 
         // Set a content scroll event
@@ -130,13 +134,29 @@ class ViewDialog extends OO.ui.MessageDialog {
         this.message.$element.toggleClass( 'is-transparent', !value );
     }
 
-    toggleProgressBar( value ) {
+    toggleProgressBar( value, instant ) {
         this.progressBarDelay && clearTimeout( this.progressBarDelay );
-        if ( !value || value === 'instant' ) {
-            this.progressBar.toggle( !!value );
-        } else {
-            this.progressBarDelay = setTimeout( () => this.progressBar.toggle( value ), 350 );
+
+        if ( instant ) {
+            return this.progressBar.toggle( value );
         }
+
+        if ( value === true ) {
+            this.progressBarTime = Date.now();
+            this.progressBar.toggle( true );
+        }
+
+        if ( value === false ) {
+            if ( !this.progressBar.isVisible() ) return;
+            const duration = this.calculateRemainingTime( this.progressBarTime, 1000 );
+            this.progressBarDelay = setTimeout( () => this.progressBar.toggle( false ), duration );
+        }
+    }
+
+    calculateRemainingTime( startTime, duration = 1000 ) {
+        const elapsed = Date.now() - startTime;
+        const currentCycleTime = elapsed % duration;
+        return duration - currentCycleTime;
     }
 
     onScroll( event ) {
