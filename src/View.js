@@ -5,14 +5,14 @@ import Link from './Link';
 import Diff from './Diff';
 import Snapshot from './Snapshot';
 
-import './styles/window.less';
+import './styles/view.less';
 
 /**
- * Class representing a Window container.
+ * Class representing a View container.
  */
-class Window {
+class View {
     /**
-     * @type {import('./Link').default|import('./WindowButton').default}
+     * @type {import('./Link').default|import('./ViewButton').default}
      */
     link;
 
@@ -66,6 +66,11 @@ class Window {
     document = {};
 
     /**
+     * @type {Promise}
+     */
+    loadPromise;
+
+    /**
      * @type {boolean}
      */
     isDependenciesLoaded = false;
@@ -86,34 +91,13 @@ class Window {
     isLoading = false;
 
     /**
-     * Get or construct a Window instance.
-     * @param {import('./Link').default|import('./WindowButton').default} link a Link instance, or a WindowButton instance
-     * @param {object} [options] configuration options
-     * @returns {import('./Window').default|undefined}
-     * @static
+     * @type {boolean}
      */
-    static getInstance( link, options ) {
-        if ( id.local.window && id.local.window.isLoading ) return;
-        if ( !id.local.window ) {
-            id.local.window = new Window( link, options );
-        } else {
-            id.local.window.setup( link, options );
-        }
-        return id.local.window;
-    }
-
-    /**
-     * Create a Dialog.
-     * @param {import('./Link').default|import('./WindowButton').default} link a Link, or a WindowButton instance
-     * @param {object} [options] configuration options
-     */
-    constructor( link, options ) {
-        this.setup.apply( this, arguments );
-    }
+    isRequesting = false;
 
     /**
      * Setup configuration options.
-     * @param {import('./Link').default|import('./WindowButton').default} link a Link, or a WindowButton instance
+     * @param {import('./Link').default|import('./ViewButton').default} link a Link, or a ViewButton instance
      * @param {object} [options] configuration options
      */
     setup( link, options ) {
@@ -152,22 +136,25 @@ class Window {
     /******* DEPENDENCIES *******/
 
     /**
-     * Request a Window dialog dependencies.
-     * @returns {Promise|undefined}
+     * Request a View dialog dependencies.
+     * @returns {Promise|boolean}
      */
     load() {
-        if ( this.isLoading ) return;
+        if ( this.isLoading ) return this.loadPromise;
 
         if ( this.isDependenciesLoaded ) {
-            return this.request();
+            this.open();
+            return true;
         }
 
         this.isLoading = true;
         this.error = null;
 
-        return $.when( mw.loader.using( this.getDependencies() ) )
+        this.loadPromise = $.when( mw.loader.using( this.getDependencies() ) )
             .then( this.onLoadSuccess.bind( this ) )
             .fail( this.onLoadError.bind( this ) );
+
+        return this.loadPromise;
     };
 
     /**
@@ -185,129 +172,74 @@ class Window {
     onLoadError( error ) {
         this.isLoading = false;
         this.isDependenciesLoaded = false;
+
         this.error = {
             type: 'dependencies',
             message: error && error.message ? error.message : null,
         };
+
         utils.notifyError( 'error-dependencies-generic', this.error );
     };
 
     /**
      * Event that emits after dependency loading successive.
-     * @returns {Promise}
      */
     onLoadSuccess() {
         this.isLoading = false;
         this.isDependenciesLoaded = true;
-        return this.request();
+
+        this.open();
     }
 
     /******* DIALOG *******/
 
     /**
-     * Import and construct an instance of the Window dialog.
+     * Import and construct an instance of the View dialog.
      */
     construct() {
         this.isConstructed = true;
 
-        // Import the Window dialog constructor
-        const WindowDialog = require( '././WindowDialog' ).default;
+        // Import the View dialog constructor
+        const ViewDialog = require( './ViewDialog' ).default;
 
-        // Construct the Window dialog and attach it to the Window Managers
-        this.dialog = new WindowDialog( this );
+        // Construct the View dialog and attach it to the View Managers
+        this.dialog = new ViewDialog( this );
         this.manager = utils.getWindowManager();
         this.manager.addWindows( [ this.dialog ] );
     }
 
-    /******* DIFF *******/
-
     /**
-     * Construct an instance of the Diff and request its content.
-     * @returns {Promise}
+     * Open the View dialog.
      */
-    request() {
+    open() {
+        // Construct the Dialog instance
         if ( !this.isConstructed ) {
             this.construct();
         }
 
-        this.isLoading = true;
-        this.error = null;
-        this.previousDiff = this.diff;
-
-        // When the Diff is about to change, restore the mw.config to the initial state
-        if ( this.mwConfigBackup ) {
-            utils.restoreMWConfig( this.mwConfigBackup );
-        }
-        if ( !this.mwConfigBackup ) {
-            this.mwConfigBackup = utils.backupMWConfig();
-        }
-        if ( this.mwUserOptionsBackup ) {
-            utils.restoreMWUserOptions( this.mwUserOptionsBackup );
-        }
-        if ( !this.mwUserOptionsBackup ) {
-            this.mwUserOptionsBackup = utils.backupMWUserOptions();
-        }
-
-        // Construct the Diff options
-        const page = this.link.getPage();
-        const options = {
-            initiatorDiff: this.options.initiatorDiff,
-            onFocus: () => this.focus(),
-            onResize: () => this.redraw(),
-        };
-
-        // Load the Diff content
-        this.diff = new Diff( page, options );
-        return $.when( this.diff.load() )
-            .then( this.onRequestSuccess.bind( this ) )
-            .fail( this.onRequestError.bind( this ) );
-    }
-
-    /**
-     * Event that emits after the Diff request failed.
-     */
-    onRequestError() {
-        this.isLoading = false;
-        this.open();
-    }
-
-    /**
-     * Event that emits after the Diff request successive.
-     */
-    onRequestSuccess() {
-        this.isLoading = false;
-        this.open();
-    }
-
-    /**
-     * Open the Window dialog.
-     */
-    open() {
-        const options = {
-            title: this.diff.getPageTitleText(),
-            message: this.diff.getContainer(),
-        };
-
-        if ( this.isOpen ) {
-            this.dialog.update( options ).then( this.onUpdate.bind( this ) );
-        } else {
+        // Open a dialog window throw the windows manager
+        if ( !this.isOpen ) {
             // Save document scroll top position before the dialog opens.
             this.document.scrollableRoot = OO.ui.Element.static.getRootScrollableElement( document.body );
             this.document.scrollTop = this.document.scrollableRoot.scrollTop;
 
-            // Open a dialog window throw the windows manager
-            this.windowInstance = this.manager.openWindow( this.dialog, options );
+            this.windowInstance = this.manager.openWindow( this.dialog );
             this.windowInstance.opened.then( this.onOpen.bind( this ) );
             this.windowInstance.closed.then( this.onClose.bind( this ) );
         }
+
+        // Show progress bar in the dialog
+        this.dialog.toggleProgressBar( true );
+
+        // Construct the Diff instance
+        this.request();
     }
 
     /**
-     * Event that emits after the Window dialog opens.
+     * Event that emits after the View dialog opens.
      */
     onOpen() {
         this.isOpen = true;
-        this.fire();
 
         if ( utils.isFunction( this.options.onOpen ) ) {
             this.options.onOpen( this );
@@ -315,10 +247,11 @@ class Window {
     }
 
     /**
-     * Event that emits after the Window dialog closes.
+     * Event that emits after the View dialog closes.
      */
     onClose() {
         this.isOpen = false;
+        this.isRequesting = false;
 
         if ( this.diff ) {
             this.diff.detach();
@@ -352,7 +285,7 @@ class Window {
     }
 
     /**
-     * Event that emits after the Window dialog updates.
+     * Event that emits after the View dialog updates.
      */
     onUpdate() {
         this.fire();
@@ -374,7 +307,7 @@ class Window {
     }
 
     /**
-     * Event that emits after the Window dialog scrolls.
+     * Event that emits after the View dialog scrolls.
      */
     onScroll( event ) {
         // Update diff content positions and sizes
@@ -386,6 +319,60 @@ class Window {
         this.diff.redraw( {
             top: event.target.scrollTop,
         } );
+    }
+
+    /******* DIFF *******/
+
+    /**
+     * Construct an instance of the Diff and request its content.
+     */
+    request() {
+        if ( this.isRequesting ) return;
+
+        this.isRequesting = true;
+        this.error = null;
+        this.previousDiff = this.diff;
+
+        // When the Diff is about to change, restore the mw.config to the initial state
+        if ( this.mwConfigBackup ) {
+            utils.restoreMWConfig( this.mwConfigBackup );
+        }
+        if ( !this.mwConfigBackup ) {
+            this.mwConfigBackup = utils.backupMWConfig();
+        }
+        if ( this.mwUserOptionsBackup ) {
+            utils.restoreMWUserOptions( this.mwUserOptionsBackup );
+        }
+        if ( !this.mwUserOptionsBackup ) {
+            this.mwUserOptionsBackup = utils.backupMWUserOptions();
+        }
+
+        // Construct the Diff instance
+        const page = this.link.getPage();
+        const options = {
+            initiatorDiff: this.options.initiatorDiff,
+            onFocus: () => this.focus(),
+        };
+        this.diff = new Diff( page, options );
+
+        // Load the Diff content
+        $.when( this.diff.load() )
+            .always( this.onRequestResponse.bind( this ) );
+    }
+
+    /**
+     * Event that emits after the Diff request failed.
+     */
+    onRequestResponse() {
+        this.isRequesting = false;
+
+        // Embed the Diff content
+        const options = {
+            title: this.diff.getPageTitleText(),
+            message: this.diff.getContainer(),
+        };
+        this.dialog.update( options )
+            .then( this.onUpdate.bind( this ) );
     }
 
     /******* ACTIONS *******/
@@ -433,7 +420,7 @@ class Window {
 
         // Update diff content positions and sizes
         this.diff.redraw( {
-            top: this.dialog.getContainerElement().scrollTop,
+            top: this.dialog.getContainerScrollTop(),
         } );
     }
 
@@ -450,9 +437,9 @@ class Window {
      * @param {Element} node
      * @returns {boolean}
      */
-    isParent( node ) {
-        return $.contains( this.dialog.$content.get( 0 ), node );
+    isContains( node ) {
+        return this.dialog?.$content.get( 0 ).contains( node );
     }
 }
 
-export default Window;
+export default new View();

@@ -1,13 +1,13 @@
 import * as utils from './utils';
 
 import Button from './Button';
-import Window from './Window';
+import view from './View';
 
 /**
- * Class representing a button that opens a Window dialog.
+ * Class representing a button that opens a View dialog.
  * @augments {import('./Button').default}
  */
-class WindowButton extends Button {
+class ViewButton extends Button {
     /**
      * @type {object}
      */
@@ -26,29 +26,27 @@ class WindowButton extends Button {
     }
 
     /**
-     * Open the Window dialog.
+     * Open the View dialog.
      */
     openDialog() {
         const options = {
             onOpen: () => this.onDialogOpen(),
             onClose: () => this.onDialogClose(),
         };
-
-        const window = Window.getInstance( this, options );
-        if ( !window ) return;
+        view.setup( this, options );
 
         this.pending( true );
-        $.when( window.load() )
+        $.when( view.load() )
             .always( () => this.pending( false ) );
     }
 
     /**
-     * Event that emits after the Window dialog opens.
+     * Event that emits after the View dialog opens.
      */
     onDialogOpen() {}
 
     /**
-     * Event that emits after the Window dialog closes.
+     * Event that emits after the View dialog closes.
      */
     onDialogClose() {}
 
@@ -65,4 +63,4 @@ class WindowButton extends Button {
     }
 }
 
-export default WindowButton;
+export default ViewButton;

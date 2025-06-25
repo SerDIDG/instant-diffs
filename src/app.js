@@ -7,9 +7,10 @@ import './styles/app.less';
 import Button from './Button';
 import Link from './Link';
 import Diff from './Diff';
-import Window from './Window';
-import WindowButton from './WindowButton';
+import ViewButton from './ViewButton';
 import HistoryCompareButton from './HistoryCompareButton';
+import view from './View';
+import settings from './Settings';
 
 import './styles/skins.less';
 
@@ -260,7 +261,7 @@ function app() {
     id.config = config;
     id.local = local;
     id.timers = timers;
-    id.api = { Button, WindowButton, HistoryCompareButton, Window, Diff, Link };
+    id.api = { Button, ViewButton, HistoryCompareButton, Diff, Link, view, settings };
     id.settings ||= {};
     id.settings = { ...id.config.settings, ...id.settings };
     id.defaults ||= {};

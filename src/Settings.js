@@ -101,7 +101,6 @@ class Settings {
 
     /**
      * Event that emits after dependency loading successive.
-     * @returns {Promise}
      */
     onLoadSuccess() {
         this.isLoading = false;
@@ -122,7 +121,7 @@ class Settings {
         const SettingsDialog = require( './SettingsDialog' ).default;
 
         // Construct the Settings dialog and attach it to the Window Managers
-        this.dialog = new SettingsDialog( this );
+        this.dialog = new SettingsDialog();
         this.manager = utils.getWindowManager();
         this.manager.addWindows( [ this.dialog ] );
     };

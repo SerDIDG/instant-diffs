@@ -1017,6 +1017,8 @@ export function renderMessageBox( params ) {
         ...params,
     };
 
+    const nodes = params.$content.toArray();
+
     return h( 'div', {
             class: [
                 'cdx-message',
@@ -1026,7 +1028,7 @@ export function renderMessageBox( params ) {
             ],
         },
         h( 'span.cdx-message__icon' ),
-        h( 'div.cdx-message__content', params.$content.get( 0 ) ),
+        h( 'div.cdx-message__content', ...nodes ),
     );
 }
 

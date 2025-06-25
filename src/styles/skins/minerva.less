@@ -11,7 +11,7 @@
 
 /*** CONTENT ***/
 
-.instantDiffs-window-body {
+.instantDiffs-view-body {
     table.diff {
         margin: 0;
     }
@@ -51,7 +51,7 @@
 
 /*** FLAGGED REVISIONS ***/
 
-.instantDiffs-window-body {
+.instantDiffs-view-body {
     #mw-fr-diff-headeritems {
         .fr-diff-ratings {
             margin: 0;
@@ -75,7 +75,7 @@
 /******* PAGE SPECIFIC ADJUSTMENTS *******/
 
 #instantDiffs-line--pageSpecific () {
-    // /* [Fix] Hide the user icon in lists that were loaded from dependencies after the Window dialog opens. */
+    // /* [Fix] Hide the user icon in lists that were loaded from dependencies after the View dialog opens. */
     .fix-userlink {
         .mw-userlink {
             &::before {
@@ -98,7 +98,7 @@
         }
     }
 
-    // /* [Fix] Display user tools in lists that were loaded from dependencies after the Window dialog opens. */
+    // /* [Fix] Display user tools in lists that were loaded from dependencies after the View dialog opens. */
     .fix-usertoollinks {
         .mw-usertoollinks {
             display: inline !important;
@@ -107,7 +107,7 @@
 }
 
 .instantDiffs-line {
-    // /* [Fix] Reset the minoredit styles that were loaded from dependencies after the Window dialog opens. */
+    // /* [Fix] Reset the minoredit styles that were loaded from dependencies after the View dialog opens. */
     .minoredit {
         font-size: inherit;
     }
@@ -235,14 +235,14 @@
             display: none;
         }
 
-        // /* [Fix] Hide the user icon in lists that were loaded from dependencies after the Window dialog opens. */
+        // /* [Fix] Hide the user icon in lists that were loaded from dependencies after the View dialog opens. */
         .mw-userlink::before {
             display: none;
         }
     }
 
-    .instantDiffs-window-body {
-        // /* [Fix] Reset styles of the diff table inside the Window dialog */
+    .instantDiffs-view-body {
+        // /* [Fix] Reset styles of the diff table inside the View dialog */
         :is( .comment, .mw-userlink, .mw-usertoollinks ) {
             float: none;
             display: inline;

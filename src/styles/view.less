@@ -1,25 +1,40 @@
 @import ( reference ) '@wikimedia/codex-design-tokens/theme-wikimedia-ui.less';
 
-/******* WINDOW *******/
+/******* VIEW *******/
 
-.instantDiffs-window {
+.instantDiffs-view {
     // /* [Fix] Set top indent for the dialogs because of the fixed header on the some skins  */
     &.oo-ui-window-active {
         .oo-ui-windowManager-modal > & {
-            top: var(--instantDiffs-window-top);
+            top: var(--instantDiffs-view-top);
+        }
+    }
+
+    .oo-ui-messageDialog-text {
+        transition: opacity 150ms ease-in-out;
+
+        &.is-transparent {
+            opacity: 0;
         }
     }
 }
 
-.instantDiffs-window-overlay {
+.instantDiffs-view-overlay {
     position: absolute;
     inset: 0;
     z-index: -1;
 }
 
+.instantDiffs-view-loader {
+    max-width: none;
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 3;
+}
+
 /******* TOOLS *******/
 
-.instantDiffs-window-tools {
+.instantDiffs-view-tools {
     display: flex;
     justify-content: center;
 
@@ -30,7 +45,7 @@
 
 /******* CONTENT *******/
 
-.instantDiffs-window-content {
+.instantDiffs-view-content {
     width: auto;
     max-width: none;
     display: flow-root;
@@ -39,7 +54,7 @@
     line-height: var(--instantDiffs-line-height);
 }
 
-.instantDiffs-window-body {
+.instantDiffs-view-body {
     display: flow-root;
     position: relative;
     z-index: 1;

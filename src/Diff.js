@@ -59,9 +59,19 @@ class Diff {
     navigation;
 
     /**
+     * @type {Promise}
+     */
+    requestPromise;
+
+    /**
      * @type {boolean}
      */
     isLoading = false;
+
+    /**
+     * @type {boolean}
+     */
+    isLoaded = false;
 
     /**
      * Create a diff instance.
@@ -69,7 +79,6 @@ class Diff {
      * @param {object} [options] configuration options
      * @param {import('./Diff').default} [options.initiatorDiff] a Diff instance
      * @param {Function} [options.onFocus]
-     * @param {Function} [options.onResize]
      */
     constructor( page, options ) {
         this.page = { ...page };
@@ -77,7 +86,6 @@ class Diff {
         this.options = {
             initiatorDiff: null,
             onFocus: () => {},
-            onResize: () => {},
             ...options,
         };
 
@@ -89,8 +97,12 @@ class Diff {
         };
     }
 
+    /**
+     * Request a Diff dependencies and html content.
+     * @returns {Promise|boolean}
+     */
     load() {
-        if ( this.isLoading ) return;
+        if ( this.isLoading ) return this.requestPromise;
         this.requestPageDependencies();
         return this.request();
     }
@@ -163,8 +175,13 @@ class Diff {
         mw.loader.load( utils.getDependencies( dependencies ) );
     }
 
+    /**
+     * Request a Diff html content.
+     * @returns {Promise|boolean}
+     */
     request() {
         this.isLoading = true;
+        this.isLoaded = false;
         this.error = null;
 
         const page = {
@@ -180,25 +197,28 @@ class Diff {
             data: $.extend( page, this.pageParams ),
         };
 
-        return $.ajax( params )
+        this.requestPromise = $.ajax( params )
             .done( this.onRequestDone.bind( this ) )
             .fail( this.onRequestError.bind( this ) );
+
+        return this.requestPromise;
     }
 
-    onRequestError( data ) {
+    onRequestError( error ) {
         this.isLoading = false;
+        this.isLoaded = true;
 
+        // Do nothing when request was programmatically aborted
+        if ( error?.statusText === 'abort' ) return;
+
+        // Show notification popup
         this.error = {
             type: this.page.type,
             code: this.page.type === 'revision' && !utils.isEmpty( this.page.curid ) ? 'curid' : 'generic',
         };
-
-        if ( data?.error ) {
-            this.error.code = data.error.code;
-            this.error.message = data.error.info;
-        }
         utils.notifyError( `error-${ this.error.type }-${ this.error.code }`, this.error, this.page );
 
+        // Render content and fire hooks
         this.render();
         mw.hook( `${ id.config.prefix }.diff.renderError` ).fire( this );
         mw.hook( `${ id.config.prefix }.diff.renderComplete` ).fire( this );
@@ -217,15 +237,21 @@ class Diff {
         mw.hook( `${ id.config.prefix }.diff.renderComplete` ).fire( this );
     }
 
+    abort() {
+        if ( !this.isLoading ) return;
+        this.requestPromise.abort();
+    }
+
     /******* RENDER *******/
 
     render() {
         const classes = [
-            'instantDiffs-window-content',
-            `instantDiffs-window-content--${ this.page.type }`,
+            'instantDiffs-view-content',
+            `instantDiffs-view-content--${ this.page.type }`,
             'mw-body-content',
             `mw-content-${ document.dir }`,
         ];
+
         const skinClasses = id.config.skinBodyClasses[ mw.config.get( 'skin' ) ];
         if ( skinClasses ) {
             classes.push( ...skinClasses );
@@ -236,11 +262,11 @@ class Diff {
             .addClass( classes );
 
         this.nodes.$tools = $( '<div>' )
-            .addClass( 'instantDiffs-window-tools' )
+            .addClass( 'instantDiffs-view-tools' )
             .appendTo( this.nodes.$container );
 
         this.nodes.$body = $( '<div>' )
-            .addClass( 'instantDiffs-window-body' )
+            .addClass( 'instantDiffs-view-body' )
             .appendTo( this.nodes.$container );
 
         if ( this.error ) {
@@ -536,8 +562,9 @@ class Diff {
 
     detach() {
         mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).fire( this );
+        this.abort();
         this.navigation?.detach();
-        this.getContainer().detach();
+        this.getContainer()?.detach();
     }
 }
 

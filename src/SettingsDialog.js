@@ -1,5 +1,6 @@
 import id from './id';
 import * as utils from './utils';
+import settings from './Settings';
 
 const { h } = utils;
 
@@ -34,11 +35,6 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     ];
 
     /**
-     * @type {import('./Settings').default}
-     */
-    settings;
-
-    /**
      * @type {object}
      */
     inputs = {};
@@ -60,14 +56,11 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
     /**
      * Create a SettingsDialog instance.
-     * @param {import('./Settings').default} settings a Settings instance
      */
-    constructor( settings ) {
+    constructor() {
         super( {
             classes: [ 'instantDiffs-settings' ],
         } );
-
-        this.settings = settings;
     }
 
     initialize( ...args ) {
@@ -159,7 +152,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         } );
         this.fields.showPageLink.toggle( id.settings.showPageLink );
 
-        // Highlight list lines when Window dialog opens
+        // Highlight list lines when View dialog opens
         this.inputs.highlightLine = new OO.ui.CheckboxInputWidget( {
             selected: utils.defaults( 'highlightLine' ),
         } );
@@ -169,7 +162,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         } );
         this.fields.highlightLine.toggle( id.settings.highlightLine );
 
-        // Mark watched lines when Window dialog opens
+        // Mark watched lines when View dialog opens
         this.inputs.markWatchedLine = new OO.ui.CheckboxInputWidget( {
             selected: utils.defaults( 'markWatchedLine' ),
         } );
@@ -441,7 +434,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             input.setDisabled( true );
         }
 
-        this.settings.request()
+       settings.request()
             .then( this.onActionRequestSuccess.bind( this ) )
             .fail( this.onActionRequestError.bind( this ) )
             .always( () => this.popPending() );
@@ -542,7 +535,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             }
         }
 
-        this.settings.save( settings )
+        settings.save( settings )
             .then( this.onActionSaveSuccess.bind( this ) )
             .fail( this.onActionSaveError.bind( this ) )
             .always( () => this.popPending() );

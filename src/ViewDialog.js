@@ -1,12 +1,13 @@
 import * as utils from './utils';
 
 import DivLabelWidget from './DivLabelWidget';
+import view from './View';
 
 /**
- * Class representing a WindowDialog.
+ * Class representing a ViewDialog.
  * @augments OO.ui.MessageDialog
  */
-class WindowDialog extends OO.ui.MessageDialog {
+class ViewDialog extends OO.ui.MessageDialog {
     static name = 'Instant Diffs Window';
     static size = 'instantDiffs';
     static actions = [
@@ -17,20 +18,12 @@ class WindowDialog extends OO.ui.MessageDialog {
     ];
 
     /**
-     * @type {import('./Window').default}
+     * Create a ViewDialog instance.
      */
-    window;
-
-    /**
-     * Create a WindowDialog instance.
-     * @param {import('./Window').default} window a Window instance
-     */
-    constructor( window ) {
+    constructor() {
         super( {
-            classes: [ 'instantDiffs-window' ],
+            classes: [ 'instantDiffs-view' ],
         } );
-
-        this.window = window;
     }
 
     initialize( ...args ) {
@@ -45,20 +38,40 @@ class WindowDialog extends OO.ui.MessageDialog {
         // Close the dialog when clicking outside of it
         this.$clickOverlay = $( '<div>' )
             .on( 'click', () => this.close() )
-            .addClass( 'instantDiffs-window-overlay' )
+            .addClass( 'instantDiffs-view-overlay' )
             .appendTo( this.$element );
+
+        // Render progress bar loader
+        this.progressBar = new OO.ui.ProgressBarWidget( {
+            classes: [ 'instantDiffs-view-loader' ],
+            progress: false,
+            inline: true,
+        } );
+        this.progressBar.toggle( false );
+        this.$content.prepend( this.progressBar.$element );
 
         // Set a content scroll event
         this.container.$element.on( 'scroll', this.onScroll.bind( this ) );
     }
 
+    /******* SETUP PROCESS *******/
+
     getSetupProcess( data ) {
         return super.getSetupProcess( data )
             .next( () => {
+                // Toggle content visibility
+                this.toggleVisibility( false );
+
                 // Set a vertical scroll position to the top of the content
                 this.container.$element.scrollTop( 0 );
             } );
     }
+
+    getBodyHeight() {
+        return 'auto';
+    }
+
+    /******* UPDATE PROCESS *******/
 
     update( data ) {
         return this.getUpdateProcess( data ).execute();
@@ -67,6 +80,10 @@ class WindowDialog extends OO.ui.MessageDialog {
     getUpdateProcess( data ) {
         return new OO.ui.Process()
             .next( () => {
+                // Hide progress bar
+                this.toggleProgressBar( false );
+
+                // Set content
                 this.title.setLabel(
                     data.title !== undefined ? data.title : this.constructor.static.title,
                 );
@@ -79,8 +96,23 @@ class WindowDialog extends OO.ui.MessageDialog {
 
                 // Set a vertical scroll position to the top of the content
                 this.container.$element.scrollTop( 0 );
+
+                // Toggle content visibility
+                this.toggleVisibility( true );
             } );
     }
+
+    /******* TEARDOWN PROCESS *******/
+
+    getTeardownProcess( data ) {
+        return super.getTeardownProcess( data )
+            .next( () => {
+                // Hide progress bar
+                this.toggleProgressBar( false );
+            } );
+    }
+
+    /******* ACTIONS *******/
 
     focus( ...args ) {
         super.focus?.( ...args );
@@ -88,19 +120,28 @@ class WindowDialog extends OO.ui.MessageDialog {
         this.$content.trigger( 'focus' );
     }
 
+    toggleVisibility( value ) {
+        this.text.$element.toggleClass( 'is-transparent', !value );
+    }
+
+    toggleProgressBar( value ) {
+        this.progressBarDelay && clearTimeout( this.progressBarDelay );
+        if ( !value || value === 'instant' ) {
+            this.progressBar.toggle( !!value );
+        } else {
+            this.progressBarDelay = setTimeout( () => this.progressBar.toggle( value ), 350 );
+        }
+    }
+
     onScroll( event ) {
-        this.window.onScroll( event );
+        view.onScroll( event );
     }
 
-    getBodyHeight() {
-        return 'auto';
-    }
-
-    getContainerElement() {
-        return this.container.$element;
+    getContainerScrollTop() {
+        return this.container.$element.scrollTop;
     }
 }
 
-utils.tweakUserOoUiClass( WindowDialog );
+utils.tweakUserOoUiClass( ViewDialog );
 
-export default WindowDialog;
+export default ViewDialog;

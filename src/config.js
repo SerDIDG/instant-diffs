@@ -46,6 +46,7 @@ export const config = {
         settings: [
             'oojs',
             'oojs-ui',
+            'oojs-ui.styles.icons-interactions',
         ],
         revision: {
             6: [
