@@ -474,14 +474,14 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         }
 
         // Render error if the userinfo request is completely failed
-        const options = data?.query?.userinfo?.options;
-        if ( !options ) {
+        const userOptions = data?.query?.userinfo?.options;
+        if ( !userOptions ) {
             return this.onActionRequestError( null, data );
         }
 
         try {
-            const settings = JSON.parse( options[ `${ id.config.settingsPrefix }-settings` ] );
-            utils.setDefaults( settings, true );
+            const options = JSON.parse( userOptions[ `${ id.config.settingsPrefix }-settings` ] );
+            utils.setDefaults( options, true );
         } catch ( e ) {}
 
         this.update();
@@ -501,7 +501,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         } );
     }
 
-    processActionUpdate( settings ) {
+    processActionUpdate( options ) {
         // Hide pending loader in the header
         this.popPending();
 
@@ -509,14 +509,14 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         for ( const [ key, input ] of Object.entries( this.inputs ) ) {
             input.setDisabled( false );
 
-            const setting = settings[ key ];
-            if ( typeof setting === 'undefined' ) return;
+            const option = options[ key ];
+            if ( typeof option === 'undefined' ) return;
 
             if ( input instanceof OO.ui.CheckboxInputWidget ) {
-                input.setSelected( setting );
+                input.setSelected( option );
             }
             if ( input instanceof OO.ui.RadioSelectWidget ) {
-                input.selectItemByData( setting );
+                input.selectItemByData( option );
             }
         }
     }
@@ -527,17 +527,17 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.pushPending();
 
         // Collect input values
-        const settings = {};
+        const options = {};
         for ( const [ key, input ] of Object.entries( this.inputs ) ) {
             if ( input instanceof OO.ui.CheckboxInputWidget ) {
-                settings[ key ] = input.isSelected();
+                options[ key ] = input.isSelected();
             }
             if ( input instanceof OO.ui.RadioSelectWidget ) {
-                settings[ key ] = input.findFirstSelectedItem()?.getData();
+                options[ key ] = input.findFirstSelectedItem()?.getData();
             }
         }
 
-        settings.save( settings )
+        settings.save( options )
             .then( this.onActionSaveSuccess.bind( this ) )
             .fail( this.onActionSaveError.bind( this ) )
             .always( () => this.popPending() );

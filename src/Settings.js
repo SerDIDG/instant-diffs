@@ -184,11 +184,12 @@ class Settings {
 
     /**
      * Save user options.
+     * @param {object} options
      * @returns {Promise|boolean}
      */
-    save( settings ) {
+    save( options ) {
         // Update settings stored in the Local Storage and in the local User Options
-        utils.setDefaults( settings, true );
+        utils.setDefaults( options, true );
 
         // Guest settings can be stored only in the Local Storage
         if ( id.local.mwIsAnon ) return $.Deferred().resolve();
@@ -198,20 +199,21 @@ class Settings {
         // Check if the Global Preferences extension is available
         const dependencies = utils.getDependencies( [ 'ext.GlobalPreferences.global' ] );
         if ( dependencies.length > 0 ) {
-            return this.saveGlobal( settings );
+            return this.saveGlobal( options );
         }
 
-        return this.saveLocal( settings );
+        return this.saveLocal( options );
     }
 
     /**
      * Post user options on the local project.
+     * @param {object} options
      * @returns {Promise}
      */
-    saveLocal( settings ) {
+    saveLocal( options ) {
         const params = [
             `${ id.config.settingsPrefix }-settings`,
-            JSON.stringify( settings ),
+            JSON.stringify( options ),
         ];
 
         return id.local.mwApi.saveOption.apply( id.local.mwApi, params )
@@ -220,13 +222,14 @@ class Settings {
 
     /**
      * Post user options on the global project.
+     * @param {object} options
      * @returns {Promise}
      */
-    saveGlobal( settings ) {
+    saveGlobal( options ) {
         const params = {
             action: 'globalpreferences',
             optionname: `${ id.config.settingsPrefix }-settings`,
-            optionvalue: JSON.stringify( settings ),
+            optionvalue: JSON.stringify( options ),
         };
 
         return id.local.mwApi.postWithEditToken( params )
