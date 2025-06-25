@@ -1,4 +1,4 @@
-import * as utils from './utils';
+import { tweakUserOoUiClass } from './utils-oojs';
 
 /**
  * Class representing a custom LabelWidget with a div tag name.
@@ -14,6 +14,6 @@ class DivLabelWidget extends OO.ui.LabelWidget {
     }
 }
 
-utils.tweakUserOoUiClass( DivLabelWidget );
+tweakUserOoUiClass( DivLabelWidget );
 
 export default DivLabelWidget;

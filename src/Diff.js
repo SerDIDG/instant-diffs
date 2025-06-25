@@ -1,11 +1,13 @@
 import id from './id';
 import * as utils from './utils';
-import * as diffUtils from './diffUtils';
+import { executeModuleScript } from './utils-oojs';
+import { restoreInlineFormatToggle, restoreRollbackLink, restoreVisualDiffs } from './utils-diff';
 
 import Navigation from './Navigation';
 
 /**
  * Class representing a Diff.
+ * @mixes OO.EventEmitter
  */
 class Diff {
     /**
@@ -78,14 +80,12 @@ class Diff {
      * @param {object} page a page object
      * @param {object} [options] configuration options
      * @param {import('./Diff').default} [options.initiatorDiff] a Diff instance
-     * @param {Function} [options.onFocus]
      */
     constructor( page, options ) {
         this.page = { ...page };
 
         this.options = {
             initiatorDiff: null,
-            onFocus: () => {},
             ...options,
         };
 
@@ -95,6 +95,9 @@ class Diff {
             unhide: utils.defaults( 'unHideDiffs' ) ? 1 : 0,
             uselang: id.local.language,
         };
+
+        // Mixin constructor
+        OO.EventEmitter.call( this );
     }
 
     /**
@@ -480,10 +483,10 @@ class Diff {
         const diffTablePrefixTools = [];
 
         if ( this.page.type === 'diff' && utils.defaults( 'showDiffTools' ) ) {
-            const hasInlineToggle = diffUtils.restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
+            const hasInlineToggle = restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
             if ( hasInlineToggle ) diffTablePrefixTools.push( hasInlineToggle );
 
-            const hasVisualDiffs = diffUtils.restoreVisualDiffs( this.nodes.$diffTablePrefix );
+            const hasVisualDiffs = restoreVisualDiffs( this.nodes.$diffTablePrefix );
             if ( hasVisualDiffs ) diffTablePrefixTools.push( hasVisualDiffs );
         }
 
@@ -492,10 +495,10 @@ class Diff {
         this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', ( !hasVisibleChild || diffTablePrefixTools.length === 0 ) );
 
         // Restore rollback and patrol links scripts
-        utils.executeModuleScript( 'mediawiki.misc-authed-curate' );
+        executeModuleScript( 'mediawiki.misc-authed-curate' );
 
         // Restore rollback link
-        diffUtils.restoreRollbackLink( this.nodes.$body );
+        restoreRollbackLink( this.nodes.$body );
     }
 
     /******* ACTIONS *******/
@@ -521,9 +524,7 @@ class Diff {
     }
 
     focus() {
-        if ( utils.isFunction( this.options.onFocus ) ) {
-            this.options.onFocus();
-        }
+        this.emit( 'focus' );
     }
 
     redraw( params ) {

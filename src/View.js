@@ -1,5 +1,6 @@
 import id from './id';
 import * as utils from './utils';
+import { getWindowManager } from './utils-oojs';
 
 import Link from './Link';
 import Diff from './Diff';
@@ -203,8 +204,8 @@ class View {
         const ViewDialog = require( './ViewDialog' ).default;
 
         // Construct the View dialog and attach it to the View Managers
-        this.dialog = new ViewDialog( this );
-        this.manager = utils.getWindowManager();
+        this.dialog = new ViewDialog();
+        this.manager = getWindowManager();
         this.manager.addWindows( [ this.dialog ] );
     }
 
@@ -351,9 +352,9 @@ class View {
         const page = this.link.getPage();
         const options = {
             initiatorDiff: this.options.initiatorDiff,
-            onFocus: () => this.focus(),
         };
         this.diff = new Diff( page, options );
+        this.diff.on( 'focus', () => this.focus() );
 
         // Load the Diff content
         $.when( this.diff.load() )
@@ -426,14 +427,14 @@ class View {
 
     /**
      * Get a diff instance.
-     * @returns {import('./Diff').default}
+     * @returns {import('./Diff').default} a Diff instance
      */
     getDiff() {
         return this.diff;
     }
 
     /**
-     * Check if a node contains in the dialog.
+     * Check if the View dialog contains a node.
      * @param {Element} node
      * @returns {boolean}
      */

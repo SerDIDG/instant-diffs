@@ -1,6 +1,7 @@
 import id from './id';
 import { config, local, timers } from './config';
 import * as utils from './utils';
+import { mixEventEmitterInObject } from './utils-oojs';
 
 import './styles/app.less';
 
@@ -98,6 +99,10 @@ function processHistoryPage() {
 function prepare() {
     // Hide the links panel to prevent blinking before the main stylesheet is applied
     mw.util.addCSS( '.instantDiffs-panel { display:none; }' );
+
+    // Mixin OO.EventEmitter to the classes after the OOJS dependencies loaded
+    mixEventEmitterInObject(settings);
+    OO.mixinClass(Diff, OO.EventEmitter);
 
     // Prepare locale variables
     id.local.mwIsAnon = mw.user?.isAnon?.() ?? true;

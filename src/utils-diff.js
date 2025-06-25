@@ -1,6 +1,6 @@
 import id from './id';
 import * as utils from './utils';
-import { isValidID } from './utils';
+import { getModuleExport } from './utils-oojs';
 
 /******* COMMON *******/
 
@@ -33,7 +33,7 @@ export function restoreInlineFormatToggle( $container ) {
     }
 
     const $inlineToggleSwitchLayout = $container.find( '#mw-diffPage-inline-toggle-switch-layout' );
-    const inlineFormatToggle = utils.getModuleExport( 'mediawiki.diff', './inlineFormatToggle.js' );
+    const inlineFormatToggle = getModuleExport( 'mediawiki.diff', './inlineFormatToggle.js' );
 
     try {
         isRendered = true;

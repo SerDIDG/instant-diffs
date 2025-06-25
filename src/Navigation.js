@@ -1,5 +1,6 @@
 import id from './id';
 import * as utils from './utils';
+import { renderOoUiElement } from './utils-oojs';
 
 import Button from './Button';
 import Link from './Link';
@@ -280,7 +281,7 @@ class Navigation {
         items.push( this.buttons.settings );
 
         // Separator
-        items.push( utils.renderOoUiElement( $( '<hr>' ) ) );
+        items.push( renderOoUiElement( $( '<hr>' ) ) );
 
         // Link to the Instant Diffs docs and current running version
         this.buttons.id = this.renderIDLink( buttonOptions );
@@ -324,7 +325,7 @@ class Navigation {
 
         // Separator
         if ( items.length > 0 ) {
-            items.push( utils.renderOoUiElement( $( '<hr>' ) ) );
+            items.push( renderOoUiElement( $( '<hr>' ) ) );
         }
 
         // Render group
@@ -708,11 +709,8 @@ class Navigation {
      * Action that opens the Settings dialog.
      */
     actionOpenSettings() {
-        const options = {
-            onOpen: this.onSettingsOpen.bind( this ),
-            onClose: this.onSettingsClose.bind( this ),
-        };
-        settings.setup( options );
+        settings.once( 'opened', () => this.onSettingsOpen() );
+        settings.once( 'closed', () => this.onSettingsClose() );
 
         this.buttons.settingsHelper.pending( true );
         $.when( settings.load() )

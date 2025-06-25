@@ -17,13 +17,16 @@ export const config = {
         main: [
             'mediawiki.api',
             'mediawiki.util',
+            'mediawiki.user',
             'mediawiki.storage',
             'mediawiki.notification',
             'mediawiki.Title',
         ],
         window: [
             'oojs',
-            'oojs-ui',
+            'oojs-ui-core',
+            'oojs-ui-widgets',
+            'oojs-ui-windows',
             'oojs-ui.styles.icons-movement',
             'oojs-ui.styles.icons-content',
             'oojs-ui.styles.icons-alerts',
@@ -45,7 +48,9 @@ export const config = {
         ],
         settings: [
             'oojs',
-            'oojs-ui',
+            'oojs-ui-core',
+            'oojs-ui-widgets',
+            'oojs-ui-windows',
             'oojs-ui.styles.icons-interactions',
         ],
         revision: {

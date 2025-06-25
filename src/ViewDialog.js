@@ -1,4 +1,5 @@
 import * as utils from './utils';
+import { tweakUserOoUiClass } from './utils-oojs';
 
 import DivLabelWidget from './DivLabelWidget';
 import view from './View';
@@ -142,6 +143,6 @@ class ViewDialog extends OO.ui.MessageDialog {
     }
 }
 
-utils.tweakUserOoUiClass( ViewDialog );
+tweakUserOoUiClass( ViewDialog );
 
 export default ViewDialog;

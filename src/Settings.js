@@ -1,17 +1,14 @@
 import id from './id';
 import * as utils from './utils';
+import { getWindowManager } from './utils-oojs';
 
 import './styles/settings.less';
 
 /**
  * Class representing a Settings container.
+ * @mixes OO.EventEmitter
  */
 class Settings {
-    /**
-     * @type {object}
-     */
-    options = {};
-
     /**
      * @type {Promise}
      */
@@ -48,15 +45,11 @@ class Settings {
     isSaving = false;
 
     /**
-     * Setup configuration options.
-     * @param {object} [options] configuration options
+     * Create a Settings instance.
      */
-    setup( options ) {
-        this.options = {
-            onOpen: () => {},
-            onClose: () => {},
-            ...options,
-        };
+    constructor() {
+        // Mixin constructor
+        OO.EventEmitter.call( this );
     }
 
     /******* DEPENDENCIES *******/
@@ -122,7 +115,7 @@ class Settings {
 
         // Construct the Settings dialog and attach it to the Window Managers
         this.dialog = new SettingsDialog();
-        this.manager = utils.getWindowManager();
+        this.manager = getWindowManager();
         this.manager.addWindows( [ this.dialog ] );
     };
 
@@ -146,9 +139,7 @@ class Settings {
      */
     onOpen() {
         this.isOpen = true;
-        if ( utils.isFunction( this.options.onOpen ) ) {
-            this.options.onOpen( this );
-        }
+        this.emit('opened');
     }
 
     /**
@@ -156,9 +147,7 @@ class Settings {
      */
     onClose() {
         this.isOpen = false;
-        if ( utils.isFunction( this.options.onClose ) ) {
-            this.options.onClose( this );
-        }
+        this.emit('closed');
     }
 
     /******* USER OPTIONS *******/
