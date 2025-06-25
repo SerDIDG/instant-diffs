@@ -15,6 +15,7 @@ export const config = {
         styles: '__styles__',
         messages: '__messages__',
         main: [
+            'oojs',
             'mediawiki.api',
             'mediawiki.util',
             'mediawiki.user',
