@@ -11,3 +11,14 @@
     --instantDiffs-font-size: var(--font-size-medium, 1rem);
     --instantDiffs-line-height: var(--line-height, 1.6);
 }
+
+/******* VIEW *******/
+
+.oo-ui-windowManager-modal:not(.oo-ui-windowManager-size-full) {
+    & > .instantDiffs-view {
+        .instantDiffs-view-loader {
+            border-top-right-radius: var(--border-radius-medium) 0.28571429em;
+            border-top-left-radius: var(--border-radius-medium) 0.28571429em;
+        }
+    }
+}

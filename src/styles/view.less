@@ -30,9 +30,14 @@
     position: absolute;
     inset: 0 0 auto;
     z-index: 3;
+    transition: opacity 150ms ease-in-out;
 
     .oo-ui-progressBarWidget-bar {
         animation-duration: 1000ms;
+    }
+
+    &.is-transparent {
+        opacity: 0;
     }
 }
 

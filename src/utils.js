@@ -114,6 +114,12 @@ export function isBreakpoint( breakpoint ) {
     return breakpoint ? window.matchMedia( breakpoint ) : false;
 }
 
+export function onSchedule( callback ) {
+    requestAnimationFrame( () => {
+        requestAnimationFrame( callback );
+    } );
+}
+
 /******* DEFAULTS *******/
 
 /**

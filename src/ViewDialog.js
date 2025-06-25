@@ -54,7 +54,7 @@ class ViewDialog extends OO.ui.MessageDialog {
 
         // Render progress bar loader
         this.progressBar = new OO.ui.ProgressBarWidget( {
-            classes: [ 'instantDiffs-view-loader' ],
+            classes: [ 'instantDiffs-view-loader', 'is-transparent' ],
             progress: false,
             inline: true,
         } );
@@ -138,18 +138,25 @@ class ViewDialog extends OO.ui.MessageDialog {
         this.progressBarDelay && clearTimeout( this.progressBarDelay );
 
         if ( instant ) {
-            return this.progressBar.toggle( value );
+            this.progressBar.toggle( value );
+            utils.onSchedule( () => this.progressBar.$element.toggleClass( 'is-transparent', !value ) );
         }
 
         if ( value === true ) {
             this.progressBarTime = Date.now();
             this.progressBar.toggle( true );
+            utils.onSchedule( () => this.progressBar.$element.removeClass( 'is-transparent' ) );
         }
 
         if ( value === false ) {
             if ( !this.progressBar.isVisible() ) return;
+
             const duration = this.calculateRemainingTime( this.progressBarTime, 1000 );
-            this.progressBarDelay = setTimeout( () => this.progressBar.toggle( false ), duration );
+            const fadeDuration = Math.max( duration - 150, 0 );
+            this.progressBarDelay = setTimeout( () => {
+                this.progressBar.$element.addClass( 'is-transparent' );
+                this.progressBarDelay = setTimeout( () => this.progressBar.toggle( false ), 150 );
+            }, fadeDuration );
         }
     }
 
