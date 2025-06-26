@@ -594,10 +594,11 @@ class Link {
             onOpen: () => this.onDialogOpen(),
             onClose: () => this.onDialogClose(),
         };
-        view.setup( this, options );
+        const promise = view.setup( this, options );
+        if ( !promise ) return;
 
         this.toggleLoader( true );
-        $.when( view.load() )
+        $.when( promise )
             .always( () => this.toggleLoader( false ) );
     }
 

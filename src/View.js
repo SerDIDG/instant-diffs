@@ -105,8 +105,11 @@ class View {
      * Setup configuration options.
      * @param {import('./Link').default|import('./ViewButton').default} link a Link, or a ViewButton instance
      * @param {object} [options] configuration options
+     * @returns {Promise|undefined} a request promise
      */
     setup( link, options ) {
+        if ( this.isRequesting || this.isProcessing ) return;
+
         // Track on dialog process start time
         id.timers.dialogProcesStart = Date.now();
 
@@ -137,6 +140,8 @@ class View {
                 id.local.snapshot.setLink( this.initiator.link );
             }
         }
+
+        return this.load();
     }
 
     /******* DEPENDENCIES *******/
@@ -325,8 +330,6 @@ class View {
      * Construct an instance of the Diff and request its content.
      */
     request() {
-        if ( this.isRequesting || this.isProcessing ) return;
-
         this.isRequesting = true;
         this.isProcessing = true;
         this.error = null;

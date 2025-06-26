@@ -33,10 +33,11 @@ class ViewButton extends Button {
             onOpen: () => this.onDialogOpen(),
             onClose: () => this.onDialogClose(),
         };
-        view.setup( this, options );
+        const promise = view.setup( this, options );
+        if ( !promise ) return;
 
         this.pending( true );
-        $.when( view.load() )
+        $.when( promise )
             .always( () => this.pending( false ) );
     }
 

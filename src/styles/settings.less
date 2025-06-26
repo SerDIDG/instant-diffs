@@ -29,9 +29,14 @@
 /* Use more specific selector because mobile Minerva loads unscoped ".ns-special ul" */
 /* 1.42857143em is a size of the OOUI checkbox/radio */
 ul.instantDiffs-list--settings {
+    padding: 0;
     margin-block: 0;
     margin-inline: 1.42857143em 0;
     list-style: disc;
+
+    li {
+        margin: 0;
+    }
 
     // /* Set a predefine direction because links can contain rtl content */
     i {

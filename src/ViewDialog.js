@@ -121,10 +121,6 @@ class ViewDialog extends OO.ui.MessageDialog {
     toggleProgress( ...args ) {
         this.progressBar.toggleVisibility( ...args );
     }
-
-    getContainerScrollTop() {
-        return this.container.$element.scrollTop;
-    }
 }
 
 tweakUserOoUiClass( ViewDialog );
