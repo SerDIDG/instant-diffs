@@ -1,6 +1,6 @@
 import id from './id';
 import * as utils from './utils';
-import { getWindowManager } from './utils-oojs';
+import { applyOoUiPolyfill, getWindowManager } from './utils-oojs';
 
 import './styles/settings.less';
 
@@ -98,6 +98,9 @@ class Settings {
     onLoadSuccess() {
         this.isLoading = false;
         this.isDependenciesLoaded = true;
+
+        // Apply polyfills for the legacy wikis
+        applyOoUiPolyfill();
 
         this.open();
     }

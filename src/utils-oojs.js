@@ -1,4 +1,4 @@
-import { isFunction } from './utils';
+import * as utils from './utils';
 
 /**
  * Add some properties to the inheritor class that the (ES5)
@@ -39,10 +39,17 @@ export function mixEventEmitterInObject( obj ) {
 
 export function applyOoUiPolyfill() {
     // "findFirstSelectedItem" method was added in the MediaWiki 1.39 / wmf.23
-    if ( !isFunction( OO.ui.RadioSelectWidget.prototype.findFirstSelectedItem ) ) {
+    if ( !utils.isFunction( OO.ui.RadioSelectWidget.prototype.findFirstSelectedItem ) ) {
         OO.ui.RadioSelectWidget.prototype.findFirstSelectedItem = function () {
             const selected = this.findSelectedItems();
             return Array.isArray( selected ) ? selected[ 0 ] || null : selected;
+        };
+    }
+
+    // "getTeleportTarget" method was added in the MediaWiki 1.41 / wmf.25 (?)
+    if ( !utils.isFunction( OO.ui.getTeleportTarget ) ) {
+        OO.ui.getTeleportTarget = function () {
+            return document.body;
         };
     }
 }
@@ -58,7 +65,7 @@ export function getWindowManager() {
     };
 
     const manager = new OO.ui.WindowManager();
-    $( document.body ).append( manager.$element );
+    $( OO.ui.getTeleportTarget() ).append( manager.$element );
     return manager;
 }
 

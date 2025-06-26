@@ -1,6 +1,6 @@
 import id from './id';
 import * as utils from './utils';
-import { applyOoUiPolyfill, tweakUserOoUiClass } from './utils-oojs';
+import { tweakUserOoUiClass } from './utils-oojs';
 
 import settings from './Settings';
 
@@ -90,9 +90,6 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     /******* PANELS ******/
 
     renderEditPanel() {
-        // Apply polyfills for older wikis
-        applyOoUiPolyfill();
-
         // Render fieldsets
         this.renderLinksFieldset();
         this.renderDialogFieldset();

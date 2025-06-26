@@ -1,6 +1,6 @@
 import id from './id';
 import * as utils from './utils';
-import { getWindowManager } from './utils-oojs';
+import { applyOoUiPolyfill, getWindowManager } from './utils-oojs';
 
 import Link from './Link';
 import Diff from './Diff';
@@ -193,6 +193,9 @@ class View {
     onLoadSuccess() {
         this.isLoading = false;
         this.isDependenciesLoaded = true;
+
+        // Apply polyfills for the legacy wikis
+        applyOoUiPolyfill();
 
         this.open();
     }
