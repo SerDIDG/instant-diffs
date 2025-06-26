@@ -218,6 +218,11 @@ export const config = {
     ],
 
     mwLine: {
+        selector: [
+            '.mw-changeslist-line',                                     // Changelists
+            '.mw-contributions-list li',                                // User contribution
+            '.cdx-table tr',                                            // [[Special:PendingChanges]]
+        ],
         seen: [
             'mw-changeslist-line-not-watched',
             'mw-enhanced-not-watched',
@@ -231,10 +236,10 @@ export const config = {
     },
     mwLineTitle: {
         selector: [
-            '.mw-changeslist-title',
-            '.mw-contributions-title',
-            '.mw-newpages-pagename',
-            '.mw-fr-pending-changes-page-title',
+            '.mw-changeslist-title',                                    // Changelists
+            '.mw-contributions-title',                                  // User contribution
+            '.mw-newpages-pagename',                                    // [[Special:Newpages]]
+            '.mw-fr-pending-changes-page-title',                        // [[Special:PendingChanges]]
         ],
     },
     mwLink: {

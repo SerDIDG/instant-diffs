@@ -749,13 +749,7 @@ export function isMWLink( node, preset ) {
 }
 
 export function getMWDiffLine( item ) {
-    // ChangeLists
-    if ( id.config.changeLists.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) ) ) {
-        return item.link.closest( '.mw-changeslist-line' );
-    }
-
-    // E.g. Contributions page, etc
-    return item.link.closest( 'li, tr' );
+    return item.link.closest( id.config.mwLine.selector.join( ',' ) );
 }
 
 export function getMWDiffLineTitle( item ) {
