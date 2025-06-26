@@ -498,9 +498,7 @@ class Link {
     }
 
     renderWrapper() {
-        this.nodes.container = h( 'span', { class: [ 'instantDiffs-panel', 'nowrap', 'noprint' ] },
-            this.nodes.inner = h( 'span' ),
-        );
+        this.nodes.container = this.nodes.inner = h( 'span', { class: [ 'instantDiffs-panel', 'nowrap', 'noprint' ] } );
     }
 
     renderAction( params ) {
