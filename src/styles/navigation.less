@@ -1,23 +1,19 @@
 @import ( reference ) '@wikimedia/codex-design-tokens/theme-wikimedia-ui.less';
 
 .instantDiffs-navigation {
-    margin: 0 -16px;
+    margin: 0 -16px 1em;
     padding: 1em 16px;
     display: flex;
     gap: 0.5em;
     position: sticky;
     z-index: 2;
     top: 0;
-    border-bottom: 1px solid transparent;
+    border-bottom: 1px solid var(--instantDiffs-border-color);
     background: var(--instantDiffs-background-navigation);
     background-clip: padding-box;
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
     font-size: 0.875rem;
-
-    &.is-sticky {
-        border-bottom-color: var(--instantDiffs-border-color);
-    }
 
     @media (max-width: @max-width-breakpoint-mobile) {
         padding: 0.5em;
@@ -141,7 +137,7 @@
             }
 
             &:active {
-                border: 1px solid var(--border-color-progressive--active, #2a4b8d);
+                border-color: var(--border-color-progressive--active, #2a4b8d);
                 background-color: var(--background-color-progressive-subtle--active, #cbd6f6);
                 color: var(--instantDiffs-color-link--active);
             }

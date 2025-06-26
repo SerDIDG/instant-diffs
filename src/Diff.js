@@ -1,10 +1,9 @@
 import id from './id';
 import * as utils from './utils';
 import { executeModuleScript } from './utils-oojs';
-import { restoreInlineFormatToggle, restoreRollbackLink, restoreVisualDiffs } from './utils-diff';
+import { restoreInlineFormatToggle, restoreRollbackLink, restoreVisualDiffs, restoreWikiLambda } from './utils-diff';
 
 import Navigation from './Navigation';
-import { getErrorStatusText } from './utils';
 
 /**
  * Class representing a Diff.
@@ -75,6 +74,11 @@ class Diff {
      * @type {boolean}
      */
     isLoaded = false;
+
+    /**
+     * @type {boolean}
+     */
+    isDetached = false;
 
     /**
      * Create a diff instance.
@@ -208,11 +212,17 @@ class Diff {
         return this.requestPromise;
     }
 
+    /**
+     * Event that emits after the request failed.
+     */
     onRequestError( error ) {
         this.isLoading = false;
         this.isLoaded = true;
 
-        // Do nothing when request was programmatically aborted
+        // The Diff can be already detached from the DOM
+        if ( this.isDetached ) return;
+
+        // Do mot render content when request was programmatically aborted
         if ( error?.statusText === 'abort' ) return;
 
         // Create error object
@@ -222,7 +232,7 @@ class Diff {
             message: utils.getErrorStatusText( error?.status ),
         };
 
-        // Show notification popup
+        // Show critical notification popup
         utils.notifyError( `error-${ this.error.type }-${ this.error.code }`, this.error, this.page );
 
         // Render content and fire hooks
@@ -231,10 +241,17 @@ class Diff {
         mw.hook( `${ id.config.prefix }.diff.renderComplete` ).fire( this );
     }
 
+    /**
+     * Event that emits after the request successive.
+     */
     onRequestDone( data ) {
         this.isLoading = false;
-        this.data = data;
 
+        // The Diff can be already detached from the DOM
+        if ( this.isDetached ) return;
+
+        // Render error if the data request is completely failed
+        this.data = data;
         if ( !this.data ) {
             return this.onRequestError();
         }
@@ -290,6 +307,13 @@ class Diff {
         this.nodes.data = $.parseHTML( this.data );
         this.nodes.$data = $( this.nodes.data ).appendTo( this.nodes.$body );
 
+        // Collect missing data from the diff table before manipulations
+        this.collectData();
+
+        // Set additional config variables
+        mw.config.set( this.mwConfg );
+        mw.user.options.set( this.mwUserOptions );
+
         // Prepend content warnings
         this.nodes.$data
             .filter( '.cdx-message' )
@@ -304,25 +328,9 @@ class Diff {
             this.renderWarning( $emptyMessage );
         }
 
-        // Collect missing data from the diff table before manipulations
-        this.collectData();
-
-        // Hide unsupported or unnecessary apps and element
-        this.nodes.$wikiLambdaApp = this.nodes.$data
-            .filter( '#ext-wikilambda-app' )
-            .addClass( 'instantDiffs-hidden' );
-
-        if ( this.nodes.$wikiLambdaApp.length > 0 ) {
-            const $message = $( `<p>${ utils.msg( 'unsupported-wikilambda' ) }</p>` );
-            this.renderWarning( $message );
-        }
-
-        // Set additional config variables
-        mw.config.set( this.mwConfg );
-        mw.user.options.set( this.mwUserOptions );
-
         // Process diff table
-        this.renderDiffTable();
+        this.processDiffTable();
+        this.processFlaggedRevs();
     }
 
     collectData() {
@@ -383,7 +391,7 @@ class Diff {
         }
     }
 
-    renderDiffTable() {
+    processDiffTable() {
         // Find diff table tools container and pre-toggle visibility
         this.nodes.$diffTablePrefix = this.nodes.$data.filter( '.mw-diff-table-prefix' );
         if ( this.page.type !== 'diff' || !utils.defaults( 'showDiffTools' ) ) {
@@ -391,24 +399,17 @@ class Diff {
         }
 
         // Find table elements
-        this.nodes.$frDiff = this.nodes.$data.filter( '#mw-fr-diff-headeritems' );
         this.nodes.$table = this.nodes.$data.filter( 'table.diff' );
 
-        // Find and detach the all unpatrolled diffs link
-        this.nodes.$pendingLink = this.nodes.$frDiff
-            .find( '.fr-diff-to-stable a' )
-            .detach();
-        if ( this.page.type === 'diff' ) {
-            this.links.$pending = this.nodes.$pendingLink;
-        }
-
-        // Find and detach the next / previous diff links
+        // Find and hide the next / previous diff links, so the other scripts can use them later
         this.links.$prev = this.nodes.$table
             .find( '#differences-prevlink' )
-            .detach();
+            .attr( 'data-instantdiffs-link', 'none' )
+            .addClass( 'instantDiffs-hidden' );
         this.links.$next = this.nodes.$table
             .find( '#differences-nextlink' )
-            .detach();
+            .attr( 'data-instantdiffs-link', 'none' )
+            .addClass( 'instantDiffs-hidden' );
 
         // Clear whitespaces after detaching links
         const leftTitle4 = this.nodes.$table.find( '#mw-diff-otitle4' );
@@ -426,18 +427,16 @@ class Diff {
             } );
         }
 
-        // Show or hide diff info table in the revisions
+        // Show or hide diff info table in the revision view
         if ( this.page.type === 'revision' ) {
             if ( utils.defaults( 'showRevisionInfo' ) ) {
                 // Hide the left side of the table and left only related to the revision info
-                this.nodes.$frDiff.find( '.fr-diff-ratings td:nth-child(2n-1)' ).addClass( 'instantDiffs-hidden' );
                 this.nodes.$table.find( 'td:is(.diff-otitle, .diff-side-deleted)' ).addClass( 'instantDiffs-hidden' );
                 this.nodes.$table.find( 'td:is(.diff-ntitle, .diff-side-added)' ).attr( 'colspan', '4' );
 
                 // Hide comparison lines
                 this.nodes.$table.find( 'tr:not([class])' ).addClass( 'instantDiffs-hidden' );
             } else {
-                this.nodes.$frDiff.addClass( 'instantDiffs-hidden' );
                 this.nodes.$table.addClass( 'instantDiffs-hidden' );
             }
         }
@@ -446,23 +445,48 @@ class Diff {
         this.nodes.$data
             .filter( '.mw-revslider-container, .mw-diff-revision-history-links,  #mw-oldid' )
             .addClass( 'instantDiffs-hidden' );
+    }
+
+    processFlaggedRevs() {
+        // Find FlaggedRevs table info and insert before the diff table to fix the elements flow
+        this.nodes.$frDiff = this.nodes.$data
+            .filter( '#mw-fr-diff-headeritems' )
+            .insertBefore( this.nodes.$table );
+
+        // Find and hide the "All unpatrolled diffs" link, so the other scripts can use it later
+        this.nodes.$pendingLink = this.nodes.$frDiff
+            .find( '.fr-diff-to-stable a' )
+            .attr( 'data-instantdiffs-link', 'none' )
+            .addClass( 'instantDiffs-hidden' );
+        if ( this.page.type === 'diff' ) {
+            this.links.$pending = this.nodes.$pendingLink;
+        }
+
+        // Show or hide diff info table in the revision view
+        if ( this.page.type === 'revision' ) {
+            if ( utils.defaults( 'showRevisionInfo' ) ) {
+                // Hide the left side of the table and left only related to the revision info
+                this.nodes.$frDiff.find( '.fr-diff-ratings td:nth-child(2n-1)' ).addClass( 'instantDiffs-hidden' );
+            } else {
+                this.nodes.$frDiff.addClass( 'instantDiffs-hidden' );
+            }
+        }
+
+        // Hide unsupported or unnecessary element
         this.nodes.$data
             .find( '.fr-diff-to-stable, #mw-fr-diff-dataform' )
             .addClass( 'instantDiffs-hidden' );
-
     }
 
     renderError() {
-        const $message = $( `<p>${ utils.msg( 'error-revision-missing' ) }</p>` );
-        if ( this.error?.message ) {
-            $message.add( `<p>${ this.error.message }</p>` );
-        }
+        const message = utils.getErrorMessage( `error-${ this.error.type }-${ this.error.code }`, this.error, this.page );
+        const $message = $( `<p>${ message }</p>` );
         this.renderWarning( $message );
     }
 
     renderWarning( $content ) {
         const $box = utils.renderMessageBox( { $content, type: 'warning' } );
-        utils.embed( $box, this.nodes.$body );
+        utils.embed( $box, this.nodes.$body, 'prependTo' );
     }
 
     renderNavigation() {
@@ -495,14 +519,26 @@ class Diff {
         }
 
         // Show diffTablePrefix if at least one tool was restored and visible
-        const hasVisibleChild = this.nodes.$diffTablePrefix.children( ':visible' ).length > 0;
-        this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', ( !hasVisibleChild || diffTablePrefixTools.length === 0 ) );
+        if ( this.nodes.$diffTablePrefix?.length > 0 ) {
+            const hasVisibleChild = this.nodes.$diffTablePrefix.children( ':visible' ).length > 0;
+            this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', ( !hasVisibleChild || diffTablePrefixTools.length === 0 ) );
+        }
 
         // Restore rollback and patrol links scripts
         executeModuleScript( 'mediawiki.misc-authed-curate' );
 
         // Restore rollback link
         restoreRollbackLink( this.nodes.$body );
+
+        // Restore WikiLambda app
+        this.nodes.$wikiLambdaApp = this.nodes.$data.filter( '#ext-wikilambda-app' );
+        if ( this.nodes.$wikiLambdaApp.length > 0 ) {
+            restoreWikiLambda( this.nodes.$wikiLambdaApp );
+
+            // Render warning about current limitations
+            const $message = $( utils.msgDom( 'dialog-notice-wikilambda' ) );
+            this.renderWarning( $message );
+        }
     }
 
     /******* ACTIONS *******/
@@ -529,10 +565,6 @@ class Diff {
 
     focus() {
         this.emit( 'focus' );
-    }
-
-    redraw( params ) {
-        this.navigation?.redraw( params );
     }
 
     /**
@@ -567,9 +599,11 @@ class Diff {
 
     detach() {
         mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).fire( this );
+
         this.abort();
         this.navigation?.detach();
         this.getContainer()?.detach();
+        this.isDetached = true;
     }
 }
 

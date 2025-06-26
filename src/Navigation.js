@@ -752,19 +752,6 @@ class Navigation {
     }
 
     /**
-     * Redraw a navigation bar and toggle sticky state depending on top position.
-     * @param {object} [params]
-     * @param {number} [params.top] scrollTop position of the container
-     */
-    redraw( params ) {
-        params = {
-            top: 0,
-            ...params,
-        };
-        this.nodes.$container.toggleClass( 'is-sticky', params.top > 0 );
-    }
-
-    /**
      * Detach a navigation bar from the DOM.
      */
     detach() {

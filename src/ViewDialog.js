@@ -46,9 +46,6 @@ class ViewDialog extends OO.ui.MessageDialog {
         // Render progress bar loader
         this.progressBar = new ViewProgressBar();
         this.$content.prepend( this.progressBar.$element );
-
-        // Set a content scroll event
-        this.container.$element.on( 'scroll', this.onScroll.bind( this ) );
     }
 
     /******* SETUP PROCESS *******/
@@ -123,10 +120,6 @@ class ViewDialog extends OO.ui.MessageDialog {
 
     toggleProgress( ...args ) {
         this.progressBar.toggleVisibility( ...args );
-    }
-
-    onScroll( event ) {
-        view.onScroll( event );
     }
 
     getContainerScrollTop() {

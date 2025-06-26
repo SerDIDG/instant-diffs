@@ -56,7 +56,7 @@
 
     "dialog-title-empty": "[Sin título]",
     "dialog-title-not-found": "[No encontrado]",
-    "unsupported-wikilambda": "La aplicación WikiLambda no es compatible actualmente.",
+    "dialog-notice-wikilambda": "La aplicación WikiLambda actualmente solo muestra la revisión más reciente. Consulta un [[phab:T397902|ticket]] en Phabricator.",
 
     "settings-title": "Configuración de Instant Diffs",
     "settings-saved": "La configuración se ha guardado correctamente.\nRecarga la página para aplicarla.",

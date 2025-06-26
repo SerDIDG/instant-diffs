@@ -56,7 +56,7 @@
 
     "dialog-title-empty": "[No title]",
     "dialog-title-not-found": "[Not found]",
-    "unsupported-wikilambda": "WikiLambda app is not currently supported.",
+    "dialog-notice-wikilambda": "WikiLambda app currently only shows the latest revision. See a [[phab:T397902|ticket]] on Phabricator.",
 
     "settings-title": "Instant Diffs Settings",
     "settings-saved": "The settings have been saved successfully.\nReload the page to apply them.",

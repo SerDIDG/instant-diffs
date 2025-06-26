@@ -81,7 +81,7 @@ class Link {
     constructor( node, options ) {
         this.node = node;
         this.options = {
-            behavior: 'default',            // default | basic | event
+            behavior: 'default',            // default | basic | event | none
             insertMethod: 'insertAfter',
             initiatorLink: null,
             initiatorView: null,
@@ -92,7 +92,7 @@ class Link {
         };
 
         // Check if a link was opened from the View dialog
-        if ( view?.isContains( this.node ) ) {
+        if ( view.isContains( this.node ) ) {
             this.options.initiatorView = view;
             this.options.initiatorDiff = view.getDiff();
         }
@@ -121,12 +121,12 @@ class Link {
             }
         }
 
-        // Check if a link was marked manually by the "data-instantdiffs-link" attribute: default | basic | event | link (deprecated)
+        // Check if a link was marked manually by the "data-instantdiffs-link" attribute: default | basic | event | none | link (deprecated)
         this.manual.behavior = this.node.dataset.instantdiffsLink;
         if ( this.manual.behavior === 'link' ) {
             this.manual.behavior = 'event';
         }
-        if ( [ 'default', 'basic', 'event' ].includes( this.manual.behavior ) ) {
+        if ( [ 'default', 'basic', 'event', 'none' ].includes( this.manual.behavior ) ) {
             this.options.behavior = this.manual.behavior;
             this.manual.hasLink = true;
         }
@@ -184,7 +184,7 @@ class Link {
             }
         }
 
-        // Check if parameter values following by pipeline
+        // Fix common user mistake with unnecessary pipeline following after the ids
         if ( !utils.isEmpty( this.page.diff ) && this.page.diff.indexOf( '|' ) > -1 ) {
             this.page.diff = this.page.diff.split( '|' ).shift();
         }
@@ -196,7 +196,7 @@ class Link {
         }
 
         // Populate the page title from the watchlist line entry for edge cases
-        // Link minifiers like [[:ru:User:Stjn/minilink.js]] often remove titles from links
+        // Link minifiers like [[:ru:User:Stjn/minilink.js]] often remove titles from the links
         if ( utils.isEmpty( this.page.title ) && this.mw.hasLine ) {
             this.page.title = this.mw.title;
         }
@@ -218,7 +218,6 @@ class Link {
 
             // Render actions lazily for the user-contributed links
             case 'default':
-            default:
                 this.renderRequest();
                 break;
         }

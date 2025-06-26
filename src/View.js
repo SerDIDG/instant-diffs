@@ -97,6 +97,11 @@ class View {
     isRequesting = false;
 
     /**
+     * @type {boolean}
+     */
+    isProcessing = false;
+
+    /**
      * Setup configuration options.
      * @param {import('./Link').default|import('./ViewButton').default} link a Link, or a ViewButton instance
      * @param {object} [options] configuration options
@@ -235,9 +240,6 @@ class View {
             this.windowInstance.closed.then( this.onClose.bind( this ) );
         }
 
-        // Show progress bar in the dialog
-        this.dialog.toggleProgress( true );
-
         // Construct the Diff instance
         this.request();
     }
@@ -258,6 +260,8 @@ class View {
      */
     onClose() {
         this.isOpen = false;
+        this.isRequesting = false;
+        this.isProcessing = false;
 
         if ( this.diff ) {
             this.diff.detach();
@@ -312,32 +316,21 @@ class View {
         }
     }
 
-    /**
-     * Event that emits after the View dialog scrolls.
-     */
-    onScroll( event ) {
-        // Update diff content positions and sizes
-        if ( this.previousDiff instanceof Diff ) {
-            this.previousDiff.redraw( {
-                top: event.target.scrollTop,
-            } );
-        }
-        this.diff.redraw( {
-            top: event.target.scrollTop,
-        } );
-    }
-
     /******* DIFF *******/
 
     /**
      * Construct an instance of the Diff and request its content.
      */
     request() {
-        if ( this.isRequesting ) return;
+        if ( this.isRequesting || this.isProcessing ) return;
 
         this.isRequesting = true;
+        this.isProcessing = true;
         this.error = null;
         this.previousDiff = this.diff;
+
+        // Show progress bar in the dialog
+        this.dialog.toggleProgress( true );
 
         // When the Diff is about to change, restore the mw.config to the initial state
         if ( this.mwConfigBackup ) {
@@ -358,30 +351,23 @@ class View {
         const options = {
             initiatorDiff: this.options.initiatorDiff,
         };
+
         this.diff = new Diff( page, options );
         this.diff.on( 'focus', () => this.focus() );
 
         // Load the Diff content
         $.when( this.diff.load() )
-            .then( this.onRequestSuccess.bind( this ) )
-            .fail( this.onRequestError.bind( this ) );
+            .always( this.onRequestResponse.bind( this ) );
     }
 
     /**
-     * Event that emits after the Diff request failed.
+     * Event that emits after the Diff request response.
      */
-    onRequestError() {
-        this.isRequesting = false;
-    }
-
-    /**
-     * Event that emits after the Diff request successive.
-     */
-    onRequestSuccess() {
+    onRequestResponse() {
         this.isRequesting = false;
 
-        // The Diff can be detached from the DOM once the dialog closes
-        if ( !this.diff ) return;
+        // The Diff can be already detached from the DOM once the dialog closes
+        if ( !this.diff || this.diff.isDetached ) return;
 
         // Embed the Diff's content to the dialog
         const options = {
@@ -417,6 +403,8 @@ class View {
         if ( utils.defaults( 'logTimers' ) ) {
             utils.logTimer( 'dialog process time', id.timers.dialogProcesStart, id.timers.dialogProcesEnd );
         }
+
+        this.isProcessing = false;
     }
 
     /**
@@ -434,11 +422,6 @@ class View {
 
         // Refresh the dialog content height
         this.dialog.updateSize();
-
-        // Update diff content positions and sizes
-        this.diff.redraw( {
-            top: this.dialog.getContainerScrollTop(),
-        } );
     }
 
     /**

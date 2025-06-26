@@ -1,6 +1,7 @@
 /******* VARIABLES *******/
 
 @media screen {
+    --instantDiffs-border-color: #ccc;
     --instantDiffs-font-size: 0.794rem; /* 127% (12.7px) */
     --instantDiffs-line-height: 1.5;
 }
@@ -8,21 +9,27 @@
 /******* VIEW *******/
 
 .instantDiffs-view {
+    // /* Use rem instead of em to avoid horizontal scrolling */
     .oo-ui-messageDialog-text {
         padding: 1rem 1rem 1.25rem;
     }
 }
 
-/*** CONTENT ***/
-
-/* [Fix] Text color for Monobook. */
-.instantDiffs-view-content {
-    color: #000000;
-}
-
 /******* NAVIGATION *******/
 
+/* Use rem instead of em to avoid horizontal scrolling */
 .instantDiffs-navigation {
-    margin: 0 -1rem;
+    margin-inline: -1rem;
+    margin-bottom: 1rem;
     padding: 1rem;
+}
+
+/*** BUTTON GROUPS ***/
+
+.instantDiffs-buttons-group {
+    &--vertical {
+        hr {
+            background-color: var(--instantDiffs-border-color);
+        }
+    }
 }

@@ -56,7 +56,7 @@
 
     "dialog-title-empty": "Placeholder for a missing page name when the script fails to retrieve it. Brackets are used to distinguish it from a real page name.\n\nDisplayed as a title of the Instant Diffs dialog.",
     "dialog-title-not-found": "Placeholder for an undefined page name when the script fails to retrieve it. Brackets are used to distinguish it from a real page name.\n\nDisplayed as a title of the Instant Diffs dialog.",
-    "unsupported-wikilambda": "Alert message shown when the script detects the WikiLambda app but does not currently support it.\n\nDisplayed as an alert box within the the Instant Diffs dialog.",
+    "dialog-notice-wikilambda": "Alert message shown when the script detects the WikiLambda app but there are currently limitations.\n\nDisplayed as an alert box within the the Instant Diffs dialog.",
 
     "settings-title": "Title for the Settings dialog that contains the script name.\n\nSee notes at {{msg-wm|Instant-diffs-script-name}}.",
     "settings-saved": "Message shown when the settings is successfully saved. Indicates that a reload is suggested for the settings to take effect.\n\nDisplayed in the Settings dialog.",

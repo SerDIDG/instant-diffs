@@ -57,7 +57,7 @@
 
     "dialog-title-empty": "[ללא כותרת]",
     "dialog-title-not-found": "[לא נמצא]",
-    "unsupported-wikilambda": "האפליקציה WikiLambda אינה נתמכת כעת.",
+    "dialog-notice-wikilambda": "אפליקציית WikiLambda מציגה כעת רק את הגרסה האחרונה. ראו [[phab:T397902|כרטיס]] ב-Phabricator.",
 
     "settings-title": "הגדרות Instant Diffs",
     "settings-saved": "ההגדרות נשמרו בהצלחה.\nרעננו את הדף כדי להחיל את השינויים.",

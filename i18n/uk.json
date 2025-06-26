@@ -56,7 +56,7 @@
 
     "dialog-title-empty": "[Без назви]",
     "dialog-title-not-found": "[Не знайдено]",
-    "unsupported-wikilambda": "Додаток WikiLambda наразі не підтримується.",
+    "dialog-notice-wikilambda": "Додаток WikiLambda зараз показує лише останню версію. Див. [[phab:T397902|завдання]] на Phabricator.",
 
     "settings-title": "Налаштування Instant Diffs",
     "settings-saved": "Налаштування успішно збережено.\nПерезавантажте сторінку, щоб застосувати їх.",

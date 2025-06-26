@@ -303,8 +303,6 @@ export const local = {
     language: null,
     messages: {},
 
-    window: null,
-    settings: null,
     snapshot: null,
 
     links: new Map(),

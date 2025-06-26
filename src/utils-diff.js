@@ -23,10 +23,14 @@ function showNotification( message, type ) {
 
 /******* INLINE FORMAT TOGGLE *******/
 
+/**
+ * Restore the Inline toggle switch button.
+ * @param {JQuery} $container
+ */
 export function restoreInlineFormatToggle( $container ) {
     let isRendered = false;
     if (
-        $container.length === 0 &&
+        !$container || $container.length === 0 &&
         mw.loader.getState( 'mediawiki.diff' ) !== 'ready'
     ) {
         return isRendered;
@@ -45,9 +49,13 @@ export function restoreInlineFormatToggle( $container ) {
 
 /******* VISUAL EDITOR / DIFFS *******/
 
+/**
+ * Restore the Visual Diffs buttons.
+ * @param {JQuery} $container
+ */
 export function restoreVisualDiffs( $container ) {
     if (
-        $container.length === 0 ||
+        !$container || $container.length === 0 ||
         !utils.isValidID( mw.config.get( 'wgDiffOldId' ) ) ||
         !utils.isValidID( mw.config.get( 'wgDiffNewId' ) ) ||
         mw.loader.getState( 'ext.visualEditor.diffPage.init' ) !== 'ready'
@@ -77,9 +85,11 @@ export function restoreVisualDiffs( $container ) {
 /**
  * Restore and implement a rollback link behavior. Partially copied from the MediaWiki Core:
  * {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/refs/heads/master/resources/src/mediawiki.misc-authed-curate/rollback.js}
- * @param {jQuery} $container
+ * @param {JQuery} $container
  */
 export function restoreRollbackLink( $container ) {
+    if ( !$container || $container.length === 0 ) return false;
+
     // Make rollback link confirmable
     $container.confirmable( {
         i18n: {
@@ -124,4 +134,38 @@ function postRollback( link ) {
             $spinner.remove();
             $( link ).css( 'display', '' );
         } );
+}
+
+/******* WIKILAMBDA *******/
+
+/**
+ * Restore the WikiLambda app. Partially copied from the WikiLambda extension code:
+ * {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/extensions/WikiLambda/+/refs/heads/master/resources/ext.wikilambda.app/index.js}
+ * @param {JQuery} $container
+ */
+export function restoreWikiLambda( $container ) {
+    if ( !$container || $container.length === 0 ) return;
+
+    mw.loader.using( '@wikimedia/codex' ).then( require => {
+        const { createMwApp } = require( 'vue' );
+        const { createPinia } = require( 'pinia' );
+
+        mw.loader.using( 'ext.wikilambda.app' ).then( require => {
+            const { useMainStore, App } = require( 'ext.wikilambda.app' );
+
+            // Conditionally mount App.vue:
+            // If wgWikilambda config variable is available, we want to mount WikiLambda App.
+            if ( mw.config.get( 'wgWikiLambda' ) ) {
+                const pinia = createPinia();
+                const store = useMainStore( pinia );
+                window.vueInstance = createMwApp( Object.assign( {
+                    provide: () => ( {
+                        viewmode: store.getViewMode,
+                    } ),
+                }, App ) )
+                    .use( pinia )
+                    .mount( $container.get( 0 ) );
+            }
+        } );
+    } );
 }
