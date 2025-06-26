@@ -146,26 +146,23 @@ function postRollback( link ) {
 export function restoreWikiLambda( $container ) {
     if ( !$container || $container.length === 0 ) return;
 
-    mw.loader.using( '@wikimedia/codex' ).then( require => {
+    mw.loader.using( [ '@wikimedia/codex', 'ext.wikilambda.app' ] ).then( require => {
         const { createMwApp } = require( 'vue' );
         const { createPinia } = require( 'pinia' );
+        const { useMainStore, App } = require( 'ext.wikilambda.app' );
 
-        mw.loader.using( 'ext.wikilambda.app' ).then( require => {
-            const { useMainStore, App } = require( 'ext.wikilambda.app' );
-
-            // Conditionally mount App.vue:
-            // If wgWikilambda config variable is available, we want to mount WikiLambda App.
-            if ( mw.config.get( 'wgWikiLambda' ) ) {
-                const pinia = createPinia();
-                const store = useMainStore( pinia );
-                window.vueInstance = createMwApp( Object.assign( {
-                    provide: () => ( {
-                        viewmode: store.getViewMode,
-                    } ),
-                }, App ) )
-                    .use( pinia )
-                    .mount( $container.get( 0 ) );
-            }
-        } );
+        // Conditionally mount App.vue:
+        // If wgWikilambda config variable is available, we want to mount WikiLambda App.
+        if ( mw.config.get( 'wgWikiLambda' ) ) {
+            const pinia = createPinia();
+            const store = useMainStore( pinia );
+            window.vueInstance = createMwApp( Object.assign( {
+                provide: () => ( {
+                    viewmode: store.getViewMode,
+                } ),
+            }, App ) )
+                .use( pinia )
+                .mount( $container.get( 0 ) );
+        }
     } );
 }
