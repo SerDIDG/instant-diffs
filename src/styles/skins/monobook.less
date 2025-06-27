@@ -3,6 +3,7 @@
 @media screen {
     --instantDiffs-border-color: #ccc;
     --instantDiffs-font-size: 0.794rem; /* 127% (12.7px) */
+    --instantDiffs-font-size-navigation: var(--instantDiffs-font-size);
     --instantDiffs-line-height: 1.5;
 }
 
@@ -22,6 +23,10 @@
     margin-inline: -1rem;
     margin-bottom: 1rem;
     padding: 1rem;
+
+    @media (max-width: @max-width-breakpoint-mobile) {
+        padding: 0.5rem 1rem;
+    }
 }
 
 /*** BUTTON GROUPS ***/

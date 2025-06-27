@@ -5,6 +5,7 @@
 /******* VARIABLES *******/
 
 @media screen {
+    --instantDiffs-border-color: var(--theme-border-color, #4f4f51);
     --instantDiffs-background-navigation: color-mix(in srgb, var(--theme-page-background-color--secondary, #ffffff) 70%, transparent);
     --instantDiffs-font-size: 1rem;
     --instantDiffs-line-height: 1.75;
@@ -15,5 +16,28 @@
 
 .instantDiffs-navigation {
     margin-inline: -24px;
-    padding: 1em 24px;
+
+    @media (min-width: @min-width-breakpoint-tablet) {
+        padding-inline: 24px;
+    }
+}
+
+/*** BUTTON GROUPS ***/
+
+.instantDiffs-buttons-group {
+    &--vertical {
+        hr {
+            border-color: var(--instantDiffs-border-color);
+        }
+    }
+}
+
+/******* VIEW *******/
+
+.instantDiffs-view-loader {
+    border: none;
+
+    .oo-ui-progressBarWidget-bar {
+        height: 0.28571429em;
+    }
 }
