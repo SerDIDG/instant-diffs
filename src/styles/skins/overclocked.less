@@ -5,6 +5,8 @@
 /******* VARIABLES *******/
 
 @media screen {
+    --instantDiffs-font-size: 1.3rem;
+    --instantDiffs-font-size-navigation: var(--instantDiffs-font-size);
     --instantDiffs-view-top: 45px;
 }
 
@@ -25,4 +27,15 @@
 
 .instantDiffs-button--compare {
     padding: 8px 12px;
+}
+
+/******* VIEW *******/
+
+.instantDiffs-view-loader {
+    border: none;
+    box-shadow: none;
+
+    .oo-ui-progressBarWidget-bar {
+        height: 0.28571429em;
+    }
 }

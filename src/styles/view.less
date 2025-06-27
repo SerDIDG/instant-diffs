@@ -17,6 +17,17 @@
             opacity: 0;
         }
     }
+
+    .oo-ui-windowManager-modal:not(.oo-ui-windowManager-size-full) & > {
+        .instantDiffs-navigation {
+            border-radius: var(--instantDiffs-view-radius) var(--instantDiffs-view-radius) 0 0;
+        }
+
+        .instantDiffs-view-loader {
+            border-top-right-radius: max(var(--instantDiffs-view-radius), 0.28571429em) 0.28571429em;
+            border-top-left-radius: max(var(--instantDiffs-view-radius), 0.28571429em) 0.28571429em;
+        }
+    }
 }
 
 .instantDiffs-view-overlay {
@@ -30,6 +41,7 @@
     position: absolute;
     inset: 0 0 auto;
     z-index: 3;
+    border-radius: 0;
     transition: opacity 150ms ease-in-out;
 
     .oo-ui-progressBarWidget-bar {
