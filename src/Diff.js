@@ -1,7 +1,7 @@
 import id from './id';
 import * as utils from './utils';
+import * as utilsDiff from './utils-diff';
 import { executeModuleScript } from './utils-oojs';
-import { restoreInlineFormatToggle, restoreRollbackLink, restoreVisualDiffs, restoreWikiLambda } from './utils-diff';
 
 import Navigation from './Navigation';
 
@@ -333,6 +333,12 @@ class Diff {
         // Process diff table
         this.processDiffTable();
         this.processFlaggedRevs();
+
+        // Process revision
+        this.processRevision();
+
+        // Restore functionally that not requires that elements are in the DOM
+        this.processFunctionality();
     }
 
     collectData() {
@@ -480,6 +486,15 @@ class Diff {
             .addClass( 'instantDiffs-hidden' );
     }
 
+    processRevision() {
+        this.nodes.$diffTitle = this.nodes.$data.filter( '.diff-currentversion-title' );
+
+        // Hide unsupported or unnecessary element
+        this.nodes.$data
+            .find( '.mw-slot-header' )
+            .addClass( 'instantDiffs-hidden' );
+    }
+
     renderError() {
         const message = utils.getErrorMessage( `error-${ this.error.type }-${ this.error.code }`, this.error, this.page );
         const $message = $( `<p>${ message }</p>` );
@@ -505,17 +520,34 @@ class Diff {
         $links.each( ( i, node ) => node.setAttribute( 'target', '_blank' ) );
     }
 
+    async processFunctionality() {
+        // Restore file media info
+        this.nodes.$mediaInfoView = this.nodes.$data.find( 'mediainfoview' );
+        if ( this.page.type === 'revision' && this.nodes.$mediaInfoView.length > 0 ) {
+            const content = await utilsDiff.restoreFileMediaInfo( this.nodes.$mediaInfoView );
+            if ( content ) {
+                utils.embed( content, this.nodes.$diffTitle, 'insertAfter' );
+            }
+        }
+    }
+
     restoreFunctionality() {
         if ( this.error ) return;
+
+        // Restore rollback and patrol links scripts
+        executeModuleScript( 'mediawiki.misc-authed-curate' );
+
+        // Restore rollback link
+        utilsDiff.restoreRollbackLink( this.nodes.$body );
 
         // Restore diff format toggle buttons
         const diffTablePrefixTools = [];
 
         if ( this.page.type === 'diff' && utils.defaults( 'showDiffTools' ) ) {
-            const hasInlineToggle = restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
+            const hasInlineToggle = utilsDiff.restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
             if ( hasInlineToggle ) diffTablePrefixTools.push( hasInlineToggle );
 
-            const hasVisualDiffs = restoreVisualDiffs( this.nodes.$diffTablePrefix );
+            const hasVisualDiffs = utilsDiff.restoreVisualDiffs( this.nodes.$diffTablePrefix );
             if ( hasVisualDiffs ) diffTablePrefixTools.push( hasVisualDiffs );
         }
 
@@ -525,16 +557,10 @@ class Diff {
             this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', ( !hasVisibleChild || diffTablePrefixTools.length === 0 ) );
         }
 
-        // Restore rollback and patrol links scripts
-        executeModuleScript( 'mediawiki.misc-authed-curate' );
-
-        // Restore rollback link
-        restoreRollbackLink( this.nodes.$body );
-
         // Restore WikiLambda app
         this.nodes.$wikiLambdaApp = this.nodes.$data.filter( '#ext-wikilambda-app' );
         if ( this.nodes.$wikiLambdaApp.length > 0 ) {
-            restoreWikiLambda( this.nodes.$wikiLambdaApp );
+            utilsDiff.restoreWikiLambda( this.nodes.$wikiLambdaApp );
 
             // Render warning about current limitations
             const $message = $( utils.msgDom( 'dialog-notice-wikilambda' ) );
@@ -548,7 +574,7 @@ class Diff {
      * Fire hooks and events.
      */
     fire() {
-        // Try to restore all original functionality
+        // Restore functionally that requires that elements are in the DOM
         this.restoreFunctionality();
 
         // Fire navigation events

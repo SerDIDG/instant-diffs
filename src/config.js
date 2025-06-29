@@ -55,11 +55,16 @@ export const config = {
             'oojs-ui.styles.icons-interactions',
         ],
         revision: {
-            6: [
+            6: [                                                        // File:
                 'filepage',
+                "wikibase.mediainfo.filepage.styles",
+                "wikibase.mediainfo.statements",
             ],
-            14: [
+            14: [                                                       // Category:
                 'mediawiki.page.gallery.styles',
+            ],
+            146: [                                                      // Lexeme:
+                'wikibase.lexeme.styles'
             ],
         },
     },

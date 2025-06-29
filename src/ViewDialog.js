@@ -85,11 +85,11 @@ class ViewDialog extends OO.ui.MessageDialog {
                     data.message !== undefined ? data.message : this.constructor.static.message,
                 );
 
-                // Restore focus trap inside the dialog
-                this.focus();
-
                 // Set a vertical scroll position to the top of the content
                 this.container.$element.scrollTop( 0 );
+
+                // Restore focus trap inside the dialog
+                this.focus();
 
                 // Toggle content visibility
                 this.toggleVisibility( true );

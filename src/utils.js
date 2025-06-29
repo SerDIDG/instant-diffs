@@ -226,6 +226,30 @@ export function getMsgParams( params ) {
     return params;
 }
 
+/**
+ * Loads interface messages if missing.
+ * @param {array|string} messages
+ * @param {object} [options]
+ * @returns {mw.Api.Promise<[] | [boolean]>|boolean}
+ */
+export function loadMessage( messages, options ) {
+    messages = typeof messages === 'string' ? [ messages ] : messages;
+    options = {
+        promise: true,
+        ...options,
+    };
+
+    // Return results as soon as possible
+    if ( !options.promise ) {
+        const missing = messages.filter( msg => !mw.message( msg ).exists() );
+        if ( missing.length === 0 ) return true;
+    }
+
+    return id.local.mwApi.loadMessagesIfMissing( messages, {
+        uselang: id.local.language,
+    } );
+}
+
 export function getErrorStatusText( status ) {
     if ( !Number.isInteger( status ) ) return;
 

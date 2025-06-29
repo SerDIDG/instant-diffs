@@ -1,6 +1,9 @@
 import id from './id';
 import * as utils from './utils';
 import { getModuleExport } from './utils-oojs';
+import { loadMessage } from './utils';
+
+const { h } = utils;
 
 /******* COMMON *******/
 
@@ -165,4 +168,54 @@ export function restoreWikiLambda( $container ) {
                 .mount( $container.get( 0 ) );
         }
     } );
+}
+
+/******* FILE MEDIA INFO *******/
+
+/**
+ * Partially restore file media info.
+ * @param {JQuery} $content
+ * @returns {Element}
+ */
+export async function restoreFileMediaInfo( $content ) {
+    if ( !$content || $content.length === 0 ) return;
+
+    const messages = [
+        'wikibasemediainfo-filepage-fileinfo-heading',
+        'wikibasemediainfo-filepage-structured-data-heading',
+    ];
+    await utils.loadMessage( messages, { promise: false } );
+
+    return renderFileMediaInfo( $content );
+}
+
+function renderFileMediaInfo( $content ) {
+    const captionsTab = new OO.ui.TabPanelLayout( 'captions', {
+        expanded: false,
+        label: mw.msg( 'wikibasemediainfo-filepage-fileinfo-heading' ),
+        $content: $content.find( 'mediainfoviewcaptions' ),
+    } );
+
+    const statementsTab = new OO.ui.TabPanelLayout( 'statements', {
+        expanded: false,
+        label: mw.msg( 'wikibasemediainfo-filepage-structured-data-heading' ),
+        $content: $content.find( 'mediainfoviewstatements' ),
+    } );
+
+    const index = new OO.ui.IndexLayout( {
+        expanded: false,
+        framed: false,
+    } );
+    index.addTabPanels( [ captionsTab, statementsTab ], 0 );
+
+    const panel = new OO.ui.PanelLayout( {
+        expanded: false,
+        framed: false,
+        content: [ index ],
+    } );
+
+    // Render structure
+    return h( 'div', { class: 'instantDiffs-view-mediaInfo' },
+        panel.$element.get( 0 ),
+    );
 }
