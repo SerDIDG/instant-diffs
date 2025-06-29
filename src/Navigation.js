@@ -109,8 +109,8 @@ class Navigation {
         const items = [];
 
         // Previous link on the page
-        this.buttons.shapshotPrev = this.renderSnapshotPrevLink();
-        items.push( this.buttons.shapshotPrev );
+        this.buttons.snapshotPrev = this.renderSnapshotPrevLink();
+        items.push( this.buttons.snapshotPrev );
 
         // Next link on the page
         this.buttons.snapshotNext = this.renderSnapshotNextLink();
@@ -167,9 +167,9 @@ class Navigation {
         }
 
         // [FlaggedRevisions] Link to all unpatrolled changes
-        if ( this.options.links.$pending?.length > 0 ) {
-            this.buttons.pending = this.renderPendingLink( { name: 'pending', ...buttonOptions } );
-            items.push( this.buttons.pending );
+        if ( this.options.links.$unpatrolled?.length > 0 ) {
+            this.buttons.unpatrolled = this.renderUnpatrolledLink( { name: 'unpatrolled', ...buttonOptions } );
+            items.push( this.buttons.unpatrolled );
         }
 
         // Render dropdown button
@@ -320,9 +320,9 @@ class Navigation {
         }
 
         // [FlaggedRevisions] Link to all unpatrolled changes
-        if ( this.options.links.$pending?.length > 0 ) {
-            this.buttons.mobilePending = this.renderPendingLink( { name: 'mobilePending', ...buttonOptions } );
-            items.push( this.buttons.mobilePending );
+        if ( this.options.links.$unpatrolled?.length > 0 ) {
+            this.buttons.mobileUnpatrolled = this.renderUnpatrolledLink( { name: 'mobileUnpatrolled', ...buttonOptions } );
+            items.push( this.buttons.mobileUnpatrolled );
         }
 
         // Link that switch between revision and diff
@@ -530,8 +530,8 @@ class Navigation {
      * @param {object} [options] button configuration options
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
-    renderPendingLink( options ) {
-        const link = this.options.links.$pending;
+    renderUnpatrolledLink( options ) {
+        const link = this.options.links.$unpatrolled;
 
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-view-pending' ),
@@ -782,15 +782,26 @@ class Navigation {
      * @param {string} name
      */
     focusButton( name ) {
-        const actions = {
-            'pending': 'back',
-            'pendingMobile': 'backMobile',
-            'pending-back': 'pending',
-            'pendingMobile-backMobile': 'pendingMobile',
+        const unpatrolledActions = {
+            'unpatrolled': 'back',
+            'mobileUnpatrolled': 'backMobile',
+            'unpatrolled-back': 'unpatrolled',
+            'mobileUnpatrolled-backMobile': 'mobileUnpatrolled',
         };
-        name = actions[ name ] || name;
+        const disabledActions = {
+            'next': 'prev',
+            'prev': 'next',
+            'snapshotNext': 'snapshotPrev',
+            'snapshotPrev': 'snapshotNext',
+        };
+        name = unpatrolledActions[ name ] || name;
 
-        const button = this.buttons[ name ];
+        let button = this.buttons[ name ];
+        if ( button && button.isDisabled() ) {
+            name = disabledActions[ name ];
+            button = this.buttons[ name ];
+        }
+
         if ( !button ) return;
         button.focus();
     }

@@ -451,26 +451,26 @@ class Diff {
 
     processFlaggedRevs() {
         // Find FlaggedRevs table info and insert before the diff table to fix the elements flow
-        this.nodes.$frDiff = this.nodes.$data
+        this.nodes.$frDiffHeader = this.nodes.$data
             .filter( '#mw-fr-diff-headeritems' )
             .insertBefore( this.nodes.$table );
 
         // Find and hide the "All unpatrolled diffs" link, so the other scripts can use it later
-        this.nodes.$pendingLink = this.nodes.$frDiff
+        this.nodes.$unpatrolledLink = this.nodes.$frDiffHeader
             .find( '.fr-diff-to-stable a' )
             .attr( 'data-instantdiffs-link', 'none' )
             .addClass( 'instantDiffs-hidden' );
         if ( this.page.type === 'diff' ) {
-            this.links.$pending = this.nodes.$pendingLink;
+            this.links.$unpatrolled = this.nodes.$unpatrolledLink;
         }
 
         // Show or hide diff info table in the revision view
         if ( this.page.type === 'revision' ) {
             if ( utils.defaults( 'showRevisionInfo' ) ) {
                 // Hide the left side of the table and left only related to the revision info
-                this.nodes.$frDiff.find( '.fr-diff-ratings td:nth-child(2n-1)' ).addClass( 'instantDiffs-hidden' );
+                this.nodes.$frDiffHeader.find( '.fr-diff-ratings td:nth-child(2n-1)' ).addClass( 'instantDiffs-hidden' );
             } else {
-                this.nodes.$frDiff.addClass( 'instantDiffs-hidden' );
+                this.nodes.$frDiffHeader.addClass( 'instantDiffs-hidden' );
             }
         }
 
