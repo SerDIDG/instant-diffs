@@ -335,7 +335,9 @@ class Diff {
         this.processFlaggedRevs();
 
         // Process revision
-        this.processRevision();
+        if ( this.page.type === 'revision' ) {
+            this.processRevision();
+        }
 
         // Restore functionally that not requires that elements are in the DOM
         this.processFunctionality();
