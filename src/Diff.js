@@ -491,7 +491,7 @@ class Diff {
 
         // Hide unsupported or unnecessary element
         this.nodes.$data
-            .find( '.mw-slot-header' )
+            .find( '.mw-diff-slot-header, .mw-slot-header' )
             .addClass( 'instantDiffs-hidden' );
     }
 
