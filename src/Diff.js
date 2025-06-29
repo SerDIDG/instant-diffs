@@ -84,12 +84,14 @@ class Diff {
      * Create a diff instance.
      * @param {object} page a page object
      * @param {object} [options] configuration options
+     * @param {string[]} [options.initiatorAction] an action name
      * @param {import('./Diff').default} [options.initiatorDiff] a Diff instance
      */
     constructor( page, options ) {
         this.page = { ...page };
 
         this.options = {
+            initiatorAction: null,
             initiatorDiff: null,
             ...options,
         };
@@ -491,8 +493,7 @@ class Diff {
 
     renderNavigation() {
         this.navigation = new Navigation( this, this.page, this.pageParams, {
-            type: this.page.type,
-            typeVariant: this.page.typeVariant,
+            initiatorAction: this.options.initiatorAction,
             links: this.links,
         } );
         this.navigation.embed( this.nodes.$container, 'prependTo' );
@@ -543,9 +544,15 @@ class Diff {
 
     /******* ACTIONS *******/
 
+    /**
+     * Fire hooks and events.
+     */
     fire() {
         // Try to restore all original functionality
         this.restoreFunctionality();
+
+        // Fire navigation events
+        this.getNavigation()?.fire();
 
         // Fire diff table hook
         const $diffTable = this.getDiffTable();
@@ -597,11 +604,15 @@ class Diff {
         return this.options.initiatorDiff;
     }
 
+    getNavigation() {
+        return this.navigation;
+    }
+
     detach() {
         mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).fire( this );
 
         this.abort();
-        this.navigation?.detach();
+        this.getNavigation()?.detach();
         this.getContainer()?.detach();
         this.isDetached = true;
     }

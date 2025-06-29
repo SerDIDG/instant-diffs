@@ -77,6 +77,15 @@ class Link {
      * Create a link instance.
      * @param {Element} node a link node
      * @param {object} [options] configuration options
+     * @param {string} [options.behavior]
+     * @param {string} [options.insertAfter]
+     * @param {import('./Link').default} [options.initiatorLink] a Link instance
+     * @param {import('./Diff').default} [options.initiatorDiff] a Diff instance
+     * @param {View} [options.initiatorView] a View instance
+     * @param {function} [options.onRequest] a callback
+     * @param {function} [options.onLoad] a callback
+     * @param {function} [options.onOpen] a callback
+     * @param {function} [options.onClose] a callback
      */
     constructor( node, options ) {
         this.node = node;
@@ -84,8 +93,10 @@ class Link {
             behavior: 'default',            // default | basic | event | none
             insertMethod: 'insertAfter',
             initiatorLink: null,
-            initiatorView: null,
             initiatorDiff: null,
+            initiatorView: null,
+            onRequest: () => {},
+            onLoad: () => {},
             onOpen: () => {},
             onClose: () => {},
             ...options,
@@ -594,14 +605,39 @@ class Link {
             onOpen: () => this.onDialogOpen(),
             onClose: () => this.onDialogClose(),
         };
-        const promise = view.setup( this, options );
-        if ( !promise ) return;
+        const isReady = view.setup( this, options );
+        if ( !isReady ) return;
 
-        this.toggleLoader( true );
-        $.when( promise )
-            .always( () => this.toggleLoader( false ) );
+        this.onDialogRequest();
+        $.when( view.load() )
+            .always( () => this.onDialogLoad() );
     }
 
+    /**
+     * Event that emits before the View dialog loads.
+     */
+    onDialogRequest() {
+        this.toggleLoader( true );
+
+        if ( utils.isFunction( this.options.onRequest ) ) {
+            this.options.onRequest( this );
+        }
+    }
+
+    /**
+     * Event that emits after the View dialog loads.
+     */
+    onDialogLoad() {
+        this.toggleLoader( false );
+
+        if ( utils.isFunction( this.options.onLoad ) ) {
+            this.options.onLoad( this );
+        }
+    }
+
+    /**
+     * Event that emits after the View dialog opens.
+     */
     onDialogOpen() {
         if ( this.mw.hasLine && this.config.highlightLine ) {
             this.mw.line.classList.add( 'instantDiffs-line--highlight' );
@@ -616,6 +652,9 @@ class Link {
         }
     }
 
+    /**
+     * Event that emits after the View dialog closes.
+     */
     onDialogClose() {
         if ( this.mw.hasLine ) {
             if ( this.config.highlightLine ) {

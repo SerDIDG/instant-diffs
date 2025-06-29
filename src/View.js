@@ -105,10 +105,13 @@ class View {
      * Setup configuration options.
      * @param {import('./Link').default|import('./ViewButton').default} link a Link, or a ViewButton instance
      * @param {object} [options] configuration options
-     * @returns {Promise|undefined} a request promise
+     * @param {import('./Diff').default} [options.initiatorDiff] a Diff instance
+     * @param {function} [options.onOpen] a callback
+     * @param {function} [options.onClose] a callback
+     * @returns {boolean} a ready state
      */
     setup( link, options ) {
-        if ( this.isRequesting || this.isProcessing ) return;
+        if ( this.isRequesting || this.isProcessing ) return false;
 
         // Track on dialog process start time
         id.timers.dialogProcesStart = Date.now();
@@ -141,7 +144,7 @@ class View {
             }
         }
 
-        return this.load();
+        return true;
     }
 
     /******* DEPENDENCIES *******/
@@ -355,6 +358,7 @@ class View {
         // Construct the Diff instance
         const page = this.link.getPage();
         const options = {
+            initiatorAction: this.previousDiff?.getNavigation()?.getActionRegister(),
             initiatorDiff: this.options.initiatorDiff,
         };
 
@@ -396,7 +400,7 @@ class View {
             this.previousDiff = null;
         }
 
-        // Fire the Diff hooks
+        // Fire the Diff hooks and events
         this.diff.fire();
 
         // Refresh the dialog content height

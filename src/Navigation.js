@@ -45,11 +45,18 @@ class Navigation {
     buttons = {};
 
     /**
+     * @type {string}
+     */
+    actionRegister;
+
+    /**
      * Create a diff navigation bar instance.
      * @param {import('./Diff').default} diff a Diff instance
      * @param {object} page
      * @param {object} pageParams
      * @param {object} [options] configuration options
+     * @param {string[]} [options.initiatorAction] an action name
+     * @param {object} [options.links] a link nodes object
      */
     constructor( diff, page, pageParams, options ) {
         this.diff = diff;
@@ -59,7 +66,8 @@ class Navigation {
         this.pageParams = { ...pageParams };
 
         this.options = {
-            links: [],
+            initiatorAction: null,
+            links: {},
             ...options,
         };
 
@@ -129,7 +137,7 @@ class Navigation {
 
         // Link that switch between revision and diff
         if ( ![ 'page' ].includes( this.page.typeVariant ) ) {
-            this.buttons.switch = this.renderSwitchLink( buttonOptions );
+            this.buttons.switch = this.renderSwitchLink( { name: 'switch', ...buttonOptions } );
             items.push( this.buttons.switch );
         }
 
@@ -154,13 +162,13 @@ class Navigation {
 
         // Back to the initiator diff link
         if ( this.diff.getInitiatorDiff() ) {
-            this.buttons.initiatorDiff = this.renderBackLink( buttonOptions );
-            items.push( this.buttons.initiatorDiff );
+            this.buttons.back = this.renderBackLink( { name: 'back', ...buttonOptions } );
+            items.push( this.buttons.back );
         }
 
         // [FlaggedRevisions] Link to all unpatrolled changes
         if ( this.options.links.$pending?.length > 0 ) {
-            this.buttons.pending = this.renderPendingLink( buttonOptions );
+            this.buttons.pending = this.renderPendingLink( { name: 'pending', ...buttonOptions } );
             items.push( this.buttons.pending );
         }
 
@@ -307,20 +315,20 @@ class Navigation {
 
         // Back to the initiator diff link
         if ( this.diff.getInitiatorDiff() ) {
-            this.buttons.mobileInitiatorDiff = this.renderBackLink( buttonOptions );
-            items.push( this.buttons.mobileInitiatorDiff );
+            this.buttons.mobileBack = this.renderBackLink( { name: 'mobileBack', ...buttonOptions } );
+            items.push( this.buttons.mobileBack );
         }
 
         // [FlaggedRevisions] Link to all unpatrolled changes
         if ( this.options.links.$pending?.length > 0 ) {
-            this.buttons.mobilePending = this.renderPendingLink( buttonOptions );
+            this.buttons.mobilePending = this.renderPendingLink( { name: 'mobilePending', ...buttonOptions } );
             items.push( this.buttons.mobilePending );
         }
 
         // Link that switch between revision and diff
         if ( ![ 'page', 'compare' ].includes( this.page.typeVariant ) ) {
-            this.buttons.mobileWwitch = this.renderSwitchLink( buttonOptions );
-            items.push( this.buttons.mobileWwitch );
+            this.buttons.mobileSwitch = this.renderSwitchLink( { name: 'mobileSwitch', ...buttonOptions } );
+            items.push( this.buttons.mobileSwitch );
         }
 
         // Separator
@@ -362,6 +370,7 @@ class Navigation {
             new Link( button.$button.get( 0 ), {
                 behavior: 'event',
                 initiatorLink: link,
+                onRequest: () => this.setActionRegister( 'snapshotPrev' ),
             } );
         }
 
@@ -389,6 +398,7 @@ class Navigation {
             new Link( button.$button.get( 0 ), {
                 behavior: 'event',
                 initiatorLink: link,
+                onRequest: () => this.setActionRegister( 'snapshotNext' ),
             } );
         }
 
@@ -435,6 +445,7 @@ class Navigation {
         if ( href ) {
             new Link( button.$button.get( 0 ), {
                 behavior: 'event',
+                onRequest: () => this.setActionRegister( 'prev' ),
             } );
         }
 
@@ -480,6 +491,7 @@ class Navigation {
         if ( href ) {
             new Link( button.$button.get( 0 ), {
                 behavior: 'event',
+                onRequest: () => this.setActionRegister( 'next' ),
             } );
         }
 
@@ -506,6 +518,7 @@ class Navigation {
 
         new Link( button.$button.get( 0 ), {
             behavior: 'event',
+            onRequest: () => this.setActionRegister( options.name ),
         } );
 
         return button;
@@ -532,6 +545,7 @@ class Navigation {
         new Link( button.$button.get( 0 ), {
             behavior: 'event',
             initiatorDiff: this.diff,
+            onRequest: () => this.setActionRegister( options.name ),
         } );
 
         return button;
@@ -555,8 +569,15 @@ class Navigation {
             ...options,
         } );
 
+        const initiatorAction = initiator.getNavigation()?.getActionRegister();
+        let action = options.name;
+        if ( !utils.isEmpty( initiatorAction ) ) {
+            action = `${ initiatorAction }-${ action }`;
+        }
+
         new Link( button.$button.get( 0 ), {
             behavior: 'event',
+            onRequest: () => this.setActionRegister( action ),
         } );
 
         return button;
@@ -732,6 +753,20 @@ class Navigation {
         this.diff.focus();
     }
 
+    /**
+     * Set to the register currently executed switch action, like navigation, etc.
+     */
+    setActionRegister( name ) {
+        this.actionRegister = name;
+    }
+
+    /**
+     * Get from the register previously executed switch action, like navigation, etc.
+     */
+    getActionRegister() {
+        return this.actionRegister;
+    }
+
     /******* ACTIONS *******/
 
     /**
@@ -740,6 +775,31 @@ class Navigation {
      */
     toggleMenuDropdown( value ) {
         this.buttons.menuDropdown.getPopup().toggle( value );
+    }
+
+    /**
+     * Set focus on the specified button
+     * @param {string} name
+     */
+    focusButton( name ) {
+        const actions = {
+            'pending': 'back',
+            'pendingMobile': 'backMobile',
+            'pending-back': 'pending',
+            'pendingMobile-backMobile': 'pendingMobile',
+        };
+        name = actions[ name ] || name;
+
+        const button = this.buttons[ name ];
+        if ( !button ) return;
+        button.focus();
+    }
+
+    /**
+     * Fire hooks and events.
+     */
+    fire() {
+        this.focusButton( this.options.initiatorAction );
     }
 
     /**
