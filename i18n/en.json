@@ -22,8 +22,8 @@
     "action-close": "Close",
     "action-reload": "Reload",
 
-    "goto-snapshot-next": "Next link on a page",
     "goto-snapshot-prev": "Previous link on a page",
+    "goto-snapshot-next": "Next link on a page",
     "goto-view-diff": "Show changes",
     "goto-view-revision": "Show revision",
     "goto-view-unpatrolled": "Pending changes",
@@ -46,8 +46,8 @@
 
     "hint-close": "Esc",
     "hint-alt-click": "Alt+Click: open the link",
-    "hint-snapshot-next": "Ctrl+Arrow Left",
-    "hint-snapshot-prev": "Ctrl+Arrow Right",
+    "hint-snapshot-prev": "Ctrl+Arrow Left",
+    "hint-snapshot-next": "Ctrl+Arrow Right",
     "hint-prev": "Arrow Left",
     "hint-next": "Arrow Right",
     "hint-switch": "Ctrl+Arrow Up",

@@ -46,8 +46,8 @@
 
     "hint-close": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-action-close}}.",
     "hint-alt-click": "Title hint shown in the tooltip that indicates an alternative action when Alt+Click is used on a link.\n\n\"Alt\" means keyboard key, \"Click\" means left mouse button.",
-    "hint-snapshot-next": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-snapshot-prev}}.",
     "hint-snapshot-prev": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-snapshot-next}}.",
+    "hint-snapshot-next": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-snapshot-prev}}.",
     "hint-prev": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-prev-diff}} and {{msg-wm|Instant-diffs-goto-prev-revision}}.",
     "hint-next": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-prev-next}} and {{msg-wm|Instant-diffs-goto-prev-next}}.",
     "hint-switch": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-view-diff}} and {{msg-wm|Instant-diffs-goto-view-revision}}.",

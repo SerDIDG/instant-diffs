@@ -22,8 +22,8 @@
     "action-close": "Закрити",
     "action-reload": "Перезавантажити",
 
-    "goto-snapshot-next": "Наступне посилання на сторінці",
     "goto-snapshot-prev": "Попереднє посилання на сторінці",
+    "goto-snapshot-next": "Наступне посилання на сторінці",
     "goto-view-diff": "Різниця версій",
     "goto-view-revision": "Показати версію",
     "goto-view-unpatrolled": "Неперевірені зміни",
@@ -46,8 +46,8 @@
 
     "hint-close": "Esc",
     "hint-alt-click": "Alt+Click: відкрити посилання",
-    "hint-snapshot-next": "Ctrl+Стрілка вліво",
-    "hint-snapshot-prev": "Ctrl+Стрілка вправо",
+    "hint-snapshot-prev": "Ctrl+Стрілка вліво",
+    "hint-snapshot-next": "Ctrl+Стрілка вправо",
     "hint-prev": "Стрілка вліво",
     "hint-next": "Стрілка вправо",
     "hint-switch": "Ctrl+Стрілка вгору",

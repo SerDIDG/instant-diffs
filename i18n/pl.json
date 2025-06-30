@@ -22,8 +22,8 @@
     "action-close": "Zamknij",
     "action-reload": "Przeładuj",
 
-    "goto-snapshot-next": "Następny link na stronie",
     "goto-snapshot-prev": "Poprzedni link na stronie",
+    "goto-snapshot-next": "Następny link na stronie",
     "goto-view-diff": "Pokaż zmiany",
     "goto-view-revision": "Pokaż wersję",
     "goto-view-unpatrolled": "Oczekuje na przejrzenie",
@@ -46,8 +46,8 @@
 
     "hint-close": "Esc",
     "hint-alt-click": "Alt+klik: otwórz link",
-    "hint-snapshot-next": "Ctrl+Strzałka w lewo",
-    "hint-snapshot-prev": "Ctrl+Strzałka w prawo",
+    "hint-snapshot-prev": "Ctrl+Strzałka w lewo",
+    "hint-snapshot-next": "Ctrl+Strzałka w prawo",
     "hint-prev": "Strzałka w lewo",
     "hint-next": "Strzałka w prawo",
     "hint-switch": "Ctrl+Strzałka w górę",

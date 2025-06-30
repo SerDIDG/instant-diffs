@@ -22,8 +22,8 @@
     "action-close": "Cerrar",
     "action-reload": "Recargar",
 
-    "goto-snapshot-next": "Siguiente enlace en la página",
     "goto-snapshot-prev": "Enlace anterior en la página",
+    "goto-snapshot-next": "Siguiente enlace en la página",
     "goto-view-diff": "Mostrar cambios",
     "goto-view-revision": "Mostrar la revisión",
     "goto-view-unpatrolled": "Ediciones pendientes",
@@ -46,8 +46,8 @@
 
     "hint-close": "Esc",
     "hint-alt-click": "Alt+clic: abrir el enlace",
-    "hint-snapshot-next": "Ctrl+Flecha izquierda",
-    "hint-snapshot-prev": "Ctrl+Flecha derecha",
+    "hint-snapshot-prev": "Ctrl+Flecha izquierda",
+    "hint-snapshot-next": "Ctrl+Flecha derecha",
     "hint-prev": "Flecha izquierda",
     "hint-next": "Flecha derecha",
     "hint-switch": "Ctrl+Flecha arriba",

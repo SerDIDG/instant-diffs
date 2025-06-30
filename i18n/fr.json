@@ -22,8 +22,8 @@
     "action-close": "Fermer",
     "action-reload": "Recharger",
 
-    "goto-snapshot-next": "Lien suivant sur la page",
     "goto-snapshot-prev": "Lien précédent sur la page",
+    "goto-snapshot-next": "Lien suivant sur la page",
     "goto-view-diff": "Afficher les modifications",
     "goto-view-revision": "Afficher la révision",
     "goto-view-unpatrolled": "Modifications en attente",
@@ -46,8 +46,8 @@
 
     "hint-close": "Échap",
     "hint-alt-click": "Alt+clic : ouvrir le lien",
-    "hint-snapshot-next": "Ctrl+Flèche gauche",
-    "hint-snapshot-prev": "Ctrl+Flèche droite",
+    "hint-snapshot-prev": "Ctrl+Flèche gauche",
+    "hint-snapshot-next": "Ctrl+Flèche droite",
     "hint-prev": "Flèche gauche",
     "hint-next": "Flèche droite",
     "hint-switch": "Ctrl+Flèche haut",

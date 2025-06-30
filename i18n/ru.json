@@ -22,8 +22,8 @@
     "action-close": "Закрыть",
     "action-reload": "Перезагрузить",
 
-    "goto-snapshot-next": "Следующая ссылка на странице",
     "goto-snapshot-prev": "Предыдущая ссылка на странице",
+    "goto-snapshot-next": "Следующая ссылка на странице",
     "goto-view-diff": "Разница версий",
     "goto-view-revision": "Показать версию",
     "goto-view-unpatrolled": "Непроверенные изменения",
@@ -46,8 +46,8 @@
 
     "hint-close": "Esc",
     "hint-alt-click": "Alt+Click: перейти по ссылке",
-    "hint-snapshot-next": "Ctrl+Стрелка влево",
-    "hint-snapshot-prev": "Ctrl+Стрелка вправо",
+    "hint-snapshot-prev": "Ctrl+Стрелка влево",
+    "hint-snapshot-next": "Ctrl+Стрелка вправо",
     "hint-prev": "Стрелка влево",
     "hint-next": "Стрелка вправо",
     "hint-switch": "Ctrl+Стрелка вверх",

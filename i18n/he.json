@@ -23,8 +23,8 @@
     "action-close": "סגירה",
     "action-reload": "טען מחדש",
 
-    "goto-snapshot-next": "הקישור הבא בדף",
     "goto-snapshot-prev": "הקישור הקודם בדף",
+    "goto-snapshot-next": "הקישור הבא בדף",
     "goto-view-diff": "הצג שינויים",
     "goto-view-revision": "הצג גרסה",
     "goto-view-unpatrolled": "עריכות ממתינות",
@@ -46,8 +46,8 @@
     "goto-menu": "פעולות",
 
     "hint-alt-click": "Alt+Click: מעבר ליעד הקישור",
-    "hint-snapshot-next": "Ctrl+חץ שמאלה",
-    "hint-snapshot-prev": "Ctrl+חץ ימינה",
+    "hint-snapshot-prev": "Ctrl+חץ שמאלה",
+    "hint-snapshot-next": "Ctrl+חץ ימינה",
     "hint-prev": "חץ שמאלה",
     "hint-next": "חץ ימינה",
     "hint-switch": "Ctrl+חץ למעלה",
