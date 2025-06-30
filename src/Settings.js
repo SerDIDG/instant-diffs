@@ -119,9 +119,9 @@ class Settings {
         // Construct the Settings dialog and attach it to the Window Managers
         this.dialog = new SettingsDialog();
         this.dialog.connect( this, {
-            opening: event => this.emit('opening', event),
-            closing: event => this.emit('closing', event),
-        });
+            opening: 'onOpening',
+            closing: 'onClosing',
+        } );
 
         this.manager = getWindowManager();
         this.manager.addWindows( [ this.dialog ] );
@@ -143,11 +143,25 @@ class Settings {
     }
 
     /**
+     * Event that emits after the Settings dialog starts opening.
+     */
+    onOpening() {
+        this.emit( 'opening' );
+    }
+
+    /**
      * Event that emits after the Settings dialog opens.
      */
     onOpen() {
         this.isOpen = true;
         this.emit( 'opened' );
+    }
+
+    /**
+     * Event that emits after the View Settings starts closing.
+     */
+    onClosing() {
+        this.emit( 'closing' );
     }
 
     /**

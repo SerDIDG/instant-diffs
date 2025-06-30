@@ -230,10 +230,10 @@ class View {
         // Construct the View dialog and attach it to the View Managers
         this.dialog = new ViewDialog();
         this.dialog.connect( this, {
-            opening: event => this.emit('opening', event),
-            closing: event => this.emit('closing', event),
-            hotkey: event => this.emit('hotkey', event),
-        });
+            hotkey: event => this.emit( 'hotkey', event ),
+            opening: 'onOpening',
+            closing: 'onClosing',
+        } );
 
         this.manager = getWindowManager();
         this.manager.addWindows( [ this.dialog ] );
@@ -270,6 +270,13 @@ class View {
     }
 
     /**
+     * Event that emits after the View dialog starts opening.
+     */
+    onOpening() {
+        this.emit( 'opening' );
+    }
+
+    /**
      * Event that emits after the View dialog opens.
      */
     onOpen() {
@@ -278,6 +285,15 @@ class View {
         if ( utils.isFunction( this.options.onOpen ) ) {
             this.options.onOpen( this );
         }
+
+        this.emit( 'opened' );
+    }
+
+    /**
+     * Event that emits after the View dialog starts closing.
+     */
+    onClosing() {
+        this.emit( 'closing' );
     }
 
     /**
@@ -317,6 +333,8 @@ class View {
         // In the revision view, some module dependencies cause the page
         // to scroll to the top after loading, for some reason.
         this.document.scrollableRoot.scrollTop = this.document.scrollTop;
+
+        this.emit( 'closed' );
     }
 
     /**
@@ -339,6 +357,8 @@ class View {
         ) {
             this.initiator.options.onOpen( this );
         }
+
+        this.emit( 'updated' );
     }
 
     /******* DIFF *******/

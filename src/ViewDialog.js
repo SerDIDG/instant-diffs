@@ -3,7 +3,6 @@ import { tweakUserOoUiClass } from './utils-oojs';
 
 import DivLabelWidget from './DivLabelWidget';
 import ViewProgressBar from './ViewProgrssBar';
-import view from './View';
 
 /**
  * Class representing a ViewDialog.
@@ -37,6 +36,10 @@ class ViewDialog extends OO.ui.MessageDialog {
         this.message.$element.remove();
         this.message = new DivLabelWidget();
         this.text.$element.append( this.message.$element );
+
+        // Set content scroll element as primary focusable element
+        this.$content.removeAttr( 'tabindex' );
+        this.container.$element.attr( 'tabindex', '-1' );
 
         // Close the dialog when clicking outside of it
         this.$clickOverlay = $( '<div>' )
@@ -121,11 +124,14 @@ class ViewDialog extends OO.ui.MessageDialog {
 
     /******* ACTIONS *******/
 
-    focus( ...args ) {
-        super.focus?.( ...args );
-
-        // Focus scroll element so user can immediately interact with a content without pressing another tab
-        this.container.$element.trigger( 'focus' );
+    focus( focusLast ) {
+        if ( focusLast ) {
+            super.focus( focusLast );
+        } else {
+            // Focus scroll element so user can immediately interact with a content without pressing another tab
+            this.container.$element.trigger( 'focus' );
+        }
+        return this;
     }
 
     toggleVisibility( value ) {
