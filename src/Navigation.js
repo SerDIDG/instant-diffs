@@ -110,6 +110,8 @@ class Navigation {
     }
 
     onHotkey( event ) {
+        if ( !utils.defaults( 'enableHotkeys' ) ) return;
+
         const isCtrlPressed = event.ctrlKey;
         const isShiftPressed = event.shiftKey;
         const isAltPressed = event.altKey;
@@ -254,7 +256,7 @@ class Navigation {
         return new OO.ui.PopupButtonWidget( {
             icon: 'menu',
             label: utils.msg( 'goto-menu' ),
-            title: utils.msgHint( 'goto-menu', 'menu' ),
+            title: utils.msgHint( 'goto-menu', 'menu', utils.defaults( 'enableHotkeys' ) ),
             invisibleLabel: true,
             popup: {
                 $content: $( groupsElements ),
@@ -404,7 +406,7 @@ class Navigation {
 
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-snapshot-prev' ),
-            title: utils.msgHint( 'goto-snapshot-prev', 'snapshot-prev' ),
+            title: utils.msgHint( 'goto-snapshot-prev', 'snapshot-prev', utils.defaults( 'enableHotkeys' ) ),
             href: link ? link.href : null,
             target: utils.getTarget( true ),
             invisibleLabel: true,
@@ -432,7 +434,7 @@ class Navigation {
 
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-snapshot-next' ),
-            title: utils.msgHint( 'goto-snapshot-next', 'snapshot-next' ),
+            title: utils.msgHint( 'goto-snapshot-next', 'snapshot-next', utils.defaults( 'enableHotkeys' ) ),
             href: link ? link.href : null,
             target: utils.getTarget( true ),
             invisibleLabel: true,
@@ -483,7 +485,7 @@ class Navigation {
 
         const button = new OO.ui.ButtonWidget( {
             label: $( label ),
-            title: utils.msgHint( `goto-prev-${ this.page.type }`, 'prev' ),
+            title: utils.msgHint( `goto-prev-${ this.page.type }`, 'prev', utils.defaults( 'enableHotkeys' ) ),
             href: href,
             target: utils.getTarget( true ),
             disabled: !href,
@@ -530,7 +532,7 @@ class Navigation {
 
         const button = new OO.ui.ButtonWidget( {
             label: $( label ),
-            title: utils.msgHint( `goto-next-${ this.page.type }`, 'next' ),
+            title: utils.msgHint( `goto-next-${ this.page.type }`, 'next', utils.defaults( 'enableHotkeys' ) ),
             href: href,
             target: utils.getTarget( true ),
             disabled: !href,
@@ -557,7 +559,7 @@ class Navigation {
 
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( `goto-view-${ page.type }` ),
-            title: utils.msgHint( `goto-view-${ page.type }`, 'switch' ),
+            title: utils.msgHint( `goto-view-${ page.type }`, 'switch', utils.defaults( 'enableHotkeys' ) ),
             href: utils.getTypeHref( page ),
             target: utils.getTarget( true ),
             icon: 'specialPages',
@@ -584,7 +586,7 @@ class Navigation {
 
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-view-unpatrolled' ),
-            title: utils.msgHint( 'goto-view-unpatrolled', 'unpatrolled' ),
+            title: utils.msgHint( 'goto-view-unpatrolled', 'unpatrolled', utils.defaults( 'enableHotkeys' ) ),
             href: link.attr( 'href' ),
             target: utils.getTarget( true ),
             icon: 'info',
@@ -612,7 +614,7 @@ class Navigation {
 
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( `goto-back-${ page.type }` ),
-            title: utils.msgHint( `goto-back-${ page.type }`, 'back' ),
+            title: utils.msgHint( `goto-back-${ page.type }`, 'back', utils.defaults( 'enableHotkeys' ) ),
             href: utils.getTypeHref( page, initiator.getPageParams() ),
             target: utils.getTarget( true ),
             icon: 'newline',

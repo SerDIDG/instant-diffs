@@ -93,6 +93,7 @@
     "settings-fieldset-general": "General",
     "settings-enable-mobile": "Habilitar Instant Diffs en la apariencia móvil (Minerva).",
     "settings-enable-mobile-help": "Para volver a habilitar Instant Diffs, tendrás que cambiar a otra apariencia.",
+    "settings-enable-hotkeys": "Habilitar los atajos de teclado en el cuadro de diálogo de Instant Diffs.",
     "settings-show-menu-icons": "Mostrar iconos en el menú desplegable del diálogo de Instant Diffs.",
     "settings-notify-errors": "Mostrar alertas emergentes para errores críticos.",
 

@@ -93,6 +93,7 @@
     "settings-fieldset-general": "Title for the field group that combines appearance-related settings.\n\nDisplayed in the Settings dialog.",
     "settings-enable-mobile": "Label of the checkbox in the settings dialog.",
     "settings-enable-mobile-help": "Help text for the checkbox labeled with the {{msg-wm|Instant-diffs-settings-enable-mobile}} message in the Settings dialog.",
+    "settings-enable-hotkeys": "Label of the checkbox in the settings dialog.",
     "settings-show-menu-icons": "Label of the checkbox in the settings dialog.",
     "settings-notify-errors": "Label of the checkbox in the settings dialog.",
 

@@ -57,14 +57,14 @@ export const config = {
         revision: {
             6: [                                                        // File:
                 'filepage',
-                "wikibase.mediainfo.filepage.styles",
-                "wikibase.mediainfo.statements",
+                'wikibase.mediainfo.filepage.styles',
+                'wikibase.mediainfo.statements',
             ],
             14: [                                                       // Category:
                 'mediawiki.page.gallery.styles',
             ],
             146: [                                                      // Lexeme:
-                'wikibase.lexeme.styles'
+                'wikibase.lexeme.styles',
             ],
         },
     },
@@ -82,6 +82,7 @@ export const config = {
         linksFormat: true,
         wikilinksFormat: true,
         enableMobile: true,
+        enableHotkeys: true,
         showMenuIcons: true,
         notifyErrors: true,
     },
@@ -101,6 +102,7 @@ export const config = {
         linksFormat: 'full',
         wikilinksFormat: 'special',
         enableMobile: true,
+        enableHotkeys: true,
         showMenuIcons: true,
         notifyErrors: true,
     },

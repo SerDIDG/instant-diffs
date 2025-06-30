@@ -93,6 +93,7 @@
     "settings-fieldset-general": "Generale",
     "settings-enable-mobile": "Abilita Instant Diffs nel tema mobile (Minerva).",
     "settings-enable-mobile-help": "Per riabilitare Instant Diffs dovrai passare a un altro tema.",
+    "settings-enable-hotkeys": "Abilita le scorciatoie da tastiera nel dialogo di Instant Diffs.",
     "settings-show-menu-icons": "Mostra le icone nel menu a discesa del dialogo Instant Diffs.",
     "settings-notify-errors": "Mostra popup di avviso per errori critici.",
 

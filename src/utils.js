@@ -196,8 +196,12 @@ export function hint( str ) {
     return `[${ msg( str ) }]`;
 }
 
-export function msgHint( str, hintStr ) {
-    return `${ msg( str ) } ${ hint( hintStr ) }`.trim();
+export function msgHint( str, hintStr, showHint = true ) {
+    str = msg( str );
+    if ( showHint ) {
+        str = `${ str } ${ hint( hintStr ) }`;
+    }
+    return str.trim();
 }
 
 export function msgParse() {

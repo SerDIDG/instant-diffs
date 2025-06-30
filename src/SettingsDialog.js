@@ -305,7 +305,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     };
 
     renderGeneralFieldset() {
-        // Unhide revisions and diff content for administrators
+        // Enable on the mobile skin
         this.inputs.enableMobile = new OO.ui.CheckboxInputWidget( {
             selected: utils.defaults( 'enableMobile' ),
         } );
@@ -316,6 +316,16 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             helpInline: true,
         } );
         this.fields.enableMobile.toggle( id.settings.enableMobile );
+
+        // Enable keyboard hotkeys
+        this.inputs.enableHotkeys = new OO.ui.CheckboxInputWidget( {
+            selected: utils.defaults( 'enableHotkeys' ),
+        } );
+        this.fields.enableHotkeys = new OO.ui.FieldLayout( this.inputs.enableHotkeys, {
+            label: utils.msg( 'settings-enable-hotkeys' ),
+            align: 'inline',
+        } );
+        this.fields.enableHotkeys.toggle( id.settings.enableHotkeys );
 
         // Show icons in the dropdown menu
         this.inputs.showMenuIcons = new OO.ui.CheckboxInputWidget( {
@@ -343,11 +353,13 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         } );
         this.layouts.general.addItems( [
             this.fields.enableMobile,
+            this.fields.enableHotkeys,
             this.fields.showMenuIcons,
             this.fields.notifyErrors,
         ] );
         this.layouts.general.toggle(
             id.settings.enableMobile ||
+            id.settings.enableHotkeys ||
             id.settings.showMenuIcons ||
             id.settings.notifyErrors,
         );
