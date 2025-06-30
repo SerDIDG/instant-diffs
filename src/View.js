@@ -102,6 +102,14 @@ class View {
     isProcessing = false;
 
     /**
+     * Create a View instance.
+     */
+    constructor() {
+        // Mixin constructor
+        OO.EventEmitter.call( this );
+    }
+
+    /**
      * Setup configuration options.
      * @param {import('./Link').default|import('./ViewButton').default} link a Link, or a ViewButton instance
      * @param {object} [options] configuration options
@@ -221,6 +229,12 @@ class View {
 
         // Construct the View dialog and attach it to the View Managers
         this.dialog = new ViewDialog();
+        this.dialog.connect( this, {
+            opening: event => this.emit('opening', event),
+            closing: event => this.emit('closing', event),
+            hotkey: event => this.emit('hotkey', event),
+        });
+
         this.manager = getWindowManager();
         this.manager.addWindows( [ this.dialog ] );
     }
@@ -435,11 +449,19 @@ class View {
     }
 
     /**
-     * Get a diff instance.
+     * Get the Diff instance.
      * @returns {import('./Diff').default} a Diff instance
      */
     getDiff() {
         return this.diff;
+    }
+
+    /**
+     * Get the Dialog instance.
+     * @returns {import('./ViewDialog').default} a Dialog instance
+     */
+    getDialog() {
+        return this.dialog;
     }
 
     /**

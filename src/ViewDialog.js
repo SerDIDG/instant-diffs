@@ -16,6 +16,7 @@ class ViewDialog extends OO.ui.MessageDialog {
         {
             action: 'close',
             label: utils.msg( 'action-close' ),
+            title: utils.msgHint( 'action-close', 'close' ),
         },
     ];
 
@@ -58,7 +59,19 @@ class ViewDialog extends OO.ui.MessageDialog {
 
                 // Set a vertical scroll position to the top of the content
                 this.container.$element.scrollTop( 0 );
+
+                // Restore focus on the content
+                this.focus();
             } );
+    }
+
+    onDialogKeyDown( event ) {
+        super.onDialogKeyDown( event );
+
+        // Add key events for the keyboard hotkeys
+        if ( utils.isActiveElement( event ) ) return;
+
+        this.emit( 'hotkey', event );
     }
 
     getBodyHeight() {
@@ -88,11 +101,11 @@ class ViewDialog extends OO.ui.MessageDialog {
                 // Set a vertical scroll position to the top of the content
                 this.container.$element.scrollTop( 0 );
 
-                // Restore focus trap inside the dialog
-                this.focus();
-
                 // Toggle content visibility
                 this.toggleVisibility( true );
+
+                // Restore focus on the content
+                this.focus();
             } );
     }
 
@@ -111,7 +124,8 @@ class ViewDialog extends OO.ui.MessageDialog {
     focus( ...args ) {
         super.focus?.( ...args );
 
-        this.$content.trigger( 'focus' );
+        // Focus scroll element so user can immediately interact with a content without pressing another tab
+        this.container.$element.trigger( 'focus' );
     }
 
     toggleVisibility( value ) {

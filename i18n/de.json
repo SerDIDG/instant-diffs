@@ -4,7 +4,7 @@
             "Serhio Magpie"
         ]
     },
-    
+
     "script-name": "Instant Diffs",
     "script-name-short": "ID",
 
@@ -21,14 +21,12 @@
     "action-cancel": "Abbrechen",
     "action-close": "Schließen",
     "action-reload": "Neu laden",
-    "hint-alt-click": "(Alt+Klick: Link öffnen)",
 
-    "goto-links": "Links",
     "goto-snapshot-next": "Nächster Link auf der Seite",
     "goto-snapshot-prev": "Vorheriger Link auf der Seite",
     "goto-view-diff": "Änderungen anzeigen",
     "goto-view-revision": "Version anzeigen",
-    "goto-view-pending": "Unmarkierten Änderungen",
+    "goto-view-unpatrolled": "Unmarkierten Änderungen",
     "goto-prev": "Älter",
     "goto-next": "Neuer",
     "goto-prev-diff": "Ältere Bearbeitung",
@@ -44,6 +42,18 @@
     "goto-history": "Versionsgeschichte",
     "goto-talkpage": "Diskussion",
     "goto-settings": "Einstellungen",
+    "goto-menu": "Aktionen",
+
+    "hint-close": "Esc",
+    "hint-alt-click": "(Alt+Klick: Link öffnen)",
+    "hint-snapshot-next": "Strg+Pfeil links",
+    "hint-snapshot-prev": "Strg+Pfeil rechts",
+    "hint-prev": "Pfeil links",
+    "hint-next": "Pfeil rechts",
+    "hint-switch": "Strg+Pfeil nach oben",
+    "hint-unpatrolled": "Strg+P",
+    "hint-back": "Strg+Z",
+    "hint-menu": "Strg+Pfeil nach unten",
 
     "copy-link": "Link kopieren",
     "copy-link-copied": "Der Link wurde in die Zwischenablage kopiert.",

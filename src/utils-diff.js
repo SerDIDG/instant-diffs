@@ -1,7 +1,6 @@
 import id from './id';
 import * as utils from './utils';
 import { getModuleExport } from './utils-oojs';
-import { loadMessage } from './utils';
 
 const { h } = utils;
 
@@ -175,7 +174,7 @@ export function restoreWikiLambda( $container ) {
 /**
  * Partially restore file media info.
  * @param {JQuery} $content
- * @returns {Element}
+ * @returns {Element|undefined}
  */
 export async function restoreFileMediaInfo( $content ) {
     if ( !$content || $content.length === 0 ) return;

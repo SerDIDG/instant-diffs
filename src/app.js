@@ -101,8 +101,9 @@ function prepare() {
     mw.util.addCSS( '.instantDiffs-panel { display:none; }' );
 
     // Mixin OO.EventEmitter to the classes after the OOJS dependencies loaded
-    mixEventEmitterInObject(settings);
-    OO.mixinClass(Diff, OO.EventEmitter);
+    mixEventEmitterInObject( settings );
+    mixEventEmitterInObject( view );
+    OO.mixinClass( Diff, OO.EventEmitter );
 
     // Prepare locale variables
     id.local.mwIsAnon = mw.user?.isAnon?.() ?? true;

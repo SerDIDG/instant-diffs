@@ -41,6 +41,20 @@ export function isToggleKey( event ) {
     return event.type === 'click' || ( event.type === 'keypress' && [ 'Enter', 'Space' ].includes( event.code ) );
 }
 
+/**
+ * Checks whether the current action element is typeable.
+ * @param {MouseEvent|KeyboardEvent} event
+ * @returns {boolean}
+ */
+export function isActiveElement( event ) {
+    const nonTypeableInputs = [ 'button', 'submit', 'reset', 'file', 'checkbox', 'radio', 'range', 'color', 'image', 'hidden' ];
+    const element = document.activeElement;
+    return !element ||
+        element.contentEditable === 'true' ||
+        element.tagName === 'TEXTAREA' ||
+        ( element.tagName === 'INPUT' && !nonTypeableInputs.includes( element.type ) );
+}
+
 /******* COMMON *******/
 
 /**
@@ -175,6 +189,15 @@ export function processDefaults() {
 
 export function msg() {
     return mw.msg.apply( mw.msg, getMsgParams( arguments ) );
+}
+
+export function hint( str ) {
+    str = `hint-${ str }`;
+    return `[${ msg( str ) }]`;
+}
+
+export function msgHint( str, hintStr ) {
+    return `${ msg( str ) } ${ hint( hintStr ) }`.trim();
 }
 
 export function msgParse() {
@@ -890,7 +913,7 @@ export function addClick( node, handler, useAltKey = true ) {
         if ( isEmpty( node.dataset.altTitle ) ) {
             node.dataset.altTitle = node.title;
         }
-        node.dataset.altTitle = `${ node.dataset.altTitle } ${ msg( 'hint-alt-click' ) }`.trim();
+        node.dataset.altTitle = `${ node.dataset.altTitle } ${ hint( 'alt-click' ) }`.trim();
         node.dataset.origTitle = node.title;
 
         // Set alt title temporary to increase compatibility with the other scripts

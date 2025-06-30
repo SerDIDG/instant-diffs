@@ -5,6 +5,7 @@ import { renderOoUiElement } from './utils-oojs';
 import Button from './Button';
 import Link from './Link';
 import settings from './Settings';
+import view from './View';
 
 import './styles/navigation.less';
 
@@ -50,6 +51,11 @@ class Navigation {
     actionRegister;
 
     /**
+     * @type {boolean}
+     */
+    isDetached = false;
+
+    /**
      * Create a diff navigation bar instance.
      * @param {import('./Diff').default} diff a Diff instance
      * @param {object} page
@@ -70,6 +76,9 @@ class Navigation {
             links: {},
             ...options,
         };
+
+        // Setup hotkey events
+        view.connect( this, { hotkey: 'onHotkey' } );
 
         this.render();
     }
@@ -98,6 +107,42 @@ class Navigation {
         this.renderSnapshotLinks();
         this.renderNavigationLinks();
         this.renderMenuLinks();
+    }
+
+    onHotkey( event ) {
+        const isCtrlPressed = event.ctrlKey;
+        const isShiftPressed = event.shiftKey;
+        const isAltPressed = event.altKey;
+
+        // Get action
+        const actionMaps = {
+            ctrl: {
+                ArrowLeft: 'snapshotPrev',
+                ArrowRight: 'snapshotNext',
+                ArrowUp: 'switch',
+                ArrowDown: 'menu',
+                KeyZ: 'back',
+                KeyP: 'unpatrolled',
+            },
+            none: {
+                ArrowLeft: 'prev',
+                ArrowRight: 'next',
+            },
+            alt: {},
+            shift: {},
+        };
+
+        const modifier = isAltPressed ? 'alt' : isCtrlPressed ? 'ctrl' : isShiftPressed ? 'shift' : 'none';
+        const action = actionMaps[ modifier ]?.[ event.code ];
+
+        if ( action ) {
+            // Prevent default arrow key behavior
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Execute action
+            this.clickButton( action );
+        }
     }
 
     /******* NAVIGATION *******/
@@ -173,8 +218,8 @@ class Navigation {
         }
 
         // Render dropdown button
-        this.buttons.menuDropdown = this.renderMenuDropdown();
-        items.push( this.buttons.menuDropdown );
+        this.buttons.menu = this.renderMenu();
+        items.push( this.buttons.menu );
 
         // Render group
         this.buttons.menuGroup = new OO.ui.ButtonGroupWidget( { items } );
@@ -187,7 +232,7 @@ class Navigation {
      * Render a menu dropdown.
      * @returns {OO.ui.PopupButtonWidget} a OO.ui.PopupButtonWidget instance
      */
-    renderMenuDropdown() {
+    renderMenu() {
         const buttonOptions = {
             framed: false,
             classes: [ 'instantDiffs-button--link' ],
@@ -208,8 +253,8 @@ class Navigation {
         // Dropdown menu
         return new OO.ui.PopupButtonWidget( {
             icon: 'menu',
-            label: utils.msg( 'goto-links' ),
-            title: utils.msg( 'goto-links' ),
+            label: utils.msg( 'goto-menu' ),
+            title: utils.msgHint( 'goto-menu', 'menu' ),
             invisibleLabel: true,
             popup: {
                 $content: $( groupsElements ),
@@ -221,6 +266,7 @@ class Navigation {
                 padded: false,
                 anchor: false,
                 align: 'backwards',
+                autoClose: true,
             },
         } );
     }
@@ -358,7 +404,7 @@ class Navigation {
 
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-snapshot-prev' ),
-            title: utils.msg( 'goto-snapshot-prev' ),
+            title: utils.msgHint( 'goto-snapshot-prev', 'snapshot-prev' ),
             href: link ? link.href : null,
             target: utils.getTarget( true ),
             invisibleLabel: true,
@@ -386,7 +432,7 @@ class Navigation {
 
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-snapshot-next' ),
-            title: utils.msg( 'goto-snapshot-next' ),
+            title: utils.msgHint( 'goto-snapshot-next', 'snapshot-next' ),
             href: link ? link.href : null,
             target: utils.getTarget( true ),
             invisibleLabel: true,
@@ -437,6 +483,7 @@ class Navigation {
 
         const button = new OO.ui.ButtonWidget( {
             label: $( label ),
+            title: utils.msgHint( `goto-prev-${ this.page.type }`, 'prev' ),
             href: href,
             target: utils.getTarget( true ),
             disabled: !href,
@@ -483,6 +530,7 @@ class Navigation {
 
         const button = new OO.ui.ButtonWidget( {
             label: $( label ),
+            title: utils.msgHint( `goto-next-${ this.page.type }`, 'next' ),
             href: href,
             target: utils.getTarget( true ),
             disabled: !href,
@@ -509,6 +557,7 @@ class Navigation {
 
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( `goto-view-${ page.type }` ),
+            title: utils.msgHint( `goto-view-${ page.type }`, 'switch' ),
             href: utils.getTypeHref( page ),
             target: utils.getTarget( true ),
             icon: 'specialPages',
@@ -534,7 +583,8 @@ class Navigation {
         const link = this.options.links.$unpatrolled;
 
         const button = new OO.ui.ButtonWidget( {
-            label: utils.msg( 'goto-view-pending' ),
+            label: utils.msg( 'goto-view-unpatrolled' ),
+            title: utils.msgHint( 'goto-view-unpatrolled', 'unpatrolled' ),
             href: link.attr( 'href' ),
             target: utils.getTarget( true ),
             icon: 'info',
@@ -562,6 +612,7 @@ class Navigation {
 
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( `goto-back-${ page.type }` ),
+            title: utils.msgHint( `goto-back-${ page.type }`, 'back' ),
             href: utils.getTypeHref( page, initiator.getPageParams() ),
             target: utils.getTarget( true ),
             icon: 'newline',
@@ -694,9 +745,6 @@ class Navigation {
      * Action that copies a link to the edit or revision to the clipboard.
      */
     actionCopyLink() {
-        // Hide menu dropdown
-        this.toggleMenuDropdown( false );
-
         const options = {
             relative: false,
             minify: utils.defaults( 'linksFormat' ) === 'minify',
@@ -705,15 +753,16 @@ class Navigation {
 
         // Copy href to the clipboard
         utils.clipboardWrite( href );
+
+        // Hide menu dropdown
+        this.toggleMenu( false );
+        this.focusButton( 'menu' );
     }
 
     /**
      * Action that copies a formatted wikilink to the edit or revision to the clipboard.
      */
     actionCopyWikilink() {
-        // Hide menu dropdown
-        this.toggleMenuDropdown( false );
-
         const options = {
             relative: false,
             minify: utils.defaults( 'linksFormat' ) === 'minify',
@@ -724,6 +773,10 @@ class Navigation {
 
         // Copy href to the clipboard
         utils.clipboardWrite( href );
+
+        // Hide menu dropdown
+        this.toggleMenu( false );
+        this.focusButton( 'menu' );
     }
 
     /**
@@ -743,14 +796,14 @@ class Navigation {
      */
     onSettingsOpen() {
         // Hide menu dropdown
-        this.toggleMenuDropdown( false );
+        this.toggleMenu( false );
     }
 
     /**
      * Event that emits after the Settings dialog closes.
      */
     onSettingsClose() {
-        this.diff.focus();
+        this.focusButton( 'menu' );
     }
 
     /**
@@ -773,8 +826,8 @@ class Navigation {
      * Toggle a menu dropdown visibility.
      * @param {boolean} value
      */
-    toggleMenuDropdown( value ) {
-        this.buttons.menuDropdown.getPopup().toggle( value );
+    toggleMenu( value ) {
+        this.buttons.menu.getPopup().toggle( value );
     }
 
     /**
@@ -806,6 +859,19 @@ class Navigation {
         button.focus();
     }
 
+    clickButton( name ) {
+        // FixMe: find a way to make the popup hide automatically when the button loses focus
+        if ( name !== 'menu' ) {
+            this.toggleMenu( false );
+        }
+
+        const button = this.buttons[ name ];
+        if ( button && !button.isDisabled() ) {
+            button.focus();
+            button.$button.get( 0 ).click();
+        }
+    }
+
     /**
      * Fire hooks and events.
      */
@@ -827,9 +893,13 @@ class Navigation {
      */
     detach() {
         // Hide menu dropdown
-        this.toggleMenuDropdown( false );
+        this.toggleMenu( false );
+
+        // Disconnect hotkey events
+        view.disconnect( this, { hotkey: 'onHotkey' } );
 
         this.nodes.$container.detach();
+        this.isDetached = true;
     }
 }
 
