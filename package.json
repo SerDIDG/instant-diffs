@@ -1,6 +1,6 @@
 {
     "name": "instant-diffs",
-    "version": "3.1.3+build.1",
+    "version": "3.1.4+build.1",
     "description": "A JavaScript tool that enhances MediaWiki diff links with interactive functionality.",
     "keywords": [
         "wikipedia",

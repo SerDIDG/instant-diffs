@@ -57,17 +57,16 @@ class ViewDialog extends OO.ui.MessageDialog {
     /******* SETUP PROCESS *******/
 
     getSetupProcess( data ) {
-        return super.getSetupProcess( data )
-            .next( () => {
-                // Toggle content visibility
-                this.toggleVisibility( false );
+        return super.getSetupProcess( data ).next( () => {
+            // Toggle content visibility
+            this.toggleVisibility( false );
 
-                // Set a vertical scroll position to the top of the content
-                this.container.$element.scrollTop( 0 );
+            // Set a vertical scroll position to the top of the content
+            this.container.$element.scrollTop( 0 );
 
-                // Restore focus on the content
-                this.focus();
-            } );
+            // Restore focus on the content
+            this.focus();
+        } );
     }
 
     onDialogKeyDown( event ) {
@@ -90,38 +89,36 @@ class ViewDialog extends OO.ui.MessageDialog {
     }
 
     getUpdateProcess( data ) {
-        return new OO.ui.Process()
-            .next( () => {
-                // Hide progress bar
-                this.toggleProgress( false );
+        return new OO.ui.Process().next( () => {
+            // Hide progress bar
+            this.toggleProgress( false );
 
-                // Set content
-                this.title.setLabel(
-                    data.title !== undefined ? data.title : this.constructor.static.title,
-                );
-                this.message.setLabel(
-                    data.message !== undefined ? data.message : this.constructor.static.message,
-                );
+            // Set content
+            this.title.setLabel(
+                data.title !== undefined ? data.title : this.constructor.static.title,
+            );
+            this.message.setLabel(
+                data.message !== undefined ? data.message : this.constructor.static.message,
+            );
 
-                // Set a vertical scroll position to the top of the content
-                this.container.$element.scrollTop( 0 );
+            // Set a vertical scroll position to the top of the content
+            this.container.$element.scrollTop( 0 );
 
-                // Toggle content visibility
-                this.toggleVisibility( true );
+            // Toggle content visibility
+            this.toggleVisibility( true );
 
-                // Restore focus on the content
-                this.focus();
-            } );
+            // Restore focus on the content
+            this.focus();
+        } );
     }
 
     /******* TEARDOWN PROCESS *******/
 
     getTeardownProcess( data ) {
-        return super.getTeardownProcess( data )
-            .next( () => {
-                // Hide progress bar
-                this.toggleProgress( false );
-            } );
+        return super.getTeardownProcess( data ).next( () => {
+            // Hide progress bar
+            this.toggleProgress( false );
+        } );
     }
 
     /******* ACTIONS *******/

@@ -411,6 +411,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         return super.getSetupProcess( data ).next( () => {
             this.actions.setMode( 'edit' );
             this.stackLayout.setItem( this.panelEdit );
+            this.$body.scrollTop( 0 );
             this.processActionRequest();
         } );
     };
