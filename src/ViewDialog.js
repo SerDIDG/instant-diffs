@@ -28,8 +28,8 @@ class ViewDialog extends OO.ui.MessageDialog {
         } );
     }
 
-    initialize( ...args ) {
-        super.initialize( ...args );
+    initialize() {
+        super.initialize();
 
         // By default, the whole message is wrapped in a <label> element.
         // We don't want that behavior and revert it.
@@ -50,6 +50,8 @@ class ViewDialog extends OO.ui.MessageDialog {
         // Render progress bar loader
         this.progressBar = new ViewProgressBar();
         this.$content.prepend( this.progressBar.$element );
+
+        return this;
     }
 
     /******* SETUP PROCESS *******/
@@ -72,7 +74,7 @@ class ViewDialog extends OO.ui.MessageDialog {
         super.onDialogKeyDown( event );
 
         // Add key events for the keyboard hotkeys
-        if ( utils.isActiveElement( event ) ) return;
+        if ( utils.isActiveElement() ) return;
 
         this.emit( 'hotkey', event );
     }

@@ -43,10 +43,9 @@ export function isToggleKey( event ) {
 
 /**
  * Checks whether the current action element is typeable.
- * @param {MouseEvent|KeyboardEvent} event
  * @returns {boolean}
  */
-export function isActiveElement( event ) {
+export function isActiveElement() {
     const nonTypeableInputs = [ 'button', 'submit', 'reset', 'file', 'checkbox', 'radio', 'range', 'color', 'image', 'hidden' ];
     const element = document.activeElement;
     return !element ||
@@ -128,6 +127,12 @@ export function isBreakpoint( breakpoint ) {
     return breakpoint ? window.matchMedia( breakpoint ) : false;
 }
 
+/**
+ * Delays callback execution by two animation frames to ensure DOM updates are complete.
+ * @param {function} callback
+ * @description Uses double requestAnimationFrame to guarantee the callback runs after
+ * both layout and paint phases are complete, useful for DOM measurements after changes.
+ */
 export function onSchedule( callback ) {
     requestAnimationFrame( () => {
         requestAnimationFrame( callback );

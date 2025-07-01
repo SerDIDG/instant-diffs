@@ -118,11 +118,6 @@ class Settings {
 
         // Construct the Settings dialog and attach it to the Window Managers
         this.dialog = new SettingsDialog();
-        this.dialog.connect( this, {
-            opening: 'onOpening',
-            closing: 'onClosing',
-        } );
-
         this.manager = getWindowManager();
         this.manager.addWindows( [ this.dialog ] );
     };
@@ -138,7 +133,9 @@ class Settings {
         }
 
         this.windowInstance = this.manager.openWindow( this.dialog );
+        this.windowInstance.opening.then( this.onOpening.bind( this ) );
         this.windowInstance.opened.then( this.onOpen.bind( this ) );
+        this.windowInstance.closing.then( this.onClosing.bind( this ) );
         this.windowInstance.closed.then( this.onClose.bind( this ) );
     }
 

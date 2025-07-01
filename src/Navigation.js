@@ -109,44 +109,6 @@ class Navigation {
         this.renderMenuLinks();
     }
 
-    onHotkey( event ) {
-        if ( !utils.defaults( 'enableHotkeys' ) ) return;
-
-        const isCtrlPressed = event.ctrlKey;
-        const isShiftPressed = event.shiftKey;
-        const isAltPressed = event.altKey;
-
-        // Get action
-        const actionMaps = {
-            ctrl: {
-                ArrowLeft: 'snapshotPrev',
-                ArrowRight: 'snapshotNext',
-                ArrowUp: 'switch',
-                ArrowDown: 'menu',
-                KeyZ: 'back',
-                KeyP: 'unpatrolled',
-            },
-            none: {
-                ArrowLeft: 'prev',
-                ArrowRight: 'next',
-            },
-            alt: {},
-            shift: {},
-        };
-
-        const modifier = isAltPressed ? 'alt' : isCtrlPressed ? 'ctrl' : isShiftPressed ? 'shift' : 'none';
-        const action = actionMaps[ modifier ]?.[ event.code ];
-
-        if ( action ) {
-            // Prevent default arrow key behavior
-            event.preventDefault();
-            event.stopPropagation();
-
-            // Execute action
-            this.clickButton( action );
-        }
-    }
-
     /******* NAVIGATION *******/
 
     /**
@@ -623,10 +585,8 @@ class Navigation {
         } );
 
         const initiatorAction = initiator.getNavigation()?.getActionRegister();
-        let action = options.name;
-        if ( !utils.isEmpty( initiatorAction ) ) {
-            action = `${ initiatorAction }-${ action }`;
-        }
+        const action = !utils.isEmpty( initiatorAction )
+            ? `${ initiatorAction }-${ options.name }` : options.name;
 
         new Link( button.$button.get( 0 ), {
             behavior: 'event',
@@ -785,7 +745,7 @@ class Navigation {
      * Action that opens the Settings dialog.
      */
     actionOpenSettings() {
-        settings.once( 'opened', () => this.onSettingsOpen() );
+        settings.once( 'opening', () => this.onSettingsOpen() );
         settings.once( 'closed', () => this.onSettingsClose() );
 
         this.buttons.settingsHelper.pending( true );
@@ -797,7 +757,6 @@ class Navigation {
      * Event that emits after the Settings dialog opens.
      */
     onSettingsOpen() {
-        // Hide menu dropdown
         this.toggleMenu( false );
     }
 
@@ -822,6 +781,47 @@ class Navigation {
         return this.actionRegister;
     }
 
+    /**
+     * Event that emits when the View dialog fires hotkey event.
+     */
+    onHotkey( event ) {
+        if ( !utils.defaults( 'enableHotkeys' ) ) return;
+
+        const isCtrlPressed = event.ctrlKey;
+        const isShiftPressed = event.shiftKey;
+        const isAltPressed = event.altKey;
+
+        // Get action
+        const actionMaps = {
+            ctrl: {
+                ArrowLeft: 'snapshotPrev',
+                ArrowRight: 'snapshotNext',
+                ArrowUp: 'switch',
+                ArrowDown: 'menu',
+                KeyZ: 'back',
+                KeyP: 'unpatrolled',
+            },
+            none: {
+                ArrowLeft: 'prev',
+                ArrowRight: 'next',
+            },
+            alt: {},
+            shift: {},
+        };
+
+        const modifier = isAltPressed ? 'alt' : isCtrlPressed ? 'ctrl' : isShiftPressed ? 'shift' : 'none';
+        const action = actionMaps[ modifier ]?.[ event.code ];
+
+        if ( action ) {
+            // Prevent default arrow key behavior
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Execute action
+            this.clickButton( action );
+        }
+    }
+
     /******* ACTIONS *******/
 
     /**
@@ -833,8 +833,9 @@ class Navigation {
     }
 
     /**
-     * Set focus on the specified button
-     * @param {string} name
+     * Set focus on the specified button.
+     * Performs transform to the opposite button for the disabled buttons and for the view switching buttons.
+     * @param {string} name an action button name
      */
     focusButton( name ) {
         const unpatrolledActions = {
@@ -861,6 +862,10 @@ class Navigation {
         button.focus();
     }
 
+    /**
+     * Set focus and click the specified button if not disabled.
+     * @param {string} name an action button name
+     */
     clickButton( name ) {
         // FixMe: find a way to make the popup hide automatically when the button loses focus
         if ( name !== 'menu' ) {

@@ -231,8 +231,6 @@ class View {
         this.dialog = new ViewDialog();
         this.dialog.connect( this, {
             hotkey: event => this.emit( 'hotkey', event ),
-            opening: 'onOpening',
-            closing: 'onClosing',
         } );
 
         this.manager = getWindowManager();
@@ -261,7 +259,9 @@ class View {
 
             // Open a dialog window through the windows manager
             this.windowInstance = this.manager.openWindow( this.dialog, options );
+            this.windowInstance.opening.then( this.onOpening.bind( this ) );
             this.windowInstance.opened.then( this.onOpen.bind( this ) );
+            this.windowInstance.closing.then( this.onClosing.bind( this ) );
             this.windowInstance.closed.then( this.onClose.bind( this ) );
         }
 
