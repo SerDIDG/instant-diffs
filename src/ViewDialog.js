@@ -115,6 +115,9 @@ class ViewDialog extends OO.ui.MessageDialog {
         return super.getTeardownProcess( data ).next( () => {
             // Hide progress bar
             this.toggleProgress( false );
+
+            // Toggle content visibility
+            this.toggleVisibility( false );
         } );
     }
 
