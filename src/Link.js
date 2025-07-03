@@ -298,7 +298,7 @@ class Link {
             rvsection: 0,
             format: 'json',
             formatversion: 2,
-            uselang: id.local.language,
+            uselang: id.local.userLanguage,
         };
 
         if ( !utils.isEmpty( this.page.oldid ) ) {
@@ -391,7 +391,7 @@ class Link {
             torelative: utils.isValidDir( this.page.diff ) ? this.page.diff : undefined,
             format: 'json',
             formatversion: 2,
-            uselang: id.local.language,
+            uselang: id.local.userLanguage,
         };
         return id.local.mwApi
             .get( params )

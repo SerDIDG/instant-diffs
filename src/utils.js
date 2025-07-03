@@ -223,16 +223,16 @@ export function isMessageExists( str ) {
 }
 
 export function processMessages() {
-    const language = mw.config.get( 'wgUserLanguage' );
+    id.local.userLanguage = mw.config.get( 'wgUserLanguage' );
 
     // Do not set strings when the language is qqx for debagging
-    if ( language === 'qqx' ) {
-        id.local.language = language;
+    if ( id.local.userLanguage === 'qqx' ) {
+        id.local.language = id.local.userLanguage;
         return;
     }
 
     // Merge current language strings with English for fallback
-    id.local.language = id.i18n[ language ] ? language : 'en';
+    id.local.language = id.i18n[ id.local.userLanguage ] ? id.local.userLanguage : 'en';
     id.local.messages = id.i18n[ id.local.language ];
     if ( id.local.language !== 'en' ) {
         id.local.messages = { ...id.i18n.en, ...id.local.messages };
@@ -278,7 +278,7 @@ export function loadMessage( messages, options ) {
     }
 
     return id.local.mwApi.loadMessagesIfMissing( messages, {
-        uselang: id.local.language,
+        uselang: id.local.userLanguage,
     } );
 }
 

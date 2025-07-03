@@ -13,7 +13,7 @@ function showNotification( message, type ) {
         text: message,
         format: 'json',
         formatversion: 2,
-        uselang: id.local.language,
+        uselang: id.local.userLanguage,
     };
 
     id.local.mwApi
@@ -118,7 +118,7 @@ function postRollback( link ) {
         user: mw.util.getParamValue( 'from', link.href ),
         token: mw.util.getParamValue( 'token', link.href ),
         formatversion: 2,
-        uselang: id.local.language,
+        uselang: id.local.userLanguage,
     };
 
     id.local.mwApi.post( params )

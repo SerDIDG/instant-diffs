@@ -187,7 +187,7 @@ class Settings {
             uiprop: 'options',
             format: 'json',
             formatversion: 2,
-            uselang: id.local.language,
+            uselang: id.local.userLanguage,
         };
         return id.local.mwApi
             .post( params )

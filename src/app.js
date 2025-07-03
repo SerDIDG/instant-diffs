@@ -151,7 +151,7 @@ function getLocalizedTitles() {
         return true;
     }
 
-    // Request localized specialPages
+    // Request localized specialPages for the current content language
     const params = {
         action: 'query',
         titles: id.config.specialPages,

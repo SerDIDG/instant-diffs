@@ -100,7 +100,7 @@ class Diff {
             action: 'render',
             diffonly: this.page.type === 'diff' ? 1 : 0,
             unhide: utils.defaults( 'unHideDiffs' ) ? 1 : 0,
-            uselang: id.local.language,
+            uselang: id.local.userLanguage,
         };
 
         // Mixin constructor
@@ -127,7 +127,7 @@ class Diff {
             redirects: 1,
             format: 'json',
             formatversion: 2,
-            uselang: id.local.language,
+            uselang: id.local.userLanguage,
         };
 
         // FixMe: oldid can be for the previous revision (in cases when direction = next)
