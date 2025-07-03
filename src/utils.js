@@ -436,6 +436,7 @@ export function getHref( page, pageParams, options ) {
     options = {
         type: 'diff',
         relative: true,
+        hash: false,
         minify: false,
         wikilink: false,
         wikilinkPreset: null,
@@ -451,9 +452,15 @@ export function getHref( page, pageParams, options ) {
         url.search = new URLSearchParams( pageParams ).toString();
     }
 
+    // Add hash
+    if ( options.hash && !isEmpty( page.section ) ) {
+        url.hash = `#${ page.section }`;
+    }
+
     // Minify href
     if ( options.minify ) {
         url.pathname = '';
+        url.hash = '';
         url.searchParams.delete( 'title' );
     }
 
@@ -471,15 +478,17 @@ export function getHref( page, pageParams, options ) {
 export function getTypeHref( page, pageParams, options ) {
     pageParams = { ...pageParams };
     options = {
-        type: 'diff',
+        type: null,
         ...options,
     };
 
     // Validate options
-    if ( page.type === 'revision' && page.typeVariant === 'page' ) {
-        options.type = 'page';
-    } else {
-        options.type = page.type;
+    if ( !options.type ) {
+        if ( page.type === 'revision' && page.typeVariant === 'page' ) {
+            options.type = 'page';
+        } else {
+            options.type = page.type;
+        }
     }
 
     // Validate page params for diffs
@@ -606,6 +615,9 @@ export function getRevisionSection( revision ) {
 
 export function validatePage( page ) {
     // Validate components
+    if ( [ 0, '0' ].includes( page.oldid ) ) {
+        delete page.oldid;
+    }
     if ( [ 0, '0', 'current' ].includes( page.diff ) ) {
         page.diff = 'cur';
     }

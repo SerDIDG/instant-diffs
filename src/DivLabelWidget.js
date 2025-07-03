@@ -9,7 +9,7 @@ class DivLabelWidget extends OO.ui.LabelWidget {
 
     constructor() {
         super( {
-            classes: [ 'oo-ui-messageDialog-message' ],
+            classes: [ 'oo-ui-messageDialog-message', 'is-transparent' ],
         } );
     }
 }

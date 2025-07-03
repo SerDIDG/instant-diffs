@@ -58,9 +58,6 @@ class ViewDialog extends OO.ui.MessageDialog {
 
     getSetupProcess( data ) {
         return super.getSetupProcess( data ).next( () => {
-            // Toggle content visibility
-            this.toggleVisibility( false );
-
             // Set a vertical scroll position to the top of the content
             this.container.$element.scrollTop( 0 );
 

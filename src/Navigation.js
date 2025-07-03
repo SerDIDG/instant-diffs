@@ -516,13 +516,13 @@ class Navigation {
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderSwitchLink( options ) {
-        const page = { ...this.page };
-        page.type = page.type === 'diff' ? 'revision' : 'diff';
+        const type = this.page.type === 'diff' ? 'revision' : 'diff';
+        const pageOptions = { type };
 
         const button = new OO.ui.ButtonWidget( {
-            label: utils.msg( `goto-view-${ page.type }` ),
-            title: utils.msgHint( `goto-view-${ page.type }`, 'switch', utils.defaults( 'enableHotkeys' ) ),
-            href: utils.getTypeHref( page ),
+            label: utils.msg( `goto-view-${ type }` ),
+            title: utils.msgHint( `goto-view-${ type }`, 'switch', utils.defaults( 'enableHotkeys' ) ),
+            href: utils.getTypeHref( this.page, {}, pageOptions ),
             target: utils.getTarget( true ),
             icon: 'specialPages',
             classes: [ 'instantDiffs-button--switch' ],
