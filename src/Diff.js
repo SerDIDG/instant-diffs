@@ -518,8 +518,16 @@ class Diff {
 
     processLinksTaget() {
         if ( !utils.defaults( 'openInNewTab' ) ) return;
+
         const $links = this.nodes.$container.find( 'a:not(.mw-thanks-thank-link, .jquery-confirmable-element)' );
-        $links.each( ( i, node ) => node.setAttribute( 'target', '_blank' ) );
+        $links.each( ( i, node ) => {
+            // Add target attribute only to links with non-empty href.
+            // Some scripts add links with href="#" - bypass those as well.
+            const href = node.getAttribute( 'href' );
+            if ( utils.isEmpty( href ) || href === '#' ) return;
+
+            node.setAttribute( 'target', '_blank' );
+        } );
     }
 
     async processFunctionality() {
