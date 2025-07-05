@@ -435,20 +435,17 @@ class View {
         }
 
         // Fire the Diff hooks and events
-        this.diff.fire();
+        this.diff.fire().then( () => {
+            // Track on dialog process end time
+            id.timers.dialogProcesEnd = Date.now();
 
-        // Refresh the dialog content height
-        this.redraw();
+            // Log timers for the dialog process
+            if ( utils.defaults( 'logTimers' ) ) {
+                utils.logTimer( 'dialog process time', id.timers.dialogProcesStart, id.timers.dialogProcesEnd );
+            }
 
-        // Track on dialog process end time
-        id.timers.dialogProcesEnd = Date.now();
-
-        // Log timers for the dialog process
-        if ( utils.defaults( 'logTimers' ) ) {
-            utils.logTimer( 'dialog process time', id.timers.dialogProcesStart, id.timers.dialogProcesEnd );
-        }
-
-        this.isProcessing = false;
+            this.isProcessing = false;
+        } );
     }
 
     /**
@@ -456,16 +453,6 @@ class View {
      */
     focus() {
         this.dialog.focus();
-    }
-
-    /**
-     * Refresh the dialog content height.
-     */
-    redraw() {
-        if ( !this.isOpen ) return;
-
-        // Refresh the dialog content height
-        this.dialog.updateSize();
     }
 
     /**
