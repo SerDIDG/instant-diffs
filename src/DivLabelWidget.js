@@ -12,6 +12,10 @@ class DivLabelWidget extends OO.ui.LabelWidget {
             classes: [ 'oo-ui-messageDialog-message', 'is-transparent' ],
         } );
     }
+
+    toggleVisibility( value ) {
+        this.$element.toggleClass( 'is-transparent', !value );
+    }
 }
 
 tweakUserOoUiClass( DivLabelWidget );

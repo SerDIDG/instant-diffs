@@ -38,6 +38,7 @@ class Diff {
         wgDiffOldId: false,
         wgDiffNewId: false,
         wgCanonicalSpecialPageName: false,
+        wgIsProbablyEditable: false,
     };
 
     /**
@@ -112,9 +113,10 @@ class Diff {
      * @returns {Promise|boolean}
      */
     load() {
-        if ( this.isLoading ) return this.requestPromise;
-        this.requestPageDependencies();
-        return this.request();
+        if ( !this.isLoading ) {
+            this.requestPromise = this.request();
+        }
+        return this.requestPromise;
     }
 
     /******* REQUESTS *******/
@@ -122,7 +124,7 @@ class Diff {
     requestPageDependencies() {
         const params = {
             action: 'parse',
-            prop: [ 'modules', 'jsconfigvars' ],
+            prop: [ 'modules', 'jsconfigvars', 'revid' ],
             disablelimitreport: 1,
             redirects: 1,
             format: 'json',
@@ -130,11 +132,12 @@ class Diff {
             uselang: id.local.userLanguage,
         };
 
-        // FixMe: oldid can be for the previous revision (in cases when direction = next)
-        if ( !utils.isEmpty( this.page.oldid ) ) {
-            params.oldid = this.page.oldid;
-        } else if ( !utils.isEmpty( this.page.curid ) ) {
-            params.pageid = this.page.curid;
+        const oldid = mw.config.get( 'wgDiffNewId' ) || this.page.oldid;
+        const pageid = mw.config.get( 'wgArticleId' ) || this.page.curid;
+        if ( utils.isValidID( oldid ) ) {
+            params.oldid = oldid;
+        } else if ( utils.isValidID( pageid ) ) {
+            params.pageid = pageid;
         }
 
         return id.local.mwApi
@@ -163,6 +166,14 @@ class Diff {
             return this.onRequestPageDependenciesError( null, data );
         }
 
+        // Get values for mw.config
+        this.mwConfg.wgArticleId = parse.pageid;
+        this.mwConfg.wgRevisionId = parse.revid;
+        this.mwConfg = { ...this.mwConfg, ...parse.jsconfigvars };
+
+        // Set additional config variables
+        this.setConfigs();
+
         // Get page dependencies
         let dependencies = [ ...parse.modulestyles, ...parse.modulescripts, ...parse.modules ];
 
@@ -181,7 +192,6 @@ class Diff {
             }
         }
 
-        mw.config.set( parse.jsconfigvars );
         mw.loader.load( utils.getDependencies( dependencies ) );
     }
 
@@ -207,11 +217,9 @@ class Diff {
             data: $.extend( page, this.pageParams ),
         };
 
-        this.requestPromise = $.ajax( params )
+        return $.ajax( params )
             .done( this.onRequestDone.bind( this ) )
             .fail( this.onRequestError.bind( this ) );
-
-        return this.requestPromise;
     }
 
     /**
@@ -313,8 +321,7 @@ class Diff {
         this.collectData();
 
         // Set additional config variables
-        mw.config.set( this.mwConfg );
-        mw.user.options.set( this.mwUserOptions );
+        this.setConfigs();
 
         // Prepend content warnings
         this.nodes.$data
@@ -385,6 +392,12 @@ class Diff {
         if ( utils.isEmpty( this.page.section ) && $toSectionLinks.length > 0 ) {
             const section = utils.getComponentFromUrl( 'hash', $toSectionLinks.prop( 'href' ) );
             this.page = utils.extendPage( this.page, { section } );
+        }
+
+        // Get undo links to check if user can edit the page
+        const $editLinks = this.nodes.$data.find( '.mw-diff-undo a, .mw-rollback-link a' );
+        if ( $editLinks.length > 0 ) {
+            this.mwConfg.wgIsProbablyEditable = true;
         }
 
         // Save the title values to the mw.config
@@ -583,7 +596,10 @@ class Diff {
     /**
      * Fire hooks and events.
      */
-    fire() {
+    async fire() {
+        // Request page dependencies
+        await this.requestPageDependencies();
+
         // Restore functionally that requires that elements are in the DOM
         this.restoreFunctionality();
 
@@ -608,6 +624,11 @@ class Diff {
 
     focus() {
         this.emit( 'focus' );
+    }
+
+    setConfigs() {
+        mw.config.set( this.mwConfg );
+        mw.user.options.set( this.mwUserOptions );
     }
 
     /**

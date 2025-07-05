@@ -134,7 +134,7 @@ class ViewDialog extends OO.ui.MessageDialog {
     }
 
     toggleVisibility( value ) {
-        this.message.$element.toggleClass( 'is-transparent', !value );
+        this.message.toggleVisibility( value );
     }
 
     toggleProgress( ...args ) {

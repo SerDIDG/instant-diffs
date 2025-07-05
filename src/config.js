@@ -165,6 +165,7 @@ export const config = {
         'wgRelevantPageName',
         'wgRelevantArticleId',
         'wgCanonicalSpecialPageName',
+        'wgIsProbablyEditable',
     ],
     mwUserOptionsBackup: [
         'visualeditor-diffmode-historical',
