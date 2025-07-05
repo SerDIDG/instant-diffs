@@ -114,7 +114,8 @@
     "error-diff-missingcontent": "Version masquée",
     "error-diff-nosuchrevid": "Version introuvable",
     "error-dependencies-generic": "Échec du chargement des dépendances : $4",
-    "error-dependencies-page": "Échec du chargement des dépendances de la page « $3 » : $4",
+    "error-dependencies-revid": "Échec du chargement des dépendances de la page « oldid=$1 » : $4",
+    "error-dependencies-curid": "Échec du chargement des dépendances de la page « curid=$1 » : $4",
     "error-setting-request": "Échec du chargement des options utilisateur : $4",
     "error-setting-save": "Échec de l’enregistrement des options utilisateur : $4"
 }

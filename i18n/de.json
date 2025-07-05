@@ -114,7 +114,8 @@
     "error-diff-missingcontent": "Version ist versteckt",
     "error-diff-nosuchrevid": "Version nicht gefunden",
     "error-dependencies-generic": "Abhängigkeiten konnten nicht geladen werden: $4",
-    "error-dependencies-page": "Seitendependenzen konnten nicht geladen werden „$3“: $4",
+    "error-dependencies-revid": "Seitendependenzen konnten nicht geladen werden „oldid=$1“: $4",
+    "error-dependencies-curid": "Seitendependenzen konnten nicht geladen werden „curid=$1“: $4",
     "error-setting-request": "Benutzereinstellungen konnten nicht geladen werden: $4",
     "error-setting-save": "Benutzereinstellungen konnten nicht gespeichert werden: $4"
 }

@@ -114,7 +114,8 @@
     "error-diff-missingcontent": "Revisão oculta",
     "error-diff-nosuchrevid": "Revisão não encontrada",
     "error-dependencies-generic": "Falha ao carregar dependências: $4",
-    "error-dependencies-page": "Falha ao carregar dependências da página \"$3\": $4",
+    "error-dependencies-revid": "Falha ao carregar dependências da página \"oldid=$1\": $4",
+    "error-dependencies-curid": "Falha ao carregar dependências da página \"curid=$1\": $4",
     "error-setting-request": "Falha ao carregar as opções do usuário: $4",
     "error-setting-save": "Falha ao salvar as opções do usuário: $4"
 }

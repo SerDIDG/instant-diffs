@@ -114,7 +114,8 @@
     "error-diff-missingcontent": "Wersja ukryta",
     "error-diff-nosuchrevid": "Wersja nie znaleziona",
     "error-dependencies-generic": "Nie udało się załadować zależności: $4",
-    "error-dependencies-page": "Nie udało się załadować zależności strony „$3”: $4",
+    "error-dependencies-revid": "Nie udało się załadować zależności strony „oldid=$1”: $4",
+    "error-dependencies-curid": "Nie udało się załadować zależności strony „curid=$1”: $4",
     "error-setting-request": "Nie udało się załadować ustawień użytkownika: $4",
     "error-setting-save": "Nie udało się zapisać ustawień użytkownika: $4"
 }

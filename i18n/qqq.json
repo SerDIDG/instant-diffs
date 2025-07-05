@@ -113,8 +113,9 @@
     "error-diff-generic": "Generic error message.\n\n* $1: oldid.\n* $2: diff.\n* $4: error info text.",
     "error-diff-missingcontent": "Generic error message.",
     "error-diff-nosuchrevid": "Generic error message.",
-    "error-dependencies-generic": "Generic error message.\n\n* $1: oldid.\n* $4: error info text.",
-    "error-dependencies-page": "Generic error message.\n\n* $3: page name.\n* $4: error info text.",
+    "error-dependencies-generic": "Generic error message.\n\n* $4: error info text.",
+    "error-dependencies-revid": "Generic error message.\n\n* $1: oldid.\n* $4: error info text.",
+    "error-dependencies-curid": "Generic error message.\n\n* $1: curid.\n* $4: error info text.",
     "error-setting-request": "Text of an error notification. Used as an error message in the Settings dialog.\n\n* $4: error info text.",
     "error-setting-save": "Text of an error notification. Used as an error message in the Settings dialog.\n\n* $4: error info text."
 }

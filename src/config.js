@@ -158,15 +158,15 @@ export const config = {
     mwConfigBackup: [
         'wgTitle',
         'wgPageName',
+        'wgRelevantPageName',
         'wgPageContentModel',
         'wgNamespaceNumber',
         'wgArticleId',
+        'wgRelevantArticleId',                                          // Article ID on the special pages
         'wgCurRevisionId',
         'wgRevisionId',
         'wgDiffOldId',
         'wgDiffNewId',
-        'wgRelevantPageName',
-        'wgRelevantArticleId',
         'wgCanonicalSpecialPageName',
         'wgIsProbablyEditable',
         'thanks-confirmation-required',

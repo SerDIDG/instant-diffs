@@ -114,7 +114,8 @@
     "error-diff-missingcontent": "Revision is hidden",
     "error-diff-nosuchrevid": "Revision not found",
     "error-dependencies-generic": "Failed to load dependencies: $4",
-    "error-dependencies-page": "Failed to load page dependencies \"$3\": $4",
+    "error-dependencies-revid": "Failed to load page dependencies \"oldid=$1\": $4",
+    "error-dependencies-curid": "Failed to load page dependencies \"curid=$1\": $4",
     "error-setting-request": "Failed to load user options: $4",
     "error-setting-save": "Failed to save user options: $4"
 }

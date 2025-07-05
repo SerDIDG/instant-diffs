@@ -34,6 +34,8 @@ class Diff {
         wgRelevantPageName: false,
         wgNamespaceNumber: false,
         wgArticleId: false,
+        wgRelevantArticleId: false,
+        wgCurRevisionId: false,
         wgRevisionId: false,
         wgDiffOldId: false,
         wgDiffNewId: false,
@@ -120,7 +122,10 @@ class Diff {
      */
     load() {
         if ( !this.isLoading ) {
-            const promises = [ this.request() ];
+            const promises = [
+                this.requestPageIds(),
+                this.request(),
+            ];
 
             // Try to load page dependencies in parallel to the main request:
             // * for the diff view we only need to load bare minimum;
@@ -139,7 +144,59 @@ class Diff {
         return this.requestPromise;
     }
 
-    /******* REQUESTS *******/
+    /******* DEPENDENCIES *******/
+
+    requestPageIds() {
+        const params = {
+            action: 'compare',
+            prop: [ 'ids' ],
+            torelative: 'cur',
+            format: 'json',
+            formatversion: 2,
+            uselang: id.local.userLanguage,
+        };
+
+        const oldid = this.page.revid || this.page.oldid;
+        const pageid = this.page.curid;
+        if ( utils.isValidID( oldid ) ) {
+            params.fromrev = oldid;
+        } else if ( utils.isValidID( pageid ) ) {
+            params.fromid = pageid;
+        }
+
+        return id.local.mwApi
+            .get( params )
+            .then( ( data ) => this.onRequestPageIdsDone( data, params ) )
+            .fail( ( message, data ) => this.onRequestPageIdsError( message, data, params ) );
+    }
+
+    onRequestPageIdsError( message, data, params ) {
+        const error = {
+            message,
+            type: 'dependencies',
+        };
+        if ( data?.error ) {
+            error.code = data.error.code;
+            error.message = data.error.info;
+        }
+        const type = params.fromrev ? 'revid' : 'curid';
+        utils.notifyError( `error-dependencies-${ type }`, error, this.page, true );
+    }
+
+    onRequestPageIdsDone( data, params ) {
+        // Render error if the parse request is completely failed
+        const compare = data?.compare;
+        if ( !compare ) {
+            return this.onRequestPageIdsError( null, data, params );
+        }
+
+        // Get values for mw.config
+        this.mwConfg.wgArticleId = this.page.curid = compare.toid;
+        this.mwConfg.wgCurRevisionId = this.page.curRevid = compare.torevid;
+
+        // Set additional config variables
+        this.setConfigs();
+    }
 
     requestPageDependencies() {
         const params = {
@@ -162,32 +219,32 @@ class Diff {
 
         return id.local.mwApi
             .get( params )
-            .then( this.onRequestPageDependenciesDone.bind( this ) )
-            .fail( this.onRequestPageDependenciesError.bind( this ) );
+            .then( ( data ) => this.onRequestPageDependenciesDone( data, params ) )
+            .fail( ( message, data ) => this.onRequestPageDependenciesError( message, data, params ) );
     }
 
-    onRequestPageDependenciesError( error, data ) {
+    onRequestPageDependenciesError( message, data, params ) {
         this.isDependenciesLoaded = true;
 
-        const params = {
+        const error = {
+            message,
             type: 'dependencies',
         };
         if ( data?.error ) {
-            params.code = data.error.code;
-            params.message = data.error.info;
-        } else {
-            params.message = error;
+            error.code = data.error.code;
+            error.message = data.error.info;
         }
-        utils.notifyError( 'error-dependencies-page', params, this.page, true );
+        const type = params.oldid ? 'revid' : 'curid';
+        utils.notifyError( `error-dependencies-${ type }`, error, this.page, true );
     }
 
-    onRequestPageDependenciesDone( data ) {
+    onRequestPageDependenciesDone( data, params ) {
         this.isDependenciesLoaded = true;
 
         // Render error if the parse request is completely failed
         const parse = data?.parse;
         if ( !parse ) {
-            return this.onRequestPageDependenciesError( null, data );
+            return this.onRequestPageDependenciesError( null, data, params );
         }
 
         // Get values for mw.config
@@ -218,6 +275,8 @@ class Diff {
 
         mw.loader.load( utils.getDependencies( dependencies ) );
     }
+
+    /******* REQUESTS *******/
 
     /**
      * Request a Diff html content.

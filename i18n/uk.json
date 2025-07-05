@@ -114,7 +114,8 @@
     "error-diff-missingcontent": "Версію приховано",
     "error-diff-nosuchrevid": "Версію не знайдено",
     "error-dependencies-generic": "Не вдалося завантажити залежності: $4",
-    "error-dependencies-page": "Не вдалося завантажити залежності сторінки «$3»: $4",
+    "error-dependencies-curid": "Не вдалося завантажити залежності сторінки «oldid=$1»: $4",
+    "error-dependencies-revid": "Не вдалося завантажити залежності сторінки «curid=$1»: $4",
     "error-setting-request": "Не вдалося завантажити налаштування користувача: $4",
     "error-setting-save": "Не вдалося зберегти налаштування користувача: $4"
 }

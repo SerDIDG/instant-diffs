@@ -45,6 +45,7 @@
     "goto-settings": "הגדרות",
     "goto-menu": "פעולות",
 
+    "hint-close": "Esc",
     "hint-alt-click": "Alt+Click: מעבר ליעד הקישור",
     "hint-snapshot-prev": "Ctrl+חץ שמאלה",
     "hint-snapshot-next": "Ctrl+חץ ימינה",
@@ -114,7 +115,8 @@
     "error-diff-missingcontent": "הגרסה הוסתרה",
     "error-diff-nosuchrevid": "הגרסה לא אותרה",
     "error-dependencies-generic": "נכשלה הטענת התלויות: $4",
-    "error-dependencies-page": "נכשלה הטענת התלויות הדף \"$3\": $4",
+    "error-dependencies-revid": "נכשלה הטענת התלויות הדף \"oldid=$1\": $4",
+    "error-dependencies-curid": "נכשלה הטענת התלויות הדף \"curid=$1\": $4",
     "error-setting-request": "טעינת ההגדרות נכשלה: $4",
     "error-setting-save": "שמירת ההגדרות נכשלה: $4"
 }
