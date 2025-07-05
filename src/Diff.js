@@ -29,16 +29,17 @@ class Diff {
      * @type {object}
      */
     mwConfg = {
-        'thanks-confirmation-required': true,
         wgTitle: false,
         wgPageName: false,
         wgRelevantPageName: false,
         wgNamespaceNumber: false,
+        wgArticleId: false,
         wgRevisionId: false,
         wgDiffOldId: false,
         wgDiffNewId: false,
         wgCanonicalSpecialPageName: false,
         wgIsProbablyEditable: false,
+        'thanks-confirmation-required': true,
     };
 
     /**
@@ -79,6 +80,11 @@ class Diff {
     /**
      * @type {boolean}
      */
+    isDependenciesLoaded = false;
+
+    /**
+     * @type {boolean}
+     */
     isDetached = false;
 
     /**
@@ -114,7 +120,21 @@ class Diff {
      */
     load() {
         if ( !this.isLoading ) {
-            this.requestPromise = this.request();
+            const promises = [ this.request() ];
+
+            // Try to load page dependencies in parallel to the main request:
+            // * for the diff view we only need to load bare minimum;
+            // * for the revision view we need to know actual revision id;
+            // * for the page view we need to know page id.
+            if (
+                this.page.type === 'diff' ||
+                ( this.page.type === 'revision' && utils.isValidID( this.page.revid ) ) ||
+                ( this.page.typeVariant === 'page' && utils.isValidID( this.page.curid ) )
+            ) {
+                promises.push( this.requestPageDependencies() );
+            }
+
+            this.requestPromise = Promise.allSettled( promises );
         }
         return this.requestPromise;
     }
@@ -124,7 +144,7 @@ class Diff {
     requestPageDependencies() {
         const params = {
             action: 'parse',
-            prop: [ 'modules', 'jsconfigvars', 'revid' ],
+            prop: [ 'revid', 'modules', 'jsconfigvars' ],
             disablelimitreport: 1,
             redirects: 1,
             format: 'json',
@@ -132,8 +152,8 @@ class Diff {
             uselang: id.local.userLanguage,
         };
 
-        const oldid = mw.config.get( 'wgDiffNewId' ) || this.page.oldid;
-        const pageid = mw.config.get( 'wgArticleId' ) || this.page.curid;
+        const oldid = this.mwConfg.wgDiffNewId || Math.max( this.page.revid, this.page.oldid );
+        const pageid = this.mwConfg.wgArticleId || this.page.curid;
         if ( utils.isValidID( oldid ) ) {
             params.oldid = oldid;
         } else if ( utils.isValidID( pageid ) ) {
@@ -147,6 +167,8 @@ class Diff {
     }
 
     onRequestPageDependenciesError( error, data ) {
+        this.isDependenciesLoaded = true;
+
         const params = {
             type: 'dependencies',
         };
@@ -160,6 +182,8 @@ class Diff {
     }
 
     onRequestPageDependenciesDone( data ) {
+        this.isDependenciesLoaded = true;
+
         // Render error if the parse request is completely failed
         const parse = data?.parse;
         if ( !parse ) {
@@ -167,8 +191,8 @@ class Diff {
         }
 
         // Get values for mw.config
-        this.mwConfg.wgArticleId = parse.pageid;
-        this.mwConfg.wgRevisionId = parse.revid;
+        this.mwConfg.wgArticleId = this.page.curid = parse.pageid;
+        this.mwConfg.wgRevisionId = this.page.revid = Math.max( this.page.revid, parse.revid );
         this.mwConfg = { ...this.mwConfg, ...parse.jsconfigvars };
 
         // Set additional config variables
@@ -248,7 +272,6 @@ class Diff {
         // Render content and fire hooks
         this.render();
         mw.hook( `${ id.config.prefix }.diff.renderError` ).fire( this );
-        mw.hook( `${ id.config.prefix }.diff.renderComplete` ).fire( this );
     }
 
     /**
@@ -347,7 +370,7 @@ class Diff {
         }
 
         // Restore functionally that not requires that elements are in the DOM
-        this.processFunctionality();
+        this.restoreFunctionality();
     }
 
     collectData() {
@@ -369,9 +392,7 @@ class Diff {
                 this.mwConfg.wgRevisionId = diff;
 
                 // Set actual revision id for the copy actions, etc.
-                if ( this.page.typeVariant !== 'page' ) {
-                    this.page.revid = diff;
-                }
+                this.page.revid = diff;
 
                 // Replace diff when its values = cur
                 if ( this.page.diff === 'cur' ) {
@@ -543,7 +564,11 @@ class Diff {
         } );
     }
 
-    async processFunctionality() {
+    /******* RESTORE FUNCTIONALITY *******/
+
+    async restoreFunctionality() {
+        if ( this.error ) return;
+
         // Restore file media info
         this.nodes.$mediaInfoView = this.nodes.$data.find( 'mediainfoview' );
         if ( this.page.type === 'revision' && this.nodes.$mediaInfoView.length > 0 ) {
@@ -554,7 +579,7 @@ class Diff {
         }
     }
 
-    restoreFunctionality() {
+    restoreFunctionalityEmbed() {
         if ( this.error ) return;
 
         // Restore rollback and patrol links scripts
@@ -583,11 +608,18 @@ class Diff {
         // Restore WikiLambda app
         this.nodes.$wikiLambdaApp = this.nodes.$data.filter( '#ext-wikilambda-app' );
         if ( this.nodes.$wikiLambdaApp.length > 0 ) {
-            utilsDiff.restoreWikiLambda( this.nodes.$wikiLambdaApp );
-
             // Render warning about current limitations
             const $message = $( utils.msgDom( 'dialog-notice-wikilambda' ) );
             this.renderWarning( $message );
+        }
+    }
+
+    restoreFunctionalityWithDependencies() {
+        if ( this.error ) return;
+
+        // Restore WikiLambda app
+        if ( this.nodes.$wikiLambdaApp.length > 0 ) {
+            utilsDiff.restoreWikiLambda( this.nodes.$wikiLambdaApp );
         }
     }
 
@@ -597,11 +629,16 @@ class Diff {
      * Fire hooks and events.
      */
     async fire() {
-        // Request page dependencies
-        await this.requestPageDependencies();
+        // Restore functionally that requires elements appended in the DOM
+        this.restoreFunctionalityEmbed();
 
-        // Restore functionally that requires that elements are in the DOM
-        this.restoreFunctionality();
+        // Request page dependencies
+        if ( !this.isDependenciesLoaded ) {
+            await this.requestPageDependencies();
+        }
+
+        // Restore functionally that requires page dependencies
+        this.restoreFunctionalityWithDependencies();
 
         // Fire navigation events
         this.getNavigation()?.fire();
@@ -620,6 +657,9 @@ class Diff {
 
         // Replace link target attributes after the hooks have fired
         this.processLinksTaget();
+
+        // Fire hook on complete
+        mw.hook( `${ id.config.prefix }.diff.complete` ).fire( this );
     }
 
     focus() {

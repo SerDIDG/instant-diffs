@@ -705,7 +705,39 @@ export function extendPage( page, params = {} ) {
         page.href = mw.util.getUrl( page.titleSection || page.title );
     }
 
+    page.revid = getPageRevID( page );
+
     return page;
+}
+
+export function getPageRevID( page ) {
+    if ( isValidID( page.revid ) ) {
+        return page.revid;
+    }
+
+    if ( page.type === 'revision' ) {
+        if ( isValidID( page.oldid ) ) {
+            if ( !isValidDir( page.direction ) || page.direction === 'prev' ) {
+                return page.oldid;
+            }
+        }
+    }
+
+    if ( page.type === 'diff' ) {
+        if ( isValidID( page.oldid ) && isValidID( page.diff ) ) {
+            return Math.max( page.oldid, page.diff );
+        } else if ( isValidID( page.oldid ) ) {
+            if ( !isValidDir( page.diff ) || page.diff === 'prev' ) {
+                return page.oldid;
+            }
+        } else if ( isValidID( page.diff ) ) {
+            if ( !isValidDir( page.oldid ) || page.oldid === 'prev' ) {
+                return page.diff;
+            }
+        }
+    }
+
+    return false;
 }
 
 /******* MW *******/

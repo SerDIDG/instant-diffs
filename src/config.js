@@ -43,7 +43,6 @@ export const config = {
             'mediawiki.diff.styles',
             'mediawiki.interface.helpers.styles',
             'mediawiki.misc-authed-curate',
-            'ext.visualEditor.diffPage.init',
             'ext.flaggedRevs.basic',
             'ext.thanks.corethank',
         ],
@@ -54,6 +53,11 @@ export const config = {
             'oojs-ui-windows',
             'oojs-ui.styles.icons-interactions',
         ],
+        diff: {
+            '*': [
+                'ext.visualEditor.diffPage.init',
+            ],
+        },
         revision: {
             6: [                                                        // File:
                 'filepage',
@@ -152,12 +156,11 @@ export const config = {
 
     // MediaWiki config
     mwConfigBackup: [
-        'thanks-confirmation-required',
         'wgTitle',
         'wgPageName',
-        'wgArticleId',
         'wgPageContentModel',
         'wgNamespaceNumber',
+        'wgArticleId',
         'wgCurRevisionId',
         'wgRevisionId',
         'wgDiffOldId',
@@ -166,6 +169,7 @@ export const config = {
         'wgRelevantArticleId',
         'wgCanonicalSpecialPageName',
         'wgIsProbablyEditable',
+        'thanks-confirmation-required',
     ],
     mwUserOptionsBackup: [
         'visualeditor-diffmode-historical',

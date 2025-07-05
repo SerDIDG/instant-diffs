@@ -54,6 +54,11 @@ class Link {
     };
 
     /**
+     * @type {object}
+     */
+    extensions = {};
+
+    /**
      * @type {boolean}
      */
     isLoading = false;

@@ -1,30 +1,40 @@
 import id from './id';
 import * as utils from './utils';
 
-/******* [[commons:User:JWBTH/CD]] *******/
+/******* CONVENIENT DISCUSSIONS *******/
+
+/**
+ * {@link [[commons:User:JWBTH/CD]]}
+ */
 
 mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
     if ( !cd ) return;
 
+    /**
+     * @param {import('./Link').default} link
+     */
     const renderLink = ( link ) => {
-        if ( !link.isProcessed || !link.config.showPageLink || link.cd ) return;
+        if ( !link.isProcessed || !link.config.showPageLink || link.extensions.cd ) return;
 
-        link.cd = {};
-        link.cd.href = getHref( link );
-        if ( utils.isEmpty( link.cd.href ) ) return;
+        link.extensions.cd = {};
+        link.extensions.cd.href = getHref( link );
+        if ( utils.isEmpty( link.extensions.cd.href ) ) return;
 
         if ( link.page.button ) {
             link.page.button.remove();
         }
 
-        link.cd.button = link.renderAction( {
+        link.extensions.cd.button = link.renderAction( {
             label: utils.getLabel( 'page' ),
             title: utils.msg( 'comment-title' ),
-            href: link.cd.href,
+            href: link.extensions.cd.href,
             modifiers: [ 'page', 'comment' ],
         } );
     };
 
+    /**
+     * @param {import('./Link').default} link
+     */
     const getHref = ( link ) => {
         if ( !link.compare && !link.revision ) return;
 
@@ -33,28 +43,28 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
 
         if ( link.revision ) {
             if ( link.revision.revid ) {
-                link.cd.date = new Date( link.revision.timestamp );
-                link.cd.user = link.revision.user;
+                link.extensions.cd.date = new Date( link.revision.timestamp );
+                link.extensions.cd.user = link.revision.user;
             }
         } else if ( link.compare ) {
             if ( link.compare.torevid ) {
-                link.cd.date = new Date( link.compare.totimestamp );
-                link.cd.user = link.compare.touser;
+                link.extensions.cd.date = new Date( link.compare.totimestamp );
+                link.extensions.cd.user = link.compare.touser;
             } else if ( link.compare.fromrevid ) {
-                link.cd.date = new Date( link.compare.fromtimestamp );
-                link.cd.user = link.compare.fromuser;
+                link.extensions.cd.date = new Date( link.compare.fromtimestamp );
+                link.extensions.cd.user = link.compare.fromuser;
             }
         }
 
-        if ( link.cd.date && link.cd.user ) {
+        if ( link.extensions.cd.date && link.extensions.cd.user ) {
             try {
-                link.cd.anchor = cd.api.generateCommentId( link.cd.date, link.cd.user );
+                link.extensions.cd.anchor = cd.api.generateCommentId( link.extensions.cd.date, link.extensions.cd.user );
             } catch ( e ) {}
         }
 
-        if ( !link.cd.anchor ) return;
+        if ( !link.extensions.cd.anchor ) return;
 
-        let href = `#${ link.cd.anchor }`;
+        let href = `#${ link.extensions.cd.anchor }`;
         if ( link.page.titleText !== id.local.titleText ) {
             href = mw.util.getUrl( `${ link.page.titleText }${ href }` );
         }
@@ -69,25 +79,60 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
     }
 
     // Add hook listener to process newly added links
-    mw.hook( `${ id.config.prefix }.link.renderSuccess` ).add( ( link ) => {
-        if ( !link ) return;
-        renderLink( link );
-    } );
+    mw.hook( `${ id.config.prefix }.link.renderSuccess` ).add(
+        /**
+         * @param {import('./Link').default} link
+         */
+        ( link ) => {
+            if ( !link ) return;
+            renderLink( link );
+        },
+    );
 } );
 
-/******* [[:en:User:Cacycle/wikEdDiff]] *******/
+/******* WIKI ED DIFF *******/
 
-mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).add( ( diff ) => {
-    if ( !diff ) return;
+/**
+ * {@link [[:en:User:Cacycle/wikEdDiff]]}
+ */
 
-    // Reset diff table linking
-    // FixMe: Suggest a better solution
-    const $diffTable = diff.getDiffTable();
-    if (
-        typeof wikEd !== 'undefined' &&
-        wikEd.diffTableLinkified &&
-        ( $diffTable?.length > 0 && wikEd.diffTable === $diffTable.get( 0 ) )
-    ) {
-        wikEd.diffTableLinkified = false;
-    }
-} );
+mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).add(
+    /**
+     * @param {import('./Diff').default} diff
+     */
+    ( diff ) => {
+        if ( !diff ) return;
+
+        // Reset diff table linking
+        // FixMe: Suggest a better solution
+        const $diffTable = diff.getDiffTable();
+        if (
+            typeof wikEd !== 'undefined' &&
+            wikEd.diffTableLinkified &&
+            ( $diffTable?.length > 0 && wikEd.diffTable === $diffTable.get( 0 ) )
+        ) {
+            wikEd.diffTableLinkified = false;
+        }
+    },
+);
+
+/******* TWINKLE *******/
+
+/**
+ * {@link [[w:Wikipedia:Twinkle|Twinkle]]}
+ * {@link [[meta:User:Xiplus/TwinkleGlobal|TwinkleGlobal]]}
+ */
+
+mw.hook( `${ id.config.prefix }.diff.complete` ).add(
+    /**
+     * @param {import('./Diff').default} diff
+     */
+    ( diff ) => {
+        if ( !diff ) return;
+
+        const $links = diff.getContainer()?.find( '[id^="tw-revert"] a' );
+        $links.each( ( i, node ) => {
+            node.addEventListener( 'click', () => diff.emit( 'close' ) );
+        } );
+    },
+);

@@ -397,7 +397,10 @@ class View {
         };
 
         this.diff = new Diff( page, options );
-        this.diff.on( 'focus', () => this.focus() );
+        this.diff.connect( this, {
+            focus: 'focus',
+            close: 'close',
+        } );
 
         // Load the Diff content
         $.when( this.diff.load() )
@@ -454,6 +457,13 @@ class View {
      */
     focus() {
         this.dialog.focus();
+    }
+
+    /**
+     * Close the dialog.
+     */
+    close() {
+        this.dialog.close();
     }
 
     /**
