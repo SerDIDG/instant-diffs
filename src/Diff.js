@@ -32,6 +32,7 @@ class Diff {
         wgTitle: false,
         wgPageName: false,
         wgRelevantPageName: false,
+        wgPageContentModel: 'wikitext',
         wgNamespaceNumber: false,
         wgArticleId: false,
         wgRelevantArticleId: false,

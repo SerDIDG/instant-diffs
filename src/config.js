@@ -45,6 +45,7 @@ export const config = {
             'mediawiki.misc-authed-curate',
             'ext.flaggedRevs.basic',
             'ext.thanks.corethank',
+            'ext.visualEditor.diffPage.init',
         ],
         settings: [
             'oojs',
@@ -53,11 +54,8 @@ export const config = {
             'oojs-ui-windows',
             'oojs-ui.styles.icons-interactions',
         ],
-        diff: {
-            '*': [
-                'ext.visualEditor.diffPage.init',
-            ],
-        },
+
+        // Lazy-loaded dependencies
         revision: {
             6: [                                                        // File:
                 'filepage',
