@@ -597,14 +597,14 @@ class Diff {
      * Fire hooks and events.
      */
     async fire() {
+        // Request page dependencies
+        await this.requestPageDependencies();
+
         // Restore functionally that requires that elements are in the DOM
         this.restoreFunctionality();
 
         // Fire navigation events
         this.getNavigation()?.fire();
-
-        // Request page dependencies
-        await this.requestPageDependencies();
 
         // Fire diff table hook
         const $diffTable = this.getDiffTable();
