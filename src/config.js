@@ -21,6 +21,7 @@ export const config = {
             'mediawiki.user',
             'mediawiki.storage',
             'mediawiki.notification',
+            'mediawiki.ForeignApi',
             'mediawiki.Title',
         ],
         window: [
@@ -115,7 +116,7 @@ export const config = {
     },
 
     exclude: {
-        pages: [ 'GlobalContributions' ],
+        pages: [],
     },
 
     // Action labels

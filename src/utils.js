@@ -443,12 +443,20 @@ export function getHref( page, pageParams, options ) {
         ...options,
     };
 
+    // Validate
+    if ( window.location.origin !== page.origin ) {
+        options.relative = false;
+    }
+
+    // Get link's endpoint url
+    const mwEndPointUrl = page.mwEndPointUrl || id.local.mwEndPointUrl;
+
     // Get url with the current origin
     let url;
     if ( !isEmpty( page.title ) ) {
-        url = new URL( mw.util.getUrl( page.title, pageParams ), id.local.mwEndPointUrl.origin );
+        url = new URL( mw.util.getUrl( page.title, pageParams ), mwEndPointUrl.origin );
     } else {
-        url = new URL( id.local.mwEndPointUrl );
+        url = new URL( mwEndPointUrl );
         url.search = new URLSearchParams( pageParams ).toString();
     }
 

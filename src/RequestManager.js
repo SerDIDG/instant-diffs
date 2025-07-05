@@ -1,4 +1,5 @@
 import id from './id';
+import * as utils from './utils';
 
 /**
  * Class representing a Request Manager.
@@ -12,10 +13,12 @@ class RequestManager {
     /**
      * mw.Api.get wrapper.
      * @param {object} params
+     * @param {mw.Api|mw.ForeignApi} [api]
      * @returns {mw.Api.Promise}
      */
-    get( params ) {
-        const request = id.local.mwApi.get( params );
+    get( params, api ) {
+        api = api || id.local.mwApi;
+        const request = api.get( params );
         this.add( request );
         return request;
     }

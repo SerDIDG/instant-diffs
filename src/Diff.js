@@ -127,7 +127,7 @@ class Diff {
 
     /**
      * Request a Diff dependencies and html content.
-     * @returns {Promise|boolean}
+     * @returns {Promise}
      */
     load() {
         if ( !this.isLoading ) {
@@ -155,7 +155,7 @@ class Diff {
 
     /**
      * Request page ids.
-     * @returns {mw.Api.Promise}
+     * @returns {JQuery.Promise}
      */
     requestPageIds() {
         const params = {
@@ -211,7 +211,7 @@ class Diff {
 
     /**
      * Request page dependencies.
-     * @returns {mw.Api.Promise}
+     * @returns {JQuery.Promise}
      */
     requestPageDependencies() {
         const params = {

@@ -4,6 +4,7 @@ import { applyOoUiPolyfill, getWindowManager } from './utils-oojs';
 
 import Link from './Link';
 import Diff from './Diff';
+import GlobalDiff from './GlobalDiff';
 import Snapshot from './Snapshot';
 
 import './styles/view.less';
@@ -389,14 +390,18 @@ class View {
             this.mwUserOptionsBackup = utils.backupMWUserOptions();
         }
 
-        // Construct the Diff instance
+        // Get diff params
         const page = this.link.getPage();
         const options = {
             initiatorAction: this.previousDiff?.getNavigation()?.getActionRegister(),
             initiatorDiff: this.options.initiatorDiff,
         };
 
-        this.diff = new Diff( page, options );
+        // Get diff controller dependent of local or global lists
+        const Controller = window.location.origin !== page.origin ? GlobalDiff : Diff;
+
+        // Construct the Diff instance
+        this.diff = new Controller( page, options );
         this.diff.connect( this, {
             focus: 'focus',
             close: 'close',

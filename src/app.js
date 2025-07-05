@@ -14,6 +14,7 @@ import view from './View';
 import settings from './Settings';
 
 import './styles/skins.less';
+import GlobalDiff from './GlobalDiff';
 
 /******* PAGE SPECIFIC ADJUSTMENTS *******/
 
