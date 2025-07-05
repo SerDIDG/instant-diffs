@@ -4,6 +4,7 @@ import * as utilsDiff from './utils-diff';
 import { executeModuleScript } from './utils-oojs';
 
 import Navigation from './Navigation';
+import RequestManager from './RequestManager';
 
 /**
  * Class representing a Diff.
@@ -61,14 +62,19 @@ class Diff {
     links = {};
 
     /**
-     * @type {import('./Navigation').default}
+     * @type {import('./RequestManager').default}
      */
-    navigation;
+    requestManager;
 
     /**
      * @type {Promise}
      */
     requestPromise;
+
+    /**
+     * @type {import('./Navigation').default}
+     */
+    navigation;
 
     /**
      * @type {boolean}
@@ -113,6 +119,8 @@ class Diff {
             uselang: id.local.userLanguage,
         };
 
+        this.requestManager = new RequestManager();
+
         // Mixin constructor
         OO.EventEmitter.call( this );
     }
@@ -129,18 +137,16 @@ class Diff {
             ];
 
             // Try to load page dependencies in parallel to the main request:
-            // * for the diff view we only need to load bare minimum;
             // * for the revision view we need to know actual revision id;
             // * for the page view we need to know page id.
             if (
-                this.page.type === 'diff' ||
                 ( this.page.type === 'revision' && utils.isValidID( this.page.revid ) ) ||
                 ( this.page.typeVariant === 'page' && utils.isValidID( this.page.curid ) )
             ) {
                 promises.push( this.requestPageDependencies() );
             }
 
-            this.requestPromise = Promise.allSettled( promises );
+            this.requestPromise = this.requestManager.allSettled( promises );
         }
         return this.requestPromise;
     }
@@ -356,7 +362,7 @@ class Diff {
 
     abort() {
         if ( !this.isLoading ) return;
-        this.requestPromise.abort();
+        this.requestManager.abort();
     }
 
     /******* RENDER *******/
@@ -692,8 +698,8 @@ class Diff {
         // Restore functionally that requires elements appended in the DOM
         this.restoreFunctionalityEmbed();
 
-        // Request page dependencies
-        if ( !this.isDependenciesLoaded ) {
+        // Request page dependencies lazily
+        if ( this.page.type === 'revision' && !this.isDependenciesLoaded ) {
             await this.requestPageDependencies();
         }
 
