@@ -435,17 +435,18 @@ class View {
         }
 
         // Fire the Diff hooks and events
-        this.diff.fire().then( () => {
-            // Track on dialog process end time
-            id.timers.dialogProcesEnd = Date.now();
+        $.when( this.diff.fire() )
+            .always( () => {
+                // Track on dialog process end time
+                id.timers.dialogProcesEnd = Date.now();
 
-            // Log timers for the dialog process
-            if ( utils.defaults( 'logTimers' ) ) {
-                utils.logTimer( 'dialog process time', id.timers.dialogProcesStart, id.timers.dialogProcesEnd );
-            }
+                // Log timers for the dialog process
+                if ( utils.defaults( 'logTimers' ) ) {
+                    utils.logTimer( 'dialog process time', id.timers.dialogProcesStart, id.timers.dialogProcesEnd );
+                }
 
-            this.isProcessing = false;
-        } );
+                this.isProcessing = false;
+            } );
     }
 
     /**
