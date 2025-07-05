@@ -1,56 +1,60 @@
+import id from './id';
+
 /**
  * Class representing a Request Manager.
  */
 class RequestManager {
     /**
-     * @type {Set}
+     * @type {Map<JQuery.jqXHR | mw.Api.Promise, JQuery.Promise>}
      */
-    items = new Set();
+    items = new Map();
 
     /**
-     * Add promise requests and call Promise.all.
-     * @param {Array.<JQuery.Promise>} promises
-     * @returns {Promise}
+     * mw.Api.get wrapper.
+     * @param {object} params
+     * @returns {mw.Api.Promise}
      */
-    all( promises ) {
-        promises.forEach( promise => this.add( promise ) );
-        return Promise.all( Array.from( this.items ) );
+    get( params ) {
+        const request = id.local.mwApi.get( params );
+        this.add( request );
+        return request;
     }
 
     /**
-     * Add promise requests and call Promise.allSettled.
-     * @param {Array.<JQuery.Promise>} promises
-     * @returns {Promise}
+     * $.ajax wrapper.
+     * @param {object} params
+     * @returns {JQuery.jqXHR}
      */
-    allSettled( promises ) {
-        promises.forEach( promise => this.add( promise ) );
-        return Promise.allSettled( Array.from( this.items ) );
+    ajax( params ) {
+        const request = $.ajax( params );
+        this.add( request );
+        return request;
     }
 
     /**
      * Abort all requests in the set.
      */
     abort() {
-        for ( const promise of this.items ) {
-            promise.abort();
-        }
+        this.items.forEach( ( promise, request ) => request.abort() );
     }
 
     /**
      * Add promise to the set.
-     * @param {JQuery.Promise} promise
+     * @param {JQuery.jqXHR|mw.Api.Promise} request
+     * @returns {JQuery.Promise}
      */
-    add( promise ) {
-        promise.always( () => this.delete( promise ) );
-        this.items.add( promise );
+    add( request ) {
+        const promise = request.always( () => this.delete( request ) );
+        this.items.set( request, promise );
+        return promise;
     }
 
     /**
      * Delete promise from the set.
-     * @param {JQuery.Promise} promise
+     * @param {JQuery.jqXHR|mw.Api.Promise} request
      */
-    delete( promise ) {
-        this.items.delete( promise );
+    delete( request ) {
+        this.items.delete( request );
     }
 }
 

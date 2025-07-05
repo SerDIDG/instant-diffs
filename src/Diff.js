@@ -146,13 +146,17 @@ class Diff {
                 promises.push( this.requestPageDependencies() );
             }
 
-            this.requestPromise = this.requestManager.allSettled( promises );
+            this.requestPromise = Promise.allSettled( promises );
         }
         return this.requestPromise;
     }
 
     /******* DEPENDENCIES *******/
 
+    /**
+     * Request page ids.
+     * @returns {mw.Api.Promise}
+     */
     requestPageIds() {
         const params = {
             action: 'compare',
@@ -171,7 +175,7 @@ class Diff {
             params.fromid = pageid;
         }
 
-        return id.local.mwApi
+        return this.requestManager
             .get( params )
             .then( ( data ) => this.onRequestPageIdsDone( data, params ) )
             .fail( ( message, data ) => this.onRequestPageIdsError( message, data, params ) );
@@ -205,6 +209,10 @@ class Diff {
         this.setConfigs();
     }
 
+    /**
+     * Request page dependencies.
+     * @returns {mw.Api.Promise}
+     */
     requestPageDependencies() {
         const params = {
             action: 'parse',
@@ -224,7 +232,7 @@ class Diff {
             params.pageid = pageid;
         }
 
-        return id.local.mwApi
+        return this.requestManager
             .get( params )
             .then( ( data ) => this.onRequestPageDependenciesDone( data, params ) )
             .fail( ( message, data ) => this.onRequestPageDependenciesError( message, data, params ) );
@@ -287,7 +295,7 @@ class Diff {
 
     /**
      * Request a Diff html content.
-     * @returns {Promise|boolean}
+     * @returns {JQuery.jqXHR}
      */
     request() {
         this.isLoading = true;
@@ -307,7 +315,8 @@ class Diff {
             data: $.extend( page, this.pageParams ),
         };
 
-        return $.ajax( params )
+        return this.requestManager
+            .ajax( params )
             .done( this.onRequestDone.bind( this ) )
             .fail( this.onRequestError.bind( this ) );
     }
