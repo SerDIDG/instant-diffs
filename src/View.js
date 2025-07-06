@@ -4,6 +4,7 @@ import { applyOoUiPolyfill, getWindowManager } from './utils-oojs';
 
 import Link from './Link';
 import Diff from './Diff';
+import LocalDiff from './LocalDiff';
 import GlobalDiff from './GlobalDiff';
 import Snapshot from './Snapshot';
 
@@ -397,8 +398,8 @@ class View {
             initiatorDiff: this.options.initiatorDiff,
         };
 
-        // Get diff controller dependent of local or global lists
-        const Controller = window.location.origin !== page.origin ? GlobalDiff : Diff;
+        // Get a Diff controller dependent of local or global lists
+        const Controller = window.location.origin !== page.origin ? GlobalDiff : LocalDiff;
 
         // Construct the Diff instance
         this.diff = new Controller( page, options );

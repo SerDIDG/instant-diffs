@@ -8,13 +8,14 @@ import './styles/app.less';
 import Button from './Button';
 import Link from './Link';
 import Diff from './Diff';
+import LocalDiff from './LocalDiff';
+import GlobalDiff from './GlobalDiff';
 import ViewButton from './ViewButton';
 import HistoryCompareButton from './HistoryCompareButton';
 import view from './View';
 import settings from './Settings';
 
 import './styles/skins.less';
-import GlobalDiff from './GlobalDiff';
 
 /******* PAGE SPECIFIC ADJUSTMENTS *******/
 
@@ -268,7 +269,7 @@ function app() {
     id.config = config;
     id.local = local;
     id.timers = timers;
-    id.api = { Button, ViewButton, HistoryCompareButton, Diff, Link, view, settings };
+    id.api = { Button, ViewButton, HistoryCompareButton, Diff, LocalDiff, GlobalDiff, Link, view, settings };
     id.settings ||= {};
     id.settings = { ...id.config.settings, ...id.settings };
     id.defaults ||= {};

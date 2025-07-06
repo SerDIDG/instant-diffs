@@ -26,12 +26,20 @@ class RequestManager {
     /**
      * $.ajax wrapper.
      * @param {object} params
-     * @returns {JQuery.jqXHR}
+     * @returns {JQuery.jqXHR|JQuery.Promise}
      */
     ajax( params ) {
         const request = $.ajax( params );
         this.add( request );
         return request;
+    }
+
+    /**
+     * $.when wrapper.
+     * @returns {JQuery.Promise}
+     */
+    when( ...args ) {
+        return $.when( ...args );
     }
 
     /**

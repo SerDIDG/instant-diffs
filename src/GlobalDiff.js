@@ -8,31 +8,28 @@ const { h } = utils;
 /**
  * Class representing a global Diff.
  * @augments {import('./Diff').default}
- * @mixes OO.EventEmitter
  */
 class GlobalDiff extends Diff {
+
     /**
-     * Request a Diff dependencies and html content.
-     * @returns {Promise}
+     * Create a diff instance.
+     * @param {object} page a page object
+     * @param {object} [options] configuration options
      */
-    load() {
-        if ( !this.isLoading ) {
-            this.requestPromise = this.request();
-        }
-        return this.requestPromise;
+    constructor( page, options ) {
+        super( page, {
+            ...options,
+            fireWikipageHooks: false,
+        } );
     }
 
     /******* REQUESTS *******/
 
     /**
-     * Request a Diff html content.
+     * Request process to get diff compare.
      * @returns {JQuery.Promise}
      */
-    request() {
-        this.isLoading = true;
-        this.isLoaded = false;
-        this.error = null;
-
+    requestProcess() {
         const params = {
             action: 'compare',
             prop: [ 'diff', 'ids', 'parsedcomment', 'rel', 'timestamp', 'title', 'user' ],
@@ -45,38 +42,23 @@ class GlobalDiff extends Diff {
             uselang: id.local.userLanguage,
         };
 
-        console.log( this.page );
-
         const api = new mw.ForeignApi( `${ this.page.origin }${ mw.util.wikiScript( 'api' ) }` );
-        return this.requestManager
-            .get( params, api )
-            .done( this.onRequestDone.bind( this ) )
-            .fail( this.onRequestError.bind( this ) );
-    }
-
-    /**
-     * Event that emits after the request successive.
-     */
-    onRequestDone( data ) {
-        this.isLoading = false;
-
-        // The Diff can be already detached from the DOM
-        if ( this.isDetached ) return;
-
-        // Render error if the data request is completely failed
-        this.data = data?.compare;
-        if ( !this.data ) {
-            return this.onRequestError();
-        }
-
-        console.log( this.data );
-
-        this.render();
-        mw.hook( `${ id.config.prefix }.diff.renderSuccess` ).fire( this );
-        mw.hook( `${ id.config.prefix }.diff.renderComplete` ).fire( this );
+        return this.requestManager.get( params, api );
     }
 
     /******* RENDER *******/
+
+    renderSuccess( data ) {
+        // Render error if the data request is completely failed
+        this.data = data?.compare;
+        if ( !this.data ) {
+            this.onRequestError();
+            return false;
+        }
+
+        this.render();
+        return true;
+    }
 
     renderContent() {
         // Collect data
@@ -122,16 +104,6 @@ class GlobalDiff extends Diff {
         );
 
         return nodes;
-    }
-
-    /******* ACTIONS *******/
-
-    fire() {
-        // Replace link target attributes after the hooks have fired
-        this.processLinksTaget();
-
-        // Fire hook on complete
-        mw.hook( `${ id.config.prefix }.diff.complete` ).fire( this );
     }
 }
 
