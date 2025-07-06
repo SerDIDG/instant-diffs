@@ -12,7 +12,7 @@ const { h } = utils;
 class GlobalDiff extends Diff {
 
     /**
-     * Create a diff instance.
+     * Create a global diff instance.
      * @param {object} page a page object
      * @param {object} [options] configuration options
      */
@@ -26,7 +26,7 @@ class GlobalDiff extends Diff {
     /******* REQUESTS *******/
 
     /**
-     * Request process to get diff compare.
+     * Request process to get diff compare content.
      * @returns {JQuery.Promise}
      */
     requestProcess() {
@@ -42,8 +42,7 @@ class GlobalDiff extends Diff {
             uselang: id.local.userLanguage,
         };
 
-        const api = new mw.ForeignApi( `${ this.page.origin }${ mw.util.wikiScript( 'api' ) }` );
-        return this.requestManager.get( params, api );
+        return this.requestManager.get( params, this.page.mwApi || id.local.mwApi );
     }
 
     /******* RENDER *******/

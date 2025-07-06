@@ -622,6 +622,15 @@ export function getRevisionSection( revision ) {
 }
 
 export function validatePage( page ) {
+    // Sett index and api endpoints
+    if ( !isEmpty( page.origin ) ) {
+        page.mwEndPoint = `${ page.origin }${ mw.util.wikiScript( 'index' ) }`;
+        page.mwEndPointUrl = new URL( page.mwEndPoint );
+
+        page.mwApiEndPoint = `${ page.origin }${ mw.util.wikiScript( 'api' ) }`;
+        page.mwApi = window.location.origin === page.origin ? id.local.mwApi : new mw.ForeignApi( page.mwApiEndPoint );
+    }
+
     // Validate components
     if ( [ 0, '0' ].includes( page.oldid ) ) {
         delete page.oldid;

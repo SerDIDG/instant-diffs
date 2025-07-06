@@ -176,10 +176,8 @@ class Link {
             return;
         }
 
-        // Get link origin and index.php endpoint
+        // Get link origin
         this.page.origin = this.url.origin;
-        this.page.mwEndPoint = `${ this.page.origin }${ mw.config.get( 'wgScript' ) }`;
-        this.page.mwEndPointUrl = new URL( this.page.mwEndPoint );
 
         if ( id.local.specialPagesSearchRegExp.test( urlParts.title ) ) {
             // Get components from splitting url title
