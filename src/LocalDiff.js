@@ -11,6 +11,11 @@ import Diff from './Diff';
  */
 class LocalDiff extends Diff {
     /**
+     * @type {string}
+     */
+    type = 'local';
+
+    /**
      * Load process that combines multiple requests into one the promise.
      * @returns {Promise}
      */
@@ -153,23 +158,12 @@ class LocalDiff extends Diff {
         this.setConfigs();
 
         // Get page dependencies
-        let dependencies = [ ...parse.modulestyles, ...parse.modulescripts, ...parse.modules ];
-
-        // Get dependencies by type
-        const typeDependencies = id.config.dependencies[ this.page.type ];
-        if ( typeDependencies ) {
-            // Set common dependencies
-            if ( typeDependencies[ '*' ] ) {
-                dependencies = dependencies.concat( typeDependencies[ '*' ] );
-            }
-
-            // Set namespace-specific dependencies
-            const pageNamespace = this.page.mwTitle?.getNamespaceId();
-            if ( typeDependencies[ pageNamespace ] ) {
-                dependencies = dependencies.concat( typeDependencies[ pageNamespace ] );
-            }
-        }
-
+        const dependencies = [
+            ...parse.modulestyles,
+            ...parse.modulescripts,
+            ...parse.modules,
+            ...utils.getPageDependencies( this.page ),
+        ];
         mw.loader.load( utils.getDependencies( dependencies ) );
     }
 

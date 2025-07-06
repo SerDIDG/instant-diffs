@@ -10,6 +10,11 @@ import Navigation from './Navigation';
  */
 class Diff {
     /**
+     * @type {string}
+     */
+    type = 'abstract';
+
+    /**
      * @type {object}
      */
     page = {};
@@ -182,7 +187,7 @@ class Diff {
         if ( error?.statusText === 'abort' ) return;
 
         // Render content and fire hooks
-        const status = this.renderError();
+        const status = this.renderError( error );
         if ( status ) {
             mw.hook( `${ id.config.prefix }.diff.renderError` ).fire( this );
             mw.hook( `${ id.config.prefix }.diff.renderComplete` ).fire( this );
@@ -226,7 +231,7 @@ class Diff {
         return true;
     }
 
-    renderError() {
+    renderError( error ) {
         // Create error object
         this.error = {
             type: this.page.type,
@@ -283,8 +288,8 @@ class Diff {
         this.renderWarning( $message );
     }
 
-    renderWarning( $content ) {
-        const $box = utils.renderMessageBox( { $content, type: 'warning' } );
+    renderWarning( $content, type = 'warning' ) {
+        const $box = utils.renderMessageBox( { $content, type } );
         utils.embed( $box, this.nodes.$body, 'prependTo' );
     }
 

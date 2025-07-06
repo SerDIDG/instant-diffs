@@ -399,7 +399,7 @@ class View {
         };
 
         // Get a Diff controller dependent of local or global lists
-        const DiffController = window.location.origin === page.origin ? LocalDiff : GlobalDiff;
+        const DiffController = !page.origin || window.location.origin === page.origin ? LocalDiff : GlobalDiff;
 
         // Construct the Diff instance
         this.diff = new DiffController( page, options );

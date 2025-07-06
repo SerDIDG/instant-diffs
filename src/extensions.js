@@ -59,7 +59,7 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
         if ( link.extensions.cd.date && link.extensions.cd.user ) {
             try {
                 link.extensions.cd.anchor = cd.api.generateCommentId( link.extensions.cd.date, link.extensions.cd.user );
-            } catch ( e ) {}
+            } catch {}
         }
 
         if ( !link.extensions.cd.anchor ) return;

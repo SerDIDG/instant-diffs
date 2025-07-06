@@ -172,7 +172,7 @@ class Link {
             urlParts.title = this.url.searchParams.get( 'title' );
             urlParts.pathname = decodeURIComponent( this.url.pathname );
             urlParts.pathnameNormalized = urlParts.pathname.replace( new RegExp( id.local.mwArticlePath ), '' );
-        } catch ( e ) {
+        } catch {
             return;
         }
 

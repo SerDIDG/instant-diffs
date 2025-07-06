@@ -492,7 +492,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         try {
             const options = JSON.parse( userOptions[ `${ id.config.settingsPrefix }-settings` ] );
             utils.setDefaults( options, true );
-        } catch ( e ) {}
+        } catch {}
 
         this.update();
     }

@@ -1,6 +1,7 @@
 import id from './id';
 import * as utils from './utils';
 import { getModuleExport } from './utils-oojs';
+import { isString } from './utils';
 
 const { h } = utils;
 
@@ -21,6 +22,53 @@ function showNotification( message, type ) {
         .then( ( data ) => {
             mw.notify( $( data.parse.text ), { type } );
         } );
+}
+
+/**
+ * Get the required <table> structure for displaying diffs.
+ * @param {string} [body] a body content
+ * @returns {Element}
+ */
+export function renderDiffTable( body ) {
+    const nodes = {};
+
+    nodes.container = h( 'table', { class: [ 'diff', 'diff-type-table', `diff-editfont-${ mw.user.options.get( 'editfont' ) }` ] },
+        h( 'col', { class: 'diff-marker' } ),
+        h( 'col', { class: 'diff-content' } ),
+        h( 'col', { class: 'diff-marker' } ),
+        h( 'col', { class: 'diff-content' } ),
+        nodes.head = h( 'thead',
+            h( 'tr', { class: 'diff-title', lang: id.local.userLanguage },
+                nodes.deleted = h( 'td', { class: [ 'diff-otitle', 'diff-side-deleted' ], colspan: 2 } ),
+                nodes.added = h( 'td', { class: [ 'diff-ntitle', 'diff-side-added' ], colspan: 2 } ),
+            ),
+        ),
+        nodes.body = h( 'tbody' ),
+    );
+
+    if ( !utils.isEmpty( body ) ) {
+        utils.setHTML( nodes.body, body );
+    }
+
+    return nodes;
+}
+
+/**
+ * Get a date in the user format.
+ * Uses "mediawiki.DateFormatter" module for formatting if exists, otherwise uses "date.toLocaleString".
+ * @param {string|Date} date a date string, or a Date instance
+ * @returns {string|undefined}
+ */
+export function getUserDate( date ) {
+    if ( utils.isString( date ) ) {
+        date = new Date( date );
+    }
+    if ( !( date instanceof Date ) ) return;
+
+    const formatTimeAndDate = utils.moduleRequire( 'mediawiki.DateFormatter' );
+    return formatTimeAndDate
+        ? formatTimeAndDate.forUser().formatTimeAndDate( date )
+        : date.toLocaleString();
 }
 
 /******* INLINE FORMAT TOGGLE *******/
@@ -44,7 +92,7 @@ export function restoreInlineFormatToggle( $container ) {
     try {
         isRendered = true;
         inlineFormatToggle( $inlineToggleSwitchLayout );
-    } catch ( e ) {}
+    } catch {}
 
     return isRendered;
 }

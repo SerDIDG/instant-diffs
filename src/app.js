@@ -98,7 +98,10 @@ function processHistoryPage() {
 
 /******* PREPARE ******/
 
-function prepare() {
+function prepare( require ) {
+    // Save exported modules to the ID singleton
+    id.local.require = require;
+
     // Hide the links panel to prevent blinking before the main stylesheet is applied
     mw.util.addCSS( '.instantDiffs-panel { display:none; }' );
 

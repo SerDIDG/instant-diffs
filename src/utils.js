@@ -14,6 +14,15 @@ export function isEmpty( str ) {
 }
 
 /**
+ * Checks if a value is a string.
+ * @param {*} value
+ * @returns {boolean}
+ */
+export function isString( value ) {
+    return typeof value === 'string';
+}
+
+/**
  * Checks if a value is a boolean.
  * @param {*} value
  * @returns {boolean}
@@ -75,6 +84,10 @@ export function getDependencies( data ) {
         const state = mw.loader.getState( item );
         return state && ![ 'error', 'missing' ].includes( state );
     } );
+}
+
+export function moduleRequire( name ) {
+    return id.local.require( name );
 }
 
 /**
@@ -166,7 +179,7 @@ export function setDefaults( settings, saveUserOptions ) {
     if ( saveUserOptions && !id.local.mwIsAnon ) {
         try {
             mw.user.options.set( id.config.settingsPrefix, JSON.stringify( id.defaults ) );
-        } catch ( e ) {}
+        } catch {}
     }
 }
 
@@ -179,14 +192,14 @@ export function processDefaults() {
     try {
         const settings = mw.storage.getObject( `${ id.config.prefix }-settings` );
         setDefaults( settings, false );
-    } catch ( e ) {}
+    } catch {}
 
     // Set settings stored in the User Options
     if ( !id.local.mwIsAnon ) {
         try {
             const settings = JSON.parse( mw.user.options.get( `${ id.config.settingsPrefix }-settings` ) );
             setDefaults( settings, false );
-        } catch ( e ) {}
+        } catch {}
     }
 }
 
@@ -364,7 +377,7 @@ export function getParamFromUrl( param, href ) {
     try {
         const url = new URL( href );
         return url.searchParams.get( param );
-    } catch ( e ) {
+    } catch {
         return null;
     }
 }
@@ -373,7 +386,7 @@ export function getComponentFromUrl( param, href ) {
     try {
         const url = new URL( href );
         return url[ param ];
-    } catch ( e ) {
+    } catch {
         return null;
     }
 }
@@ -621,6 +634,8 @@ export function getRevisionSection( revision ) {
     return sectionMatch && sectionMatch[ 1 ] || null;
 }
 
+/******* PAGE *******/
+
 export function validatePage( page ) {
     // Sett index and api endpoints
     if ( !isEmpty( page.origin ) ) {
@@ -755,6 +770,24 @@ export function getPageRevID( page ) {
     }
 
     return false;
+}
+
+export function getPageDependencies( page ) {
+    let dependencies = [];
+    const typeDependencies = id.config.dependencies[ page.type ];
+    if ( typeDependencies ) {
+        // Set common dependencies
+        if ( typeDependencies[ '*' ] ) {
+            dependencies = dependencies.concat( typeDependencies[ '*' ] );
+        }
+
+        // Set namespace-specific dependencies
+        const pageNamespace = page.mwTitle?.getNamespaceId();
+        if ( typeDependencies[ pageNamespace ] ) {
+            dependencies = dependencies.concat( typeDependencies[ pageNamespace ] );
+        }
+    }
+    return dependencies;
 }
 
 /******* MW *******/
@@ -1022,6 +1055,54 @@ export function embed( node, container, insertMethod = 'appendTo' ) {
         default:
             container.append( element );
             break;
+    }
+}
+
+export function setHTML( container, value ) {
+    if ( !container ) return;
+
+    if ( container instanceof jQuery ) {
+        container.html( value );
+        return;
+    }
+
+    if ( !( Element.prototype.setHTML instanceof Function ) ) {
+        Element.prototype.setHTML = function ( html ) {
+            this.innerHTML = html;
+        };
+    }
+
+    container.setHTML( value );
+}
+
+/**
+ * Add an origin to the link hrefs.
+ * @author {@link https://github.com/jwbth Jack who built the house}
+ * @param {JQuery} $content
+ * @param {string} url
+ * @param {boolean} [hashOnly]
+ */
+export function addBaseToLinks( $content, url, hashOnly = false ) {
+    let baseUrl;
+    try {
+        baseUrl = new URL( url, location.origin );
+    } catch {
+        return;
+    }
+    $content
+        .find( 'a[href^="#"]' )
+        .each( ( i, el ) => {
+            $( el )
+                .attr( 'href', baseUrl.origin + baseUrl.pathname + $( el ).attr( 'href' ) );
+        } );
+    if ( !hashOnly ) {
+        $content
+            .find( 'a[href^="/"]:not([href^="//"])' )
+            .each( ( i, el ) => {
+                $( el )
+                    .attr( 'href', baseUrl.origin + $( el ).attr( 'href' ).replace( /special:mylanguage\//i, '' ) )
+                    .attr( 'title', ( $( el ).attr( 'title' ) || '' ).replace( /special:mylanguage\//i, '' ) );
+            } );
     }
 }
 

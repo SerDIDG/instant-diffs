@@ -44,6 +44,7 @@ export const config = {
             'mediawiki.diff.styles',
             'mediawiki.interface.helpers.styles',
             'mediawiki.misc-authed-curate',
+            'mediawiki.DateFormatter',
             'ext.flaggedRevs.basic',
             'ext.thanks.corethank',
             'ext.visualEditor.diffPage.init',
