@@ -202,12 +202,13 @@ export const config = {
     linkSelector: [                                                     // $1 - server
         'a[data-instantdiffs-link]',
         'a.external[href*="$1"]',
+        'a.mw-changeslist-date',                                        // (revision)
         'a.mw-changeslist-diff',
         'a.mw-changeslist-diff-cur',
         'a.mw-changeslist-groupdiff',
         '.mw-fr-reviewlink a',                                          // [[Special:Watchlist]]
+        '.mw-enhanced-rc-time a',                                       // [[Special:Watchlist]] (revision)
         '.mw-history-histlinks a',
-        'a.mw-changeslist-date.mw-newpages-time',                       // [[Special:Newpages]]
         '.mw-diff-bytes + a',
         '.mw-fr-pending-changes-table a.cdx-docs-link',
         '#mw-revision-nav a',                                           // [[Special:PermanentLink]]
@@ -267,6 +268,7 @@ export const config = {
             'mw-newpages-time',                                         // [[Special:Newpages]]
         ],
         closestTo: [
+            '.mw-changeslist-line',                                     // [[Special:Watchlist]]
             '.mw-pager-navigation-bar + ul',
             '.mw-history-histlinks',
             '.mw-fr-hist-difflink',
