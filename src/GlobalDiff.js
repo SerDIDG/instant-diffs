@@ -3,9 +3,8 @@ import * as utils from './utils';
 import { getUserDate, renderDiffTable } from './utils-diff';
 
 import Diff from './Diff';
-import { addBaseToLinks } from './utils';
 
-const { h } = utils;
+const { h, hf } = utils;
 
 /**
  * Class representing a global Diff.
@@ -108,7 +107,35 @@ class GlobalDiff extends Diff {
     }
 
     renderDiffTable() {
-        this.nodes.table = renderDiffTable( this.compare.body );
+        // Render table structure
+        this.nodes.table = renderDiffTable();
+        utils.setHTML( this.nodes.table.body, this.compare.body );
+
+        // Add deleted side content
+        const deletedTitle = this.mwConfg.wgDiffOldId === this.mwConfg.wgCurRevisionId ? 'currentrev-asof' : 'revisionasof';
+        const deleted = hf(
+            h( 'div', { id: 'mw-diff-otitle1' },
+                h( 'strong', mw.msg( deletedTitle, getUserDate( this.compare.fromtimestamp ) ) ),
+            ),
+            h( 'div', { id: 'mw-diff-otitle2' },
+                h( 'bdi', this.compare.fromuser ),
+            ),
+        );
+        utils.embed( deleted, this.nodes.table.deleted );
+
+        // Add added side content
+        const addedTitle = this.mwConfg.wgDiffNewId === this.mwConfg.wgCurRevisionId ? 'currentrev-asof' : 'revisionasof';
+        const added = hf(
+            h( 'div', { id: 'mw-diff-otitle1' },
+                h( 'strong', mw.msg( addedTitle, getUserDate( this.compare.totimestamp ) ) ),
+            ),
+            h( 'div', { id: 'mw-diff-otitle2' },
+                h( 'bdi', this.compare.touser ),
+            ),
+        );
+        utils.embed( added, this.nodes.table.added );
+
+        // Append
         this.nodes.$table = $( this.nodes.table.container ).appendTo( this.nodes.$body );
     }
 
@@ -184,7 +211,7 @@ class GlobalDiff extends Diff {
         // Append title
         const title = this.mwConfg.wgRevisionId === this.mwConfg.wgCurRevisionId ? 'currentrev-asof' : 'revisionasof';
         this.nodes.revisionTitle = h( 'h2', { class: 'diff-currentversion-title' },
-            mw.msg( title, getUserDate( this.compare.totimestamp ) )
+            mw.msg( title, getUserDate( this.compare.totimestamp ) ),
         );
         this.nodes.$body.append( this.nodes.revisionTitle );
 

@@ -70,7 +70,7 @@ export function isActiveElement() {
  * @param {string} path
  * @returns {string}
  */
-export function getOrigin( path ) {
+export function origin( path ) {
     return `${ id.config.origin }${ path }`;
 }
 
@@ -230,6 +230,11 @@ export function msgDom() {
     return mw.message.apply( mw.message, getMsgParams( arguments ) ).parseDom();
 }
 
+export function textDom( text ) {
+    mw.messages.set( { [ getMsgKey( 'buffer' ) ]: text } );
+    return msgDom( 'buffer' );
+}
+
 export function isMessageExists( str ) {
     if ( isEmpty( str ) ) return false;
     return mw.message( getMsgKey( str ) ).exists();
@@ -344,7 +349,7 @@ export function notifyError( str, error, page, silent ) {
     if ( typeof mw !== 'undefined' && mw.notify ) {
         const content = h( 'div.instantDiffs-notification',
             h( 'div.instantDiffs-notification-label',
-                h( 'a', { href: getOrigin( `/wiki/${ id.config.link }` ), target: '_blank' }, msg( 'script-name' ) ),
+                h( 'a', { href: origin( `/wiki/${ id.config.link }` ), target: '_blank' }, msg( 'script-name' ) ),
             ),
             ht( message ),
         );
@@ -416,6 +421,7 @@ export function getWikilink( page, pageParams, options ) {
         type: 'diff',
         minify: false,
         relative: true,
+        interwiki: null,
         wikilink: true,
         wikilinkPreset: 'special',
         ...options,
@@ -440,6 +446,7 @@ export function getWikilink( page, pageParams, options ) {
     const wikilink = preset[ options.type ];
     return wikilink
         .replace( '$1', attr )
+        .replace( '$pref', `${ options.interwiki?.prefix }:` || '' )
         .replace( '$href', options.href )
         .replace( '$msg', msg( `copy-wikilink-${ options.type }` ) );
 }
@@ -451,6 +458,7 @@ export function getHref( page, pageParams, options ) {
         relative: true,
         hash: false,
         minify: false,
+        interwiki: null,
         wikilink: false,
         wikilinkPreset: null,
         ...options,
@@ -564,6 +572,15 @@ export function getTypeHref( page, pageParams, options ) {
     return getHref( page, pageParams, options );
 }
 
+export function getHrefAbsolute( page, href ) {
+    const mwEndPointUrl = page.mwEndPointUrl || id.local.mwEndPointUrl;
+    try {
+        return new URL( href, mwEndPointUrl.origin ).toString();
+    } catch {
+        return href;
+    }
+}
+
 export function getSplitSpecialUrl( title ) {
     const titleParts = title.split( '/' );
     const page = {};
@@ -639,11 +656,14 @@ export function getRevisionSection( revision ) {
 export function validatePage( page ) {
     // Sett index and api endpoints
     if ( !isEmpty( page.origin ) ) {
+        page.isForeign = window.location.origin !== page.origin;
+
         page.mwEndPoint = `${ page.origin }${ mw.util.wikiScript( 'index' ) }`;
         page.mwEndPointUrl = new URL( page.mwEndPoint );
 
         page.mwApiEndPoint = `${ page.origin }${ mw.util.wikiScript( 'api' ) }`;
-        page.mwApi = window.location.origin === page.origin ? id.local.mwApi : new mw.ForeignApi( page.mwApiEndPoint );
+        page.mwApi = !page.isForeign ? id.local.mwApi : new mw.ForeignApi( page.mwApiEndPoint );
+
     }
 
     // Validate components

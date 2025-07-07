@@ -201,7 +201,7 @@ function getMessages() {
         } )
         .map( lang => {
             const path = id.config.dependencies.messages.replace( '$lang', lang );
-            return mw.loader.getScript( utils.getOrigin( path ) );
+            return mw.loader.getScript( utils.origin( path ) );
         } );
 }
 
@@ -291,7 +291,7 @@ function app() {
     require( './extensions.js' );
 
     // Load dependencies and prepare variables
-    mw.loader.load( utils.getOrigin( id.config.dependencies.styles ), 'text/css' );
+    mw.loader.load( utils.origin( id.config.dependencies.styles ), 'text/css' );
     mw.loader.using( id.config.dependencies.main )
         .then( prepare )
         .then( ready )

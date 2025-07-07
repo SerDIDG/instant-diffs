@@ -145,9 +145,9 @@ export const config = {
             revision: '[$href $msg]',
         },
         special: {
-            page: '[[Special:Redirect/page/$1|$msg]]',
-            diff: '[[Special:Diff/$1|$msg]]',
-            revision: '[[Special:PermanentLink/$1|$msg]]',
+            page: '[[$prefSpecial:Redirect/page/$1|$msg]]',
+            diff: '[[$prefSpecial:Diff/$1|$msg]]',
+            revision: '[[$prefSpecial:PermanentLink/$1|$msg]]',
         },
     },
 
@@ -319,6 +319,7 @@ export const local = {
     titleText: null,
     language: null,
     messages: {},
+    interwikiMap: [],
 
     snapshot: null,
 

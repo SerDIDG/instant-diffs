@@ -1,54 +1,39 @@
 import id from './id';
 import * as utils from './utils';
 import { getModuleExport } from './utils-oojs';
-import { isString } from './utils';
 
 const { h } = utils;
 
 /******* COMMON *******/
 
-function showNotification( message, type ) {
-    const params = {
-        action: 'parse',
-        contentmodel: 'wikitext',
-        text: message,
-        format: 'json',
-        formatversion: 2,
-        uselang: id.local.userLanguage,
-    };
-
-    id.local.mwApi
-        .post( params )
-        .then( ( data ) => {
-            mw.notify( $( data.parse.text ), { type } );
-        } );
-}
-
 /**
  * Get the required <table> structure for displaying diffs.
- * @param {string} [body] a body content
  * @returns {Element}
  */
-export function renderDiffTable( body ) {
+export function renderDiffTable() {
     const nodes = {};
 
-    nodes.container = h( 'table', { class: [ 'diff', 'diff-type-table', `diff-editfont-${ mw.user.options.get( 'editfont' ) }` ] },
-        h( 'col', { class: 'diff-marker' } ),
-        h( 'col', { class: 'diff-content' } ),
-        h( 'col', { class: 'diff-marker' } ),
-        h( 'col', { class: 'diff-content' } ),
+    nodes.container = h( 'table', {
+            class: [
+                'diff',
+                'diff-type-table',
+                `diff-editfont-${ mw.user.options.get( 'editfont' ) }`,
+            ],
+        },
+        h( 'colgroup',
+            h( 'col', { class: 'diff-marker' } ),
+            h( 'col', { class: 'diff-content' } ),
+            h( 'col', { class: 'diff-marker' } ),
+            h( 'col', { class: 'diff-content' } ),
+        ),
         nodes.head = h( 'thead',
             h( 'tr', { class: 'diff-title', lang: id.local.userLanguage },
-                nodes.deleted = h( 'td', { class: [ 'diff-otitle', 'diff-side-deleted' ], colspan: 2 } ),
-                nodes.added = h( 'td', { class: [ 'diff-ntitle', 'diff-side-added' ], colspan: 2 } ),
+                nodes.deleted = h( 'td', { class: [ 'diff-otitle', 'diff-side-deleted' ], colSpan: 2 } ),
+                nodes.added = h( 'td', { class: [ 'diff-ntitle', 'diff-side-added' ], colSpan: 2 } ),
             ),
         ),
         nodes.body = h( 'tbody' ),
     );
-
-    if ( !utils.isEmpty( body ) ) {
-        utils.setHTML( nodes.body, body );
-    }
 
     return nodes;
 }
@@ -171,13 +156,13 @@ function postRollback( link ) {
 
     id.local.mwApi.post( params )
         .then( ( data ) => {
-            showNotification( data?.rollback?.summary );
+            mw.notify( $( utils.textDom( data?.rollback?.summary ) ) );
 
             // Remove link wrapper (including the spinner).
             $( link ).closest( '.mw-rollback-link' ).remove();
         } )
         .catch( ( code, data ) => {
-            showNotification( data?.error?.info, 'error' );
+            mw.notify( $( utils.textDom( data?.error?.info ) ), { type: 'error' } );
 
             // Restore the link. This allows the user to try again
             // (or open it in a new window, bypassing this ajax handler).

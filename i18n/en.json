@@ -115,6 +115,7 @@
     "error-diff-generic": "Failed to load revision compare data \"oldid=$1\", \"diff=$2\": $4",
     "error-diff-missingcontent": "Revision is hidden",
     "error-diff-nosuchrevid": "Revision not found",
+    "error-api-generic": "Failed to request api: $4",
     "error-dependencies-generic": "Failed to load dependencies: $4",
     "error-dependencies-revid": "Failed to load page dependencies \"oldid=$1\": $4",
     "error-dependencies-curid": "Failed to load page dependencies \"curid=$1\": $4",

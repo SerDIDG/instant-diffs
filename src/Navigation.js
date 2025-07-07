@@ -1,5 +1,6 @@
 import id from './id';
 import * as utils from './utils';
+import { getInterwikiMap } from './utils-api';
 import { renderOoUiElement } from './utils-oojs';
 
 import Button from './Button';
@@ -278,8 +279,10 @@ class Navigation {
             items.push( this.buttons.page );
 
             // Link to the talk page
-            this.buttons.talkPage = this.renderTalkPageLink( buttonOptions );
-            items.push( this.buttons.talkPage );
+            if ( this.page.mwTitle.canHaveTalkPage() ) {
+                this.buttons.talkPage = this.renderTalkPageLink( buttonOptions );
+                items.push( this.buttons.talkPage );
+            }
 
             // Link to the history
             this.buttons.history = this.renderHistoryLink( buttonOptions );
@@ -629,7 +632,7 @@ class Navigation {
 
         return new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-page' ),
-            href: href,
+            href: utils.getHrefAbsolute( this.page, href ),
             target: utils.getTarget( true ),
             icon: iconSet[ this.page.mwTitle.getNamespaceId() ] || iconSet.default,
             ...options,
@@ -654,7 +657,7 @@ class Navigation {
 
         return new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-talkpage' ),
-            href: href,
+            href: utils.getHrefAbsolute( this.page, href ),
             target: utils.getTarget( true ),
             icon: iconSet[ this.page.mwTitle.getNamespaceId() ] || iconSet.default,
             ...options,
@@ -667,9 +670,11 @@ class Navigation {
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderHistoryLink( options ) {
+        const href = mw.util.getUrl( this.page.title, { action: 'history' } );
+
         return new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-history' ),
-            href: mw.util.getUrl( this.page.title, { action: 'history' } ),
+            href: utils.getHrefAbsolute( this.page, href ),
             target: utils.getTarget( true ),
             icon: 'history',
             ...options,
@@ -690,7 +695,7 @@ class Navigation {
 
         options = {
             label: $( label ),
-            href: utils.getOrigin( `/wiki/${ id.config.link }` ),
+            href: utils.origin( `/wiki/${ id.config.link }` ),
             target: utils.getTarget( true ),
             classes: [],
             ...options,
@@ -724,13 +729,26 @@ class Navigation {
     /**
      * Action that copies a formatted wikilink to the edit or revision to the clipboard.
      */
-    actionCopyWikilink() {
+    async actionCopyWikilink() {
         const options = {
             relative: false,
             minify: utils.defaults( 'linksFormat' ) === 'minify',
             wikilink: true,
             wikilinkPreset: utils.defaults( 'wikilinksFormat' ),
         };
+
+        // Get project prefix for the foreign link
+        if ( this.page.isForeign ) {
+            const interwikiMap = await getInterwikiMap();
+
+            if ( interwikiMap ) {
+                options.interwiki = interwikiMap
+                    .filter( entry => entry.url.includes( this.page.origin ) )
+                    .reduce( (accumulator, entry) => !accumulator || accumulator.prefix.length > entry.prefix.length ? entry : accumulator);
+            }
+        }
+
+        // Get wikilink
         const href = utils.getTypeHref( this.page, {}, options );
 
         // Copy href to the clipboard
