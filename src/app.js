@@ -6,6 +6,7 @@ import { mixEventEmitterInObject } from './utils-oojs';
 import './styles/app.less';
 
 import Button from './Button';
+import Article from './Article';
 import Link from './Link';
 import Page from './Page';
 import LocalPage from './LocalPage';
@@ -272,7 +273,7 @@ function app() {
     id.config = config;
     id.local = local;
     id.timers = timers;
-    id.api = { Button, ViewButton, HistoryCompareButton, Diff: Page, LocalDiff: LocalPage, ForeignDiff: GlobalPage, Link, view, settings };
+    id.api = { Button, ViewButton, HistoryCompareButton, Page, LocalPage, GlobalPage, Link, Article, view, settings };
     id.settings ||= {};
     id.settings = { ...id.config.settings, ...id.settings };
     id.defaults ||= {};
