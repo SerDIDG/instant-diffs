@@ -5,8 +5,8 @@ import { mixEventEmitterInObject } from './utils-oojs';
 
 import './styles/app.less';
 
-import Button from './Button';
 import Article from './Article';
+import Button from './Button';
 import Link from './Link';
 import Page from './Page';
 import LocalPage from './LocalPage';

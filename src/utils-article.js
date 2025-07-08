@@ -1,5 +1,5 @@
-import * as utils from './utils';
 import id from './id';
+import * as utils from './utils';
 
 export function getRevID( article ) {
     if ( utils.isValidID( article.get( 'revid' ) ) ) {

@@ -1,3 +1,4 @@
+import Article from './Article';
 import Button from './Button';
 import view from './View';
 
@@ -21,6 +22,8 @@ class ViewButton extends Button {
             ariaHaspopup: true,
             handler: () => this.openDialog(),
         } );
+
+        this.article = new Article();
     }
 
     /**
@@ -64,7 +67,7 @@ class ViewButton extends Button {
     onDialogClose() {}
 
     /**
-     * Get article.
+     * Get the Article instance.
      * @returns {import('./Article').default}
      */
     getArticle() {

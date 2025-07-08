@@ -2,8 +2,8 @@ import id from './id';
 import * as utils from './utils';
 import * as utilsLink from './utils-link';
 
-import Button from './Button';
 import Article from './Article';
+import Button from './Button';
 import view from './View';
 
 import './styles/links.less';

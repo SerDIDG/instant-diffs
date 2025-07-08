@@ -141,8 +141,8 @@ class View {
             // Get a new snapshot of the links to properly calculate indexes for navigation between them
             const options = {};
 
-            const mw = this.opener.link.getMW();
-            if ( mw?.hasLine ) {
+            // Add filter by article type when link generated my MediaWiki in the changes lists
+            if ( this.opener.link.getMW?.().hasLine ) {
                 options.filterType = this.opener.link.getArticle().get( 'type' );
                 options.filterMWLine = true;
             }
