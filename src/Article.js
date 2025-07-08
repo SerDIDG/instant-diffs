@@ -64,7 +64,7 @@ class Article {
         this.values.revid = getRevID( this );
 
         // Validate title
-        if ( !isEmpty( this.values.title ) || !isEmpty( this.values.section ) ) {
+        if ( !isEmpty( this.values.title ) ) {
             this.setTitle();
         }
 
@@ -178,8 +178,10 @@ class Article {
      * @private
      */
     setTitle() {
-        this.mw.title = new mw.Title( this.values.title );
-        this.values.titleText = this.mw.title.getPrefixedText();
+        try {
+            this.mw.title = new mw.Title( this.values.title );
+            this.values.titleText = this.mw.title.getPrefixedText();
+        } catch {}
 
         if ( !isEmpty( this.values.section ) ) {
             this.values.titleSection = [ this.values.title, this.values.section ].join( '#' );

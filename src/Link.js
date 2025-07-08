@@ -234,13 +234,13 @@ class Link {
     observe() {
         if ( this.isObserved ) return;
         this.isObserved = true;
-        id.local.observer.observe( this.node );
+        id.local.interactionObserver.observe( this.node );
     }
 
     unobserve() {
         if ( !this.isObserved ) return;
         this.isObserved = false;
-        id.local.observer.unobserve( this.node );
+        id.local.interactionObserver.unobserve( this.node );
     }
 
     onIntersect() {

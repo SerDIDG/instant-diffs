@@ -106,7 +106,7 @@ mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).add(
 
         // Reset diff table linking
         // FixMe: Suggest a better solution
-        const $diffTable = diff.getPageTable();
+        const $diffTable = diff.getDiffTable();
         if (
             typeof wikEd !== 'undefined' &&
             wikEd.diffTableLinkified &&

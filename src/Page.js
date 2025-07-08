@@ -329,7 +329,7 @@ class Page {
         // Fire wikipage hooks
         if ( this.options.fireWikipageHooks ) {
             // Fire diff table hook
-            const $diffTable = this.getPageTable();
+            const $diffTable = this.getDiffTable();
             if ( this.article.get( 'type' ) === 'diff' && $diffTable?.length > 0 ) {
                 mw.hook( 'wikipage.diff' ).fire( $diffTable );
             }
@@ -379,7 +379,7 @@ class Page {
         return this.nodes.$container;
     }
 
-    getPageTable() {
+    getDiffTable() {
         return this.nodes.$table;
     }
 

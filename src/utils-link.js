@@ -82,8 +82,16 @@ export function getMWLine( node ) {
 }
 
 export function getMWLineTitle( container ) {
+    // Get title from the data attribute, if the container has one.
+    const title = container.dataset.title;
+    if ( !utils.isEmpty( title ) ) {
+        return decodeURIComponent( title );
+    }
+
+    // Get nodes from the selector list
     const selector = id.config.mwLineTitle.selector.join( ',' );
     const node = container.querySelector( selector );
     if ( !node ) return;
+
     return !utils.isEmpty( node.title ) ? node.title : node.innerText;
 }

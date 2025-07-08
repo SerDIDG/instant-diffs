@@ -184,6 +184,7 @@ export const config = {
 
     // Content selectors
     bodyContentSelector: '#bodyContent',
+    contentSelector: '#mw-content-text',
 
     // Link selectors
     specialPages: [
@@ -214,6 +215,7 @@ export const config = {
         '#mw-revision-nav a',                                           // [[Special:PermanentLink]]
         '.diff-type-table #differences-prevlink',                       // [[Special:Diff]]
         '.diff-type-table #differences-nextlink',                       // [[Special:Diff]]
+        'a.ext-globalwatchlist-diff',                                   // [[Special:GlobalWatchlist]]
     ],
 
     changeLists: [
@@ -235,6 +237,7 @@ export const config = {
             '.mw-changeslist-line',                                     // Changelists
             '.mw-contributions-list li',                                // User contribution
             '.cdx-table tr',                                            // [[Special:PendingChanges]]
+            '.ext-globalwatchlist-site li',                             // [[Special:GlobalWatchlist]]
         ],
         seen: [
             'mw-changeslist-line-not-watched',
@@ -269,6 +272,7 @@ export const config = {
         ],
         closestTo: [
             '.mw-changeslist-line',                                     // [[Special:Watchlist]]
+            '.ext-globalwatchlist-site',                                // [[Special:GlobalWatchlist]]
             '.mw-pager-navigation-bar + ul',
             '.mw-history-histlinks',
             '.mw-fr-hist-difflink',

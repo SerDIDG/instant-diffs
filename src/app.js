@@ -33,6 +33,11 @@ function applyPageSpecificAdjustments() {
         return processContributionsPage();
     }
 
+    // GlobalWatchlist Extension
+    if ( mw.config.get( 'wgCanonicalSpecialPageName' ) === 'GlobalWatchlist' ) {
+        return processGlobalWatchlistPage();
+    }
+
     // History
     if ( mw.config.get( 'wgAction' ) === 'history' ) {
         return processHistoryPage();
@@ -52,6 +57,13 @@ function processContributionsPage() {
         if ( $node.find( 'a' ).length === 0 ) {
             $node.wrapInner( utils.renderPlaceholder() );
         }
+    } );
+}
+
+function processGlobalWatchlistPage() {
+    const container = document.getElementById( 'ext-globalwatchlist-watchlistsfeed' );
+    id.local.mutationObserver.observe( container, {
+        childList: true,
     } );
 }
 
@@ -126,8 +138,11 @@ function prepare( require ) {
         id.local.mwServers.push( mobileServer );
     }
 
+    // Init dom mutation observer
+    id.local.mutationObserver = new MutationObserver( observeMutations );
+
     // Init links Intersection Observer
-    id.local.observer = new IntersectionObserver( observe, {
+    id.local.interactionObserver = new IntersectionObserver( observeInteractions, {
         threshold: 0,
         rootMargin: utils.defaults( 'debug' ) ? '0px 0px 0px 0px' : '33% 0px 33% 0px',
     } );
@@ -376,7 +391,7 @@ function process( $context ) {
     mw.hook( `${ id.config.prefix }.processed` ).fire( links );
 }
 
-function observe( entries ) {
+function observeInteractions( entries ) {
     entries.forEach( entry => {
         if ( !entry.isIntersecting ) return;
 
@@ -387,9 +402,18 @@ function observe( entries ) {
     } );
 }
 
+function observeMutations( entries ) {
+    entries.forEach( entry => {
+        if ( entry.addedNodes.length > 0 ) {
+            mw.hook( `${ id.config.prefix }.process` ).fire( $( entry.target ) );
+        }
+    } );
+}
+
 function unload() {
     id.isUnloading = true;
-    id.local.observer?.disconnect();
+    id.local.mutationObserver?.disconnect();
+    id.local.interactionObserver?.disconnect();
 }
 
 app();
