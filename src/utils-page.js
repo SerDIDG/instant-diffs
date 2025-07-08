@@ -1,13 +1,14 @@
 import id from './id';
 import * as utils from './utils';
 import { getModuleExport } from './utils-oojs';
+import { getInterwikiMap } from './utils-api';
 
 const { h } = utils;
 
 /******* COMMON *******/
 
 /**
- * Get the required <table> structure for displaying diffs.
+ * Gets the required <table> structure for displaying diffs.
  * @returns {Element}
  */
 export function renderDiffTable() {
@@ -39,7 +40,7 @@ export function renderDiffTable() {
 }
 
 /**
- * Get a date in the user format.
+ * Gets a date in the user format.
  * Uses "mediawiki.DateFormatter" module for formatting if exists, otherwise uses "date.toLocaleString".
  * @param {string|Date} date a date string, or a Date instance
  * @returns {string|undefined}
@@ -50,10 +51,38 @@ export function getUserDate( date ) {
     }
     if ( !( date instanceof Date ) ) return;
 
-    const formatTimeAndDate = utils.moduleRequire( 'mediawiki.DateFormatter' );
-    return formatTimeAndDate
-        ? formatTimeAndDate.forUser().formatTimeAndDate( date )
+    const DateFormatter = utils.moduleRequire( 'mediawiki.DateFormatter' );
+    return DateFormatter
+        ? DateFormatter.forUser().formatTimeAndDate( date )
         : date.toLocaleString();
+}
+
+/**
+ * Gets formated wikilink, adds interwiki prefix if a page is foreign.
+ * @param {import('./Article').default} article a Page object
+ * @returns {string} formated wikilink
+ */
+export async function getWikilink( article ) {
+    const options = {
+        relative: false,
+        minify: utils.defaults( 'linksFormat' ) === 'minify',
+        wikilink: true,
+        wikilinkPreset: utils.defaults( 'wikilinksFormat' ),
+    };
+
+    // Get project prefix for the foreign link
+    if ( article.isForeign ) {
+        const interwikiMap = await getInterwikiMap();
+
+        if ( interwikiMap ) {
+            options.interwiki = interwikiMap
+                .filter( entry => entry.url.includes( article.get( 'origin' ) ) )
+                .reduce( ( accumulator, entry ) => !accumulator || accumulator.prefix.length > entry.prefix.length ? entry : accumulator );
+        }
+    }
+
+    // Get wikilink
+    return utils.getTypeHref( article, {}, options );
 }
 
 /******* INLINE FORMAT TOGGLE *******/
@@ -247,7 +276,7 @@ function renderFileMediaInfo( $content ) {
     } );
 
     // Render structure
-    return h( 'div', { class: 'instantDiffs-view-mediaInfo' },
+    return h( 'div', { class: 'instantDiffs-page-mediaInfo' },
         panel.$element.get( 0 ),
     );
 }

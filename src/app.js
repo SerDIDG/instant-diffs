@@ -7,9 +7,9 @@ import './styles/app.less';
 
 import Button from './Button';
 import Link from './Link';
-import Diff from './Diff';
-import LocalDiff from './LocalDiff';
-import GlobalDiff from './GlobalDiff';
+import Page from './Page';
+import LocalPage from './LocalPage';
+import GlobalPage from './GlobalPage';
 import ViewButton from './ViewButton';
 import HistoryCompareButton from './HistoryCompareButton';
 import view from './View';
@@ -108,7 +108,7 @@ function prepare( require ) {
     // Mixin OO.EventEmitter to the classes after the OOJS dependencies loaded
     mixEventEmitterInObject( settings );
     mixEventEmitterInObject( view );
-    OO.mixinClass( Diff, OO.EventEmitter );
+    OO.mixinClass( Page, OO.EventEmitter );
 
     // Prepare locale variables
     id.local.mwIsAnon = mw.user?.isAnon?.() ?? true;
@@ -272,7 +272,7 @@ function app() {
     id.config = config;
     id.local = local;
     id.timers = timers;
-    id.api = { Button, ViewButton, HistoryCompareButton, Diff, LocalDiff, GlobalDiff, Link, view, settings };
+    id.api = { Button, ViewButton, HistoryCompareButton, Diff: Page, LocalDiff: LocalPage, ForeignDiff: GlobalPage, Link, view, settings };
     id.settings ||= {};
     id.settings = { ...id.config.settings, ...id.settings };
     id.defaults ||= {};

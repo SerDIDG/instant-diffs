@@ -28,7 +28,7 @@ export function tweakUserOoUiClass( targetClass ) {
  * Can be used for singletons or classes. In the latter case, the methods will be added as static.
  * @author {@link https://github.com/jwbth Jack who built the house}
  *
- * @param {object} obj
+ * @param {Object} obj
  */
 export function mixEventEmitterInObject( obj ) {
     const dummy = { prototype: {} };

@@ -8,29 +8,29 @@ import Navigation from './Navigation';
  * Class representing a Diff.
  * @mixes OO.EventEmitter
  */
-class Diff {
+class Page {
     /**
      * @type {string}
      */
     type = 'abstract';
 
     /**
-     * @type {object}
+     * @type {import('./Article').default}
      */
-    page = {};
+    article;
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     options = {};
 
     /**
-     * @type {object}
+     * @type {Object}
      */
-    pageParams = {};
+    articleParams = {};
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     mwConfg = {
         wgTitle: false,
@@ -50,17 +50,17 @@ class Diff {
     };
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     mwUserOptions = {};
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     nodes = {};
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     links = {};
 
@@ -101,25 +101,25 @@ class Diff {
 
     /**
      * Create a diff instance.
-     * @param {object} page a page object
-     * @param {object} [options] configuration options
+     * @param {import('./Article').default} article a page object
+     * @param {Object} [options] configuration options
      * @param {string[]} [options.initiatorAction] an action name
-     * @param {import('./Diff').default} [options.initiatorDiff] a Diff instance
+     * @param {import('./Page').default} [options.initiatorPage] a Page instance
      * @param {boolean} [options.fireWikipageHooks] fire wikipage hooks on fire method
      */
-    constructor( page, options ) {
-        this.page = { ...page };
+    constructor( article, options ) {
+        this.article = article;
 
         this.options = {
             initiatorAction: null,
-            initiatorDiff: null,
+            initiatorPage: null,
             fireWikipageHooks: true,
             ...options,
         };
 
-        this.pageParams = {
+        this.articleParams = {
             action: 'render',
-            diffonly: this.page.type === 'diff' ? 1 : 0,
+            diffonly: this.article.get( 'type' ) === 'diff' ? 1 : 0,
             unhide: utils.defaults( 'unHideDiffs' ) ? 1 : 0,
             uselang: id.local.userLanguage,
         };
@@ -234,13 +234,13 @@ class Diff {
     renderError( error ) {
         // Create error object
         this.error = {
-            type: this.page.type,
-            code: this.page.typeVariant === 'page' ? 'curid' : 'generic',
+            type: this.article.get( 'type' ),
+            code: this.article.get( 'typeVariant' ) === 'page' ? 'curid' : 'generic',
             message: utils.getErrorStatusText( error?.status ),
         };
 
         // Show critical notification popup
-        utils.notifyError( `error-${ this.error.type }-${ this.error.code }`, this.error, this.page );
+        utils.notifyError( `error-${ this.error.type }-${ this.error.code }`, this.error, this.article );
 
         this.render();
         return true;
@@ -248,8 +248,8 @@ class Diff {
 
     render() {
         const classes = [
-            'instantDiffs-view-content',
-            `instantDiffs-view-content--${ this.page.type }`,
+            'instantDiffs-page',
+            `instantDiffs-page--${ this.article.get( 'type' ) }`,
             'mw-body-content',
             `mw-content-${ document.dir }`,
         ];
@@ -264,11 +264,11 @@ class Diff {
             .addClass( classes );
 
         this.nodes.$tools = $( '<div>' )
-            .addClass( 'instantDiffs-view-tools' )
+            .addClass( 'instantDiffs-page-tools' )
             .appendTo( this.nodes.$container );
 
         this.nodes.$body = $( '<div>' )
-            .addClass( 'instantDiffs-view-body' )
+            .addClass( 'instantDiffs-page-body' )
             .appendTo( this.nodes.$container );
 
         if ( this.error ) {
@@ -283,7 +283,7 @@ class Diff {
     renderContent() {}
 
     renderErrorContent() {
-        const message = utils.getErrorMessage( `error-${ this.error.type }-${ this.error.code }`, this.error, this.page );
+        const message = utils.getErrorMessage( `error-${ this.error.type }-${ this.error.code }`, this.error, this.article );
         const $message = $( `<p>${ message }</p>` );
         this.renderWarning( $message );
     }
@@ -294,7 +294,7 @@ class Diff {
     }
 
     renderNavigation() {
-        this.navigation = new Navigation( this, this.page, this.pageParams, {
+        this.navigation = new Navigation( this, this.article, this.articleParams, {
             initiatorAction: this.options.initiatorAction,
             links: this.links,
         } );
@@ -327,8 +327,8 @@ class Diff {
         // Fire wikipage hooks
         if ( this.options.fireWikipageHooks ) {
             // Fire diff table hook
-            const $diffTable = this.getDiffTable();
-            if ( this.page.type === 'diff' && $diffTable?.length > 0 ) {
+            const $diffTable = this.getPageTable();
+            if ( this.article.get( 'type' ) === 'diff' && $diffTable?.length > 0 ) {
                 mw.hook( 'wikipage.diff' ).fire( $diffTable );
             }
 
@@ -356,33 +356,33 @@ class Diff {
     }
 
     /**
-     * Get page.
-     * @returns {object}
+     * Get the Article instance.
+     * @returns {import('./Article').default}
      */
-    getPage() {
-        return this.page;
+    getArticle() {
+        return this.article;
     }
 
-    getPageTitleText() {
+    getArticleTitleText() {
         if ( this.error ) return utils.msg( 'dialog-title-not-found' );
-        if ( utils.isEmpty( this.page.title ) ) return utils.msg( 'dialog-title-empty' );
-        return this.page.titleText;
+        if ( utils.isEmpty( this.article.get( 'title' ) ) ) return utils.msg( 'dialog-title-empty' );
+        return this.article.get( 'titleText' );
     }
 
-    getPageParams() {
-        return this.pageParams;
+    getArticleParams() {
+        return this.articleParams;
     }
 
     getContainer() {
         return this.nodes.$container;
     }
 
-    getDiffTable() {
+    getPageTable() {
         return this.nodes.$table;
     }
 
-    getInitiatorDiff() {
-        return this.options.initiatorDiff;
+    getInitiatorPage() {
+        return this.options.initiatorPage;
     }
 
     getNavigation() {
@@ -399,4 +399,4 @@ class Diff {
     }
 }
 
-export default Diff;
+export default Page;

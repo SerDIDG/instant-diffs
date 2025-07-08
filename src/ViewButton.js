@@ -1,5 +1,3 @@
-import * as utils from './utils';
-
 import Button from './Button';
 import view from './View';
 
@@ -9,13 +7,13 @@ import view from './View';
  */
 class ViewButton extends Button {
     /**
-     * @type {object}
+     * @type {import('./Article').default}
      */
-    page = {};
+    article;
 
     /**
      * Create a dialog button.
-     * @param {object} [options] configuration options
+     * @param {Object} [options] configuration options
      */
     constructor( options ) {
         super( {
@@ -66,15 +64,11 @@ class ViewButton extends Button {
     onDialogClose() {}
 
     /**
-     * Get page.
-     * @returns {object}
+     * Get article.
+     * @returns {import('./Article').default}
      */
-    getPage() {
-        // Validate page object
-        this.page = utils.validatePage( this.page );
-        this.page = utils.extendPage( this.page );
-
-        return this.page;
+    getArticle() {
+        return this.article;
     }
 }
 

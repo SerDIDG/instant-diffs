@@ -2,14 +2,14 @@
  * The main script object, globally available.
  *
  * @namespace instantDiffs
- * @typedef {object} instantDiffs
- * @property {object} config
- * @property {object} local
- * @property {object} timers
- * @property {object} settings
- * @property {object} defaults
- * @property {object} utils
- * @property {object} api
+ * @typedef {Object} instantDiffs
+ * @property {Object} config
+ * @property {Object} local
+ * @property {Object} timers
+ * @property {Object} settings
+ * @property {Object} defaults
+ * @property {Object} utils
+ * @property {Object} api
  * @global
  */
 self.instantDiffs ||= {};

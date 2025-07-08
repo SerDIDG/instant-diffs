@@ -1,0 +1,79 @@
+.instantDiffs-page {
+    width: auto;
+    max-width: none;
+    display: flow-root;
+    margin: 0;
+    font-size: var(--instantDiffs-font-size);
+    line-height: var(--instantDiffs-line-height);
+}
+
+/******* TOOLS *******/
+
+.instantDiffs-page-tools {
+    display: flex;
+    justify-content: center;
+
+    &:is(:empty) {
+        display: none;
+    }
+}
+
+/******* CONTENT *******/
+
+.instantDiffs-page-body {
+    display: flow-root;
+    position: relative;
+    z-index: 1;
+
+    .cdx-message--block {
+        margin-bottom: 1em;
+    }
+
+    #mw-fr-diff-headeritems {
+        margin-top: 0;
+    }
+
+    #mw-fr-revisiontag-old {
+        margin-bottom: 1em;
+    }
+
+    // /* Set a min height for the diff tools so they don't jump while loading */
+    .mw-diff-table-prefix {
+        min-height: 2rem;
+        margin-top: 0;
+    }
+
+    // /* Fix overflow */
+    .mw-diffPage-inlineToggle-container {
+        .oo-ui-fieldLayout {
+            > .oo-ui-fieldLayout-body {
+                > .oo-ui-fieldLayout-field {
+                    width: auto;
+                }
+            }
+        }
+    }
+
+    // /* Reset styles for the rollback link */
+    table.diff {
+        .mw-rollback-link {
+            display: initial;
+        }
+    }
+
+    // /* Hide table of contents */
+    #toc {
+        display: none;
+    }
+}
+
+/******* BLOCKS *******/
+
+.instantDiffs-page-mediaInfo {
+    .oo-ui-indexLayout-stackLayout {
+        > .oo-ui-tabPanelLayout-active {
+            margin: 1rem 0 0;
+            padding: 0;
+        }
+    }
+}

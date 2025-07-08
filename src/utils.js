@@ -76,8 +76,8 @@ export function origin( path ) {
 
 /**
  * Filters list from the unavailable dependencies.
- * @param {array} data
- * @returns {array}
+ * @param {Array} data
+ * @returns {Array}
  */
 export function getDependencies( data ) {
     return data.filter( item => {
@@ -103,7 +103,7 @@ export function isAllowed() {
  * Calls a console object method with a script's prefix attached before the message.
  * @param {string} type
  * @param {string} message
- * @param {array} [data]
+ * @param {Array} [data]
  */
 export function log( type, message, data = [] ) {
     const logger = console[ type ];
@@ -142,7 +142,7 @@ export function isBreakpoint( breakpoint ) {
 
 /**
  * Delays callback execution by two animation frames to ensure DOM updates are complete.
- * @param {function} callback
+ * @param {Function} callback
  * @description Uses double requestAnimationFrame to guarantee the callback runs after
  * both layout and paint phases are complete, useful for DOM measurements after changes.
  */
@@ -166,7 +166,7 @@ export function defaults( key ) {
 /**
  * Applies the setting options to the ID's singleton and saves to the Local Storage,
  * and if second parameter is true, also saves to the local User Options.
- * @param {object} settings the setting options data
+ * @param {Object} settings the setting options data
  * @param {boolean} [saveUserOptions] save the setting options to the local User Options
  */
 export function setDefaults( settings, saveUserOptions ) {
@@ -279,7 +279,7 @@ export function getMsgParams( params ) {
 /**
  * Loads interface messages if missing.
  * @param {array|string} messages
- * @param {object} [options]
+ * @param {Object} [options]
  * @returns {mw.Api.Promise<[] | [boolean]>|boolean}
  */
 export function loadMessage( messages, options ) {
@@ -314,15 +314,15 @@ export function getErrorStatusText( status ) {
     }
 }
 
-export function getErrorMessage( str, error, page ) {
+export function getErrorMessage( str, error, article ) {
     str = isMessageExists( str ) ? str : 'error-generic';
-    page = $.extend( {}, page );
+    article = $.extend( {}, article?.values );
     error = $.extend( {}, error );
     let message = msg(
         str,
-        page.oldid || page.curid,
-        page.diff,
-        page.titleText || page.title,
+        article.oldid || article.curid,
+        article.diff,
+        article.titleText || article.title,
         error.message || msg( 'error-wasted' ),
     );
     if ( !/\.$/.test( message ) ) {
@@ -331,7 +331,7 @@ export function getErrorMessage( str, error, page ) {
     return message;
 }
 
-export function notifyError( str, error, page, silent ) {
+export function notifyError( str, error, article, silent ) {
     silent = isBoolean( silent ) ? silent : !defaults( 'notifyErrors' );
 
     // Silent all errors if a document is hidden or in the process of unloading
@@ -340,9 +340,9 @@ export function notifyError( str, error, page, silent ) {
         silent = true;
     }
 
-    const message = getErrorMessage( str, error, page );
+    const message = getErrorMessage( str, error, article );
     if ( silent ) {
-        log( 'warn', message, [ page, error ] );
+        log( 'warn', message, [ article, error ] );
         return;
     }
 
@@ -356,7 +356,7 @@ export function notifyError( str, error, page, silent ) {
         mw.notify( content, { type: 'error', tag: `${ id.config.prefix }-${ error.type }` } );
     }
 
-    log( 'error', message, [ page, error ] );
+    log( 'error', message, [ article, error ] );
 }
 
 /******* LINKS *******/
@@ -414,8 +414,8 @@ export function isRevisionHidden( data ) {
     return data && data.slots?.main?.texthidden;
 }
 
-export function getWikilink( page, pageParams, options ) {
-    pageParams = { ...pageParams };
+export function getWikilink( article, articleParams, options ) {
+    articleParams = { ...articleParams };
     options = {
         href: null,
         type: 'diff',
@@ -429,14 +429,14 @@ export function getWikilink( page, pageParams, options ) {
 
     // Get diff \ oldid params
     let attr = null;
-    if ( !isEmpty( pageParams.oldid ) && !isEmpty( pageParams.diff ) ) {
-        attr = `${ pageParams.oldid }/${ pageParams.diff }`;
-    } else if ( !isEmpty( pageParams.oldid ) ) {
-        attr = pageParams.oldid;
-    } else if ( !isEmpty( pageParams.diff ) ) {
-        attr = pageParams.diff;
-    } else if ( !isEmpty( pageParams.curid ) ) {
-        attr = pageParams.curid;
+    if ( !isEmpty( articleParams.oldid ) && !isEmpty( articleParams.diff ) ) {
+        attr = `${ articleParams.oldid }/${ articleParams.diff }`;
+    } else if ( !isEmpty( articleParams.oldid ) ) {
+        attr = articleParams.oldid;
+    } else if ( !isEmpty( articleParams.diff ) ) {
+        attr = articleParams.diff;
+    } else if ( !isEmpty( articleParams.curid ) ) {
+        attr = articleParams.curid;
     }
 
     // Get preset
@@ -451,8 +451,8 @@ export function getWikilink( page, pageParams, options ) {
         .replace( '$msg', msg( `copy-wikilink-${ options.type }` ) );
 }
 
-export function getHref( page, pageParams, options ) {
-    pageParams = { ...pageParams };
+export function getHref( article, articleParams, options ) {
+    articleParams = { ...articleParams };
     options = {
         type: 'diff',
         relative: true,
@@ -465,25 +465,25 @@ export function getHref( page, pageParams, options ) {
     };
 
     // Validate
-    if ( window.location.origin !== page.origin ) {
+    if ( window.location.origin !== article.get( 'origin' ) ) {
         options.relative = false;
     }
 
     // Get link's endpoint url
-    const mwEndPointUrl = page.mwEndPointUrl || id.local.mwEndPointUrl;
+    const mwEndPointUrl = article.getMW( 'endPointUrl' ) || id.local.mwEndPointUrl;
 
     // Get url with the current origin
     let url;
-    if ( !isEmpty( page.title ) ) {
-        url = new URL( mw.util.getUrl( page.title, pageParams ), mwEndPointUrl.origin );
+    if ( !isEmpty( article.get( 'title' ) ) ) {
+        url = new URL( mw.util.getUrl( article.get( 'title' ), articleParams ), mwEndPointUrl.origin );
     } else {
         url = new URL( mwEndPointUrl );
-        url.search = new URLSearchParams( pageParams ).toString();
+        url.search = new URLSearchParams( articleParams ).toString();
     }
 
     // Add hash
-    if ( options.hash && !isEmpty( page.section ) ) {
-        url.hash = `#${ page.section }`;
+    if ( options.hash && !isEmpty( article.get( 'section' ) ) ) {
+        url.hash = `#${ article.get( 'section' ) }`;
     }
 
     // Minify href
@@ -498,14 +498,14 @@ export function getHref( page, pageParams, options ) {
 
     // Get wikilink
     if ( options.wikilink ) {
-        return getWikilink( page, pageParams, options );
+        return getWikilink( article, articleParams, options );
     }
 
     return options.href;
 }
 
-export function getTypeHref( page, pageParams, options ) {
-    pageParams = { ...pageParams };
+export function getTypeHref( article, articleParams, options ) {
+    articleParams = { ...articleParams };
     options = {
         type: null,
         ...options,
@@ -513,107 +513,72 @@ export function getTypeHref( page, pageParams, options ) {
 
     // Validate options
     if ( !options.type ) {
-        if ( page.type === 'revision' && page.typeVariant === 'page' ) {
+        if ( article.get( 'type' ) === 'revision' && article.get( 'typeVariant' ) === 'page' ) {
             options.type = 'page';
         } else {
-            options.type = page.type;
+            options.type = article.get( 'type' );
         }
     }
 
     // Validate page params for diffs
     if ( options.type === 'diff' ) {
-        if ( isEmpty( page.diff ) && isValidDir( page.direction ) ) {
-            page.diff = page.direction;
+        if ( isEmpty( article.get( 'diff' ) ) && isValidDir( article.get( 'direction' ) ) ) {
+            article.setValue( 'diff', article.get( 'direction' ) );
         }
 
-        if ( isValidID( page.oldid ) && isValidID( page.diff ) ) {
-            pageParams.oldid = page.oldid;
-            pageParams.diff = page.diff;
-        } else if ( isValidID( page.revid ) ) {
-            pageParams.diff = page.revid;
-        } else if ( isValidID( page.oldid ) ) {
-            if ( isValidDir( page.diff ) && page.diff !== 'prev' ) {
-                pageParams.oldid = page.oldid;
-                pageParams.diff = page.diff;
+        if ( isValidID( article.get( 'oldid' ) ) && isValidID( article.get( 'diff' ) ) ) {
+            articleParams.oldid = article.get( 'oldid' );
+            articleParams.diff = article.get( 'diff' );
+        } else if ( isValidID( article.get( 'revid' ) ) ) {
+            articleParams.diff = article.get( 'revid' );
+        } else if ( isValidID( article.get( 'oldid' ) ) ) {
+            if ( isValidDir( article.get( 'diff' ) ) && article.get( 'diff' ) !== 'prev' ) {
+                articleParams.oldid = article.get( 'oldid' );
+                articleParams.diff = article.get( 'diff' );
             } else {
-                pageParams.diff = page.oldid;
+                articleParams.diff = article.get( 'oldid' );
             }
-        } else if ( isValidID( page.diff ) ) {
-            if ( isValidDir( page.oldid ) && page.oldid !== 'prev' ) {
-                pageParams.oldid = page.diff;
-                pageParams.diff = page.oldid;
+        } else if ( isValidID( article.get( 'diff' ) ) ) {
+            if ( isValidDir( article.get( 'oldid' ) ) && article.get( 'oldid' ) !== 'prev' ) {
+                articleParams.oldid = article.get( 'diff' );
+                articleParams.diff = article.get( 'oldid' );
             } else {
-                pageParams.diff = page.diff;
+                articleParams.diff = article.get( 'diff' );
             }
         }
     }
 
     // Validate page params for revisions
     if ( options.type === 'revision' ) {
-        if ( isEmpty( page.direction ) && isValidDir( page.diff ) ) {
-            page.direction = page.diff;
+        if ( isEmpty( article.get( 'direction' ) ) && isValidDir( article.get( 'diff' ) ) ) {
+            article.setValue( 'direction', article.get( 'diff' ) );
         }
 
-        if ( isValidID( page.revid ) ) {
-            pageParams.oldid = page.revid;
-        } else if ( isValidID( page.oldid ) ) {
-            pageParams.oldid = page.oldid;
-            if ( isValidDir( page.direction ) && page.direction === 'next' ) {
-                pageParams.direction = page.direction;
+        if ( isValidID( article.get( 'revid' ) ) ) {
+            articleParams.oldid = article.get( 'revid' );
+        } else if ( isValidID( article.get( 'oldid' ) ) ) {
+            articleParams.oldid = article.get( 'oldid' );
+            if ( isValidDir( article.get( 'direction' ) ) && article.get( 'direction' ) === 'next' ) {
+                articleParams.direction = article.get( 'direction' );
             }
         }
     }
 
     // Validate page params for pages
     if ( options.type === 'page' ) {
-        pageParams.curid = page.curid;
+        articleParams.curid = article.get( 'curid' );
     }
 
-    return getHref( page, pageParams, options );
+    return getHref( article, articleParams, options );
 }
 
-export function getHrefAbsolute( page, href ) {
-    const mwEndPointUrl = page.mwEndPointUrl || id.local.mwEndPointUrl;
+export function getHrefAbsolute( article, href ) {
+    const mwEndPointUrl = article.mw.endPointUrl || id.local.mwEndPointUrl;
     try {
         return new URL( href, mwEndPointUrl.origin ).toString();
     } catch {
         return href;
     }
-}
-
-export function getSplitSpecialUrl( title ) {
-    const titleParts = title.split( '/' );
-    const page = {};
-
-    // Check for the 'Special:PermanentLink'
-    const permanentLink = id.local.specialPagesAliasesPrefixed[ 'Special:PermanentLink' ];
-    if ( permanentLink.includes( titleParts[ 0 ] ) ) {
-        page.oldid = titleParts[ 1 ];
-        return page;
-    }
-
-    // Check for the 'Special:Redirect'
-    const redirect = id.local.specialPagesAliasesPrefixed[ 'Special:Redirect' ];
-    if ( redirect.includes( titleParts[ 0 ] ) ) {
-        if ( titleParts[ 1 ] === 'revision' ) {
-            page.oldid = titleParts[ 2 ];
-            return page;
-        }
-        if ( titleParts[ 1 ] === 'page' ) {
-            page.curid = titleParts[ 2 ];
-            return page;
-        }
-        return page;
-    }
-
-    // Other special pages
-    if ( titleParts.length > 1 ) {
-        page.diff = titleParts.pop();
-    }
-    if ( titleParts.length > 1 ) {
-        page.oldid = titleParts.pop();
-    }
-    return page;
 }
 
 export function getCompareTitle( compare ) {
@@ -649,165 +614,6 @@ export function getRevisionSection( revision ) {
         sectionMatch = revision.comment.match( id.config.sectionRegExp );
     }
     return sectionMatch && sectionMatch[ 1 ] || null;
-}
-
-/******* PAGE *******/
-
-export function validatePage( page ) {
-    // Sett index and api endpoints
-    if ( !isEmpty( page.origin ) ) {
-        page.isForeign = window.location.origin !== page.origin;
-
-        page.mwEndPoint = `${ page.origin }${ mw.util.wikiScript( 'index' ) }`;
-        page.mwEndPointUrl = new URL( page.mwEndPoint );
-
-        page.mwApiEndPoint = `${ page.origin }${ mw.util.wikiScript( 'api' ) }`;
-        page.mwApi = !page.isForeign ? id.local.mwApi : new mw.ForeignApi( page.mwApiEndPoint );
-
-    }
-
-    // Validate components
-    if ( [ 0, '0' ].includes( page.oldid ) ) {
-        delete page.oldid;
-    }
-    if ( [ 0, '0', 'current' ].includes( page.diff ) ) {
-        page.diff = 'cur';
-    }
-    if ( !isValidDir( page.direction ) ) {
-        page.direction = 'prev';
-    }
-
-    // Check if a page type is a revision
-    if ( isValidID( page.oldid ) && isEmpty( page.diff ) ) {
-        page.isValid = true;
-        page.type = 'revision';
-        return page;
-    }
-
-    // Check if a page type is a diff
-    if ( isValidID( page.diff ) || isValidID( page.oldid ) ) {
-        page.isValid = true;
-        page.type = 'diff';
-
-        // Swap parameters if oldid is a direction and a title is empty
-        if ( isEmpty( page.title ) && isValidDir( page.oldid ) ) {
-            const dir = page.oldid;
-            page.oldid = page.diff;
-            page.diff = dir;
-        }
-
-        // Swap parameters if oldid is empty: special pages do not have a page title attribute
-        if ( isEmpty( page.oldid ) ) {
-            page.oldid = page.diff;
-            page.diff = page.direction;
-        }
-
-        // Fix a tenet bug
-        if (
-            isValidID( page.oldid ) &&
-            isValidID( page.diff ) &&
-            parseInt( page.oldid ) > parseInt( page.diff )
-        ) {
-            const diff = page.oldid;
-            page.oldid = page.diff;
-            page.diff = diff;
-        }
-        return page;
-    }
-
-    // Check if a page type is a diff
-    if ( !isEmpty( page.title ) && isValidDir( page.diff ) ) {
-        page.isValid = true;
-        page.type = 'diff';
-        return page;
-    }
-
-    // Check if a page type is a lastest revision
-    if ( isValidID( page.curid ) ) {
-        page.isValid = true;
-        page.type = 'revision';
-        page.typeVariant = 'page';
-        return page;
-    }
-
-    page.isValid = false;
-    return page;
-}
-
-export function extendPage( page, params = {} ) {
-    if ( isValidID( params.oldid ) ) {
-        page.oldid = params.oldid;
-    }
-    if ( !isEmpty( params.title ) ) {
-        page.title = params.title;
-    }
-    if ( !isEmpty( params.section ) ) {
-        page.section = params.section.replace( /^#/, '' );
-    }
-
-    if ( !isEmpty( page.title ) ) {
-        page.mwTitle = new mw.Title( page.title );
-        page.titleText = page.mwTitle.getPrefixedText();
-
-        if ( !isEmpty( page.section ) ) {
-            page.titleSection = [ page.title, page.section ].join( '#' );
-            page.titleTextSection = [ page.titleText, page.section ].join( '#' );
-        }
-
-        page.href = mw.util.getUrl( page.titleSection || page.title );
-    }
-
-    page.revid = getPageRevID( page );
-
-    return page;
-}
-
-export function getPageRevID( page ) {
-    if ( isValidID( page.revid ) ) {
-        return page.revid;
-    }
-
-    if ( page.type === 'revision' ) {
-        if ( isValidID( page.oldid ) ) {
-            if ( !isValidDir( page.direction ) || page.direction === 'prev' ) {
-                return page.oldid;
-            }
-        }
-    }
-
-    if ( page.type === 'diff' ) {
-        if ( isValidID( page.oldid ) && isValidID( page.diff ) ) {
-            return Math.max( page.oldid, page.diff );
-        } else if ( isValidID( page.oldid ) ) {
-            if ( !isValidDir( page.diff ) || page.diff === 'prev' ) {
-                return page.oldid;
-            }
-        } else if ( isValidID( page.diff ) ) {
-            if ( !isValidDir( page.oldid ) || page.oldid === 'prev' ) {
-                return page.diff;
-            }
-        }
-    }
-
-    return false;
-}
-
-export function getPageDependencies( page ) {
-    let dependencies = [];
-    const typeDependencies = id.config.dependencies[ page.type ];
-    if ( typeDependencies ) {
-        // Set common dependencies
-        if ( typeDependencies[ '*' ] ) {
-            dependencies = dependencies.concat( typeDependencies[ '*' ] );
-        }
-
-        // Set namespace-specific dependencies
-        const pageNamespace = page.mwTitle?.getNamespaceId();
-        if ( typeDependencies[ pageNamespace ] ) {
-            dependencies = dependencies.concat( typeDependencies[ pageNamespace ] );
-        }
-    }
-    return dependencies;
 }
 
 /******* MW *******/
@@ -875,58 +681,6 @@ export function restoreMWUserOptions( data ) {
             mw.user.options.set( key, data[ key ] );
         }
     } );
-}
-
-/**
- * Checks if a link matches a given selectors preset.
- * @param {Element} node
- * @param {object} [preset]
- * @param {array} [preset.id]
- * @param {array} [preset.hasClass]
- * @param {array} [preset.hasChild]
- * @param {array} [preset.closestTo]
- * @returns {boolean}
- */
-export function isMWLink( node, preset ) {
-    let isConfirmed = false;
-
-    // Validate preset
-    preset = preset || id.config.mwLink;
-
-    // Check if a node id matches
-    if ( preset.id ) {
-        isConfirmed = preset.id.some( entry => ( node.id === entry ) );
-        if ( isConfirmed ) return isConfirmed;
-    }
-
-    // Check if a node contains a className
-    if ( preset.hasClass ) {
-        isConfirmed = preset.hasClass.some( entry => node.classList.contains( entry ) );
-        if ( isConfirmed ) return isConfirmed;
-    }
-
-    // Check if a node contains children by a selector
-    if ( preset.hasChild ) {
-        isConfirmed = preset.hasChild.some( entry => node.querySelector( entry ) );
-        if ( isConfirmed ) return isConfirmed;
-    }
-
-    // Check if a node is a child of a parent by a selector
-    if ( preset.closestTo ) {
-        isConfirmed = preset.closestTo.some( entry => node.closest( entry ) );
-    }
-    return isConfirmed;
-}
-
-export function getMWDiffLine( item ) {
-    return item.link.closest( id.config.mwLine.selector.join( ',' ) );
-}
-
-export function getMWDiffLineTitle( item ) {
-    const selector = id.config.mwLineTitle.selector.join( ',' );
-    const node = item.line.querySelector( selector );
-    if ( !node ) return;
-    return !isEmpty( node.title ) ? node.title : node.innerText;
 }
 
 export function getSpecialPageAliases( data, name ) {

@@ -20,7 +20,7 @@ export async function getInterwikiMap() {
     } catch ( error ) {
         utils.notifyError( 'error-api-generic', {
             type: 'api',
-            message: error?.message,
+            message: error?.message || error,
         }, null, true );
     }
 }

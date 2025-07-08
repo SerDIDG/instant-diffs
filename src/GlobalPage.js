@@ -1,38 +1,39 @@
 import id from './id';
 import * as utils from './utils';
-import { getUserDate, renderDiffTable } from './utils-diff';
+import { getUserDate, renderDiffTable } from './utils-page';
+import { getDependencies } from './utils-article';
 
-import Diff from './Diff';
+import Page from './Page';
 
 const { h, hf } = utils;
 
 /**
- * Class representing a global Diff.
- * @augments {import('./Diff').default}
+ * Class representing a Foreign Diff.
+ * @augments {import('./Page').default}
  */
-class GlobalDiff extends Diff {
+class GlobalPage extends Page {
     /**
      * @type {string}
      */
-    type = 'global';
+    type = 'foreign';
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     compare;
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     parse;
 
     /**
-     * Create a global diff instance.
-     * @param {object} page a page object
-     * @param {object} [options] configuration options
+     * Create a foreign diff instance.
+     * @param {import('./Article').default} article an Article instance
+     * @param {Object} [options] configuration options
      */
-    constructor( page, options ) {
-        super( page, {
+    constructor( article, options ) {
+        super( article, {
             ...options,
             fireWikipageHooks: false,
         } );
@@ -48,15 +49,15 @@ class GlobalDiff extends Diff {
         const params = {
             action: 'compare',
             prop: [ 'diff', 'ids', 'parsedcomment', 'rel', 'timestamp', 'title', 'user' ],
-            fromrev: utils.isValidID( this.page.oldid ) ? this.page.oldid : undefined,
-            fromrelative: utils.isValidDir( this.page.oldid ) ? this.page.oldid : undefined,
-            torev: utils.isValidID( this.page.diff ) ? this.page.diff : undefined,
-            torelative: utils.isValidDir( this.page.diff ) ? this.page.diff : this.page.direction,
+            fromrev: utils.isValidID( this.article.get( 'oldid' ) ) ? this.article.get( 'oldid' ) : undefined,
+            fromrelative: utils.isValidDir( this.article.get( 'oldid' ) ) ? this.article.get( 'oldid' ) : undefined,
+            torev: utils.isValidID( this.article.get( 'diff' ) ) ? this.article.get( 'diff' ) : undefined,
+            torelative: utils.isValidDir( this.article.get( 'diff' ) ) ? this.article.get( 'diff' ) : this.article.get( 'direction' ),
             format: 'json',
             formatversion: 2,
             uselang: id.local.userLanguage,
         };
-        return this.requestManager.get( params, this.page.mwApi || id.local.mwApi );
+        return this.requestManager.get( params, this.article.mw.api || id.local.mwApi );
     }
 
     /******* RENDER *******/
@@ -74,20 +75,14 @@ class GlobalDiff extends Diff {
     }
 
     async renderContent() {
-        // Get values for mw.config
-        this.mwConfg.wgArticleId = this.page.curid = this.compare.toid;
-        this.mwConfg.wgRevisionId = this.page.revid = this.compare.torevid;
-        this.mwConfg.wgDiffOldId = this.compare.fromrevid;
-        this.mwConfg.wgDiffNewId = this.compare.torevid;
-        if ( !this.compare.next ) {
-            this.mwConfg.wgCurRevisionId = this.page.curRevid = this.compare.torevid;
-        }
+        // Collect missing data from the response
+        this.collectData();
 
         // Set additional config variables
         this.setConfigs();
 
-        // Render warning about global diff limitations
-        const $message = $( utils.msgDom( `dialog-notice-global-${ this.page.type }`, this.page.origin, this.page.origin ) );
+        // Render warning about foreign diff limitations
+        const $message = $( utils.msgDom( `dialog-notice-foreign-${ this.article.get( 'type' ) }`, this.article.get( 'origin' ), this.article.get( 'origin' ) ) );
         this.renderWarning( $message, 'notice' );
 
         // Request messages
@@ -101,8 +96,36 @@ class GlobalDiff extends Diff {
         this.renderDiffTable();
 
         // Request and render revision
-        if ( this.page.type === 'revision' ) {
+        if ( this.article.get( 'type' ) === 'revision' ) {
             await this.requestRevision();
+        }
+    }
+
+    collectData() {
+        // Get values for mw.config
+        this.mwConfg.wgArticleId = this.compare.toid;
+        this.mwConfg.wgRevisionId = this.compare.torevid;
+        this.mwConfg.wgDiffOldId = this.compare.fromrevid;
+        this.mwConfg.wgDiffNewId = this.compare.torevid;
+        if ( !this.compare.next ) {
+            this.mwConfg.wgCurRevisionId = this.compare.torevid;
+        }
+
+        // Set article values
+        this.article.set( {
+            curid: this.mwConfg.wgArticleId,
+            curRevid: this.mwConfg.wgCurRevisionId,
+            revid: this.mwConfg.wgRevisionId,
+            title: this.compare.totitle,
+        } );
+
+        // Save the title values to the mw.config
+        const mwTitle = this.article.getMW( 'title' );
+        if ( mwTitle ) {
+            this.mwConfg.wgTitle = mwTitle.getMainText();
+            this.mwConfg.wgPageName = mwTitle.getPrefixedDb();
+            this.mwConfg.wgNamespaceNumber = mwTitle.getNamespaceId();
+            this.mwConfg.wgRelevantPageName = mwTitle.getPrefixedDb();
         }
     }
 
@@ -156,8 +179,8 @@ class GlobalDiff extends Diff {
             uselang: id.local.userLanguage,
         };
 
-        const oldid = this.mwConfg.wgDiffNewId || Math.max( this.page.revid, this.page.oldid );
-        const pageid = this.mwConfg.wgArticleId || this.page.curid;
+        const oldid = this.mwConfg.wgDiffNewId || Math.max( this.article.get( 'revid' ), this.article.get( 'oldid' ) );
+        const pageid = this.mwConfg.wgArticleId || this.article.get( 'curid' );
         if ( utils.isValidID( oldid ) ) {
             params.oldid = oldid;
         } else if ( utils.isValidID( pageid ) ) {
@@ -165,7 +188,7 @@ class GlobalDiff extends Diff {
         }
 
         return this.requestManager
-            .get( params, this.page.mwApi || id.local.mwApi )
+            .get( params, this.article.mw.api || id.local.mwApi )
             .then( ( data ) => this.onRequestRevisionDone( data, params ) )
             .fail( ( message, data ) => this.onRequestRevisionError( message, data, params ) );
     }
@@ -182,7 +205,7 @@ class GlobalDiff extends Diff {
             error.message = data.error.info;
         }
         const type = params.oldid ? 'revid' : 'curid';
-        utils.notifyError( `error-dependencies-${ type }`, error, this.page );
+        utils.notifyError( `error-dependencies-${ type }`, error, this.article );
     }
 
     onRequestRevisionDone( data, params ) {
@@ -201,10 +224,14 @@ class GlobalDiff extends Diff {
         console.log( this.parse );
 
         // Get values for mw.config
-        this.mwConfg.wgArticleId = this.page.curid = this.parse.pageid;
-        this.mwConfg.wgRevisionId = this.page.revid = Math.max( this.page.revid, this.parse.revid );
+        this.mwConfg.wgArticleId = this.parse.pageid;
+        this.mwConfg.wgRevisionId = Math.max( this.article.get( 'revid' ), this.parse.revid );
         this.mwConfg = { ...this.mwConfg, ...this.parse.jsconfigvars };
 
+        // Set article values
+        this.article.setValue( 'curid', this.mwConfg.wgArticleId );
+        this.article.setValue( 'revid', this.mwConfg.wgRevisionId );
+        
         // Set additional config variables
         this.setConfigs();
 
@@ -217,17 +244,17 @@ class GlobalDiff extends Diff {
 
         // Append content
         this.nodes.$revision = $( this.parse.text ).appendTo( this.nodes.$body );
-        utils.addBaseToLinks( this.nodes.$revision, this.page.origin );
+        utils.addBaseToLinks( this.nodes.$revision, this.article.get( 'origin' ) );
 
         // Get page dependencies
         const dependencies = [
             ...this.parse.modulestyles,
             ...this.parse.modulescripts,
             ...this.parse.modules,
-            ...utils.getPageDependencies( this.page ),
+            ...getDependencies( this.article ),
         ];
         mw.loader.load( utils.getDependencies( dependencies ) );
     }
 }
 
-export default GlobalDiff;
+export default GlobalPage;

@@ -37,22 +37,22 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     ];
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     inputs = {};
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     inputOptions = {};
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     fields = {};
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     layouts = {};
 
@@ -454,8 +454,8 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
     /**
      * Event that emits after user options request failed.
-     * @param {object} [error]
-     * @param {object} [data]
+     * @param {Object} [error]
+     * @param {Object} [data]
      */
     onActionRequestError( error, data ) {
         const params = {
@@ -476,7 +476,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
     /**
      * Event that emits after user options request successive.
-     * @param {object} [data]
+     * @param {Object} [data]
      */
     onActionRequestSuccess( data ) {
         if ( id.local.mwIsAnon ) {
@@ -555,8 +555,8 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
     /**
      * Event that emits after save request failed.
-     * @param {object} [error]
-     * @param {object} [data]
+     * @param {Object} [error]
+     * @param {Object} [data]
      */
     onActionSaveError( error, data ) {
         const params = {

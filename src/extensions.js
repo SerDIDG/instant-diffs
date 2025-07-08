@@ -14,17 +14,17 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
      * @param {import('./Link').default} link
      */
     const renderLink = ( link ) => {
-        if ( !link.isProcessed || !link.config.showPageLink || link.extensions.cd ) return;
+        if ( !link.isProcessed || !link.config.showPageLink || link.actions.cd ) return;
 
         link.extensions.cd = {};
         link.extensions.cd.href = getHref( link );
         if ( utils.isEmpty( link.extensions.cd.href ) ) return;
 
-        if ( link.page.button ) {
-            link.page.button.remove();
+        if ( link.actions.page ) {
+            link.actions.page.remove();
         }
 
-        link.extensions.cd.button = link.renderAction( {
+        link.actions.cd = link.renderAction( {
             label: utils.getLabel( 'page' ),
             title: utils.msg( 'comment-title' ),
             href: link.extensions.cd.href,
@@ -38,7 +38,8 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
     const getHref = ( link ) => {
         if ( !link.compare && !link.revision ) return;
 
-        const page = cd.api.pageRegistry.get( link.page.titleText );
+        const title = link.getArticle().get( 'titleText' );
+        const page = cd.api.pageRegistry.get( title );
         if ( !page || !page.isProbablyTalkPage() ) return;
 
         if ( link.revision ) {
@@ -65,8 +66,8 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
         if ( !link.extensions.cd.anchor ) return;
 
         let href = `#${ link.extensions.cd.anchor }`;
-        if ( link.page.titleText !== id.local.titleText ) {
-            href = mw.util.getUrl( `${ link.page.titleText }${ href }` );
+        if ( title !== id.local.titleText ) {
+            href = mw.util.getUrl( `${ title }${ href }` );
         }
         return href;
     };
@@ -98,14 +99,14 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
 
 mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).add(
     /**
-     * @param {import('./Diff').default} diff
+     * @param {import('./Page').default} diff
      */
     ( diff ) => {
         if ( !diff ) return;
 
         // Reset diff table linking
         // FixMe: Suggest a better solution
-        const $diffTable = diff.getDiffTable();
+        const $diffTable = diff.getPageTable();
         if (
             typeof wikEd !== 'undefined' &&
             wikEd.diffTableLinkified &&
@@ -125,7 +126,7 @@ mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).add(
 
 mw.hook( `${ id.config.prefix }.diff.complete` ).add(
     /**
-     * @param {import('./Diff').default} diff
+     * @param {import('./Page').default} diff
      */
     ( diff ) => {
         if ( !diff ) return;

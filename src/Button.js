@@ -5,7 +5,7 @@ import * as utils from './utils';
  */
 class Button {
     /**
-     * @type {object}
+     * @type {Object}
      */
     options = {};
 
@@ -16,7 +16,7 @@ class Button {
 
     /**
      * Create a button instance.
-     * @param {object} [options] configuration options
+     * @param {Object} [options] configuration options
      */
     constructor( options ) {
         this.options = {

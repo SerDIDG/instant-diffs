@@ -78,7 +78,7 @@ class Settings {
 
     /**
      * Event that emits after dependency loading failed.
-     * @param {object} [error]
+     * @param {Object} [error]
      */
     onLoadError( error ) {
         this.isLoading = false;
@@ -203,7 +203,7 @@ class Settings {
 
     /**
      * Save user options.
-     * @param {object} options
+     * @param {Object} options
      * @returns {Promise|boolean}
      */
     save( options ) {
@@ -226,7 +226,7 @@ class Settings {
 
     /**
      * Post user options on the local project.
-     * @param {object} options
+     * @param {Object} options
      * @returns {Promise}
      */
     saveLocal( options ) {
@@ -241,7 +241,7 @@ class Settings {
 
     /**
      * Post user options on the global project.
-     * @param {object} options
+     * @param {Object} options
      * @returns {Promise}
      */
     saveGlobal( options ) {

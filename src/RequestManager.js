@@ -12,7 +12,7 @@ class RequestManager {
 
     /**
      * mw.Api.get wrapper.
-     * @param {object} params
+     * @param {Object} params
      * @param {mw.Api|mw.ForeignApi} [api]
      * @returns {mw.Api.Promise}
      */
@@ -25,7 +25,7 @@ class RequestManager {
 
     /**
      * $.ajax wrapper.
-     * @param {object} params
+     * @param {Object} params
      * @returns {JQuery.jqXHR|JQuery.Promise}
      */
     ajax( params ) {

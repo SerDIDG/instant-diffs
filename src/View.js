@@ -3,9 +3,9 @@ import * as utils from './utils';
 import { applyOoUiPolyfill, getWindowManager } from './utils-oojs';
 
 import Link from './Link';
-import Diff from './Diff';
-import LocalDiff from './LocalDiff';
-import GlobalDiff from './GlobalDiff';
+import Page from './Page';
+import LocalPage from './LocalPage';
+import GlobalPage from './GlobalPage';
 import Snapshot from './Snapshot';
 
 import './styles/view.less';
@@ -20,17 +20,17 @@ class View {
     link;
 
     /**
-     * @type {import('./Diff').default}
+     * @type {import('./Page').default}
      */
-    diff;
+    page;
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     options = {};
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     opener = {
         link: null,
@@ -38,7 +38,7 @@ class View {
     };
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     initiator = {
         link: null,
@@ -46,7 +46,7 @@ class View {
     };
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     previousInitiator = {
         link: null,
@@ -54,17 +54,17 @@ class View {
     };
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     mwConfigBackup;
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     mwUserOptionsBackup;
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     document = {};
 
@@ -114,10 +114,10 @@ class View {
     /**
      * Setup configuration options.
      * @param {import('./Link').default|import('./ViewButton').default} link a Link, or a ViewButton instance
-     * @param {object} [options] configuration options
-     * @param {import('./Diff').default} [options.initiatorDiff] a Diff instance
-     * @param {function} [options.onOpen] a callback
-     * @param {function} [options.onClose] a callback
+     * @param {Object} [options] configuration options
+     * @param {import('./Page').default} [options.initiatorPage] a Page instance
+     * @param {Function} [options.onOpen] a callback
+     * @param {Function} [options.onClose] a callback
      * @returns {boolean} a ready state
      */
     setup( link, options ) {
@@ -128,7 +128,7 @@ class View {
 
         this.link = link;
         this.options = {
-            initiatorDiff: null,
+            initiatorPage: null,
             onOpen: () => {},
             onClose: () => {},
             ...options,
@@ -139,7 +139,15 @@ class View {
             this.opener.options = { ...this.options };
 
             // Get a new snapshot of the links to properly calculate indexes for navigation between them
-            id.local.snapshot = new Snapshot();
+            const options = {};
+
+            const mw = this.opener.link.getMW();
+            if ( mw?.hasLine ) {
+                options.filterType = this.opener.link.getArticle().get( 'type' );
+                options.filterMWLine = true;
+            }
+
+            id.local.snapshot = new Snapshot( options );
         }
 
         if ( this.link instanceof Link ) {
@@ -183,7 +191,7 @@ class View {
 
     /**
      * Join a dialog and a dialog content dependencies.
-     * @returns {array}
+     * @returns {Array}
      */
     getDependencies() {
         return utils.getDependencies( [ ...id.config.dependencies.window, ...id.config.dependencies.content ] );
@@ -191,7 +199,7 @@ class View {
 
     /**
      * Event that emits after dependency loading failed.
-     * @param {object} [error]
+     * @param {Object} [error]
      */
     onLoadError( error ) {
         this.isLoading = false;
@@ -254,9 +262,9 @@ class View {
             this.document.scrollTop = this.document.scrollableRoot.scrollTop;
 
             // Initial dialog options
-            const page = this.link.getPage();
+            const article = this.link.getArticle();
             const options = {
-                title: page.titleText || page.title,
+                title: article.get( 'titleText' ) || article.get( 'title' ),
             };
 
             // Open a dialog window through the windows manager
@@ -267,7 +275,7 @@ class View {
             this.windowInstance.closed.then( this.onClose.bind( this ) );
         }
 
-        // Construct the Diff instance
+        // Construct the Page instance
         this.request();
     }
 
@@ -306,9 +314,9 @@ class View {
         this.isRequesting = false;
         this.isProcessing = false;
 
-        if ( this.diff ) {
-            this.diff.detach();
-            this.diff = null;
+        if ( this.page ) {
+            this.page.detach();
+            this.page = null;
         }
 
         // Restore the mw.config to the initial state
@@ -363,21 +371,21 @@ class View {
         this.emit( 'updated' );
     }
 
-    /******* DIFF *******/
+    /******* PAGE *******/
 
     /**
-     * Construct an instance of the Diff and request its content.
+     * Construct the Page instance and request its content.
      */
     request() {
         this.isRequesting = true;
         this.isProcessing = true;
         this.error = null;
-        this.previousDiff = this.diff;
+        this.previousPage = this.page;
 
         // Show progress bar in the dialog
         this.dialog.toggleProgress( true );
 
-        // When the Diff is about to change, restore the mw.config to the initial state
+        // When the Page is about to change, restore the mw.config to the initial state
         if ( this.mwConfigBackup ) {
             utils.restoreMWConfig( this.mwConfigBackup );
         }
@@ -391,41 +399,42 @@ class View {
             this.mwUserOptionsBackup = utils.backupMWUserOptions();
         }
 
-        // Get diff params
-        const page = this.link.getPage();
+        // Get a Page params
+        const article = this.link.getArticle();
         const options = {
-            initiatorAction: this.previousDiff?.getNavigation()?.getActionRegister(),
-            initiatorDiff: this.options.initiatorDiff,
+            initiatorAction: this.previousPage?.getNavigation()?.getActionRegister(),
+            initiatorPage: this.options.initiatorPage,
         };
 
-        // Get a Diff controller dependent of local or global lists
-        const DiffController = !page.origin || window.location.origin === page.origin ? LocalDiff : GlobalDiff;
+        // Get a Page controller dependent of local or global lists
+        const origin = article.get( 'origin' );
+        const PageController = !origin || window.location.origin === origin ? LocalPage : GlobalPage;
 
-        // Construct the Diff instance
-        this.diff = new DiffController( page, options );
-        this.diff.connect( this, {
+        // Construct the Page instance
+        this.page = new PageController( article, options );
+        this.page.connect( this, {
             focus: 'focus',
             close: 'close',
         } );
 
-        // Load the Diff content
-        $.when( this.diff.load() )
+        // Load the Page content
+        $.when( this.page.load() )
             .always( this.onRequestResponse.bind( this ) );
     }
 
     /**
-     * Event that emits after the Diff request response.
+     * Event that emits after the Page request response.
      */
     onRequestResponse() {
         this.isRequesting = false;
 
-        // The Diff can be already detached from the DOM once the dialog closes
-        if ( !this.diff || this.diff.isDetached ) return;
+        // The Page can be already detached from the DOM once the dialog closes
+        if ( !this.page || this.page.isDetached ) return;
 
-        // Embed the Diff's content to the dialog
+        // Embed the Pages's content to the dialog
         const options = {
-            title: this.diff.getPageTitleText(),
-            message: this.diff.getContainer(),
+            title: this.page.getArticleTitleText(),
+            message: this.page.getContainer(),
         };
         this.dialog.update( options )
             .then( this.onUpdate.bind( this ) );
@@ -434,17 +443,17 @@ class View {
     /******* ACTIONS *******/
 
     /**
-     * Fire hooks in the attached diff.
+     * Fire hooks in the attached Page.
      */
     fire() {
-        // Detach previous Diff if exists
-        if ( this.previousDiff instanceof Diff ) {
-            this.previousDiff.detach();
-            this.previousDiff = null;
+        // Detach previous Page if exists
+        if ( this.previousPage instanceof Page ) {
+            this.previousPage.detach();
+            this.previousPage = null;
         }
 
-        // Fire the Diff hooks and events
-        $.when( this.diff.fire() )
+        // Fire the Page hooks and events
+        $.when( this.page.fire() )
             .always( () => {
                 // Track on dialog process end time
                 id.timers.dialogProcesEnd = Date.now();
@@ -473,11 +482,11 @@ class View {
     }
 
     /**
-     * Get the Diff instance.
-     * @returns {import('./Diff').default} a Diff instance
+     * Get the Page instance.
+     * @returns {import('./Page').default} a Page instance
      */
-    getDiff() {
-        return this.diff;
+    getPage() {
+        return this.page;
     }
 
     /**

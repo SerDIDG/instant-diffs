@@ -1,10 +1,11 @@
 import id from './id';
 import * as utils from './utils';
-import { getInterwikiMap } from './utils-api';
 import { renderOoUiElement } from './utils-oojs';
+import { getWikilink } from './utils-page';
 
 import Button from './Button';
 import Link from './Link';
+import Article from './Article';
 import settings from './Settings';
 import view from './View';
 
@@ -13,36 +14,36 @@ import './styles/navigation.less';
 const { h, hf, ht } = utils;
 
 /**
- * Class representing a diff navigation bar.
+ * Class representing a Page navigation bar.
  */
 class Navigation {
     /**
-     * @type {import('./Diff').default}
+     * @type {import('./Page').default}
      */
-    diff;
+    page;
 
     /**
-     * @type {object}
+     * @type {import('./Article').default}
      */
-    page = {};
+    article;
 
     /**
-     * @type {object}
+     * @type {Object}
      */
-    pageParams = {};
+    articleParams = {};
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     options = {};
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     nodes = {};
 
     /**
-     * @type {object}
+     * @type {Object}
      */
     buttons = {};
 
@@ -57,20 +58,20 @@ class Navigation {
     isDetached = false;
 
     /**
-     * Create a diff navigation bar instance.
-     * @param {import('./Diff').default} diff a Diff instance
-     * @param {object} page
-     * @param {object} pageParams
-     * @param {object} [options] configuration options
+     * Create a Page navigation bar instance.
+     * @param {import('./Page').default} page a Page instance
+     * @param {import('./Article').default} article
+     * @param {Object} articleParams
+     * @param {Object} [options] configuration options
      * @param {string[]} [options.initiatorAction] an action name
-     * @param {object} [options.links] a link nodes object
+     * @param {Object} [options.links] a link nodes object
      */
-    constructor( diff, page, pageParams, options ) {
-        this.diff = diff;
+    constructor( page, article, articleParams, options ) {
+        this.page = page;
 
-        this.page = { ...page };
+        this.article = article;
 
-        this.pageParams = { ...pageParams };
+        this.articleParams = { ...articleParams };
 
         this.options = {
             initiatorAction: null,
@@ -113,7 +114,7 @@ class Navigation {
     /******* NAVIGATION *******/
 
     /**
-     * Render a snapshot buttons group that navigate between links on the page.
+     * Render a snapshot buttons group that navigate between links on the article.
      */
     renderSnapshotLinks() {
         const items = [];
@@ -146,7 +147,7 @@ class Navigation {
         items.push( this.buttons.prev );
 
         // Link that switch between revision and diff
-        if ( ![ 'page' ].includes( this.page.typeVariant ) ) {
+        if ( ![ 'page' ].includes( this.article.get( 'typeVariant' ) ) ) {
             this.buttons.switch = this.renderSwitchLink( { name: 'switch', ...buttonOptions } );
             items.push( this.buttons.switch );
         }
@@ -170,8 +171,8 @@ class Navigation {
             invisibleLabel: true,
         };
 
-        // Back to the initiator diff link
-        if ( this.diff.getInitiatorDiff() ) {
+        // Back to the initiator page link
+        if ( this.page.getInitiatorPage() ) {
             this.buttons.back = this.renderBackLink( { name: 'back', ...buttonOptions } );
             items.push( this.buttons.back );
         }
@@ -238,7 +239,7 @@ class Navigation {
 
     /**
      * Render a main dropdown context buttons group.
-     * @param {object} [buttonOptions] button configuration options
+     * @param {Object} [buttonOptions] button configuration options
      * @returns {OO.ui.ButtonGroupWidget} a OO.ui.ButtonGroupWidget instance
      */
     renderMenuGroup( buttonOptions ) {
@@ -273,13 +274,13 @@ class Navigation {
         items.push( this.buttons.type );
 
         // Page-specific links
-        if ( !utils.isEmpty( this.page.title ) ) {
+        if ( !utils.isEmpty( this.article.get( 'title' ) ) ) {
             // Link to the page
             this.buttons.page = this.renderPageLink( buttonOptions );
             items.push( this.buttons.page );
 
             // Link to the talk page
-            if ( this.page.mwTitle.canHaveTalkPage() ) {
+            if ( this.article.getMW( 'title' ).canHaveTalkPage() ) {
                 this.buttons.talkPage = this.renderTalkPageLink( buttonOptions );
                 items.push( this.buttons.talkPage );
             }
@@ -320,14 +321,14 @@ class Navigation {
 
     /**
      * Render a mobile specific dropdown context buttons group.
-     * @param {object} [buttonOptions] button configuration options
+     * @param {Object} [buttonOptions] button configuration options
      * @returns {OO.ui.ButtonGroupWidget} a OO.ui.ButtonGroupWidget instance
      */
     renderMenuMobileGroup( buttonOptions ) {
         const items = [];
 
-        // Back to the initiator diff link
-        if ( this.diff.getInitiatorDiff() ) {
+        // Back to the initiator page link
+        if ( this.page.getInitiatorPage() ) {
             this.buttons.mobileBack = this.renderBackLink( { name: 'mobileBack', ...buttonOptions } );
             items.push( this.buttons.mobileBack );
         }
@@ -339,7 +340,7 @@ class Navigation {
         }
 
         // Link that switch between revision and diff
-        if ( ![ 'page', 'compare' ].includes( this.page.typeVariant ) ) {
+        if ( ![ 'page', 'compare' ].includes( this.article.get( 'typeVariant' ) ) ) {
             this.buttons.mobileSwitch = this.renderSwitchLink( { name: 'mobileSwitch', ...buttonOptions } );
             items.push( this.buttons.mobileSwitch );
         }
@@ -363,7 +364,7 @@ class Navigation {
     /******* LINKS *******/
 
     /**
-     * Render a snapshot button that navigates to the previous link on the page.
+     * Render a snapshot button that navigates to the previous link on the article.
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderSnapshotPrevLink() {
@@ -391,7 +392,7 @@ class Navigation {
     }
 
     /**
-     * Render a snapshot button that navigates to the next link on the page.
+     * Render a snapshot button that navigates to the next link on the article.
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderSnapshotNextLink() {
@@ -426,31 +427,31 @@ class Navigation {
         const link = this.options.links.$prev;
         const diffOldId = mw.config.get( 'wgDiffOldId' );
 
-        // For a revision, add the ability to navigate to the very first revision of the page.
+        // For a revision, add the ability to navigate to the very first revision of the article.
         // For a diff, we show a comparison between two revisions,
         // so there will be no link to navigate to a comparison between nothing and revision.
         let href = null;
-        if ( this.page.type === 'revision' && utils.isValidID( diffOldId ) ) {
-            const page = {
+        if ( this.article.get( 'type' ) === 'revision' && utils.isValidID( diffOldId ) ) {
+            const article = new Article( {
                 type: 'revision',
-                title: this.page.title,
+                title: this.article.get( 'title' ),
                 oldid: diffOldId,
                 direction: 'prev',
-            };
-            href = utils.getTypeHref( page, this.pageParams );
+            } );
+            href = utils.getTypeHref( article, this.articleParams );
         } else if ( link?.length > 0 ) {
             href = link.attr( 'href' );
         }
 
         const label = utils.renderLabel( {
             short: utils.msg( 'goto-prev' ),
-            long: utils.msg( `goto-prev-${ this.page.type }` ),
+            long: utils.msg( `goto-prev-${ this.article.get( 'type' ) }` ),
             iconBefore: document.dir === 'ltr' ? '←' : '→',
         } );
 
         const button = new OO.ui.ButtonWidget( {
             label: $( label ),
-            title: utils.msgHint( `goto-prev-${ this.page.type }`, 'prev', utils.defaults( 'enableHotkeys' ) ),
+            title: utils.msgHint( `goto-prev-${ this.article.get( 'type' ) }`, 'prev', utils.defaults( 'enableHotkeys' ) ),
             href: href,
             target: utils.getTarget( true ),
             disabled: !href,
@@ -476,14 +477,14 @@ class Navigation {
 
         let href = null;
         if ( link?.length > 0 ) {
-            if ( this.page.type === 'revision' && utils.isValidID( diffNewId ) ) {
-                const page = {
+            if ( this.article.get( 'type' ) === 'revision' && utils.isValidID( diffNewId ) ) {
+                const article = new Article( {
                     type: 'revision',
-                    title: this.page.title,
+                    title: this.article.get( 'title' ),
                     oldid: diffNewId,
                     direction: 'next',
-                };
-                href = utils.getTypeHref( page, this.pageParams );
+                } );
+                href = utils.getTypeHref( article, this.articleParams );
             } else {
                 href = link.attr( 'href' );
             }
@@ -491,13 +492,13 @@ class Navigation {
 
         const label = utils.renderLabel( {
             short: utils.msg( 'goto-next' ),
-            long: utils.msg( `goto-next-${ this.page.type }` ),
+            long: utils.msg( `goto-next-${ this.article.get( 'type' ) }` ),
             iconAfter: document.dir === 'ltr' ? '→' : '←',
         } );
 
         const button = new OO.ui.ButtonWidget( {
             label: $( label ),
-            title: utils.msgHint( `goto-next-${ this.page.type }`, 'next', utils.defaults( 'enableHotkeys' ) ),
+            title: utils.msgHint( `goto-next-${ this.article.get( 'type' ) }`, 'next', utils.defaults( 'enableHotkeys' ) ),
             href: href,
             target: utils.getTarget( true ),
             disabled: !href,
@@ -515,17 +516,17 @@ class Navigation {
 
     /**
      * Render a button that switches view between diff or revision.
-     * @param {object} [options] button configuration options
+     * @param {Object} [options] button configuration options
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderSwitchLink( options ) {
-        const type = this.page.type === 'diff' ? 'revision' : 'diff';
-        const pageOptions = { type };
+        const type = this.article.get( 'type' ) === 'diff' ? 'revision' : 'diff';
+        const articleOptions = { type };
 
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( `goto-view-${ type }` ),
             title: utils.msgHint( `goto-view-${ type }`, 'switch', utils.defaults( 'enableHotkeys' ) ),
-            href: utils.getTypeHref( this.page, {}, pageOptions ),
+            href: utils.getTypeHref( this.article, {}, articleOptions ),
             target: utils.getTarget( true ),
             icon: 'specialPages',
             classes: [ 'instantDiffs-button--switch' ],
@@ -543,7 +544,7 @@ class Navigation {
     /**
      * Render a button that switches to the diff between the last patrolled revision and the current unpatrolled one.
      * The button appears only if the FlaggedRevs extension is installed and the page has unpatrolled edits.
-     * @param {object} [options] button configuration options
+     * @param {Object} [options] button configuration options
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderUnpatrolledLink( options ) {
@@ -561,7 +562,7 @@ class Navigation {
 
         new Link( button.$button.get( 0 ), {
             behavior: 'event',
-            initiatorDiff: this.diff,
+            initiatorPage: this.page,
             onRequest: () => this.setActionRegister( options.name ),
         } );
 
@@ -570,17 +571,17 @@ class Navigation {
 
     /**
      * Render a button that navigates to the previous view.
-     * @param {object} [options] button configuration options
+     * @param {Object} [options] button configuration options
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderBackLink( options ) {
-        const initiator = this.diff.getInitiatorDiff();
-        const page = initiator.getPage();
+        const initiator = this.page.getInitiatorPage();
+        const article = initiator.getArticle();
 
         const button = new OO.ui.ButtonWidget( {
-            label: utils.msg( `goto-back-${ page.type }` ),
-            title: utils.msgHint( `goto-back-${ page.type }`, 'back', utils.defaults( 'enableHotkeys' ) ),
-            href: utils.getTypeHref( page, initiator.getPageParams() ),
+            label: utils.msg( `goto-back-${ article.get( 'type' ) }` ),
+            title: utils.msgHint( `goto-back-${ article.get( 'type' ) }`, 'back', utils.defaults( 'enableHotkeys' ) ),
+            href: utils.getTypeHref( article, initiator.getArticleParams() ),
             target: utils.getTarget( true ),
             icon: 'newline',
             classes: [ 'instantDiffs-button--back' ],
@@ -601,13 +602,13 @@ class Navigation {
 
     /**
      * Render a button that navigates to the diff or to the revision.
-     * @param {object} [options] button configuration options
+     * @param {Object} [options] button configuration options
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderTypeLink( options ) {
         return new OO.ui.ButtonWidget( {
-            label: utils.msg( `goto-${ this.page.type }` ),
-            href: utils.getTypeHref( this.page ),
+            label: utils.msg( `goto-${ this.article.get( 'type' ) }` ),
+            href: utils.getTypeHref( this.article ),
             target: utils.getTarget( true ),
             icon: 'articleRedirect',
             ...options,
@@ -615,14 +616,14 @@ class Navigation {
     }
 
     /**
-     * Render a button that navigates to the page.
-     * @param {object} [options] button configuration options
+     * Render a button that navigates to the article.
+     * @param {Object} [options] button configuration options
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderPageLink( options ) {
-        const href = this.page.mwTitle.isTalkPage()
-            ? this.page.mwTitle.getSubjectPage().getUrl()
-            : this.page.href;
+        const href = this.article.getMW( 'title' ).isTalkPage()
+            ? this.article.getMW( 'title' ).getSubjectPage().getUrl()
+            : this.article.get( 'href' );
 
         const iconSet = {
             2: 'userAvatar',
@@ -632,22 +633,22 @@ class Navigation {
 
         return new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-page' ),
-            href: utils.getHrefAbsolute( this.page, href ),
+            href: utils.getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
-            icon: iconSet[ this.page.mwTitle.getNamespaceId() ] || iconSet.default,
+            icon: iconSet[ this.article.getMW( 'title' ).getNamespaceId() ] || iconSet.default,
             ...options,
         } );
     }
 
     /**
-     * Render a button that navigates to the talk page.
-     * @param {object} [options] button configuration options
+     * Render a button that navigates to the talk article.
+     * @param {Object} [options] button configuration options
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderTalkPageLink( options ) {
-        const href = this.page.mwTitle.isTalkPage()
-            ? this.page.href
-            : this.page.mwTitle.getTalkPage().getUrl();
+        const href = this.article.getMW( 'title' ).isTalkPage()
+            ? this.article.get( 'href' )
+            : this.article.getMW( 'title' ).getTalkPage().getUrl();
 
         const iconSet = {
             2: 'userTalk',
@@ -657,24 +658,24 @@ class Navigation {
 
         return new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-talkpage' ),
-            href: utils.getHrefAbsolute( this.page, href ),
+            href: utils.getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
-            icon: iconSet[ this.page.mwTitle.getNamespaceId() ] || iconSet.default,
+            icon: iconSet[ this.article.getMW( 'title' ).getNamespaceId() ] || iconSet.default,
             ...options,
         } );
     }
 
     /**
      * Render a button that navigates to the page history.
-     * @param {object} [options] button configuration options
+     * @param {Object} [options] button configuration options
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderHistoryLink( options ) {
-        const href = mw.util.getUrl( this.page.title, { action: 'history' } );
+        const href = mw.util.getUrl( this.article.get( 'title' ), { action: 'history' } );
 
         return new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-history' ),
-            href: utils.getHrefAbsolute( this.page, href ),
+            href: utils.getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
             icon: 'history',
             ...options,
@@ -682,8 +683,8 @@ class Navigation {
     }
 
     /**
-     * Render a button that shows a current version of the Instant Diffs and navigates to the homepage.
-     * @param {object} [options] button configuration options
+     * Render a button that shows a current version of the Instant Diffs and navigates to the homearticle.
+     * @param {Object} [options] button configuration options
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderIDLink( options ) {
@@ -716,7 +717,7 @@ class Navigation {
             relative: false,
             minify: utils.defaults( 'linksFormat' ) === 'minify',
         };
-        const href = utils.getTypeHref( this.page, {}, options );
+        const href = utils.getTypeHref( this.article, {}, options );
 
         // Copy href to the clipboard
         utils.clipboardWrite( href );
@@ -729,34 +730,20 @@ class Navigation {
     /**
      * Action that copies a formatted wikilink to the edit or revision to the clipboard.
      */
-    async actionCopyWikilink() {
-        const options = {
-            relative: false,
-            minify: utils.defaults( 'linksFormat' ) === 'minify',
-            wikilink: true,
-            wikilinkPreset: utils.defaults( 'wikilinksFormat' ),
-        };
+    actionCopyWikilink() {
+        this.buttons.copyWikiHelper.pending( true );
 
-        // Get project prefix for the foreign link
-        if ( this.page.isForeign ) {
-            const interwikiMap = await getInterwikiMap();
+        $.when( getWikilink( this.article ) )
+            .always( href => {
+                this.buttons.copyWikiHelper.pending( false );
 
-            if ( interwikiMap ) {
-                options.interwiki = interwikiMap
-                    .filter( entry => entry.url.includes( this.page.origin ) )
-                    .reduce( (accumulator, entry) => !accumulator || accumulator.prefix.length > entry.prefix.length ? entry : accumulator);
-            }
-        }
+                // Copy href to the clipboard
+                utils.clipboardWrite( href );
 
-        // Get wikilink
-        const href = utils.getTypeHref( this.page, {}, options );
-
-        // Copy href to the clipboard
-        utils.clipboardWrite( href );
-
-        // Hide menu dropdown
-        this.toggleMenu( false );
-        this.focusButton( 'menu' );
+                // Hide menu dropdown
+                this.toggleMenu( false );
+                this.focusButton( 'menu' );
+            } );
     }
 
     /**
@@ -767,6 +754,7 @@ class Navigation {
         settings.once( 'closed', () => this.onSettingsClose() );
 
         this.buttons.settingsHelper.pending( true );
+
         $.when( settings.load() )
             .always( () => this.buttons.settingsHelper.pending( false ) );
     }

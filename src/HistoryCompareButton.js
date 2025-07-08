@@ -2,19 +2,45 @@ import id from './id';
 import * as utils from './utils';
 
 import ViewButton from './ViewButton';
+import view from './View';
 
 /**
- * Class representing a button that opens a View dialog on the history page.
+ * Class representing a button that opens a View dialog on the history article.
  * @augments {import('./ViewButton').default}
  */
 class HistoryCompareButton extends ViewButton {
+    /**
+     * @type {Object}
+     */
+    nodes = {};
+
+    /**
+     * Open the View dialog.
+     */
+    openDialog() {
+        this.nodes.$oldid = $( '#mw-history-compare input[name="oldid"]:checked' );
+        this.nodes.$oldidLine = this.nodes.$oldid.closest( 'li' );
+
+        this.nodes.$diff = $( '#mw-history-compare input[name="diff"]:checked' );
+        this.nodes.$diffLine = this.nodes.$diff.closest( 'li' );
+
+        this.article.set( {
+            type: 'diff',
+            title: id.local.titleText,
+            oldid: this.nodes.$oldid.val(),
+            diff: this.nodes.$diff.val(),
+        } );
+
+        super.openDialog();
+    }
+
     /**
      * Event that emits after the View dialog opens.
      */
     onDialogOpen() {
         if ( !utils.defaults( 'highlightLine' ) ) return;
-        this.page.$oldidLine.addClass( 'instantDiffs-line--highlight' );
-        this.page.$diffLine.addClass( 'instantDiffs-line--highlight' );
+        this.nodes.$oldidLine.addClass( 'instantDiffs-line--highlight' );
+        this.nodes.$diffLine.addClass( 'instantDiffs-line--highlight' );
     }
 
     /**
@@ -22,27 +48,8 @@ class HistoryCompareButton extends ViewButton {
      */
     onDialogClose() {
         if ( !utils.defaults( 'highlightLine' ) ) return;
-        this.page.$oldidLine.removeClass( 'instantDiffs-line--highlight' );
-        this.page.$diffLine.removeClass( 'instantDiffs-line--highlight' );
-    }
-
-    /**
-     * Get page.
-     * @returns {object}
-     */
-    getPage() {
-        this.page.type = 'diff';
-        this.page.title = id.local.titleText;
-
-        this.page.$oldid = $( '#mw-history-compare input[name="oldid"]:checked' );
-        this.page.$oldidLine = this.page.$oldid.closest( 'li' );
-        this.page.oldid = this.page.$oldid.val();
-
-        this.page.$diff = $( '#mw-history-compare input[name="diff"]:checked' );
-        this.page.$diffLine = this.page.$diff.closest( 'li' );
-        this.page.diff = this.page.$diff.val();
-
-        return super.getPage();
+        this.nodes.$oldidLine.removeClass( 'instantDiffs-line--highlight' );
+        this.nodes.$diffLine.removeClass( 'instantDiffs-line--highlight' );
     }
 }
 

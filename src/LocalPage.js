@@ -1,15 +1,16 @@
 import id from './id';
 import * as utils from './utils';
-import * as utilsDiff from './utils-diff';
+import * as utilsPage from './utils-page';
 import { executeModuleScript } from './utils-oojs';
+import { getDependencies } from './utils-article';
 
-import Diff from './Diff';
+import Page from './Page';
 
 /**
  * Class representing a LocalDiff.
- * @augments {import('./Diff').default}
+ * @augments {import('./Page').default}
  */
-class LocalDiff extends Diff {
+class LocalPage extends Page {
     /**
      * @type {string}
      */
@@ -29,8 +30,8 @@ class LocalDiff extends Diff {
         // * for the revision view we need to know actual revision id;
         // * for the page view we need to know page id.
         if (
-            ( this.page.type === 'revision' && utils.isValidID( this.page.revid ) ) ||
-            ( this.page.typeVariant === 'page' && utils.isValidID( this.page.curid ) )
+            ( this.article.get( 'type' ) === 'revision' && utils.isValidID( this.article.get( 'revid' ) ) ) ||
+            ( this.article.get( 'typeVariant' ) === 'page' && utils.isValidID( this.article.get( 'curid' ) ) )
         ) {
             promises.push( this.requestPageDependencies() );
         }
@@ -54,8 +55,8 @@ class LocalDiff extends Diff {
             uselang: id.local.userLanguage,
         };
 
-        const oldid = this.page.revid || this.page.oldid;
-        const pageid = this.page.curid;
+        const oldid = this.article.get( 'revid' ) || this.article.get( 'oldid' );
+        const pageid = this.article.get( 'curid' );
         if ( utils.isValidID( oldid ) ) {
             params.fromrev = oldid;
         } else if ( utils.isValidID( pageid ) ) {
@@ -78,7 +79,7 @@ class LocalDiff extends Diff {
             error.message = data.error.info;
         }
         const type = params.fromrev ? 'revid' : 'curid';
-        utils.notifyError( `error-dependencies-${ type }`, error, this.page, true );
+        utils.notifyError( `error-dependencies-${ type }`, error, this.article, true );
     }
 
     onRequestPageIdsDone( data, params ) {
@@ -89,8 +90,12 @@ class LocalDiff extends Diff {
         }
 
         // Get values for mw.config
-        this.mwConfg.wgArticleId = this.page.curid = compare.toid;
-        this.mwConfg.wgCurRevisionId = this.page.curRevid = compare.torevid;
+        this.mwConfg.wgArticleId = compare.toid;
+        this.mwConfg.wgCurRevisionId = compare.torevid;
+
+        // Set article values
+        this.article.setValue( 'curid', this.mwConfg.wgArticleId );
+        this.article.setValue( 'curRevid', this.mwConfg.wgCurRevisionId );
 
         // Set additional config variables
         this.setConfigs();
@@ -111,8 +116,8 @@ class LocalDiff extends Diff {
             uselang: id.local.userLanguage,
         };
 
-        const oldid = this.mwConfg.wgDiffNewId || Math.max( this.page.revid, this.page.oldid );
-        const pageid = this.mwConfg.wgArticleId || this.page.curid;
+        const oldid = this.mwConfg.wgDiffNewId || Math.max( this.article.get( 'revid' ), this.article.get( 'oldid' ) );
+        const pageid = this.mwConfg.wgArticleId || this.article.get( 'curid' );
         if ( utils.isValidID( oldid ) ) {
             params.oldid = oldid;
         } else if ( utils.isValidID( pageid ) ) {
@@ -137,7 +142,7 @@ class LocalDiff extends Diff {
             error.message = data.error.info;
         }
         const type = params.oldid ? 'revid' : 'curid';
-        utils.notifyError( `error-dependencies-${ type }`, error, this.page, true );
+        utils.notifyError( `error-dependencies-${ type }`, error, this.article, true );
     }
 
     onRequestPageDependenciesDone( data, params ) {
@@ -150,9 +155,13 @@ class LocalDiff extends Diff {
         }
 
         // Get values for mw.config
-        this.mwConfg.wgArticleId = this.page.curid = parse.pageid;
-        this.mwConfg.wgRevisionId = this.page.revid = Math.max( this.page.revid, parse.revid );
+        this.mwConfg.wgArticleId = parse.pageid;
+        this.mwConfg.wgRevisionId = Math.max( this.article.get( 'revid' ), parse.revid );
         this.mwConfg = { ...this.mwConfg, ...parse.jsconfigvars };
+
+        // Set article values
+        this.article.setValue( 'curid', this.mwConfg.wgArticleId );
+        this.article.setValue( 'revid', this.mwConfg.wgRevisionId );
 
         // Set additional config variables
         this.setConfigs();
@@ -162,7 +171,7 @@ class LocalDiff extends Diff {
             ...parse.modulestyles,
             ...parse.modulescripts,
             ...parse.modules,
-            ...utils.getPageDependencies( this.page ),
+            ...getDependencies( this.article ),
         ];
         mw.loader.load( utils.getDependencies( dependencies ) );
     }
@@ -175,16 +184,16 @@ class LocalDiff extends Diff {
      */
     requestProcess() {
         const page = {
-            title: !utils.isEmpty( this.page.title ) ? this.page.title : undefined,
-            diff: !utils.isEmpty( this.page.diff ) ? this.page.diff : this.page.direction,
-            oldid: !utils.isEmpty( this.page.oldid ) ? this.page.oldid : undefined,
-            curid: !utils.isEmpty( this.page.curid ) ? this.page.curid : undefined,
+            title: !utils.isEmpty( this.article.get( 'title' ) ) ? this.article.get( 'title' ) : undefined,
+            diff: !utils.isEmpty( this.article.get( 'diff' ) ) ? this.article.get( 'diff' ) : this.article.get( 'direction' ),
+            oldid: !utils.isEmpty( this.article.get( 'oldid' ) ) ? this.article.get( 'oldid' ) : undefined,
+            curid: !utils.isEmpty( this.article.get( 'curid' ) ) ? this.article.get( 'curid' ) : undefined,
         };
 
         const params = {
             url: id.local.mwEndPoint,
             dataType: 'html',
-            data: $.extend( page, this.pageParams ),
+            data: $.extend( page, this.articleParams ),
         };
 
         return this.requestManager.ajax( params );
@@ -234,7 +243,7 @@ class LocalDiff extends Diff {
         this.processFlaggedRevs();
 
         // Process revision
-        if ( this.page.type === 'revision' ) {
+        if ( this.article.get( 'type' ) === 'revision' ) {
             this.processRevision();
         }
 
@@ -243,6 +252,8 @@ class LocalDiff extends Diff {
     }
 
     collectData() {
+        const articleValues = {};
+
         const $fromLinks = this.nodes.$data.find( '#mw-diff-otitle1 strong > a, #differences-prevlink' );
         const $toLinks = this.nodes.$data.find( '#mw-diff-ntitle1 strong > a, #differences-nextlink' );
 
@@ -261,27 +272,25 @@ class LocalDiff extends Diff {
                 this.mwConfg.wgRevisionId = diff;
 
                 // Set actual revision id for the copy actions, etc.
-                this.page.revid = diff;
+                articleValues.revid = diff;
 
                 // Replace diff when its values = cur
-                if ( this.page.diff === 'cur' ) {
-                    this.page.diff = diff;
+                if ( this.article.get( 'diff' ) === 'cur' ) {
+                    articleValues.diff = diff;
                 }
             }
         }
 
         // Get page title
         const $links = $toLinks.add( $fromLinks );
-        if ( utils.isEmpty( this.page.title ) && $links.length > 0 ) {
-            const title = utils.getParamFromUrl( 'title', $links.prop( 'href' ) ) || $links.prop( 'title' );
-            this.page = utils.extendPage( this.page, { title } );
+        if ( utils.isEmpty( this.article.get( 'title' ) ) && $links.length > 0 ) {
+            articleValues.title = utils.getParamFromUrl( 'title', $links.prop( 'href' ) ) || $links.prop( 'title' );
         }
 
         // Populate section name
         const $toSectionLinks = this.nodes.$data.find( '#mw-diff-ntitle3 .autocomment a' );
-        if ( utils.isEmpty( this.page.section ) && $toSectionLinks.length > 0 ) {
-            const section = utils.getComponentFromUrl( 'hash', $toSectionLinks.prop( 'href' ) );
-            this.page = utils.extendPage( this.page, { section } );
+        if ( utils.isEmpty( this.article.get( 'section' ) ) && $toSectionLinks.length > 0 ) {
+            articleValues.section = utils.getComponentFromUrl( 'hash', $toSectionLinks.prop( 'href' ) );
         }
 
         // Get undo links to check if user can edit the page
@@ -290,16 +299,20 @@ class LocalDiff extends Diff {
             this.mwConfg.wgIsProbablyEditable = true;
         }
 
+        // Set article values
+        this.article.set( articleValues );
+
         // Save the title values to the mw.config
-        if ( this.page.mwTitle ) {
-            this.mwConfg.wgTitle = this.page.mwTitle.getMainText();
-            this.mwConfg.wgPageName = this.page.mwTitle.getPrefixedDb();
-            this.mwConfg.wgNamespaceNumber = this.page.mwTitle.getNamespaceId();
-            this.mwConfg.wgRelevantPageName = this.page.mwTitle.getPrefixedDb();
+        const mwTitle = this.article.getMW( 'title' );
+        if ( mwTitle ) {
+            this.mwConfg.wgTitle = mwTitle.getMainText();
+            this.mwConfg.wgPageName = mwTitle.getPrefixedDb();
+            this.mwConfg.wgNamespaceNumber = mwTitle.getNamespaceId();
+            this.mwConfg.wgRelevantPageName = mwTitle.getPrefixedDb();
         }
 
         // Save additional user options dependent of a page type
-        if ( this.page.type !== 'diff' ) {
+        if ( this.article.get( 'type' ) !== 'diff' ) {
             this.mwUserOptions[ 'visualeditor-diffmode-historical' ] = 'source';
         }
     }
@@ -307,7 +320,7 @@ class LocalDiff extends Diff {
     processDiffTable() {
         // Find diff table tools container and pre-toggle visibility
         this.nodes.$diffTablePrefix = this.nodes.$data.filter( '.mw-diff-table-prefix' );
-        if ( this.page.type !== 'diff' || !utils.defaults( 'showDiffTools' ) ) {
+        if ( this.article.get( 'type' ) !== 'diff' || !utils.defaults( 'showDiffTools' ) ) {
             this.nodes.$diffTablePrefix.addClass( 'instantDiffs-hidden' );
         }
 
@@ -341,7 +354,7 @@ class LocalDiff extends Diff {
         }
 
         // Show or hide diff info table in the revision view
-        if ( this.page.type === 'revision' ) {
+        if ( this.article.get( 'type' ) === 'revision' ) {
             if ( utils.defaults( 'showRevisionInfo' ) ) {
                 // Hide the left side of the table and left only related to the revision info
                 this.nodes.$table.find( 'td:is(.diff-otitle, .diff-side-deleted)' ).addClass( 'instantDiffs-hidden' );
@@ -371,12 +384,12 @@ class LocalDiff extends Diff {
             .find( '.fr-diff-to-stable a' )
             .attr( 'data-instantdiffs-link', 'none' )
             .addClass( 'instantDiffs-hidden' );
-        if ( this.page.type === 'diff' ) {
+        if ( this.article.get( 'type' ) === 'diff' ) {
             this.links.$unpatrolled = this.nodes.$unpatrolledLink;
         }
 
         // Show or hide diff info table in the revision view
-        if ( this.page.type === 'revision' ) {
+        if ( this.article.get( 'type' ) === 'revision' ) {
             if ( utils.defaults( 'showRevisionInfo' ) ) {
                 // Hide the left side of the table and left only related to the revision info
                 this.nodes.$frDiffHeader.find( '.fr-diff-ratings td:nth-child(2n-1)' ).addClass( 'instantDiffs-hidden' );
@@ -407,8 +420,8 @@ class LocalDiff extends Diff {
 
         // Restore file media info
         this.nodes.$mediaInfoView = this.nodes.$data.find( 'mediainfoview' );
-        if ( this.page.type === 'revision' && this.nodes.$mediaInfoView.length > 0 ) {
-            const content = await utilsDiff.restoreFileMediaInfo( this.nodes.$mediaInfoView );
+        if ( this.article.get( 'type' ) === 'revision' && this.nodes.$mediaInfoView.length > 0 ) {
+            const content = await utilsPage.restoreFileMediaInfo( this.nodes.$mediaInfoView );
             if ( content ) {
                 utils.embed( content, this.nodes.$diffTitle, 'insertAfter' );
             }
@@ -422,16 +435,16 @@ class LocalDiff extends Diff {
         executeModuleScript( 'mediawiki.misc-authed-curate' );
 
         // Restore rollback link
-        utilsDiff.restoreRollbackLink( this.nodes.$body );
+        utilsPage.restoreRollbackLink( this.nodes.$body );
 
         // Restore diff format toggle buttons
         const diffTablePrefixTools = [];
 
-        if ( this.page.type === 'diff' && utils.defaults( 'showDiffTools' ) ) {
-            const hasInlineToggle = utilsDiff.restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
+        if ( this.article.get( 'type' ) === 'diff' && utils.defaults( 'showDiffTools' ) ) {
+            const hasInlineToggle = utilsPage.restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
             if ( hasInlineToggle ) diffTablePrefixTools.push( hasInlineToggle );
 
-            const hasVisualDiffs = utilsDiff.restoreVisualDiffs( this.nodes.$diffTablePrefix );
+            const hasVisualDiffs = utilsPage.restoreVisualDiffs( this.nodes.$diffTablePrefix );
             if ( hasVisualDiffs ) diffTablePrefixTools.push( hasVisualDiffs );
         }
 
@@ -455,7 +468,7 @@ class LocalDiff extends Diff {
 
         // Restore WikiLambda app
         if ( this.nodes.$wikiLambdaApp.length > 0 ) {
-            utilsDiff.restoreWikiLambda( this.nodes.$wikiLambdaApp );
+            utilsPage.restoreWikiLambda( this.nodes.$wikiLambdaApp );
         }
     }
 
@@ -469,7 +482,7 @@ class LocalDiff extends Diff {
         this.restoreFunctionalityEmbed();
 
         // Request page dependencies lazily
-        if ( this.page.type === 'revision' && !this.isDependenciesLoaded ) {
+        if ( this.article.get( 'type' ) === 'revision' && !this.isDependenciesLoaded ) {
             await this.requestPageDependencies();
         }
 
@@ -481,4 +494,4 @@ class LocalDiff extends Diff {
     }
 }
 
-export default LocalDiff;
+export default LocalPage;

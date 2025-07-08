@@ -61,11 +61,11 @@ export const config = {
         revision: {
             6: [                                                        // File:
                 'filepage',
-                'wikibase.mediainfo.filepage.styles',
+                'wikibase.mediainfo.filearticle.styles',
                 'wikibase.mediainfo.statements',
             ],
             14: [                                                       // Category:
-                'mediawiki.page.gallery.styles',
+                'mediawiki.article.gallery.styles',
             ],
             146: [                                                      // Lexeme:
                 'wikibase.lexeme.styles',

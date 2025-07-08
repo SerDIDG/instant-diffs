@@ -9,19 +9,33 @@ import Link from './Link';
  */
 class Snapshot {
     /**
+     * @type {Object}
+     */
+    options = {};
+
+    /**
      * @type {import('./Link').default}
      */
     link;
 
     /**
-     * @type {array}
+     * @type {Array}
      */
     links = [];
 
     /**
      * Create a snapshot instance.
+     * @param {Object} [options] configuration options
+     * @param {string} [options.filterType] a link type to filter
+     * @param {boolean} [options.filterMWLine] filter by mw generated links in changes lists
      */
-    constructor() {
+    constructor( options ) {
+        this.options = {
+            filterType: null,
+            filterMWLine: false,
+            ...options,
+        };
+
         this.links = Array.from( utils.getLinks() );
     }
 
@@ -48,7 +62,15 @@ class Snapshot {
      * @returns {boolean}
      */
     isLinkValid( link ) {
-        return link instanceof Link && ( link.isProcessed || ( !link.isLoaded && link.hasRequest ) );
+        const isLink = link instanceof Link;
+        const isProcessed = link.isProcessed || ( !link.isLoaded && link.hasRequest );
+        const isValidType = !utils.isEmpty( this.options.filterType )
+            ? link.getArticle().get( 'type' ) === this.options.filterType
+            : true;
+        const isValidMWLine = this.options.filterMWLine === true
+            ? link.getMW()?.hasLine
+            : true;
+        return isLink && isProcessed && isValidType && isValidMWLine;
     }
 
     /**

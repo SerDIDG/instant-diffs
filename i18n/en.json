@@ -67,8 +67,8 @@
     "dialog-title-empty": "[No title]",
     "dialog-title-not-found": "[Not found]",
     "dialog-notice-wikilambda": "WikiLambda app currently only shows the latest revision. See a [[phab:T397902|ticket]] on Phabricator.",
-    "dialog-notice-global-diff": "You are viewing a global diff from [$1 $2]. Some features can be limited.",
-    "dialog-notice-global-revision": "You are viewing a global revision from [$1 $2]. Some features can be limited.",
+    "dialog-notice-foreign-diff": "You are viewing a foreign diff from [$1 $2]. Some features can be limited.",
+    "dialog-notice-foreign-revision": "You are viewing a foreign revision from [$1 $2]. Some features can be limited.",
 
     "settings-title": "Instant Diffs Settings",
     "settings-saved": "The settings have been saved successfully.\nReload the page to apply them.",
