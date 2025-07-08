@@ -4,6 +4,8 @@ import * as utils from './utils';
 import RequestManager from './RequestManager';
 import Navigation from './Navigation';
 
+import './styles/page.less';
+
 /**
  * Class representing a Diff.
  * @mixes OO.EventEmitter
