@@ -444,9 +444,10 @@ export function getWikilink( article, articleParams, options ) {
 
     // Format wikilink
     const wikilink = preset[ options.type ];
+    const prefix = options.interwiki?.prefix;
     return wikilink
         .replace( '$1', attr )
-        .replace( '$pref', `${ options.interwiki?.prefix }:` || '' )
+        .replace( '$pref', prefix ? `${ prefix }:` : '' )
         .replace( '$href', options.href )
         .replace( '$msg', msg( `copy-wikilink-${ options.type }` ) );
 }
