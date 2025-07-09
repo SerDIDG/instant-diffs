@@ -61,6 +61,7 @@ function processContributionsPage() {
 }
 
 function processGlobalWatchlistPage() {
+    // ToDo: remove mutation observer after hooks are implemented (T275159)
     const container = document.getElementById( 'ext-globalwatchlist-watchlistsfeed' );
     id.local.mutationObserver.observe( container, {
         childList: true,
