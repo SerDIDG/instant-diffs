@@ -4,28 +4,30 @@ import * as utils from './utils';
 import Article from './Article';
 
 export function getRevID( article ) {
+    const values = article.getValues();
+
     if ( utils.isValidID( article.get( 'revid' ) ) ) {
         return article.get( 'revid' );
     }
 
-    if ( article.get( 'type' ) === 'revision' ) {
-        if ( utils.isValidID( article.get( 'oldid' ) ) ) {
-            if ( !utils.isValidDir( article.get( 'direction' ) ) || article.get( 'direction' ) === 'prev' ) {
-                return article.get( 'oldid' );
+    if ( values.type === 'revision' ) {
+        if ( utils.isValidID( values.oldid ) ) {
+            if ( !utils.isValidDir( values.direction ) || values.direction === 'prev' ) {
+                return values.oldid;
             }
         }
     }
 
-    if ( article.get( 'type' ) === 'diff' ) {
-        if ( utils.isValidID( article.get( 'oldid' ) ) && utils.isValidID( article.get( 'diff' ) ) ) {
-            return Math.max( article.get( 'oldid' ), article.get( 'diff' ) );
-        } else if ( utils.isValidID( article.get( 'oldid' ) ) ) {
-            if ( !utils.isValidDir( article.get( 'diff' ) ) || article.get( 'diff' ) === 'prev' ) {
-                return article.get( 'oldid' );
+    if ( values.type === 'diff' ) {
+        if ( utils.isValidID( values.oldid ) && utils.isValidID( values.diff ) ) {
+            return Math.max( values.oldid, values.diff );
+        } else if ( utils.isValidID( values.oldid ) ) {
+            if ( !utils.isValidDir( values.diff ) || values.diff === 'prev' ) {
+                return values.oldid;
             }
-        } else if ( utils.isValidID( article.get( 'diff' ) ) ) {
-            if ( !utils.isValidDir( article.get( 'oldid' ) ) || article.get( 'oldid' ) === 'prev' ) {
-                return article.get( 'diff' );
+        } else if ( utils.isValidID( values.diff ) ) {
+            if ( !utils.isValidDir( values.oldid ) || values.oldid === 'prev' ) {
+                return values.diff;
             }
         }
     }
@@ -52,7 +54,7 @@ export function getDependencies( article ) {
 }
 
 export function getHref( article, articleParams, options ) {
-    if ( !(article instanceof Article ) ) {
+    if ( !( article instanceof Article ) ) {
         article = new Article( article );
     }
 
@@ -62,62 +64,65 @@ export function getHref( article, articleParams, options ) {
         ...options,
     };
 
+    // Get copy of the values
+    const values = { ...article.getValues() };
+
     // Validate options
     if ( !options.type ) {
-        if ( article.get( 'type' ) === 'revision' && article.get( 'typeVariant' ) === 'page' ) {
+        if ( values.type === 'revision' && values.typeVariant === 'page' ) {
             options.type = 'page';
         } else {
-            options.type = article.get( 'type' );
+            options.type = values.type;
         }
     }
 
     // Validate page params for diffs
     if ( options.type === 'diff' ) {
-        if ( utils.isEmpty( article.get( 'diff' ) ) && utils.isValidDir( article.get( 'direction' ) ) ) {
-            article.setValue( 'diff', article.get( 'direction' ) );
+        if ( utils.isEmpty( values.diff ) && utils.isValidDir( values.direction ) ) {
+            values.diff = values.direction;
         }
 
-        if ( utils.isValidID( article.get( 'oldid' ) ) && utils.isValidID( article.get( 'diff' ) ) ) {
-            articleParams.oldid = article.get( 'oldid' );
-            articleParams.diff = article.get( 'diff' );
-        } else if ( utils.isValidID( article.get( 'revid' ) ) ) {
-            articleParams.diff = article.get( 'revid' );
-        } else if ( utils.isValidID( article.get( 'oldid' ) ) ) {
-            if ( utils.isValidDir( article.get( 'diff' ) ) && article.get( 'diff' ) !== 'prev' ) {
-                articleParams.oldid = article.get( 'oldid' );
-                articleParams.diff = article.get( 'diff' );
+        if ( utils.isValidID( values.oldid ) && utils.isValidID( values.diff ) ) {
+            articleParams.oldid = values.oldid;
+            articleParams.diff = values.diff;
+        } else if ( utils.isValidID( values.revid ) ) {
+            articleParams.diff = values.revid;
+        } else if ( utils.isValidID( values.oldid ) ) {
+            if ( utils.isValidDir( values.diff ) && values.diff !== 'prev' ) {
+                articleParams.oldid = values.oldid;
+                articleParams.diff = values.diff;
             } else {
-                articleParams.diff = article.get( 'oldid' );
+                articleParams.diff = values.oldid;
             }
-        } else if ( utils.isValidID( article.get( 'diff' ) ) ) {
-            if ( utils.isValidDir( article.get( 'oldid' ) ) && article.get( 'oldid' ) !== 'prev' ) {
-                articleParams.oldid = article.get( 'diff' );
-                articleParams.diff = article.get( 'oldid' );
+        } else if ( utils.isValidID( values.diff ) ) {
+            if ( utils.isValidDir( values.oldid ) && values.oldid !== 'prev' ) {
+                articleParams.oldid = values.diff;
+                articleParams.diff = values.oldid;
             } else {
-                articleParams.diff = article.get( 'diff' );
+                articleParams.diff = values.diff;
             }
         }
     }
 
     // Validate page params for revisions
     if ( options.type === 'revision' ) {
-        if ( utils.isEmpty( article.get( 'direction' ) ) && utils.isValidDir( article.get( 'diff' ) ) ) {
-            article.setValue( 'direction', article.get( 'diff' ) );
+        if ( utils.isEmpty( values.direction ) && utils.isValidDir( values.diff ) ) {
+            values.direction = values.diff;
         }
 
-        if ( utils.isValidID( article.get( 'revid' ) ) ) {
-            articleParams.oldid = article.get( 'revid' );
-        } else if ( utils.isValidID( article.get( 'oldid' ) ) ) {
-            articleParams.oldid = article.get( 'oldid' );
-            if ( utils.isValidDir( article.get( 'direction' ) ) && article.get( 'direction' ) === 'next' ) {
-                articleParams.direction = article.get( 'direction' );
+        if ( utils.isValidID( values.revid ) ) {
+            articleParams.oldid = values.revid;
+        } else if ( utils.isValidID( values.oldid ) ) {
+            articleParams.oldid = values.oldid;
+            if ( utils.isValidDir( values.direction ) && values.direction === 'next' ) {
+                articleParams.direction = values.direction;
             }
         }
     }
 
     // Validate page params for pages
     if ( options.type === 'page' ) {
-        articleParams.curid = article.get( 'curid' );
+        articleParams.curid = values.curid;
     }
 
     return utils.getHref( article, articleParams, options );

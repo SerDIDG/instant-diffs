@@ -55,6 +55,10 @@ class Article {
         return this.values[ name ];
     }
 
+    getValues() {
+        return this.values;
+    }
+
     getMW( name ) {
         return this.mw[ name ];
     }
