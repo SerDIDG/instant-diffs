@@ -316,20 +316,19 @@ export const config = {
  * Local variables.
  */
 export const local = {
+    language: null,
+    messages: {},
+    titleText: null,
+    interwikiMap: [],
+
     mwIsAnon: null,
     mwEndPoint: null,
     mwEndPointUrl: null,
     mwApi: null,
+    mwForeignApi: {},
     mwArticlePath: null,
     mwServers: [],
-    titleText: null,
-    language: null,
-    messages: {},
-    interwikiMap: [],
 
-    snapshot: null,
-
-    links: new Map(),
     linkSelector: null,
 
     specialPages: {},
@@ -341,6 +340,26 @@ export const local = {
     specialPagesPathRegExp: null,
     specialPagesSearchRegExp: null,
     articlePathRegExp: null,
+
+    /**
+     * @type {import('./Snapshot').default}
+     */
+    snapshot: null,
+
+    /**
+     * @type {MutationObserver}
+     */
+    mutationObserver: null,
+
+    /**
+     * @type {IntersectionObserver}
+     */
+    interactionObserver: null,
+
+    /**
+     * @type {Map}
+     */
+    links: new Map(),
 };
 
 /**

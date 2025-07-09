@@ -2,6 +2,7 @@ import id from './id';
 import * as utils from './utils';
 import { getModuleExport } from './utils-oojs';
 import { getInterwikiMap } from './utils-api';
+import { getHref } from './utils-article';
 
 const { h } = utils;
 
@@ -37,6 +38,24 @@ export function renderDiffTable() {
     );
 
     return nodes;
+}
+
+/**
+ * Process the diff table for the revision view.
+ * Dependent on 'showRevisionInfo' settings, shows right side of the table, or hides table completely.
+ * @param {JQuery} $table
+ */
+export function processRevisionDiffTable( $table ) {
+    if ( utils.defaults( 'showRevisionInfo' ) ) {
+        // Hide the left side of the table and left only related to the revision info
+        $table.find( 'td:is(.diff-otitle, .diff-side-deleted)' ).addClass( 'instantDiffs-hidden' );
+        $table.find( 'td:is(.diff-ntitle, .diff-side-added)' ).attr( 'colspan', '4' );
+
+        // Hide comparison lines
+        $table.find( 'tr:not([class])' ).addClass( 'instantDiffs-hidden' );
+    } else {
+        $table.addClass( 'instantDiffs-hidden' );
+    }
 }
 
 /**
@@ -82,7 +101,7 @@ export async function getWikilink( article ) {
     }
 
     // Get wikilink
-    return utils.getTypeHref( article, {}, options );
+    return getHref( article, {}, options );
 }
 
 /******* INLINE FORMAT TOGGLE *******/

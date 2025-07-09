@@ -63,6 +63,8 @@ class Snapshot {
      */
     isLinkValid( link ) {
         const isLink = link instanceof Link;
+        if ( !isLink ) return false;
+
         const isProcessed = link.isProcessed || ( !link.isLoaded && link.hasRequest );
         const isValidType = !utils.isEmpty( this.options.filterType )
             ? link.getArticle().get( 'type' ) === this.options.filterType
@@ -70,7 +72,7 @@ class Snapshot {
         const isValidMWLine = this.options.filterMWLine === true
             ? link.getMW()?.hasLine
             : true;
-        return isLink && isProcessed && isValidType && isValidMWLine;
+        return isProcessed && isValidType && isValidMWLine;
     }
 
     /**

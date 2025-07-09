@@ -17,7 +17,7 @@ class LocalPage extends Page {
     type = 'local';
 
     /**
-     * Load process that combines multiple requests into one the promise.
+     * Load process that combines multiple requests into the one promise.
      * @returns {Promise}
      */
     loadProcess() {
@@ -353,23 +353,21 @@ class LocalPage extends Page {
             } );
         }
 
-        // Show or hide diff info table in the revision view
-        if ( this.article.get( 'type' ) === 'revision' ) {
-            if ( utils.defaults( 'showRevisionInfo' ) ) {
-                // Hide the left side of the table and left only related to the revision info
-                this.nodes.$table.find( 'td:is(.diff-otitle, .diff-side-deleted)' ).addClass( 'instantDiffs-hidden' );
-                this.nodes.$table.find( 'td:is(.diff-ntitle, .diff-side-added)' ).attr( 'colspan', '4' );
-
-                // Hide comparison lines
-                this.nodes.$table.find( 'tr:not([class])' ).addClass( 'instantDiffs-hidden' );
-            } else {
-                this.nodes.$table.addClass( 'instantDiffs-hidden' );
-            }
-        }
-
         // Hide unsupported or unnecessary element
         this.nodes.$data
             .filter( '.mw-revslider-container, .mw-diff-revision-history-links,  #mw-oldid' )
+            .addClass( 'instantDiffs-hidden' );
+    }
+
+    processRevision() {
+        this.nodes.$diffTitle = this.nodes.$data.filter( '.diff-currentversion-title' );
+
+        // Show or hide diff info table in the revision view
+        utilsPage.processRevisionDiffTable( this.nodes.$table );
+
+        // Hide unsupported or unnecessary element
+        this.nodes.$data
+            .find( '.mw-diff-slot-header, .mw-slot-header' )
             .addClass( 'instantDiffs-hidden' );
     }
 
@@ -401,15 +399,6 @@ class LocalPage extends Page {
         // Hide unsupported or unnecessary element
         this.nodes.$data
             .find( '.fr-diff-to-stable, #mw-fr-diff-dataform' )
-            .addClass( 'instantDiffs-hidden' );
-    }
-
-    processRevision() {
-        this.nodes.$diffTitle = this.nodes.$data.filter( '.diff-currentversion-title' );
-
-        // Hide unsupported or unnecessary element
-        this.nodes.$data
-            .find( '.mw-diff-slot-header, .mw-slot-header' )
             .addClass( 'instantDiffs-hidden' );
     }
 

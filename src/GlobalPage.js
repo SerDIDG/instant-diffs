@@ -1,6 +1,6 @@
 import id from './id';
 import * as utils from './utils';
-import { getUserDate, renderDiffTable } from './utils-page';
+import * as utilsPage from './utils-page';
 import { getDependencies } from './utils-article';
 
 import Page from './Page';
@@ -35,8 +35,23 @@ class GlobalPage extends Page {
     constructor( article, options ) {
         super( article, {
             ...options,
-            fireWikipageHooks: false,
+            fireDiffHook: false,
         } );
+    }
+
+    /**
+     * Load process that chains multiple requests into the one promise.
+     * @returns {Promise}
+     */
+    loadProcess() {
+        let request = this.request();
+
+        // Add revision request to the chain
+        if ( this.article.get( 'type' ) === 'revision' ) {
+            request = request.then( () => this.requestRevision() );
+        }
+
+        return request;
     }
 
     /******* REQUESTS *******/
@@ -57,7 +72,7 @@ class GlobalPage extends Page {
             formatversion: 2,
             uselang: id.local.userLanguage,
         };
-        return this.requestManager.get( params, this.article.mw.api || id.local.mwApi );
+        return this.requestManager.get( params, this.article.getMW( 'api' ) || id.local.mwApi );
     }
 
     /******* RENDER *******/
@@ -94,11 +109,6 @@ class GlobalPage extends Page {
 
         // Render diff table
         this.renderDiffTable();
-
-        // Request and render revision
-        if ( this.article.get( 'type' ) === 'revision' ) {
-            await this.requestRevision();
-        }
     }
 
     collectData() {
@@ -131,14 +141,14 @@ class GlobalPage extends Page {
 
     renderDiffTable() {
         // Render table structure
-        this.nodes.table = renderDiffTable();
+        this.nodes.table = utilsPage.renderDiffTable();
         utils.setHTML( this.nodes.table.body, this.compare.body );
 
         // Add deleted side content
         const deletedTitle = this.mwConfg.wgDiffOldId === this.mwConfg.wgCurRevisionId ? 'currentrev-asof' : 'revisionasof';
         const deleted = hf(
             h( 'div', { id: 'mw-diff-otitle1' },
-                h( 'strong', mw.msg( deletedTitle, getUserDate( this.compare.fromtimestamp ) ) ),
+                h( 'strong', mw.msg( deletedTitle, utilsPage.getUserDate( this.compare.fromtimestamp ) ) ),
             ),
             h( 'div', { id: 'mw-diff-otitle2' },
                 h( 'bdi', this.compare.fromuser ),
@@ -150,7 +160,7 @@ class GlobalPage extends Page {
         const addedTitle = this.mwConfg.wgDiffNewId === this.mwConfg.wgCurRevisionId ? 'currentrev-asof' : 'revisionasof';
         const added = hf(
             h( 'div', { id: 'mw-diff-otitle1' },
-                h( 'strong', mw.msg( addedTitle, getUserDate( this.compare.totimestamp ) ) ),
+                h( 'strong', mw.msg( addedTitle, utilsPage.getUserDate( this.compare.totimestamp ) ) ),
             ),
             h( 'div', { id: 'mw-diff-otitle2' },
                 h( 'bdi', this.compare.touser ),
@@ -188,7 +198,7 @@ class GlobalPage extends Page {
         }
 
         return this.requestManager
-            .get( params, this.article.mw.api || id.local.mwApi )
+            .get( params, this.article.getMW( 'api' ) || id.local.mwApi )
             .then( ( data ) => this.onRequestRevisionDone( data, params ) )
             .fail( ( message, data ) => this.onRequestRevisionError( message, data, params ) );
     }
@@ -204,6 +214,7 @@ class GlobalPage extends Page {
             error.code = data.error.code;
             error.message = data.error.info;
         }
+
         const type = params.oldid ? 'revid' : 'curid';
         utils.notifyError( `error-dependencies-${ type }`, error, this.article );
     }
@@ -231,14 +242,17 @@ class GlobalPage extends Page {
         // Set article values
         this.article.setValue( 'curid', this.mwConfg.wgArticleId );
         this.article.setValue( 'revid', this.mwConfg.wgRevisionId );
-        
+
         // Set additional config variables
         this.setConfigs();
+
+        // Show or hide diff info table in the revision view
+        utilsPage.processRevisionDiffTable( this.nodes.$table );
 
         // Append title
         const title = this.mwConfg.wgRevisionId === this.mwConfg.wgCurRevisionId ? 'currentrev-asof' : 'revisionasof';
         this.nodes.revisionTitle = h( 'h2', { class: 'diff-currentversion-title' },
-            mw.msg( title, getUserDate( this.compare.totimestamp ) ),
+            mw.msg( title, utilsPage.getUserDate( this.compare.totimestamp ) ),
         );
         this.nodes.$body.append( this.nodes.revisionTitle );
 

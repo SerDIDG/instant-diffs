@@ -107,7 +107,8 @@ class Page {
      * @param {Object} [options] configuration options
      * @param {string[]} [options.initiatorAction] an action name
      * @param {import('./Page').default} [options.initiatorPage] a Page instance
-     * @param {boolean} [options.fireWikipageHooks] fire wikipage hooks on fire method
+     * @param {boolean} [options.fireDiffHook] fire 'wikipage.diff' hook on fire method
+     * @param {boolean} [options.fireContentHook] fire 'wikipage.content' hook on fire method
      */
     constructor( article, options ) {
         this.article = article;
@@ -115,7 +116,8 @@ class Page {
         this.options = {
             initiatorAction: null,
             initiatorPage: null,
-            fireWikipageHooks: true,
+            fireDiffHook: true,
+            fireContentHook: true,
             ...options,
         };
 
@@ -144,7 +146,7 @@ class Page {
     }
 
     /**
-     * Load process that combines multiple requests into one the promise.
+     * Load process that combines multiple requests into the one promise.
      * @returns {JQuery.Promise|Promise}
      */
     loadProcess() {
@@ -327,13 +329,14 @@ class Page {
         this.getNavigation()?.fire();
 
         // Fire wikipage hooks
-        if ( this.options.fireWikipageHooks ) {
+        if ( this.options.fireDiffHook ) {
             // Fire diff table hook
             const $diffTable = this.getDiffTable();
             if ( this.article.get( 'type' ) === 'diff' && $diffTable?.length > 0 ) {
                 mw.hook( 'wikipage.diff' ).fire( $diffTable );
             }
-
+        }
+        if ( this.options.fireContentHook ) {
             // Fire content hook
             const $container = this.getContainer();
             if ( $container?.length > 0 ) {

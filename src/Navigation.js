@@ -2,6 +2,7 @@ import id from './id';
 import * as utils from './utils';
 import { renderOoUiElement } from './utils-oojs';
 import { getWikilink } from './utils-page';
+import { getHref } from './utils-article';
 
 import Button from './Button';
 import Link from './Link';
@@ -438,7 +439,7 @@ class Navigation {
                 oldid: diffOldId,
                 direction: 'prev',
             } );
-            href = utils.getTypeHref( article, this.articleParams );
+            href = getHref( article, this.articleParams );
         } else if ( link?.length > 0 ) {
             href = link.attr( 'href' );
         }
@@ -484,7 +485,7 @@ class Navigation {
                     oldid: diffNewId,
                     direction: 'next',
                 } );
-                href = utils.getTypeHref( article, this.articleParams );
+                href = getHref( article, this.articleParams );
             } else {
                 href = link.attr( 'href' );
             }
@@ -526,7 +527,7 @@ class Navigation {
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( `goto-view-${ type }` ),
             title: utils.msgHint( `goto-view-${ type }`, 'switch', utils.defaults( 'enableHotkeys' ) ),
-            href: utils.getTypeHref( this.article, {}, articleOptions ),
+            href: getHref( this.article, {}, articleOptions ),
             target: utils.getTarget( true ),
             icon: 'specialPages',
             classes: [ 'instantDiffs-button--switch' ],
@@ -581,7 +582,7 @@ class Navigation {
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( `goto-back-${ article.get( 'type' ) }` ),
             title: utils.msgHint( `goto-back-${ article.get( 'type' ) }`, 'back', utils.defaults( 'enableHotkeys' ) ),
-            href: utils.getTypeHref( article, initiator.getArticleParams() ),
+            href: getHref( article, initiator.getArticleParams() ),
             target: utils.getTarget( true ),
             icon: 'newline',
             classes: [ 'instantDiffs-button--back' ],
@@ -608,7 +609,7 @@ class Navigation {
     renderTypeLink( options ) {
         return new OO.ui.ButtonWidget( {
             label: utils.msg( `goto-${ this.article.get( 'type' ) }` ),
-            href: utils.getTypeHref( this.article ),
+            href: getHref( this.article ),
             target: utils.getTarget( true ),
             icon: 'articleRedirect',
             ...options,
@@ -717,7 +718,7 @@ class Navigation {
             relative: false,
             minify: utils.defaults( 'linksFormat' ) === 'minify',
         };
-        const href = utils.getTypeHref( this.article, {}, options );
+        const href = getHref( this.article, {}, options );
 
         // Copy href to the clipboard
         utils.clipboardWrite( href );

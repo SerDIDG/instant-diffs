@@ -1,6 +1,7 @@
 import id from './id';
 import * as utils from './utils';
 import { tweakUserOoUiClass } from './utils-oojs';
+import { getHref } from './utils-article';
 
 import settings from './Settings';
 
@@ -395,9 +396,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
     getLinksFormatExample( options ) {
         const title = utils.msg( 'copy-wikilink-example-title' );
-        const diff = utils.getTypeHref( { title, diff: '12345', type: 'diff' }, {}, options );
-        const revision = utils.getTypeHref( { title, oldid: '12345', type: 'revision' }, {}, options );
-        const page = utils.getTypeHref( { title, curid: '12345', type: 'revision', typeVariant: 'page' }, {}, options );
+        const diff = getHref( { title, diff: '12345', type: 'diff' }, {}, options );
+        const revision = getHref( { title, oldid: '12345', type: 'revision' }, {}, options );
+        const page = getHref( { title, curid: '12345', type: 'revision', typeVariant: 'page' }, {}, options );
         return h( 'ul.instantDiffs-list--settings',
             h( 'li', h( 'i', diff ) ),
             h( 'li', h( 'i', revision ) ),
