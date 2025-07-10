@@ -4,7 +4,7 @@ const path = require( 'path' );
 const chalk = require( 'chalk' );
 const createDOMPurify = require( 'dompurify' );
 const { JSDOM } = require('jsdom');
-const { replaceEntitiesInI18n, unhideText, hideText } = require( './misc/utils' );
+const { replaceEntitiesInI18n, unhideText, hideText } = require( './utils' );
 
 const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify( window );
@@ -60,7 +60,7 @@ fs.readdirSync( './i18n/' )
     .filter( filename => path.extname( filename ) === '.json' && filename !== 'qqq.json' )
     .forEach( ( filename ) => {
         const [ , lang ] = path.basename( filename ).match( /^(.+)\.json$/ ) || [];
-        const strings = require( `./i18n/${ filename }` );
+        const strings = require( `../i18n/${ filename }` );
         Object.keys( strings )
             .filter( ( name ) => typeof strings[ name ] === 'string' )
             .forEach( ( stringName ) => {
@@ -118,7 +118,7 @@ if ( Object.keys( i18n ).length ) {
     // Use language fallbacks data to fill missing messages. When the fallbacks need to be updated,
     // they can be collected using
     // https://phabricator.wikimedia.org/source/mediawiki/browse/master/languages/messages/?grep=fallback%20%3D.
-    const fallbackData = require( './data/languageFallbacks.json' );
+    const fallbackData = require( '../data/languageFallbacks.json' );
     Object.keys( i18n ).forEach( ( lang ) => {
         const fallbacks = fallbackData[ lang ];
         if ( fallbacks ) {
@@ -143,13 +143,13 @@ instantDiffs.i18n ||= {};
 instantDiffs.i18n['${ lang }'] = ${ jsonText };
 `;
 
-        fs.mkdirSync( 'dist/instantDiffs-i18n/', { recursive: true } );
-        fs.writeFileSync( `dist/instantDiffs-i18n/${ lang }.js`, text );
+        fs.mkdirSync( './dist/instantDiffs-i18n/', { recursive: true } );
+        fs.writeFileSync( `./dist/instantDiffs-i18n/${ lang }.js`, text );
     }
 }
 
 const i18nListText = JSON.stringify( Object.keys( i18n ), null, '\t' ) + '\n';
-fs.mkdirSync( 'data', { recursive: true } );
-fs.writeFileSync( 'dist/instantDiffs-i18n.json', i18nListText );
+fs.mkdirSync( './data', { recursive: true } );
+fs.writeFileSync( './dist/instantDiffs-i18n.json', i18nListText );
 
 console.log('Internationalization files have been built successfully.');

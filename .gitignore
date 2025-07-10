@@ -5,10 +5,11 @@
 ehthumbs.db
 Thumbs.db
 env.json
+credentials.json
 package-lock.json
 i18nList.json
 node_modules
 bower_components
+garage
 dist
 public
-garage
