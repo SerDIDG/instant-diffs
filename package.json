@@ -1,6 +1,6 @@
 {
     "name": "instant-diffs",
-    "version": "3.3.0+build.13",
+    "version": "3.3.0+build.14",
     "description": "A JavaScript tool that enhances MediaWiki diff links with interactive functionality.",
     "keywords": [
         "wikipedia",
@@ -32,10 +32,11 @@
         "start": "npm run buildI18n && node esbuild.config.mjs --start --dev",
         "dev": "npm run buildI18n && node esbuild.config.mjs --build --dev",
         "build": "npm run buildI18n && node esbuild.config.mjs --build",
+        "testwiki": "npm run buildI18n && node esbuild.config.mjs --build --testwiki",
         "buildI18n": "node ./scripts/buildI18n",
         "deploy": "npm run build && node ./scripts/deploy.js",
         "deploy-dev": "npm run dev && node ./scripts/deploy.js --dev",
-        "deploy-testwiki": "npm run build && node ./scripts/deploy.js --testwiki"
+        "deploy-testwiki": "npm run testwiki && node ./scripts/deploy.js --testwiki"
     },
     "devDependencies": {
         "@fal-works/esbuild-plugin-global-externals": "^2.1.2",
