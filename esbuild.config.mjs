@@ -32,6 +32,10 @@ if ( process.argv.includes( '--start' ) ) {
     strings.__messages__ = '/instantDiffs-i18n/$lang.js';
 }
 
+if ( process.argv.includes( '--testwiki' ) ) {
+    strings.__origin__ = 'https://test.wikipedia.org';
+}
+
 // Prepend a banner and footer
 const banner = `/**
  * Instant Diffs
