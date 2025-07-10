@@ -1,6 +1,6 @@
 {
     "name": "instant-diffs",
-    "version": "3.2.1+build.1",
+    "version": "3.2.1+build.2",
     "description": "A JavaScript tool that enhances MediaWiki diff links with interactive functionality.",
     "keywords": [
         "wikipedia",
@@ -29,16 +29,19 @@
     },
     "main": "src/app.js",
     "scripts": {
-        "start": "node buildI18n && node esbuild.config.mjs --start --dev",
-        "dev": "node buildI18n && node esbuild.config.mjs --build --dev",
-        "build": "node buildI18n && node esbuild.config.mjs --build",
-        "build16": "node buildI18n"
+        "start": "npm run buildI18n && node esbuild.config.mjs --start --dev",
+        "dev": "npm run buildI18n && node esbuild.config.mjs --build --dev",
+        "build": "npm run buildI18n && node esbuild.config.mjs --build",
+        "buildI18n": "node ./scripts/buildI18n",
+        "deploy": "npm run build && node ./scripts/deploy.js",
+        "deploy-dev": "npm run dev && node ./scripts/deploy.js --dev",
+        "deploy-testwiki": "npm run build && node ./scripts/deploy.js --testwiki"
     },
     "devDependencies": {
         "@fal-works/esbuild-plugin-global-externals": "^2.1.2",
         "@types/oojs-ui": "^0.49.4",
         "@wikimedia/codex-design-tokens": "^2.0.0",
-        "chalk": "^5.4.1",
+        "chalk": "^4.1.2",
         "dompurify": "^3.2.6",
         "esbuild": "0.25.5",
         "esbuild-plugin-copy": "^2.1.1",
@@ -48,6 +51,9 @@
         "eslint": "^9.29.0",
         "hyperscript": "^2.0.2",
         "jsdom": "^26.1.0",
+        "minimist": "^1.2.8",
+        "mwn": "^3.0.1",
+        "prompts": "^2.4.2",
         "types-mediawiki": "^1.10.1"
     }
 }
