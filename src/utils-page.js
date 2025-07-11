@@ -1,20 +1,22 @@
 import id from './id';
 import * as utils from './utils';
 import { getModuleExport } from './utils-oojs';
-import { getInterwikiMap } from './utils-api';
-import { getHref } from './utils-article';
+import { getHref, getHrefAbsolute } from './utils-article';
 
-const { h } = utils;
+import Article from './Article';
+
+const { h, hf, ht, hj } = utils;
 
 /******* COMMON *******/
 
 /**
- * Gets the required <table> structure for displaying diffs.
+ * Renders the <table> structure for displaying diff table.
  * @returns {Element}
  */
-export function renderDiffTable() {
+export function renderDiffTable( body ) {
     const nodes = {};
 
+    // Render structure
     nodes.container = h( 'table', {
             class: [
                 'diff',
@@ -28,7 +30,7 @@ export function renderDiffTable() {
             h( 'col', { class: 'diff-marker' } ),
             h( 'col', { class: 'diff-content' } ),
         ),
-        nodes.head = h( 'thead',
+        nodes.head = h( 'tbody',
             h( 'tr', { class: 'diff-title', lang: id.local.userLanguage },
                 nodes.deleted = h( 'td', { class: [ 'diff-otitle', 'diff-side-deleted' ], colSpan: 2 } ),
                 nodes.added = h( 'td', { class: [ 'diff-ntitle', 'diff-side-added' ], colSpan: 2 } ),
@@ -37,7 +39,88 @@ export function renderDiffTable() {
         nodes.body = h( 'tbody' ),
     );
 
+    // Render body
+    if ( !utils.isEmpty( body ) ) {
+        utils.setHTML( nodes.body, body );
+    } else if ( utils.isString( body ) ) {
+        nodes.notice = h( 'tr',
+            h( 'td', { class: 'diff-notice', colSpan: 4 },
+                h( 'dif', { class: 'mw-diff-empty' }, mw.msg( 'diff-empty' ) ),
+            ),
+        );
+        nodes.body.append( nodes.notice );
+    }
+
     return nodes;
+}
+
+/**
+ * Renders the diff table side.
+ * @param {Object} data
+ * @returns {DocumentFragment}
+ */
+export function renderDiffTableSide( data ) {
+    data = {
+        prefix: 'n',
+        title: null,
+        revid: null,
+        curRevid: null,
+        origin: null,
+        timestamp: null,
+        user: null,
+        ...data,
+    };
+
+    const prefix = `mw-diff-${ data.prefix }title`;
+    const title = data.revid === data.curRevid ? 'currentrev-asof' : 'revisionasof';
+    const article = new Article( {
+        type: 'revision',
+        title: data.title,
+        oldid: data.revid,
+        origin: data.origin,
+    } );
+
+    const userTitle = new mw.Title( data.user, 2 ).getPrefixedText();
+    const userTalkTitle = new mw.Title( data.user, 3 ).getPrefixedText();
+    const userContribsTitle = new mw.Title( `Contributions/${ data.user }`, -1 ).getPrefixedText();
+    const userLinks = hf(
+        h( 'a', {
+                class: [ 'mw-redirect', 'mw-usertoollinks-talk' ],
+                title: userTalkTitle,
+                href: getHrefAbsolute( article, mw.util.getUrl( userTalkTitle ) ),
+            },
+            mw.msg( 'talkpagelinktext' ),
+        ),
+        ht( mw.msg( 'pipe-separator' ) ),
+        h( 'a', {
+                class: [ 'mw-redirect', 'mw-usertoollinks-talk' ],
+                title: userTalkTitle,
+                href: getHrefAbsolute( article, mw.util.getUrl( userContribsTitle ) ),
+            },
+            mw.msg( 'contribslink' ),
+        ),
+    );
+
+    return hf(
+        h( 'div', { id: `${ prefix }1` },
+            h( 'strong',
+                h( 'a', { href: getHref( article ) }, mw.msg( title, getUserDate( data.timestamp ) ) ),
+            ),
+        ),
+        h( 'div', { id: `${ prefix }2` },
+            h( 'a', {
+                    class: 'mw-userlink',
+                    title: userTitle,
+                    href: getHrefAbsolute( article, mw.util.getUrl( userTitle ) ),
+                },
+                h( 'bdi', data.user ),
+            ),
+            ht( mw.msg( 'word-separator' ) ),
+            h( 'span', { class: 'mw-usertoollinks' },
+                hj( mw.message( 'parentheses', userLinks ).parseDom() ),
+            ),
+        ),
+    );
 }
 
 /**
@@ -74,34 +157,6 @@ export function getUserDate( date ) {
     return DateFormatter
         ? DateFormatter.forUser().formatTimeAndDate( date )
         : date.toLocaleString();
-}
-
-/**
- * Gets formated wikilink, adds interwiki prefix if a page is foreign.
- * @param {import('./Article').default} article a Page object
- * @returns {string} formated wikilink
- */
-export async function getWikilink( article ) {
-    const options = {
-        relative: false,
-        minify: utils.defaults( 'linksFormat' ) === 'minify',
-        wikilink: true,
-        wikilinkPreset: utils.defaults( 'wikilinksFormat' ),
-    };
-
-    // Get project prefix for the foreign link
-    if ( article.isForeign ) {
-        const interwikiMap = await getInterwikiMap();
-
-        if ( interwikiMap ) {
-            options.interwiki = interwikiMap
-                .filter( entry => entry.url.includes( article.get( 'origin' ) ) )
-                .reduce( ( accumulator, entry ) => !accumulator || accumulator.prefix.length > entry.prefix.length ? entry : accumulator );
-        }
-    }
-
-    // Get wikilink
-    return getHref( article, {}, options );
 }
 
 /******* INLINE FORMAT TOGGLE *******/

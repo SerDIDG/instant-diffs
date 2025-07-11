@@ -45,6 +45,7 @@ class Article {
     set( values ) {
         this.values = { ...this.values, ...this.validateValues( values ) };
         this.isValid = this.validate();
+        this.process();
     }
 
     setValue( name, value ) {
@@ -66,20 +67,41 @@ class Article {
     /**
      * @private
      */
+    validateValues( values ) {
+        // Fix common user mistake with unnecessary pipeline following after the ids.
+        if ( !isEmpty( values.diff ) && isString( values.diff ) && values.diff.indexOf( '|' ) > -1 ) {
+            values.diff = values.diff.split( '|' ).shift();
+        }
+        if ( !isEmpty( values.oldid ) && isString( values.oldid ) && values.oldid.indexOf( '|' ) > -1 ) {
+            values.oldid = values.oldid.split( '|' ).shift();
+        }
+        if ( !isEmpty( values.curid ) && isString( values.curid ) && values.curid.indexOf( '|' ) > -1 ) {
+            values.curid = values.curid.split( '|' ).shift();
+        }
+
+        // Validate components
+        if ( [ 0, '0' ].includes( values.oldid ) ) {
+            delete values.oldid;
+        }
+        if ( [ 0, '0', 'current' ].includes( values.diff ) ) {
+            values.diff = 'cur';
+        }
+        if ( !isValidDir( values.direction ) ) {
+            values.direction = 'prev';
+        }
+
+        // Validate section
+        if ( !isEmpty( values.section ) ) {
+            values.section = values.section.replace( /^#/, '' );
+        }
+
+        return values;
+    }
+
+    /**
+     * @private
+     */
     validate() {
-        // Get revision id if possible from the provided diff and oldid
-        this.values.revid = getRevID( this );
-
-        // Validate title
-        if ( !isEmpty( this.values.title ) ) {
-            this.setTitle();
-        }
-
-        // Validate origin
-        if ( !isEmpty( this.values.origin ) ) {
-            this.setOrigin();
-        }
-
         // Check if a page type is a revision
         if ( isValidID( this.values.oldid ) && isEmpty( this.values.diff ) ) {
             this.values.type = 'revision';
@@ -136,35 +158,19 @@ class Article {
     /**
      * @private
      */
-    validateValues( values ) {
-        // Fix common user mistake with unnecessary pipeline following after the ids.
-        if ( !isEmpty( values.diff ) && isString( values.diff ) && values.diff.indexOf( '|' ) > -1 ) {
-            values.diff = values.diff.split( '|' ).shift();
-        }
-        if ( !isEmpty( values.oldid ) && isString( values.oldid ) && values.oldid.indexOf( '|' ) > -1 ) {
-            values.oldid = values.oldid.split( '|' ).shift();
-        }
-        if ( !isEmpty( values.curid ) && isString( values.curid ) && values.curid.indexOf( '|' ) > -1 ) {
-            values.curid = values.curid.split( '|' ).shift();
+    process() {
+        // Get revision id if possible from the provided diff and oldid
+        this.values.revid = getRevID( this );
+
+        // Set title
+        if ( !isEmpty( this.values.title ) ) {
+            this.setTitle();
         }
 
-        // Validate components
-        if ( [ 0, '0' ].includes( values.oldid ) ) {
-            delete values.oldid;
+        // Set origin
+        if ( !isEmpty( this.values.origin ) ) {
+            this.setOrigin();
         }
-        if ( [ 0, '0', 'current' ].includes( values.diff ) ) {
-            values.diff = 'cur';
-        }
-        if ( !isValidDir( values.direction ) ) {
-            values.direction = 'prev';
-        }
-
-        // Validate section
-        if ( !isEmpty( values.section ) ) {
-            values.section = values.section.replace( /^#/, '' );
-        }
-
-        return values;
     }
 
     /**

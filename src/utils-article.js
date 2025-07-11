@@ -1,13 +1,14 @@
 import id from './id';
 import * as utils from './utils';
+import { getInterwikiMap } from './utils-api';
 
 import Article from './Article';
 
 export function getRevID( article ) {
     const values = article.getValues();
 
-    if ( utils.isValidID( article.get( 'revid' ) ) ) {
-        return article.get( 'revid' );
+    if ( utils.isValidID( values.revid ) ) {
+        return values.revid;
     }
 
     if ( values.type === 'revision' ) {
@@ -53,12 +54,50 @@ export function getDependencies( article ) {
     return dependencies;
 }
 
+/******* FORMAT HREFS *******/
+
+/**
+ * Gets formated wikilink, adds interwiki prefix if an article is foreign.
+ * @param {import('./Article').default} article an Article instance
+ * @returns {string} formated wikilink
+ */
+export async function getWikilink( article ) {
+    const options = {
+        relative: false,
+        minify: utils.defaults( 'linksFormat' ) === 'minify',
+        wikilink: true,
+        wikilinkPreset: utils.defaults( 'wikilinksFormat' ),
+    };
+
+    // Get project prefix for the foreign link
+    if ( article.isForeign ) {
+        const interwikiMap = await getInterwikiMap();
+
+        if ( interwikiMap ) {
+            options.interwiki = interwikiMap
+                .filter( entry => entry.url.includes( article.get( 'origin' ) ) )
+                .reduce( ( accumulator, entry ) => !accumulator || accumulator.prefix.length > entry.prefix.length ? entry : accumulator );
+        }
+    }
+
+    // Get wikilink
+    return getHref( article, {}, options );
+}
+
+/**
+ * Gets article's formatted url href.
+ * @param {import('./Article').default} article an Article instance
+ * @param {Object} [articleParams]
+ * @param {Object} [options]
+ * @returns {string}
+ */
 export function getHref( article, articleParams, options ) {
     if ( !( article instanceof Article ) ) {
         article = new Article( article );
     }
 
     articleParams = { ...articleParams };
+
     options = {
         type: null,
         ...options,
@@ -125,5 +164,111 @@ export function getHref( article, articleParams, options ) {
         articleParams.curid = values.curid;
     }
 
-    return utils.getHref( article, articleParams, options );
+    return processHref( article, articleParams, options );
+}
+
+/**
+ * Adds absolute path from the article to provided href.
+ * @param {import('./Article').default} article an Article instance
+ * @param {string} [href]
+ * @returns {string|undefined}
+ */
+export function getHrefAbsolute( article, href ) {
+    const mwEndPointUrl = article.mw.endPointUrl || id.local.mwEndPointUrl;
+    try {
+        return new URL( href, mwEndPointUrl.origin ).toString();
+    } catch {
+        return href;
+    }
+}
+
+function processHref( article, articleParams, options ) {
+    articleParams = { ...articleParams };
+    options = {
+        type: 'diff',
+        relative: true,
+        hash: false,
+        minify: false,
+        interwiki: null,
+        wikilink: false,
+        wikilinkPreset: null,
+        ...options,
+    };
+
+    // Validate
+    if ( window.location.origin !== article.get( 'origin' ) ) {
+        options.relative = false;
+    }
+
+    // Get link's endpoint url
+    const mwEndPointUrl = article.getMW( 'endPointUrl' ) || id.local.mwEndPointUrl;
+
+    // Get url with the current origin
+    let url;
+    if ( !utils.isEmpty( article.get( 'title' ) ) ) {
+        url = new URL( mw.util.getUrl( article.get( 'title' ), articleParams ), mwEndPointUrl.origin );
+    } else {
+        url = new URL( mwEndPointUrl );
+        url.search = new URLSearchParams( articleParams ).toString();
+    }
+
+    // Add hash
+    if ( options.hash && !utils.isEmpty( article.get( 'section' ) ) ) {
+        url.hash = `#${ article.get( 'section' ) }`;
+    }
+
+    // Minify href
+    if ( options.minify ) {
+        url.pathname = '';
+        url.hash = '';
+        url.searchParams.delete( 'title' );
+    }
+
+    // Get relative or absolute href
+    options.href = decodeURIComponent( options.relative ? ( url.pathname + url.search + url.hash ) : url.toString() );
+
+    // Get wikilink
+    if ( options.wikilink ) {
+        return processWikilink( article, articleParams, options );
+    }
+
+    return options.href;
+}
+
+function processWikilink( article, articleParams, options ) {
+    articleParams = { ...articleParams };
+    options = {
+        href: null,
+        type: 'diff',
+        minify: false,
+        relative: true,
+        interwiki: null,
+        wikilink: true,
+        wikilinkPreset: 'special',
+        ...options,
+    };
+
+    // Get diff \ oldid params
+    let attr = null;
+    if ( !utils.isEmpty( articleParams.oldid ) && !utils.isEmpty( articleParams.diff ) ) {
+        attr = `${ articleParams.oldid }/${ articleParams.diff }`;
+    } else if ( !utils.isEmpty( articleParams.oldid ) ) {
+        attr = articleParams.oldid;
+    } else if ( !utils.isEmpty( articleParams.diff ) ) {
+        attr = articleParams.diff;
+    } else if ( !utils.isEmpty( articleParams.curid ) ) {
+        attr = articleParams.curid;
+    }
+
+    // Get preset
+    const preset = id.config.wikilinkPresets[ options.wikilinkPreset ] || id.config.wikilinkPresets.special;
+
+    // Format wikilink
+    const wikilink = preset[ options.type ];
+    const prefix = options.interwiki?.prefix;
+    return wikilink
+        .replace( '$1', attr )
+        .replace( '$pref', prefix ? `${ prefix }:` : '' )
+        .replace( '$href', options.href )
+        .replace( '$msg', utils.msg( `copy-wikilink-${ options.type }` ) );
 }

@@ -1,9 +1,10 @@
 import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
-import { getDependencies } from './utils-article';
+import { getDependencies, getHref } from './utils-article';
 
 import Page from './Page';
+import Article from './Article';
 
 const { h, hf } = utils;
 
@@ -44,14 +45,15 @@ class GlobalPage extends Page {
      * @returns {Promise}
      */
     loadProcess() {
-        let request = this.request();
+        const request = this.request();
 
-        // Add revision request to the chain
-        if ( this.article.get( 'type' ) === 'revision' ) {
-            request = request.then( () => this.requestRevision() );
+        // Handle request for the diff view
+        if ( this.article.get( 'type' ) !== 'revision' ) {
+            return request;
         }
 
-        return request;
+        // Otherwise add revision request to the request chain
+        return request.then( () => this.requestRevision() );
     }
 
     /******* REQUESTS *******/
@@ -104,6 +106,12 @@ class GlobalPage extends Page {
         const messages = [
             'revisionasof',
             'currentrev-asof',
+            'word-separator',
+            'pipe-separator',
+            'parentheses',
+            'talkpagelinktext',
+            'contribslink',
+            'diff-empty',
         ];
         await utils.loadMessage( messages, { promise: false } );
 
@@ -141,31 +149,30 @@ class GlobalPage extends Page {
 
     renderDiffTable() {
         // Render table structure
-        this.nodes.table = utilsPage.renderDiffTable();
-        utils.setHTML( this.nodes.table.body, this.compare.body );
+        this.nodes.table = utilsPage.renderDiffTable( this.compare.body );
 
         // Add deleted side content
-        const deletedTitle = this.mwConfg.wgDiffOldId === this.mwConfg.wgCurRevisionId ? 'currentrev-asof' : 'revisionasof';
-        const deleted = hf(
-            h( 'div', { id: 'mw-diff-otitle1' },
-                h( 'strong', mw.msg( deletedTitle, utilsPage.getUserDate( this.compare.fromtimestamp ) ) ),
-            ),
-            h( 'div', { id: 'mw-diff-otitle2' },
-                h( 'bdi', this.compare.fromuser ),
-            ),
-        );
+        const deleted = utilsPage.renderDiffTableSide( {
+            prefix: 'o',
+            title: this.compare.fromtitle,
+            revid: this.compare.fromrevid,
+            curRevid: this.mwConfg.wgCurRevisionId,
+            origin: this.article.get( 'origin' ),
+            timestamp: this.compare.fromtimestamp,
+            user: this.compare.fromuser,
+        } );
         utils.embed( deleted, this.nodes.table.deleted );
 
         // Add added side content
-        const addedTitle = this.mwConfg.wgDiffNewId === this.mwConfg.wgCurRevisionId ? 'currentrev-asof' : 'revisionasof';
-        const added = hf(
-            h( 'div', { id: 'mw-diff-otitle1' },
-                h( 'strong', mw.msg( addedTitle, utilsPage.getUserDate( this.compare.totimestamp ) ) ),
-            ),
-            h( 'div', { id: 'mw-diff-otitle2' },
-                h( 'bdi', this.compare.touser ),
-            ),
-        );
+        const added = utilsPage.renderDiffTableSide( {
+            prefix: 'n',
+            title: this.compare.totitle,
+            revid: this.compare.torevid,
+            curRevid: this.mwConfg.wgCurRevisionId,
+            origin: this.article.get( 'origin' ),
+            timestamp: this.compare.totimestamp,
+            user: this.compare.touser,
+        } );
         utils.embed( added, this.nodes.table.added );
 
         // Append
@@ -189,8 +196,8 @@ class GlobalPage extends Page {
             uselang: id.local.userLanguage,
         };
 
-        const oldid = this.mwConfg.wgDiffNewId || Math.max( this.article.get( 'revid' ), this.article.get( 'oldid' ) );
-        const pageid = this.mwConfg.wgArticleId || this.article.get( 'curid' );
+        const oldid = Math.max( this.article.get( 'revid' ), this.article.get( 'oldid' ) );
+        const pageid = this.article.get( 'curid' );
         if ( utils.isValidID( oldid ) ) {
             params.oldid = oldid;
         } else if ( utils.isValidID( pageid ) ) {

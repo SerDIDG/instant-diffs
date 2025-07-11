@@ -414,106 +414,6 @@ export function isRevisionHidden( data ) {
     return data && data.slots?.main?.texthidden;
 }
 
-export function getWikilink( article, articleParams, options ) {
-    articleParams = { ...articleParams };
-    options = {
-        href: null,
-        type: 'diff',
-        minify: false,
-        relative: true,
-        interwiki: null,
-        wikilink: true,
-        wikilinkPreset: 'special',
-        ...options,
-    };
-
-    // Get diff \ oldid params
-    let attr = null;
-    if ( !isEmpty( articleParams.oldid ) && !isEmpty( articleParams.diff ) ) {
-        attr = `${ articleParams.oldid }/${ articleParams.diff }`;
-    } else if ( !isEmpty( articleParams.oldid ) ) {
-        attr = articleParams.oldid;
-    } else if ( !isEmpty( articleParams.diff ) ) {
-        attr = articleParams.diff;
-    } else if ( !isEmpty( articleParams.curid ) ) {
-        attr = articleParams.curid;
-    }
-
-    // Get preset
-    const preset = id.config.wikilinkPresets[ options.wikilinkPreset ] || id.config.wikilinkPresets.special;
-
-    // Format wikilink
-    const wikilink = preset[ options.type ];
-    const prefix = options.interwiki?.prefix;
-    return wikilink
-        .replace( '$1', attr )
-        .replace( '$pref', prefix ? `${ prefix }:` : '' )
-        .replace( '$href', options.href )
-        .replace( '$msg', msg( `copy-wikilink-${ options.type }` ) );
-}
-
-export function getHref( article, articleParams, options ) {
-    articleParams = { ...articleParams };
-    options = {
-        type: 'diff',
-        relative: true,
-        hash: false,
-        minify: false,
-        interwiki: null,
-        wikilink: false,
-        wikilinkPreset: null,
-        ...options,
-    };
-
-    // Validate
-    if ( window.location.origin !== article.get( 'origin' ) ) {
-        options.relative = false;
-    }
-
-    // Get link's endpoint url
-    const mwEndPointUrl = article.getMW( 'endPointUrl' ) || id.local.mwEndPointUrl;
-
-    // Get url with the current origin
-    let url;
-    if ( !isEmpty( article.get( 'title' ) ) ) {
-        url = new URL( mw.util.getUrl( article.get( 'title' ), articleParams ), mwEndPointUrl.origin );
-    } else {
-        url = new URL( mwEndPointUrl );
-        url.search = new URLSearchParams( articleParams ).toString();
-    }
-
-    // Add hash
-    if ( options.hash && !isEmpty( article.get( 'section' ) ) ) {
-        url.hash = `#${ article.get( 'section' ) }`;
-    }
-
-    // Minify href
-    if ( options.minify ) {
-        url.pathname = '';
-        url.hash = '';
-        url.searchParams.delete( 'title' );
-    }
-
-    // Get relative or absolute href
-    options.href = decodeURIComponent( options.relative ? ( url.pathname + url.search + url.hash ) : url.toString() );
-
-    // Get wikilink
-    if ( options.wikilink ) {
-        return getWikilink( article, articleParams, options );
-    }
-
-    return options.href;
-}
-
-export function getHrefAbsolute( article, href ) {
-    const mwEndPointUrl = article.mw.endPointUrl || id.local.mwEndPointUrl;
-    try {
-        return new URL( href, mwEndPointUrl.origin ).toString();
-    } catch {
-        return href;
-    }
-}
-
 export function getCompareTitle( compare ) {
     if ( compare.torevid ) {
         return compare.totitle;
@@ -660,12 +560,20 @@ export function ht( text ) {
     return document.createTextNode( text );
 }
 
+export function hs( ...children ) {
+    return children.reduce( ( accumulator, node ) => accumulator + node.outerHTML, '' );
+}
+
 export function hf( ...children ) {
     const fragment = new DocumentFragment();
     for ( const child of children ) {
         fragment.append( child );
     }
     return fragment;
+}
+
+export function hj( $node ) {
+    return hf( ...$node.toArray() );
 }
 
 export function clipboardWrite( text, callback ) {

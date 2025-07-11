@@ -21,7 +21,8 @@ class LocalPage extends Page {
      * @returns {Promise}
      */
     loadProcess() {
-        const promises = [
+
+        const requests = [
             this.requestPageIds(),
             this.request(),
         ];
@@ -30,13 +31,15 @@ class LocalPage extends Page {
         // * for the revision view we need to know actual revision id;
         // * for the page view we need to know page id.
         if (
-            ( this.article.get( 'type' ) === 'revision' && utils.isValidID( this.article.get( 'revid' ) ) ) ||
-            ( this.article.get( 'typeVariant' ) === 'page' && utils.isValidID( this.article.get( 'curid' ) ) )
+            this.article.get( 'type' ) === 'revision' && (
+                ( this.article.get( 'typeVariant' ) !== 'page' && utils.isValidID( this.article.get( 'revid' ) ) ) ||
+                ( this.article.get( 'typeVariant' ) === 'page' && utils.isValidID( this.article.get( 'curid' ) ) )
+            )
         ) {
-            promises.push( this.requestPageDependencies() );
+            requests.push( this.requestPageDependencies() );
         }
 
-        return Promise.allSettled( promises );
+        return Promise.allSettled( requests );
     }
 
     /******* DEPENDENCIES *******/
@@ -55,7 +58,7 @@ class LocalPage extends Page {
             uselang: id.local.userLanguage,
         };
 
-        const oldid = this.article.get( 'revid' ) || this.article.get( 'oldid' );
+        const oldid = Math.max( this.article.get( 'revid' ), this.article.get( 'oldid' ) );
         const pageid = this.article.get( 'curid' );
         if ( utils.isValidID( oldid ) ) {
             params.fromrev = oldid;
@@ -470,7 +473,7 @@ class LocalPage extends Page {
         // Restore functionally that requires elements appended in the DOM
         this.restoreFunctionalityEmbed();
 
-        // Request page dependencies lazily
+        // Request page dependencies lazily, so visually it appears faster than actually
         if ( this.article.get( 'type' ) === 'revision' && !this.isDependenciesLoaded ) {
             await this.requestPageDependencies();
         }

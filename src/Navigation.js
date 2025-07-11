@@ -1,8 +1,7 @@
 import id from './id';
 import * as utils from './utils';
 import { renderOoUiElement } from './utils-oojs';
-import { getWikilink } from './utils-page';
-import { getHref } from './utils-article';
+import { getWikilink, getHref, getHrefAbsolute } from './utils-article';
 
 import Button from './Button';
 import Link from './Link';
@@ -61,8 +60,8 @@ class Navigation {
     /**
      * Create a Page navigation bar instance.
      * @param {import('./Page').default} page a Page instance
-     * @param {import('./Article').default} article
-     * @param {Object} articleParams
+     * @param {import('./Article').default} article an Article instance
+     * @param {Object} [articleParams]
      * @param {Object} [options] configuration options
      * @param {string[]} [options.initiatorAction] an action name
      * @param {Object} [options.links] a link nodes object
@@ -437,7 +436,6 @@ class Navigation {
                 type: 'revision',
                 title: this.article.get( 'title' ),
                 oldid: diffOldId,
-                direction: 'prev',
             } );
             href = getHref( article, this.articleParams );
         } else if ( link?.length > 0 ) {
@@ -634,7 +632,7 @@ class Navigation {
 
         return new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-page' ),
-            href: utils.getHrefAbsolute( this.article, href ),
+            href: getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
             icon: iconSet[ this.article.getMW( 'title' ).getNamespaceId() ] || iconSet.default,
             ...options,
@@ -659,7 +657,7 @@ class Navigation {
 
         return new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-talkpage' ),
-            href: utils.getHrefAbsolute( this.article, href ),
+            href: getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
             icon: iconSet[ this.article.getMW( 'title' ).getNamespaceId() ] || iconSet.default,
             ...options,
@@ -676,7 +674,7 @@ class Navigation {
 
         return new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-history' ),
-            href: utils.getHrefAbsolute( this.article, href ),
+            href: getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
             icon: 'history',
             ...options,
