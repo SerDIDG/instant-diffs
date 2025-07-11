@@ -230,6 +230,7 @@ export const config = {
     otherLists: [
         'Newpages',
         'PendingChanges',
+        'GlobalWatchlist',
     ],
 
     mwLine: {
@@ -302,12 +303,13 @@ export const config = {
     },
     mwLinkExclude: {
         closestTo: [
-            '.comment',                                                 // Edit summary in the edit lists
+            '.comment',                                                 // Edit summary in the changelists
         ],
     },
     mwLinkAltTitle: {
         closestTo: [
             '.mw-fr-reviewlink',                                        // [[Special:Watchlist]]
+            '.mw-history-histlinks',                                    // History page
         ],
     },
 };

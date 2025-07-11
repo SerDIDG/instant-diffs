@@ -131,6 +131,8 @@ class GlobalPage extends Page {
 
         // Set article values
         this.article.set( {
+            previd: this.compare.prev,
+            nextid: this.compare.next,
             curid: this.mwConfg.wgArticleId,
             curRevid: this.mwConfg.wgCurRevisionId,
             revid: this.mwConfg.wgRevisionId,
@@ -145,6 +147,15 @@ class GlobalPage extends Page {
             this.mwConfg.wgNamespaceNumber = mwTitle.getNamespaceId();
             this.mwConfg.wgRelevantPageName = mwTitle.getPrefixedDb();
         }
+
+        // Collect links that will be available in the navigation:
+        // * For a revision, add the ability to navigate to the very first revision of the article;
+        // * For a diff, we show only a comparison between two revisions,
+        // * so there will be no link to navigate to a comparison between nothing and revision.
+        this.links.prev = this.article.get( 'type' ) === 'revision'
+            ? utils.isValidID( this.compare.fromrevid )
+            : this.compare.prev && this.compare.prev !== this.compare.fromrevid;
+        this.links.next = this.compare.next && this.compare.next !== this.compare.torevid;
     }
 
     renderDiffTable() {
@@ -152,28 +163,38 @@ class GlobalPage extends Page {
         this.nodes.table = utilsPage.renderDiffTable( this.compare.body );
 
         // Add deleted side content
-        const deleted = utilsPage.renderDiffTableSide( {
-            prefix: 'o',
-            title: this.compare.fromtitle,
-            revid: this.compare.fromrevid,
-            curRevid: this.mwConfg.wgCurRevisionId,
-            origin: this.article.get( 'origin' ),
-            timestamp: this.compare.fromtimestamp,
-            user: this.compare.fromuser,
-        } );
-        utils.embed( deleted, this.nodes.table.deleted );
+        if ( this.compare.fromid ) {
+            const deleted = utilsPage.renderDiffTableSide( {
+                prefix: 'o',
+                title: this.compare.fromtitle,
+                revid: this.compare.fromrevid,
+                curRevid: this.mwConfg.wgCurRevisionId,
+                origin: this.article.get( 'origin' ),
+                timestamp: this.compare.fromtimestamp,
+                user: this.compare.fromuser,
+            } );
+            utils.embed( deleted, this.nodes.table.deleted );
+        } else {
+            this.nodes.table.added.colSpan = 4;
+            this.nodes.table.deleted.classList.add( 'instantDiffs-hidden' );
+        }
 
         // Add added side content
-        const added = utilsPage.renderDiffTableSide( {
-            prefix: 'n',
-            title: this.compare.totitle,
-            revid: this.compare.torevid,
-            curRevid: this.mwConfg.wgCurRevisionId,
-            origin: this.article.get( 'origin' ),
-            timestamp: this.compare.totimestamp,
-            user: this.compare.touser,
-        } );
-        utils.embed( added, this.nodes.table.added );
+        if ( this.compare.toid ) {
+            const added = utilsPage.renderDiffTableSide( {
+                prefix: 'n',
+                title: this.compare.totitle,
+                revid: this.compare.torevid,
+                curRevid: this.mwConfg.wgCurRevisionId,
+                origin: this.article.get( 'origin' ),
+                timestamp: this.compare.totimestamp,
+                user: this.compare.touser,
+            } );
+            utils.embed( added, this.nodes.table.added );
+        } else {
+            this.nodes.table.deleted.colSpan = 4;
+            this.nodes.table.added.classList.add( 'instantDiffs-hidden' );
+        }
 
         // Append
         this.nodes.$table = $( this.nodes.table.container ).appendTo( this.nodes.$body );

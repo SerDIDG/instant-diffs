@@ -178,7 +178,7 @@ class Navigation {
         }
 
         // [FlaggedRevisions] Link to all unpatrolled changes
-        if ( this.options.links.$unpatrolled?.length > 0 ) {
+        if ( !utils.isEmpty( this.options.links.unpatrolled ) ) {
             this.buttons.unpatrolled = this.renderUnpatrolledLink( { name: 'unpatrolled', ...buttonOptions } );
             items.push( this.buttons.unpatrolled );
         }
@@ -334,7 +334,7 @@ class Navigation {
         }
 
         // [FlaggedRevisions] Link to all unpatrolled changes
-        if ( this.options.links.$unpatrolled?.length > 0 ) {
+        if ( !utils.isEmpty( this.options.links.unpatrolled ) ) {
             this.buttons.mobileUnpatrolled = this.renderUnpatrolledLink( { name: 'mobileUnpatrolled', ...buttonOptions } );
             items.push( this.buttons.mobileUnpatrolled );
         }
@@ -424,22 +424,16 @@ class Navigation {
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderPrevLink() {
-        const link = this.options.links.$prev;
-        const diffOldId = mw.config.get( 'wgDiffOldId' );
-
-        // For a revision, add the ability to navigate to the very first revision of the article.
-        // For a diff, we show a comparison between two revisions,
-        // so there will be no link to navigate to a comparison between nothing and revision.
-        let href = null;
-        if ( this.article.get( 'type' ) === 'revision' && utils.isValidID( diffOldId ) ) {
+        let href;
+        if ( this.options.links.prev ) {
             const article = new Article( {
-                type: 'revision',
                 title: this.article.get( 'title' ),
-                oldid: diffOldId,
+                origin: this.article.get( 'origin' ),
+                oldid: mw.config.get( 'wgDiffOldId' ),
+                diff: this.article.get( 'type' ) === 'diff' ? 'prev' : null,
+                direction: this.article.get( 'type' ) === 'revision' ? 'prev' : null,
             } );
-            href = getHref( article, this.articleParams );
-        } else if ( link?.length > 0 ) {
-            href = link.attr( 'href' );
+            href = getHref( article );
         }
 
         const label = utils.renderLabel( {
@@ -471,22 +465,16 @@ class Navigation {
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderNextLink() {
-        const link = this.options.links.$next;
-        const diffNewId = mw.config.get( 'wgDiffNewId' );
-
-        let href = null;
-        if ( link?.length > 0 ) {
-            if ( this.article.get( 'type' ) === 'revision' && utils.isValidID( diffNewId ) ) {
-                const article = new Article( {
-                    type: 'revision',
-                    title: this.article.get( 'title' ),
-                    oldid: diffNewId,
-                    direction: 'next',
-                } );
-                href = getHref( article, this.articleParams );
-            } else {
-                href = link.attr( 'href' );
-            }
+        let href;
+        if ( this.options.links.next ) {
+            const article = new Article( {
+                title: this.article.get( 'title' ),
+                origin: this.article.get( 'origin' ),
+                oldid: mw.config.get( 'wgDiffNewId' ),
+                diff: this.article.get( 'type' ) === 'diff' ? 'next' : null,
+                direction: this.article.get( 'type' ) === 'revision' ? 'next' : null,
+            } );
+            href = getHref( article );
         }
 
         const label = utils.renderLabel( {
@@ -547,12 +535,10 @@ class Navigation {
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderUnpatrolledLink( options ) {
-        const link = this.options.links.$unpatrolled;
-
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-view-unpatrolled' ),
             title: utils.msgHint( 'goto-view-unpatrolled', 'unpatrolled', utils.defaults( 'enableHotkeys' ) ),
-            href: link.attr( 'href' ),
+            href: this.options.links.unpatrolled,
             target: utils.getTarget( true ),
             icon: 'info',
             classes: [ 'instantDiffs-button--pending' ],

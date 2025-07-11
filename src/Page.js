@@ -193,8 +193,8 @@ class Page {
         // Render content and fire hooks
         const status = this.renderError( error );
         if ( status ) {
-            mw.hook( `${ id.config.prefix }.diff.renderError` ).fire( this );
-            mw.hook( `${ id.config.prefix }.diff.renderComplete` ).fire( this );
+            mw.hook( `${ id.config.prefix }.page.renderError` ).fire( this );
+            mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
         }
     }
 
@@ -211,8 +211,8 @@ class Page {
         // Render content and fire hooks
         const status = this.renderSuccess( data );
         if ( status ) {
-            mw.hook( `${ id.config.prefix }.diff.renderSuccess` ).fire( this );
-            mw.hook( `${ id.config.prefix }.diff.renderComplete` ).fire( this );
+            mw.hook( `${ id.config.prefix }.page.renderSuccess` ).fire( this );
+            mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
         }
     }
 
@@ -348,7 +348,7 @@ class Page {
         this.processLinksTaget();
 
         // Fire hook on complete
-        mw.hook( `${ id.config.prefix }.diff.complete` ).fire( this );
+        mw.hook( `${ id.config.prefix }.page.complete` ).fire( this );
     }
 
     focus() {
@@ -393,9 +393,13 @@ class Page {
     getNavigation() {
         return this.navigation;
     }
+    
+    close() {
+        this.emit( 'close' );
+    }
 
     detach() {
-        mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).fire( this );
+        mw.hook( `${ id.config.prefix }.page.beforeDetach` ).fire( this );
 
         this.abort();
         this.getNavigation()?.detach();

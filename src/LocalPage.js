@@ -261,7 +261,6 @@ class LocalPage extends Page {
         const $toLinks = this.nodes.$data.find( '#mw-diff-ntitle1 strong > a, #differences-nextlink' );
 
         // Get diff and oldid values
-        // FixMe: request via api action=revisions
         if ( $fromLinks.length > 0 ) {
             const oldid = Number( utils.getParamFromUrl( 'oldid', $fromLinks.prop( 'href' ) ) );
             if ( utils.isValidID( oldid ) ) {
@@ -331,11 +330,12 @@ class LocalPage extends Page {
         this.nodes.$table = this.nodes.$data.filter( 'table.diff' );
 
         // Find and hide the next / previous diff links, so the other scripts can use them later
-        this.links.$prev = this.nodes.$table
+        this.nodes.$prev = this.nodes.$table
             .find( '#differences-prevlink' )
             .attr( 'data-instantdiffs-link', 'none' )
             .addClass( 'instantDiffs-hidden' );
-        this.links.$next = this.nodes.$table
+
+        this.nodes.$next = this.nodes.$table
             .find( '#differences-nextlink' )
             .attr( 'data-instantdiffs-link', 'none' )
             .addClass( 'instantDiffs-hidden' );
@@ -360,6 +360,15 @@ class LocalPage extends Page {
         this.nodes.$data
             .filter( '.mw-revslider-container, .mw-diff-revision-history-links,  #mw-oldid' )
             .addClass( 'instantDiffs-hidden' );
+
+        // Collect links that will be available in the navigation:
+        // * For a revision, add the ability to navigate to the very first revision of the article;
+        // * For a diff, we show only a comparison between two revisions,
+        // * so there will be no link to navigate to a comparison between nothing and revision.
+        this.links.prev = this.article.get( 'type' ) === 'revision'
+            ? utils.isValidID( this.mwConfg.wgDiffOldId )
+            : this.nodes.$prev.attr( 'href' );
+        this.links.next = this.nodes.$next.attr( 'href' );
     }
 
     processRevision() {
@@ -381,12 +390,13 @@ class LocalPage extends Page {
             .insertBefore( this.nodes.$table );
 
         // Find and hide the "All unpatrolled diffs" link, so the other scripts can use it later
-        this.nodes.$unpatrolledLink = this.nodes.$frDiffHeader
+        this.nodes.$unpatrolled = this.nodes.$frDiffHeader
             .find( '.fr-diff-to-stable a' )
             .attr( 'data-instantdiffs-link', 'none' )
             .addClass( 'instantDiffs-hidden' );
+
         if ( this.article.get( 'type' ) === 'diff' ) {
-            this.links.$unpatrolled = this.nodes.$unpatrolledLink;
+            this.links.unpatrolled = this.nodes.$unpatrolled.attr( 'href' );
         }
 
         // Show or hide diff info table in the revision view

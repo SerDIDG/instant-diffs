@@ -97,16 +97,16 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
  * {@link [[:en:User:Cacycle/wikEdDiff]]}
  */
 
-mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).add(
+mw.hook( `${ id.config.prefix }.page.beforeDetach` ).add(
     /**
-     * @param {import('./Page').default} diff
+     * @param {import('./Page').default} page
      */
-    ( diff ) => {
-        if ( !diff ) return;
+    ( page ) => {
+        if ( !page ) return;
 
         // Reset diff table linking
         // FixMe: Suggest a better solution
-        const $diffTable = diff.getDiffTable();
+        const $diffTable = page.getDiffTable();
         if (
             typeof wikEd !== 'undefined' &&
             wikEd.diffTableLinkified &&
@@ -124,16 +124,16 @@ mw.hook( `${ id.config.prefix }.diff.beforeDetach` ).add(
  * {@link [[meta:User:Xiplus/TwinkleGlobal|TwinkleGlobal]]}
  */
 
-mw.hook( `${ id.config.prefix }.diff.complete` ).add(
+mw.hook( `${ id.config.prefix }.page.complete` ).add(
     /**
-     * @param {import('./Page').default} diff
+     * @param {import('./Page').default} page
      */
-    ( diff ) => {
-        if ( !diff ) return;
+    ( page ) => {
+        if ( !page ) return;
 
-        const $links = diff.getContainer()?.find( '[id^="tw-revert"] a' );
+        const $links = page.getContainer()?.find( '[id^="tw-revert"] a' );
         $links.each( ( i, node ) => {
-            node.addEventListener( 'click', () => diff.emit( 'close' ) );
+            node.addEventListener( 'click', () => page.close() );
         } );
     },
 );
