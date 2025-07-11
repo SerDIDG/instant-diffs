@@ -45,9 +45,9 @@ class Settings {
     isSaving = false;
 
     /**
-     * Create a Settings instance.
+     * Mixin a Settings instance.
      */
-    constructor() {
+    mixin() {
         // Mixin constructor
         OO.EventEmitter.call( this );
     }

@@ -94,7 +94,7 @@ export function renderDiffTableSide( data ) {
         ht( mw.msg( 'pipe-separator' ) ),
         h( 'a', {
                 class: [ 'mw-redirect', 'mw-usertoollinks-talk' ],
-                title: userTalkTitle,
+                title: userContribsTitle,
                 href: getHrefAbsolute( article, mw.util.getUrl( userContribsTitle ) ),
             },
             mw.msg( 'contribslink' ),

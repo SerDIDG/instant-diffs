@@ -120,8 +120,11 @@ function prepare( require ) {
     mw.util.addCSS( '.instantDiffs-panel { display:none; }' );
 
     // Mixin OO.EventEmitter to the classes after the OOJS dependencies loaded
-    mixEventEmitterInObject( settings );
+    view.mixin();
+    settings.mixin();
+
     mixEventEmitterInObject( view );
+    mixEventEmitterInObject( settings );
     OO.mixinClass( Page, OO.EventEmitter );
 
     // Prepare locale variables
