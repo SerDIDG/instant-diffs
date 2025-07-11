@@ -102,9 +102,9 @@ class View {
     isProcessing = false;
 
     /**
-     * Create a View instance.
+     * Mixin a View instance.
      */
-    constructor() {
+    mixin() {
         // Mixin constructor
         OO.EventEmitter.call( this );
     }
