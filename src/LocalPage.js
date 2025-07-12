@@ -39,8 +39,7 @@ class LocalPage extends Page {
         }
 
         return $.when( Promise.allSettled( requests ) )
-            .done( this.onLoadDone.bind( this ) )
-            .fail( this.onLoadError.bind( this ) );
+            .always( this.mwConLoadResponse.bind( this ) );
     }
 
     /******* DEPENDENCIES *******/
@@ -94,12 +93,12 @@ class LocalPage extends Page {
         }
 
         // Get values for mw.config
-        this.mwConfg.wgArticleId = compare.toid;
-        this.mwConfg.wgCurRevisionId = compare.torevid;
+        this.mwConfig.wgArticleId = compare.toid;
+        this.mwConfig.wgCurRevisionId = compare.torevid;
 
         // Set article values
-        this.article.setValue( 'curid', this.mwConfg.wgArticleId );
-        this.article.setValue( 'curRevid', this.mwConfg.wgCurRevisionId );
+        this.article.setValue( 'curid', this.mwConfig.wgArticleId );
+        this.article.setValue( 'curRevid', this.mwConfig.wgCurRevisionId );
 
         // Set additional config variables
         this.setConfigs();
@@ -120,8 +119,8 @@ class LocalPage extends Page {
             uselang: id.local.userLanguage,
         };
 
-        const oldid = this.mwConfg.wgDiffNewId || Math.max( this.article.get( 'revid' ), this.article.get( 'oldid' ) );
-        const pageid = this.mwConfg.wgArticleId || this.article.get( 'curid' );
+        const oldid = this.mwConfig.wgDiffNewId || Math.max( this.article.get( 'revid' ), this.article.get( 'oldid' ) );
+        const pageid = this.mwConfig.wgArticleId || this.article.get( 'curid' );
         if ( utils.isValidID( oldid ) ) {
             params.oldid = oldid;
         } else if ( utils.isValidID( pageid ) ) {
@@ -159,13 +158,13 @@ class LocalPage extends Page {
         }
 
         // Get values for mw.config
-        this.mwConfg.wgArticleId = parse.pageid;
-        this.mwConfg.wgRevisionId = Math.max( this.article.get( 'revid' ), parse.revid );
-        this.mwConfg = { ...this.mwConfg, ...parse.jsconfigvars };
+        this.mwConfig.wgArticleId = parse.pageid;
+        this.mwConfig.wgRevisionId = Math.max( this.article.get( 'revid' ), parse.revid );
+        this.mwConfig = { ...this.mwConfig, ...parse.jsconfigvars };
 
         // Set article values
-        this.article.setValue( 'curid', this.mwConfg.wgArticleId );
-        this.article.setValue( 'revid', this.mwConfg.wgRevisionId );
+        this.article.setValue( 'curid', this.mwConfig.wgArticleId );
+        this.article.setValue( 'revid', this.mwConfig.wgRevisionId );
 
         // Set additional config variables
         this.setConfigs();
@@ -257,14 +256,14 @@ class LocalPage extends Page {
         if ( $fromLinks.length > 0 ) {
             const oldid = Number( utils.getParamFromUrl( 'oldid', $fromLinks.prop( 'href' ) ) );
             if ( utils.isValidID( oldid ) ) {
-                this.mwConfg.wgDiffOldId = oldid;
+                this.mwConfig.wgDiffOldId = oldid;
             }
         }
         if ( $toLinks.length > 0 ) {
             const diff = Number( utils.getParamFromUrl( 'oldid', $toLinks.prop( 'href' ) ) );
             if ( utils.isValidID( diff ) ) {
-                this.mwConfg.wgDiffNewId = diff;
-                this.mwConfg.wgRevisionId = diff;
+                this.mwConfig.wgDiffNewId = diff;
+                this.mwConfig.wgRevisionId = diff;
 
                 // Set actual revision id for the copy actions, etc.
                 articleValues.revid = diff;
@@ -291,7 +290,7 @@ class LocalPage extends Page {
         // Get undo links to check if user can edit the page
         const $editLinks = this.nodes.$data.find( '.mw-diff-undo a, .mw-rollback-link a' );
         if ( $editLinks.length > 0 ) {
-            this.mwConfg.wgIsProbablyEditable = true;
+            this.mwConfig.wgIsProbablyEditable = true;
         }
 
         // Set article values
@@ -300,10 +299,10 @@ class LocalPage extends Page {
         // Save the title values to the mw.config
         const mwTitle = this.article.getMW( 'title' );
         if ( mwTitle ) {
-            this.mwConfg.wgTitle = mwTitle.getMainText();
-            this.mwConfg.wgPageName = mwTitle.getPrefixedDb();
-            this.mwConfg.wgNamespaceNumber = mwTitle.getNamespaceId();
-            this.mwConfg.wgRelevantPageName = mwTitle.getPrefixedDb();
+            this.mwConfig.wgTitle = mwTitle.getMainText();
+            this.mwConfig.wgPageName = mwTitle.getPrefixedDb();
+            this.mwConfig.wgNamespaceNumber = mwTitle.getNamespaceId();
+            this.mwConfig.wgRelevantPageName = mwTitle.getPrefixedDb();
         }
 
         // Save additional user options dependent of a page type
@@ -359,7 +358,7 @@ class LocalPage extends Page {
         // * For a diff, we show only a comparison between two revisions,
         // * so there will be no link to navigate to a comparison between nothing and revision.
         this.links.prev = this.article.get( 'type' ) === 'revision'
-            ? utils.isValidID( this.mwConfg.wgDiffOldId )
+            ? utils.isValidID( this.mwConfig.wgDiffOldId )
             : this.nodes.$prev.attr( 'href' );
         this.links.next = this.nodes.$next.attr( 'href' );
     }
@@ -473,6 +472,7 @@ class LocalPage extends Page {
      * Fire hooks and events.
      */
     async fire() {
+        return;
         // Restore functionally that requires elements appended in the DOM
         this.restoreFunctionalityEmbed();
 

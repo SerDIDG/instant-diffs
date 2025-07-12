@@ -34,7 +34,7 @@ class Page {
     /**
      * @type {Object}
      */
-    mwConfg = {
+    mwConfig = {
         wgTitle: false,
         wgPageName: false,
         wgRelevantPageName: false,
@@ -154,14 +154,13 @@ class Page {
      */
     loadProcess() {
         return this.request()
-            .done( this.onLoadDone.bind( this ) )
-            .fail( this.onLoadError.bind( this ) );
+            .always( this.mwConLoadResponse.bind( this ) );
     }
 
     /**
-     * Event that emits after the request failed.
+     * Event that emits after the load complete.
      */
-    onLoadError() {
+    mwConLoadResponse() {
         this.isLoading = false;
         this.isLoaded = true;
 
@@ -172,29 +171,10 @@ class Page {
         if ( this.error?.statusText === 'abort' ) return;
 
         // Render content and fire hooks
-        const status = this.renderError( this.error );
-        if ( status ) {
-            mw.hook( `${ id.config.prefix }.page.renderError` ).fire( this );
-            mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
-        }
-    }
-
-    /**
-     * Event that emits after the load successive.
-     */
-    onLoadDone() {
-        this.isLoading = false;
-        this.isLoaded = true;
-
-        // The Diff can be already detached from the DOM
-        if ( this.isDetached ) return;
-
-        // Render content and fire hooks
-        const status = this.renderSuccess( this.data );
-        if ( status ) {
-            mw.hook( `${ id.config.prefix }.page.renderSuccess` ).fire( this );
-            mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
-        }
+        if ( !utils.isEmpty( this.data ) ) {
+            this.renderSuccess();
+        } else
+            this.renderError();
     }
 
     /******* REQUESTS *******/
@@ -238,31 +218,28 @@ class Page {
 
     /******* RENDER *******/
 
-    renderSuccess( data ) {
-        // Render error if the data request is completely failed
-        this.data = data;
-        if ( !this.data ) {
-            this.onRequestError();
-            return false;
-        }
-
+    renderSuccess() {
         this.render();
-        return true;
+
+        mw.hook( `${ id.config.prefix }.page.renderSuccess` ).fire( this );
+        mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
     }
 
-    renderError( error ) {
+    renderError() {
         // Create error object
         this.error = {
             type: this.article.get( 'type' ),
             code: this.article.get( 'typeVariant' ) === 'page' ? 'curid' : 'generic',
-            message: utils.getErrorStatusText( error?.status ),
+            message: utils.getErrorStatusText( this.error?.status ),
         };
 
         // Show critical notification popup
         utils.notifyError( `error-${ this.error.type }-${ this.error.code }`, this.error, this.article );
 
         this.render();
-        return true;
+
+        mw.hook( `${ id.config.prefix }.page.renderError` ).fire( this );
+        mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
     }
 
     render() {
@@ -371,7 +348,7 @@ class Page {
     }
 
     setConfigs() {
-        mw.config.set( this.mwConfg );
+        mw.config.set( this.mwConfig );
         mw.user.options.set( this.mwUserOptions );
     }
 

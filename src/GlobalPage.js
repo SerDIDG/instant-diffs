@@ -52,8 +52,7 @@ class GlobalPage extends Page {
         ] );
 
         const request = $.when( promise )
-            .done( this.onLoadDone.bind( this ) )
-            .fail( this.onLoadError.bind( this ) );
+            .always( this.mwConLoadResponse.bind( this ) );
 
         // Handle request for the diff view
         if ( this.article.get( 'type' ) !== 'revision' ) {
@@ -61,7 +60,7 @@ class GlobalPage extends Page {
         }
 
         // Otherwise add revision request to the request chain
-        return request.then( () => this.requestRevision() );
+        return request.done( () => this.requestRevision() );
     }
 
     /******* REQUESTS *******/
@@ -93,7 +92,7 @@ class GlobalPage extends Page {
         // Request formatted name
         const namespaces = await getNamespaces( this.article.get( 'origin' ) );
         if ( namespaces ) {
-            this.mwConfg.wgFormattedNamespaces = namespaces;
+            this.mwConfig.wgFormattedNamespaces = namespaces;
         }
     }
 
@@ -115,7 +114,6 @@ class GlobalPage extends Page {
     /******* RENDER *******/
 
     renderContent() {
-        console.log( 'renderContent' );
         // Collect missing data from the response
         this.collectData();
 
@@ -132,31 +130,31 @@ class GlobalPage extends Page {
 
     collectData() {
         // Get values for mw.config
-        this.mwConfg.wgArticleId = this.data.toid;
-        this.mwConfg.wgRevisionId = this.data.torevid;
-        this.mwConfg.wgDiffOldId = this.data.fromrevid;
-        this.mwConfg.wgDiffNewId = this.data.torevid;
+        this.mwConfig.wgArticleId = this.data.toid;
+        this.mwConfig.wgRevisionId = this.data.torevid;
+        this.mwConfig.wgDiffOldId = this.data.fromrevid;
+        this.mwConfig.wgDiffNewId = this.data.torevid;
         if ( !this.data.next ) {
-            this.mwConfg.wgCurRevisionId = this.data.torevid;
+            this.mwConfig.wgCurRevisionId = this.data.torevid;
         }
 
         // Set article values
         this.article.set( {
             previd: this.data.prev,
             nextid: this.data.next,
-            curid: this.mwConfg.wgArticleId,
-            curRevid: this.mwConfg.wgCurRevisionId,
-            revid: this.mwConfg.wgRevisionId,
+            curid: this.mwConfig.wgArticleId,
+            curRevid: this.mwConfig.wgCurRevisionId,
+            revid: this.mwConfig.wgRevisionId,
             title: this.data.totitle,
         } );
 
         // Save the title values to the mw.config
         const mwTitle = this.article.getMW( 'title' );
         if ( mwTitle ) {
-            this.mwConfg.wgTitle = mwTitle.getMainText();
-            this.mwConfg.wgPageName = mwTitle.getPrefixedDb();
-            this.mwConfg.wgNamespaceNumber = mwTitle.getNamespaceId();
-            this.mwConfg.wgRelevantPageName = mwTitle.getPrefixedDb();
+            this.mwConfig.wgTitle = mwTitle.getMainText();
+            this.mwConfig.wgPageName = mwTitle.getPrefixedDb();
+            this.mwConfig.wgNamespaceNumber = mwTitle.getNamespaceId();
+            this.mwConfig.wgRelevantPageName = mwTitle.getPrefixedDb();
         }
 
         // Collect links that will be available in the navigation:
@@ -179,7 +177,7 @@ class GlobalPage extends Page {
                 prefix: 'o',
                 title: this.data.fromtitle,
                 revid: this.data.fromrevid,
-                curRevid: this.mwConfg.wgCurRevisionId,
+                curRevid: this.mwConfig.wgCurRevisionId,
                 origin: this.article.get( 'origin' ),
                 timestamp: this.data.fromtimestamp,
                 user: this.data.fromuser,
@@ -196,7 +194,7 @@ class GlobalPage extends Page {
                 prefix: 'n',
                 title: this.data.totitle,
                 revid: this.data.torevid,
-                curRevid: this.mwConfg.wgCurRevisionId,
+                curRevid: this.mwConfig.wgCurRevisionId,
                 origin: this.article.get( 'origin' ),
                 timestamp: this.data.totimestamp,
                 user: this.data.touser,
@@ -275,13 +273,13 @@ class GlobalPage extends Page {
         console.log( this.parse );
 
         // Get values for mw.config
-        this.mwConfg.wgArticleId = this.parse.pageid;
-        this.mwConfg.wgRevisionId = Math.max( this.article.get( 'revid' ), this.parse.revid );
-        this.mwConfg = { ...this.mwConfg, ...this.parse.jsconfigvars };
+        this.mwConfig.wgArticleId = this.parse.pageid;
+        this.mwConfig.wgRevisionId = Math.max( this.article.get( 'revid' ), this.parse.revid );
+        this.mwConfig = { ...this.mwConfig, ...this.parse.jsconfigvars };
 
         // Set article values
-        this.article.setValue( 'curid', this.mwConfg.wgArticleId );
-        this.article.setValue( 'revid', this.mwConfg.wgRevisionId );
+        this.article.setValue( 'curid', this.mwConfig.wgArticleId );
+        this.article.setValue( 'revid', this.mwConfig.wgRevisionId );
 
         // Set additional config variables
         this.setConfigs();
@@ -290,7 +288,7 @@ class GlobalPage extends Page {
         utilsPage.processRevisionDiffTable( this.nodes.$table );
 
         // Append title
-        const title = this.mwConfg.wgRevisionId === this.mwConfg.wgCurRevisionId ? 'currentrev-asof' : 'revisionasof';
+        const title = this.mwConfig.wgRevisionId === this.mwConfig.wgCurRevisionId ? 'currentrev-asof' : 'revisionasof';
         this.nodes.revisionTitle = h( 'h2', { class: 'diff-currentversion-title' },
             mw.msg( title, utilsPage.getUserDate( this.data.totimestamp ) ),
         );
