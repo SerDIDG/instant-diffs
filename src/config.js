@@ -169,6 +169,7 @@ export const config = {
         'wgDiffNewId',
         'wgCanonicalSpecialPageName',
         'wgIsProbablyEditable',
+        'wgFormattedNamespaces',
         'thanks-confirmation-required',
     ],
     mwUserOptionsBackup: [
@@ -207,7 +208,8 @@ export const config = {
         'a.mw-changeslist-diff',
         'a.mw-changeslist-diff-cur',
         'a.mw-changeslist-groupdiff',
-        '.mw-fr-reviewlink a',                                          // [[Special:Watchlist]]
+        '.mw-changeslist-line a.extiw',                                 // [[Special:Watchlist]] (foreign wiki link)
+        '.mw-fr-reviewlink a',                                          // [[Special:Watchlist]] (FlaggedRevs link)
         '.mw-enhanced-rc-time a',                                       // [[Special:Watchlist]] (revision)
         '.mw-history-histlinks a',
         '.mw-diff-bytes + a',
@@ -328,6 +330,7 @@ export const local = {
     mwEndPointUrl: null,
     mwApi: null,
     mwForeignApi: {},
+    mwForeignNamespaces: {},
     mwArticlePath: null,
     mwServers: [],
 

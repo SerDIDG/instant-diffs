@@ -1,5 +1,6 @@
 import id from './id';
 import { isEmpty, isString, isValidDir, isValidID } from './utils';
+import { getForeignApi } from './utils-api';
 import { getRevID } from './utils-article';
 
 /**
@@ -182,13 +183,9 @@ class Article {
 
         this.mw.endPoint = `${ this.values.origin }${ mw.util.wikiScript( 'index' ) }`;
         this.mw.endPointUrl = new URL( this.mw.endPoint );
-        this.mw.apiEndPoint = `${ this.values.origin }${ mw.util.wikiScript( 'api' ) }`;
 
         if ( this.isForeign ) {
-            if ( !id.local.mwForeignApi[ this.mw.apiEndPoint ] ) {
-                id.local.mwForeignApi[ this.mw.apiEndPoint ] = new mw.ForeignApi( this.mw.apiEndPoint );
-            }
-            this.mw.api = id.local.mwForeignApi[ this.mw.apiEndPoint ];
+            this.mw.api = getForeignApi( this.values.origin );
         } else {
             this.mw.api = id.local.mwApi;
         }

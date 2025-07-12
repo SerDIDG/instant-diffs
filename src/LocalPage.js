@@ -21,7 +21,6 @@ class LocalPage extends Page {
      * @returns {Promise}
      */
     loadProcess() {
-
         const requests = [
             this.requestPageIds(),
             this.request(),

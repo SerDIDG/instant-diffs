@@ -1,10 +1,10 @@
 import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
-import { getDependencies, getHref } from './utils-article';
+import { getNamespaces } from './utils-api';
+import { getDependencies } from './utils-article';
 
 import Page from './Page';
-import Article from './Article';
 
 const { h, hf } = utils;
 
@@ -45,7 +45,10 @@ class GlobalPage extends Page {
      * @returns {Promise}
      */
     loadProcess() {
-        const request = this.request();
+        const request = Promise.allSettled([
+            this.requestNamespaces(),
+            this.request(),
+        ] );
 
         // Handle request for the diff view
         if ( this.article.get( 'type' ) !== 'revision' ) {
@@ -75,6 +78,14 @@ class GlobalPage extends Page {
             uselang: id.local.userLanguage,
         };
         return this.requestManager.get( params, this.article.getMW( 'api' ) || id.local.mwApi );
+    }
+
+    async requestNamespaces() {
+        // Request formatted name
+        const namespaces = await getNamespaces( this.article.get( 'origin' ) );
+        if (  namespaces ) {
+            this.mwConfg.wgFormattedNamespaces = namespaces;
+        }
     }
 
     /******* RENDER *******/
@@ -196,8 +207,9 @@ class GlobalPage extends Page {
             this.nodes.table.added.classList.add( 'instantDiffs-hidden' );
         }
 
-        // Append
+        // Append content
         this.nodes.$table = $( this.nodes.table.container ).appendTo( this.nodes.$body );
+        utils.addBaseToLinks( this.nodes.$table, this.article.get( 'origin' ) );
     }
 
     /******* REVISION *******/
