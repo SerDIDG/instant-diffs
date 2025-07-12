@@ -10,10 +10,17 @@ export function getForeignApi( origin ) {
 }
 
 export async function getInterwikiMap() {
-    if ( !utils.isEmpty( id.local.interwikiMap ) ) {
-        return id.local.interwikiMap;
+    // Try to get data from the local storage
+    if ( utils.isEmpty( id.local.mwInterwikiMap ) ) {
+        id.local.mwInterwikiMap = mw.storage.getObject( `${ id.config.prefix }-interwikiMap` ) || [];
     }
 
+    // Ty to get data from the singleton
+    if ( !utils.isEmpty( id.local.mwInterwikiMap ) ) {
+        return id.local.mwInterwikiMap;
+    }
+
+    // Request data via API
     const data = await id.local.mwApi.get( {
         action: 'query',
         meta: 'siteinfo',
@@ -24,7 +31,11 @@ export async function getInterwikiMap() {
     } );
 
     try {
-        return id.local.interwikiMap = data.query.interwikimap;
+        // Cache data with expiry
+        id.local.mwInterwikiMap = data.query.interwikimap;
+        mw.storage.setObject( `${ id.config.prefix }-interwikiMap`, id.local.mwInterwikiMap, utils.defaults( 'storageExpiry' ) );
+
+        return id.local.mwInterwikiMap;
     } catch ( error ) {
         utils.notifyError( 'error-api-generic', {
             type: 'api',
@@ -34,10 +45,17 @@ export async function getInterwikiMap() {
 }
 
 export async function getNamespaces( origin ) {
+    // Try to get data from the local storage
+    if ( utils.isEmptyObject( id.local.mwForeignNamespaces ) ) {
+        id.local.mwForeignNamespaces = mw.storage.getObject( `${ id.config.prefix }-namespaces` ) || {};
+    }
+
+    // Ty to get data from the singleton
     if ( !utils.isEmpty( id.local.mwForeignNamespaces[ origin ] ) ) {
         return id.local.mwForeignNamespaces[ origin ];
     }
 
+    // Request data via API
     const api = getForeignApi( origin );
     const data = await api.get( {
         action: 'query',
@@ -53,7 +71,12 @@ export async function getNamespaces( origin ) {
         for ( const [ key, value ] of Object.entries( data.query.namespaces ) ) {
             namespaces[ key ] = value.canonical;
         }
-        return id.local.mwForeignNamespaces[ origin ] = namespaces;
+
+        // Cache data with expiry
+        id.local.mwForeignNamespaces[ origin ] = namespaces;
+        mw.storage.setObject( `${ id.config.prefix }-namespaces`, id.local.mwForeignNamespaces, utils.defaults( 'storageExpiry' ) );
+
+        return namespaces;
     } catch ( error ) {
         utils.notifyError( 'error-api-generic', {
             type: 'api',

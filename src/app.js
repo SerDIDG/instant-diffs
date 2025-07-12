@@ -206,7 +206,8 @@ function onRequestLocalizedTitlesDone( data ) {
         } );
     }
 
-    mw.storage.setObject( `${ id.config.prefix }-specialPagesLocal`, id.local.specialPagesLocal );
+    // Cache localized special pages with expiry
+    mw.storage.setObject( `${ id.config.prefix }-specialPagesLocal`, id.local.specialPagesLocal, utils.defaults( 'storageExpiry' ) );
 }
 
 function getMessages() {

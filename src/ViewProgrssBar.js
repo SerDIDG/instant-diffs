@@ -7,7 +7,7 @@ import { tweakUserOoUiClass } from './utils-oojs';
  */
 class ViewProgressBar extends OO.ui.ProgressBarWidget {
     /**
-     * @type {number}
+     * @type {Timeout}
      */
     toggleDelay;
 

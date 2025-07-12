@@ -94,6 +94,7 @@ export const config = {
     // Settings defaults
     defaults: {
         debug: '__debug__' === 'true',
+        storageExpiry: 60 * 60 * 24 * 14,                               // 14 days
         logTimers: true,
         showLink: false,
         showPageLink: true,
@@ -323,7 +324,6 @@ export const local = {
     language: null,
     messages: {},
     titleText: null,
-    interwikiMap: [],
 
     mwIsAnon: null,
     mwEndPoint: null,
@@ -333,6 +333,7 @@ export const local = {
     mwForeignNamespaces: {},
     mwArticlePath: null,
     mwServers: [],
+    mwInterwikiMap: [],
 
     linkSelector: null,
 

@@ -5,12 +5,21 @@ import id from './id';
 /******* BASIC TYPES *******/
 
 /**
- * Checks if a string is empty.
- * @param {*} str
+ * Checks if a string or an array is empty.
+ * @param {*} value
  * @returns {boolean}
  */
-export function isEmpty( str ) {
-    return !str || str.length === 0;
+export function isEmpty( value ) {
+    return !value || value.length === 0;
+}
+
+/**
+ * Checks if an object is empty.
+ * @param {*} value
+ * @returns {boolean}
+ */
+export function isEmptyObject( value ) {
+    return !value || !isObject( value ) || Object.keys( value ).length === 0;
 }
 
 /**
@@ -38,6 +47,15 @@ export function isBoolean( value ) {
  */
 export function isFunction( value ) {
     return typeof value === 'function';
+}
+
+/**
+ * Checks if a value is an object.
+ * @param {*} value
+ * @returns {boolean}
+ */
+export function isObject( value ) {
+    return typeof value === 'object';
 }
 
 /**
