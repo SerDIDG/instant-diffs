@@ -38,7 +38,9 @@ class LocalPage extends Page {
             requests.push( this.requestPageDependencies() );
         }
 
-        return Promise.allSettled( requests );
+        return $.when( Promise.allSettled( requests ) )
+            .done( this.onLoadDone.bind( this ) )
+            .fail( this.onLoadError.bind( this ) );
     }
 
     /******* DEPENDENCIES *******/
@@ -201,19 +203,11 @@ class LocalPage extends Page {
         return this.requestManager.ajax( params );
     }
 
-    /******* RENDER *******/
-
-    renderSuccess( data ) {
-        // Render error if the data request is completely failed
+    onRequestDone( data ) {
         this.data = data;
-        if ( !this.data ) {
-            this.onRequestError();
-            return false;
-        }
-
-        this.render();
-        return true;
     }
+
+    /******* RENDER *******/
 
     renderContent() {
         // Parse and append all data coming from endpoint

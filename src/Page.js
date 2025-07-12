@@ -74,7 +74,7 @@ class Page {
     /**
      * @type {JQuery.Promise|Promise}
      */
-    requestPromise;
+    loadPromise;
 
     /**
      * @type {import('./Navigation').default}
@@ -139,10 +139,13 @@ class Page {
      * @returns {JQuery.Promise|Promise}
      */
     load() {
-        if ( !this.isLoading ) {
-            this.requestPromise = this.loadProcess();
-        }
-        return this.requestPromise;
+        if ( this.isLoading ) return this.loadPromise;
+
+        this.isLoading = true;
+        this.isLoaded = false;
+        this.error = null;
+
+        return this.loadPromise = this.loadProcess();
     }
 
     /**
@@ -150,7 +153,48 @@ class Page {
      * @returns {JQuery.Promise|Promise}
      */
     loadProcess() {
-        return this.request();
+        return this.request()
+            .done( this.onLoadDone.bind( this ) )
+            .fail( this.onLoadError.bind( this ) );
+    }
+
+    /**
+     * Event that emits after the request failed.
+     */
+    onLoadError() {
+        this.isLoading = false;
+        this.isLoaded = true;
+
+        // The Diff can be already detached from the DOM
+        if ( this.isDetached ) return;
+
+        // Do mot render content when request was programmatically aborted
+        if ( this.error?.statusText === 'abort' ) return;
+
+        // Render content and fire hooks
+        const status = this.renderError( this.error );
+        if ( status ) {
+            mw.hook( `${ id.config.prefix }.page.renderError` ).fire( this );
+            mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
+        }
+    }
+
+    /**
+     * Event that emits after the load successive.
+     */
+    onLoadDone() {
+        this.isLoading = false;
+        this.isLoaded = true;
+
+        // The Diff can be already detached from the DOM
+        if ( this.isDetached ) return;
+
+        // Render content and fire hooks
+        const status = this.renderSuccess( this.data );
+        if ( status ) {
+            mw.hook( `${ id.config.prefix }.page.renderSuccess` ).fire( this );
+            mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
+        }
     }
 
     /******* REQUESTS *******/
@@ -160,10 +204,6 @@ class Page {
      * @returns {JQuery.Promise|Promise}
      */
     request() {
-        this.isLoading = true;
-        this.isLoaded = false;
-        this.error = null;
-
         return this.requestProcess()
             .done( this.onRequestDone.bind( this ) )
             .fail( this.onRequestError.bind( this ) );
@@ -181,39 +221,14 @@ class Page {
      * Event that emits after the request failed.
      */
     onRequestError( error ) {
-        this.isLoading = false;
-        this.isLoaded = true;
-
-        // The Diff can be already detached from the DOM
-        if ( this.isDetached ) return;
-
-        // Do mot render content when request was programmatically aborted
-        if ( error?.statusText === 'abort' ) return;
-
-        // Render content and fire hooks
-        const status = this.renderError( error );
-        if ( status ) {
-            mw.hook( `${ id.config.prefix }.page.renderError` ).fire( this );
-            mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
-        }
+        this.error = error;
     }
 
     /**
      * Event that emits after the request successive.
      */
     onRequestDone( data ) {
-        this.isLoading = false;
-        this.isLoaded = true;
-
-        // The Diff can be already detached from the DOM
-        if ( this.isDetached ) return;
-
-        // Render content and fire hooks
-        const status = this.renderSuccess( data );
-        if ( status ) {
-            mw.hook( `${ id.config.prefix }.page.renderSuccess` ).fire( this );
-            mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
-        }
+        this.data = data;
     }
 
     abort() {
@@ -393,7 +408,7 @@ class Page {
     getNavigation() {
         return this.navigation;
     }
-    
+
     close() {
         this.emit( 'close' );
     }

@@ -45,10 +45,15 @@ class GlobalPage extends Page {
      * @returns {Promise}
      */
     loadProcess() {
-        const request = Promise.allSettled([
+        const promise = Promise.allSettled( [
             this.requestNamespaces(),
+            this.requestMessages(),
             this.request(),
         ] );
+
+        const request = $.when( promise )
+            .done( this.onLoadDone.bind( this ) )
+            .fail( this.onLoadError.bind( this ) );
 
         // Handle request for the diff view
         if ( this.article.get( 'type' ) !== 'revision' ) {
@@ -80,39 +85,19 @@ class GlobalPage extends Page {
         return this.requestManager.get( params, this.article.getMW( 'api' ) || id.local.mwApi );
     }
 
+    onRequestDone( data ) {
+        this.data = data?.compare;
+    }
+
     async requestNamespaces() {
         // Request formatted name
         const namespaces = await getNamespaces( this.article.get( 'origin' ) );
-        if (  namespaces ) {
+        if ( namespaces ) {
             this.mwConfg.wgFormattedNamespaces = namespaces;
         }
     }
 
-    /******* RENDER *******/
-
-    renderSuccess( data ) {
-        // Render error if the data request is completely failed
-        this.compare = data?.compare;
-        if ( !this.compare ) {
-            this.onRequestError();
-            return false;
-        }
-
-        this.render();
-        return true;
-    }
-
-    async renderContent() {
-        // Collect missing data from the response
-        this.collectData();
-
-        // Set additional config variables
-        this.setConfigs();
-
-        // Render warning about foreign diff limitations
-        const $message = $( utils.msgDom( `dialog-notice-foreign-${ this.article.get( 'type' ) }`, this.article.get( 'origin' ), this.article.get( 'origin' ) ) );
-        this.renderWarning( $message, 'notice' );
-
+    async requestMessages() {
         // Request messages
         const messages = [
             'revisionasof',
@@ -125,6 +110,21 @@ class GlobalPage extends Page {
             'diff-empty',
         ];
         await utils.loadMessage( messages, { promise: false } );
+    }
+
+    /******* RENDER *******/
+
+    renderContent() {
+        console.log( 'renderContent' );
+        // Collect missing data from the response
+        this.collectData();
+
+        // Set additional config variables
+        this.setConfigs();
+
+        // Render warning about foreign diff limitations
+        const $message = $( utils.msgDom( `dialog-notice-foreign-${ this.article.get( 'type' ) }`, this.article.get( 'origin' ), this.article.get( 'origin' ) ) );
+        this.renderWarning( $message, 'notice' );
 
         // Render diff table
         this.renderDiffTable();
@@ -132,22 +132,22 @@ class GlobalPage extends Page {
 
     collectData() {
         // Get values for mw.config
-        this.mwConfg.wgArticleId = this.compare.toid;
-        this.mwConfg.wgRevisionId = this.compare.torevid;
-        this.mwConfg.wgDiffOldId = this.compare.fromrevid;
-        this.mwConfg.wgDiffNewId = this.compare.torevid;
-        if ( !this.compare.next ) {
-            this.mwConfg.wgCurRevisionId = this.compare.torevid;
+        this.mwConfg.wgArticleId = this.data.toid;
+        this.mwConfg.wgRevisionId = this.data.torevid;
+        this.mwConfg.wgDiffOldId = this.data.fromrevid;
+        this.mwConfg.wgDiffNewId = this.data.torevid;
+        if ( !this.data.next ) {
+            this.mwConfg.wgCurRevisionId = this.data.torevid;
         }
 
         // Set article values
         this.article.set( {
-            previd: this.compare.prev,
-            nextid: this.compare.next,
+            previd: this.data.prev,
+            nextid: this.data.next,
             curid: this.mwConfg.wgArticleId,
             curRevid: this.mwConfg.wgCurRevisionId,
             revid: this.mwConfg.wgRevisionId,
-            title: this.compare.totitle,
+            title: this.data.totitle,
         } );
 
         // Save the title values to the mw.config
@@ -164,25 +164,25 @@ class GlobalPage extends Page {
         // * For a diff, we show only a comparison between two revisions,
         // * so there will be no link to navigate to a comparison between nothing and revision.
         this.links.prev = this.article.get( 'type' ) === 'revision'
-            ? utils.isValidID( this.compare.fromrevid )
-            : this.compare.prev && this.compare.prev !== this.compare.fromrevid;
-        this.links.next = this.compare.next && this.compare.next !== this.compare.torevid;
+            ? utils.isValidID( this.data.fromrevid )
+            : this.data.prev && this.data.prev !== this.data.fromrevid;
+        this.links.next = this.data.next && this.data.next !== this.data.torevid;
     }
 
     renderDiffTable() {
         // Render table structure
-        this.nodes.table = utilsPage.renderDiffTable( this.compare.body );
+        this.nodes.table = utilsPage.renderDiffTable( this.data.body );
 
         // Add deleted side content
-        if ( this.compare.fromid ) {
+        if ( this.data.fromid ) {
             const deleted = utilsPage.renderDiffTableSide( {
                 prefix: 'o',
-                title: this.compare.fromtitle,
-                revid: this.compare.fromrevid,
+                title: this.data.fromtitle,
+                revid: this.data.fromrevid,
                 curRevid: this.mwConfg.wgCurRevisionId,
                 origin: this.article.get( 'origin' ),
-                timestamp: this.compare.fromtimestamp,
-                user: this.compare.fromuser,
+                timestamp: this.data.fromtimestamp,
+                user: this.data.fromuser,
             } );
             utils.embed( deleted, this.nodes.table.deleted );
         } else {
@@ -191,15 +191,15 @@ class GlobalPage extends Page {
         }
 
         // Add added side content
-        if ( this.compare.toid ) {
+        if ( this.data.toid ) {
             const added = utilsPage.renderDiffTableSide( {
                 prefix: 'n',
-                title: this.compare.totitle,
-                revid: this.compare.torevid,
+                title: this.data.totitle,
+                revid: this.data.torevid,
                 curRevid: this.mwConfg.wgCurRevisionId,
                 origin: this.article.get( 'origin' ),
-                timestamp: this.compare.totimestamp,
-                user: this.compare.touser,
+                timestamp: this.data.totimestamp,
+                user: this.data.touser,
             } );
             utils.embed( added, this.nodes.table.added );
         } else {
@@ -292,7 +292,7 @@ class GlobalPage extends Page {
         // Append title
         const title = this.mwConfg.wgRevisionId === this.mwConfg.wgCurRevisionId ? 'currentrev-asof' : 'revisionasof';
         this.nodes.revisionTitle = h( 'h2', { class: 'diff-currentversion-title' },
-            mw.msg( title, utilsPage.getUserDate( this.compare.totimestamp ) ),
+            mw.msg( title, utilsPage.getUserDate( this.data.totimestamp ) ),
         );
         this.nodes.$body.append( this.nodes.revisionTitle );
 
