@@ -76,11 +76,16 @@ class GlobalPage extends Page {
             fromrev: utils.isValidID( this.article.get( 'oldid' ) ) ? this.article.get( 'oldid' ) : undefined,
             fromrelative: utils.isValidDir( this.article.get( 'oldid' ) ) ? this.article.get( 'oldid' ) : undefined,
             torev: utils.isValidID( this.article.get( 'diff' ) ) ? this.article.get( 'diff' ) : undefined,
-            torelative: utils.isValidDir( this.article.get( 'diff' ) ) ? this.article.get( 'diff' ) : this.article.get( 'direction' ),
             format: 'json',
             formatversion: 2,
             uselang: id.local.userLanguage,
         };
+        if ( this.article.get( 'type' ) === 'dif' ) {
+            params.torelative = utils.isValidDir( this.article.get( 'diff' ) ) ? this.article.get( 'diff' ) : undefined;
+        }
+        if ( this.article.get( 'type' ) === 'revision' ) {
+            params.torelative = utils.isValidDir( this.article.get( 'direction' ) ) ? this.article.get( 'direction' ) : undefined;
+        }
         return this.requestManager.get( params, this.article.getMW( 'api' ) || id.local.mwApi );
     }
 
