@@ -45,22 +45,22 @@ class GlobalPage extends Page {
      * @returns {Promise}
      */
     loadProcess() {
-        const promise = Promise.allSettled( [
+        const requests = [
             this.requestNamespaces(),
             this.requestMessages(),
             this.request(),
-        ] );
+        ];
 
-        const request = $.when( promise )
-            .always( this.mwConLoadResponse.bind( this ) );
+        const promise = Promise.allSettled( requests )
+            .then( this.onLoadResponse.bind( this ) );
 
         // Handle request for the diff view
         if ( this.article.get( 'type' ) !== 'revision' ) {
-            return request;
+            return promise;
         }
 
         // Otherwise add revision request to the request chain
-        return request.done( () => this.requestRevision() );
+        return promise.then( () => this.requestRevision() );
     }
 
     /******* REQUESTS *******/
@@ -208,6 +208,11 @@ class GlobalPage extends Page {
         // Append content
         this.nodes.$table = $( this.nodes.table.container ).appendTo( this.nodes.$body );
         utils.addBaseToLinks( this.nodes.$table, this.article.get( 'origin' ) );
+
+        // Show or hide diff info table in the revision view
+        if ( this.article.get( 'type' ) === 'revision' ) {
+            utilsPage.processRevisionDiffTable( this.nodes.$table );
+        }
     }
 
     /******* REVISION *******/
@@ -217,6 +222,8 @@ class GlobalPage extends Page {
      * @returns {JQuery.Promise}
      */
     requestRevision() {
+        if ( this.error ) return $.Deferred().resolve();
+
         const params = {
             action: 'parse',
             prop: [ 'text', 'revid', 'modules', 'jsconfigvars' ],
@@ -283,9 +290,6 @@ class GlobalPage extends Page {
 
         // Set additional config variables
         this.setConfigs();
-
-        // Show or hide diff info table in the revision view
-        utilsPage.processRevisionDiffTable( this.nodes.$table );
 
         // Append title
         const title = this.mwConfig.wgRevisionId === this.mwConfig.wgCurRevisionId ? 'currentrev-asof' : 'revisionasof';

@@ -38,8 +38,8 @@ class LocalPage extends Page {
             requests.push( this.requestPageDependencies() );
         }
 
-        return $.when( Promise.allSettled( requests ) )
-            .always( this.mwConLoadResponse.bind( this ) );
+        return Promise.allSettled( requests )
+            .then( this.onLoadResponse.bind( this ) );
     }
 
     /******* DEPENDENCIES *******/
@@ -109,6 +109,8 @@ class LocalPage extends Page {
      * @returns {JQuery.Promise}
      */
     requestPageDependencies() {
+        if ( this.error ) return $.Deferred().resolve();
+
         const params = {
             action: 'parse',
             prop: [ 'revid', 'modules', 'jsconfigvars' ],

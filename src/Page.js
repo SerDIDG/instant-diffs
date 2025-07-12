@@ -154,13 +154,13 @@ class Page {
      */
     loadProcess() {
         return this.request()
-            .always( this.mwConLoadResponse.bind( this ) );
+            .always( this.onLoadResponse.bind( this ) );
     }
 
     /**
      * Event that emits after the load complete.
      */
-    mwConLoadResponse() {
+    onLoadResponse() {
         this.isLoading = false;
         this.isLoaded = true;
 
