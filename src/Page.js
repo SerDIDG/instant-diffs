@@ -149,13 +149,13 @@ class Page {
      */
     loadProcess() {
         return this.request()
-            .always( this.onLoadResponse.bind( this ) );
+            .always( this.onLoadResponse );
     }
 
     /**
      * Event that emits after the load complete.
      */
-    onLoadResponse() {
+    onLoadResponse = () => {
         this.isLoading = false;
         this.isLoaded = true;
 
@@ -358,6 +358,9 @@ class Page {
     getArticleTitleText() {
         if ( this.error ) return utils.msg( 'dialog-title-not-found' );
         if ( utils.isEmpty( this.article.get( 'title' ) ) ) return utils.msg( 'dialog-title-empty' );
+        if ( !utils.isEmpty( this.article.get( 'wbLabel' ) ) ) {
+            return `${ this.article.get( 'wbLabel' ) } (${ this.article.get( 'titleText' ) })`;
+        }
         return this.article.get( 'titleText' );
     }
 

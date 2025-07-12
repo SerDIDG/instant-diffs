@@ -1,7 +1,7 @@
 import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
-import { getNamespaces } from './utils-api';
+import { getNamespaces, getWBLabel } from './utils-api';
 import { getDependencies } from './utils-article';
 
 import Page from './Page';
@@ -41,27 +41,42 @@ class GlobalPage extends Page {
     }
 
     /**
-     * Load process that chains multiple requests into the one promise.
+     * Load process that chains multiple requests into one promise.
      * @returns {Promise}
      */
     loadProcess() {
-        const requests = [
+        const promises = [
             this.requestNamespaces(),
             this.requestMessages(),
             this.request(),
         ];
 
-        const promise = Promise.allSettled( requests )
-            .then( this.onLoadResponse.bind( this ) );
+        const promise = Promise.allSettled( promises )
+            .then( this.onLoadResponse );
 
-        // Handle request for the diff view
-        if ( this.article.get( 'type' ) !== 'revision' ) {
-            return promise;
+        return promise.then( this.loadProcessSecondary );
+    }
+
+    /**
+     * Secondary load process that chains multiple requests into one promise.
+     * Process fires in a chain only after the main request because it needs additional data.
+     * @returns {Promise}
+     */
+    loadProcessSecondary = () => {
+        const promises = [];
+
+        // Add a request for the wikidata label name
+        if ( this.article.get( 'origin' ).includes( 'www.wikidata.org' ) ) {
+            promises.push( this.requestWBLabel() );
         }
 
-        // Otherwise add revision request to the request chain
-        return promise.then( () => this.requestRevision() );
-    }
+        // Add a request for the revision view
+        if ( this.article.get( 'type' ) === 'revision' ) {
+            promises.push( this.requestRevision() );
+        }
+
+        return Promise.allSettled( promises );
+    };
 
     /******* REQUESTS *******/
 
@@ -70,21 +85,22 @@ class GlobalPage extends Page {
      * @returns {JQuery.Promise}
      */
     requestProcess() {
+        const values = this.article.getValues();
         const params = {
             action: 'compare',
             prop: [ 'diff', 'ids', 'parsedcomment', 'rel', 'timestamp', 'title', 'user' ],
-            fromrev: utils.isValidID( this.article.get( 'oldid' ) ) ? this.article.get( 'oldid' ) : undefined,
-            fromrelative: utils.isValidDir( this.article.get( 'oldid' ) ) ? this.article.get( 'oldid' ) : undefined,
-            torev: utils.isValidID( this.article.get( 'diff' ) ) ? this.article.get( 'diff' ) : undefined,
+            fromrev: utils.isValidID( values.oldid ) ? values.oldid : undefined,
+            fromrelative: utils.isValidDir( values.oldid ) ? values.oldid : undefined,
+            torev: utils.isValidID( values.diff ) ? values.diff : undefined,
             format: 'json',
             formatversion: 2,
             uselang: id.local.userLanguage,
         };
-        if ( this.article.get( 'type' ) === 'dif' ) {
-            params.torelative = utils.isValidDir( this.article.get( 'diff' ) ) ? this.article.get( 'diff' ) : undefined;
+        if ( values.type === 'diff' && !utils.isValidID( values.diff ) ) {
+            params.torelative = utils.isValidDir( values.diff ) ? values.diff : 'prev';
         }
-        if ( this.article.get( 'type' ) === 'revision' ) {
-            params.torelative = utils.isValidDir( this.article.get( 'direction' ) ) ? this.article.get( 'direction' ) : undefined;
+        if ( values.type === 'revision' && !utils.isValidID( values.diff ) ) {
+            params.torelative = utils.isValidDir( values.direction ) ? values.direction : 'prev';
         }
         return this.requestManager.get( params, this.article.getMW( 'api' ) || id.local.mwApi );
     }
@@ -94,15 +110,13 @@ class GlobalPage extends Page {
     }
 
     async requestNamespaces() {
-        // Request formatted name
         const namespaces = await getNamespaces( this.article.get( 'origin' ) );
-        if ( namespaces ) {
+        if ( !utils.isEmpty( namespaces ) ) {
             this.mwConfig.wgFormattedNamespaces = namespaces;
         }
     }
 
     async requestMessages() {
-        // Request messages
         const messages = [
             'revisionasof',
             'currentrev-asof',
@@ -114,6 +128,19 @@ class GlobalPage extends Page {
             'diff-empty',
         ];
         await utils.loadMessage( messages, { promise: false } );
+    }
+
+    /**
+     * Request wikidata label name.
+     * @returns {JQuery.Promise}
+     */
+    async requestWBLabel() {
+        if ( this.error ) return $.Deferred().resolve();
+
+        const label = await getWBLabel( this.article.get( 'origin' ), this.article.get( 'title' ) );
+        if ( !utils.isEmpty( label ) ) {
+            this.article.setValue( 'wbLabel', label );
+        }
     }
 
     /******* RENDER *******/

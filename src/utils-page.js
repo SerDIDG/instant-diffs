@@ -45,7 +45,7 @@ export function renderDiffTable( body ) {
     } else if ( utils.isString( body ) ) {
         nodes.notice = h( 'tr',
             h( 'td', { class: 'diff-notice', colSpan: 4 },
-                h( 'dif', { class: 'mw-diff-empty' }, mw.msg( 'diff-empty' ) ),
+                h( 'div', { class: 'mw-diff-empty' }, mw.msg( 'diff-empty' ) ),
             ),
         );
         nodes.body.append( nodes.notice );

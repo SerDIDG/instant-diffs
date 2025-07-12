@@ -1,5 +1,4 @@
 import id from './id';
-import * as utils from './utils';
 
 /**
  * Class representing a Request Manager.

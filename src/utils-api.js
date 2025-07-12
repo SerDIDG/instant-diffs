@@ -84,3 +84,29 @@ export async function getNamespaces( origin ) {
         }, null, true );
     }
 }
+
+export async function getWBLabel( origin, ids ) {
+    if ( utils.isEmpty( ids) ) return;
+
+    // Request data via API
+    const api = getForeignApi( origin );
+    const data = await api.get( {
+        action: 'wbgetentities',
+        props: 'labels',
+        ids: ids,
+        languages: id.local.userLanguage,
+        languagefallback: 1,
+        format: 'json',
+        formatversion: 2,
+        uselang: id.local.userLanguage,
+    } );
+
+    try {
+        return data.entities[ ids ].labels[ id.local.userLanguage ].value;
+    } catch ( error ) {
+        utils.notifyError( 'error-api-generic', {
+            type: 'api',
+            message: error?.message || error,
+        }, null, true );
+    }
+}

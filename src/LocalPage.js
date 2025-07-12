@@ -44,7 +44,7 @@ class LocalPage extends Page {
         }
 
         return Promise.allSettled( requests )
-            .then( this.onLoadResponse.bind( this ) );
+            .then( this.onLoadResponse );
     }
 
     /******* DEPENDENCIES *******/
