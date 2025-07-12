@@ -249,8 +249,6 @@ class GlobalPage extends Page {
     }
 
     onRequestRevisionError( message, data, params ) {
-        this.isDependenciesLoaded = true;
-
         const error = {
             message,
             type: 'dependencies',
@@ -265,8 +263,6 @@ class GlobalPage extends Page {
     }
 
     onRequestRevisionDone( data, params ) {
-        this.isDependenciesLoaded = true;
-
         // Render error if the parse request is completely failed
         this.parse = data?.parse;
         if ( !this.parse ) {

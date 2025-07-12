@@ -298,8 +298,8 @@ class Link {
 
         if ( !utils.isEmpty( this.article.get( 'oldid' ) ) ) {
             params.revids = this.article.get( 'oldid' );
-        } else if ( !utils.isEmpty( this.article.curid ) ) {
-            params.pageids = this.article.curid;
+        } else if ( !utils.isEmpty( this.article.get( 'curid' ) ) ) {
+            params.pageids = this.article.get( 'curid' );
         }
 
         return id.local.mwApi
@@ -313,7 +313,7 @@ class Link {
 
         this.error = {
             type: 'revision',
-            code: !utils.isEmpty( this.article.curid ) ? 'curid' : 'generic',
+            code: !utils.isEmpty( this.article.get( 'curid' ) ) ? 'curid' : 'generic',
         };
 
         if ( data?.error ) {

@@ -17,6 +17,11 @@ class LocalPage extends Page {
     type = 'local';
 
     /**
+     * @type {boolean}
+     */
+    isDependenciesLoaded = false;
+
+    /**
      * Load process that combines multiple requests into the one promise.
      * @returns {Promise}
      */
@@ -474,7 +479,6 @@ class LocalPage extends Page {
      * Fire hooks and events.
      */
     async fire() {
-        return;
         // Restore functionally that requires elements appended in the DOM
         this.restoreFunctionalityEmbed();
 

@@ -94,11 +94,6 @@ class Page {
     /**
      * @type {boolean}
      */
-    isDependenciesLoaded = false;
-
-    /**
-     * @type {boolean}
-     */
     isDetached = false;
 
     /**

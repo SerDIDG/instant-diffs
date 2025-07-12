@@ -334,8 +334,9 @@ export function getErrorStatusText( status ) {
 
 export function getErrorMessage( str, error, article ) {
     str = isMessageExists( str ) ? str : 'error-generic';
-    article = $.extend( {}, article?.values );
-    error = $.extend( {}, error );
+    error = { ...error };
+    article = { ...article?.values };
+
     let message = msg(
         str,
         article.oldid || article.curid,
@@ -346,6 +347,7 @@ export function getErrorMessage( str, error, article ) {
     if ( !/\.$/.test( message ) ) {
         message = `${ message }.`;
     }
+
     return message;
 }
 
