@@ -127,9 +127,10 @@ export async function getNamespaces( origin ) {
     } );
 
     try {
-        const namespaces = {};
-        for ( const [ key, value ] of Object.entries( data.query.namespaces ) ) {
-            namespaces[ key ] = value.canonical;
+        const namespaces = { ...data.query.namespaces };
+        for ( const value of Object.values( namespaces ) ) {
+            value.nameText = value.name ?? value.canonical;
+            value.nameDB = value.nameText.trim().toLowerCase().replace( ' ', '_' );
         }
 
         // Cache data with expiry

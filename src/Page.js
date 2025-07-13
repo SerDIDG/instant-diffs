@@ -241,6 +241,9 @@ class Page {
         if ( !utils.isEmpty( label ) ) {
             this.mwConfig.wbEntityId = title;
             this.article.setValue( 'wbLabel', label );
+
+            // Set additional config variables
+            this.setConfigs();
         }
     }
 

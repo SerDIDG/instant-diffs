@@ -119,8 +119,20 @@ class GlobalPage extends Page {
 
     async requestNamespaces() {
         const namespaces = await getNamespaces( this.article.get( 'origin' ) );
-        if ( !utils.isEmpty( namespaces ) ) {
-            this.mwConfig.wgFormattedNamespaces = namespaces;
+        if ( !utils.isEmptyObject( namespaces ) ) {
+            const formattedNamespaces = {};
+            const namespaceIds = {};
+
+            for ( const value of Object.values( namespaces ) ) {
+                formattedNamespaces[ value.id ] = value.nameText;
+                namespaceIds[ value.nameDB ] = value.id;
+            }
+
+            this.mwConfig.wgFormattedNamespaces = { ...mw.config.get( 'wgFormattedNamespaces' ), ...formattedNamespaces };
+            this.mwConfig.wgNamespaceIds = { ...mw.config.get( 'wgNamespaceIds' ), ...namespaceIds };
+
+            // Set additional config variables
+            this.setConfigs();
         }
     }
 
