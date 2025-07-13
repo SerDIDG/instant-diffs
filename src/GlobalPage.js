@@ -1,12 +1,12 @@
 import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
-import { getNamespaces, getWBLabel } from './utils-api';
+import { getNamespaces } from './utils-api';
 import { getDependencies } from './utils-article';
 
 import Page from './Page';
 
-const { h, hf } = utils;
+const { h } = utils;
 
 /**
  * Class representing a Foreign Diff.
@@ -128,19 +128,6 @@ class GlobalPage extends Page {
             'diff-empty',
         ];
         await utils.loadMessage( messages, { promise: false } );
-    }
-
-    /**
-     * Request wikidata label name.
-     * @returns {JQuery.Promise}
-     */
-    async requestWBLabel() {
-        if ( this.error ) return $.Deferred().resolve();
-
-        const label = await getWBLabel( this.article.get( 'origin' ), this.article.get( 'title' ) );
-        if ( !utils.isEmpty( label ) ) {
-            this.article.setValue( 'wbLabel', label );
-        }
     }
 
     /******* RENDER *******/

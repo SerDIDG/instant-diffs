@@ -5,6 +5,7 @@ import RequestManager from './RequestManager';
 import Navigation from './Navigation';
 
 import './styles/page.less';
+import { getWBLabel } from './utils-api';
 
 /**
  * Class representing a Diff.
@@ -48,6 +49,7 @@ class Page {
         wgDiffNewId: false,
         wgCanonicalSpecialPageName: false,
         wgIsProbablyEditable: false,
+        wbEntityId: false,
         'thanks-confirmation-required': true,
     };
 
@@ -148,8 +150,17 @@ class Page {
      * @returns {JQuery.Promise|Promise}
      */
     loadProcess() {
-        return this.request()
-            .always( this.onLoadResponse );
+        const promises = [
+            this.request(),
+        ];
+
+        // Add a request for the wikidata label name
+        if ( this.article.get( 'origin' ).includes( 'www.wikidata.org' ) ) {
+            promises.push( this.requestWBLabel() );
+        }
+
+        return Promise.allSettled( promises )
+            .then( this.onLoadResponse );
     }
 
     /**
@@ -170,7 +181,7 @@ class Page {
             this.renderSuccess();
         } else
             this.renderError();
-    }
+    };
 
     /******* REQUESTS *******/
 
@@ -204,6 +215,21 @@ class Page {
      */
     onRequestDone( data ) {
         this.data = data;
+    }
+
+    /**
+     * Request wikidata label name.
+     * @returns {JQuery.Promise}
+     */
+    async requestWBLabel() {
+        if ( this.error ) return $.Deferred().resolve();
+
+        const title = this.article.getMW( 'title' )?.getMain();
+        const label = await getWBLabel( title, this.article.get( 'origin' ) );
+        if ( !utils.isEmpty( label ) ) {
+            this.mwConfig.wbEntityId = title;
+            this.article.setValue( 'wbLabel', label );
+        }
     }
 
     abort() {

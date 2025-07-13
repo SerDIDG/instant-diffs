@@ -26,10 +26,15 @@ class LocalPage extends Page {
      * @returns {Promise}
      */
     loadProcess() {
-        const requests = [
+        const promises = [
             this.requestPageIds(),
             this.request(),
         ];
+
+        // Add a request for the wikidata label name
+        if ( this.article.get( 'origin' ).includes( 'www.wikidata.org' ) ) {
+            promises.push( this.requestWBLabel() );
+        }
 
         // Try to load page dependencies in parallel to the main request:
         // * for the revision view we need to know actual revision id;
@@ -40,10 +45,10 @@ class LocalPage extends Page {
                 ( this.article.get( 'typeVariant' ) === 'page' && utils.isValidID( this.article.get( 'curid' ) ) )
             )
         ) {
-            requests.push( this.requestPageDependencies() );
+            promises.push( this.requestPageDependencies() );
         }
 
-        return Promise.allSettled( requests )
+        return Promise.allSettled( promises )
             .then( this.onLoadResponse );
     }
 

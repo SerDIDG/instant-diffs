@@ -171,6 +171,7 @@ export const config = {
         'wgCanonicalSpecialPageName',
         'wgIsProbablyEditable',
         'wgFormattedNamespaces',
+        'wbEntityId',                                                   // Wikibase
         'thanks-confirmation-required',
     ],
     mwUserOptionsBackup: [

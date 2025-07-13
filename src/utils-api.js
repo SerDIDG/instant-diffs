@@ -2,14 +2,17 @@ import id from './id';
 import * as utils from './utils';
 
 export function getForeignApi( origin ) {
+    if ( utils.isEmpty( origin ) ) return id.local.mwApi;
+
     if ( !id.local.mwForeignApi[ origin ] ) {
         const apiEndPoint = `${ origin }${ mw.util.wikiScript( 'api' ) }`;
         id.local.mwForeignApi[ origin ] = new mw.ForeignApi( apiEndPoint );
     }
+
     return id.local.mwForeignApi[ origin ];
 }
 
-export async function getInterwikiMap() {
+export async function getInterwikiMap( origin ) {
     // Try to get data from the local storage
     if ( utils.isEmpty( id.local.mwInterwikiMap ) ) {
         id.local.mwInterwikiMap = mw.storage.getObject( `${ id.config.prefix }-interwikiMap` ) || [];
@@ -21,7 +24,8 @@ export async function getInterwikiMap() {
     }
 
     // Request data via API
-    const data = await id.local.mwApi.get( {
+    const api = getForeignApi( origin );
+    const data = await api.get( {
         action: 'query',
         meta: 'siteinfo',
         siprop: 'interwikimap',
@@ -85,15 +89,15 @@ export async function getNamespaces( origin ) {
     }
 }
 
-export async function getWBLabel( origin, ids ) {
-    if ( utils.isEmpty( ids) ) return;
+export async function getWBLabel( entityId, origin ) {
+    if ( utils.isEmpty( entityId ) || !/^[QPL][0-9]+$/.test( entityId ) ) return;
 
     // Request data via API
     const api = getForeignApi( origin );
     const data = await api.get( {
         action: 'wbgetentities',
         props: 'labels',
-        ids: ids,
+        ids: entityId,
         languages: id.local.userLanguage,
         languagefallback: 1,
         format: 'json',
@@ -102,7 +106,13 @@ export async function getWBLabel( origin, ids ) {
     } );
 
     try {
-        return data.entities[ ids ].labels[ id.local.userLanguage ].value;
+        const entity = data.entities[ entityId ];
+        if ( entity.type === 'lexeme' ) {
+            return Object.values( entity.lemmas )
+                .map( lemma => lemma.value )
+                .join( '/' );
+        }
+        return entity.labels[ id.local.userLanguage ].value;
     } catch ( error ) {
         utils.notifyError( 'error-api-generic', {
             type: 'api',
