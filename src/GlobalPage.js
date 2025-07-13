@@ -160,6 +160,19 @@ class GlobalPage extends Page {
             this.mwConfig.wgCurRevisionId = this.data.torevid;
         }
 
+        // Get sections
+        try {
+            const $fromSectionLinks = $( this.data.fromparsedcomment ).find( 'a' );
+            if ( $fromSectionLinks.length > 0 ) {
+                this.data.fromsection = utils.getComponentFromUrl( 'hash', $fromSectionLinks.prop( 'href' ) );
+            }
+
+            const $toSectionLinks = $( this.data.toparsedcomment ).find( 'a' );
+            if ( $toSectionLinks.length > 0 ) {
+                this.data.tosection = utils.getComponentFromUrl( 'hash', $toSectionLinks.prop( 'href' ) );
+            }
+        } catch {}
+
         // Set article values
         this.article.set( {
             previd: this.data.prev,
@@ -168,6 +181,7 @@ class GlobalPage extends Page {
             curRevid: this.mwConfig.wgCurRevisionId,
             revid: this.mwConfig.wgRevisionId,
             title: this.data.totitle,
+            section: this.data.tosection,
         } );
 
         // Save the title values to the mw.config
