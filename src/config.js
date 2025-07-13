@@ -116,9 +116,11 @@ export const config = {
     include: {
         actions: [ 'view', 'history' ],
     },
-
     exclude: {
         pages: [],
+    },
+    linkExclude: {
+        actions: [ 'history' ],
     },
 
     // Action labels

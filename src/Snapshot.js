@@ -62,17 +62,22 @@ class Snapshot {
      * @returns {boolean}
      */
     isLinkValid( link ) {
+        // Check if a link is a Link instance
         const isLink = link instanceof Link;
         if ( !isLink ) return false;
 
-        const isProcessed = link.isProcessed || ( !link.isLoaded && link.hasRequest );
+        // Check if link is valid
+        const isProcessed = link.isProcessed || ( link.hasRequest && !link.isLoaded );
+        if ( !isProcessed ) return false;
+
+        // Check filter rules
         const isValidType = !utils.isEmpty( this.options.filterType )
             ? link.getArticle().get( 'type' ) === this.options.filterType
             : true;
         const isValidMWLine = this.options.filterMWLine === true
             ? link.getMW()?.hasLine
             : true;
-        return isProcessed && isValidType && isValidMWLine;
+        return isValidType && isValidMWLine;
     }
 
     /**

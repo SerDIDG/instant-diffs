@@ -102,6 +102,10 @@ class GlobalPage extends Page {
         if ( values.type === 'revision' && !utils.isValidID( values.diff ) ) {
             params.torelative = utils.isValidDir( values.direction ) ? values.direction : 'prev';
         }
+        if ( values.typeVariant === 'page' && utils.isValidID( values.curid ) ) {
+            params.fromid = values.curid ;
+            params.torelative = 'cur';
+        }
         return this.requestManager.get( params, this.article.getMW( 'api' ) || id.local.mwApi );
     }
 
@@ -315,8 +319,6 @@ class GlobalPage extends Page {
     }
 
     renderRevision() {
-        console.log( this.parse );
-
         // Get values for mw.config
         this.mwConfig.wgArticleId = this.parse.pageid;
         this.mwConfig.wgRevisionId = Math.max( this.article.get( 'revid' ), this.parse.revid );
