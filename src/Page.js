@@ -35,6 +35,16 @@ class Page {
     /**
      * @type {Object}
      */
+    error;
+
+    /**
+     * @type {Object}
+     */
+    errorData;
+
+    /**
+     * @type {Object}
+     */
     mwConfig = {
         wgTitle: false,
         wgPageName: false,
@@ -141,6 +151,7 @@ class Page {
         this.isLoading = true;
         this.isLoaded = false;
         this.error = null;
+        this.errorData = null;
 
         return this.loadPromise = this.loadProcess();
     }
@@ -206,8 +217,9 @@ class Page {
     /**
      * Event that emits after the request failed.
      */
-    onRequestError( error ) {
+    onRequestError( error, data ) {
         this.error = error;
+        this.errorData = data?.error;
     }
 
     /**
@@ -251,7 +263,9 @@ class Page {
         this.error = {
             type: this.article.get( 'type' ),
             code: this.article.get( 'typeVariant' ) === 'page' ? 'curid' : 'generic',
-            message: utils.getErrorStatusText( this.error?.status ),
+            status: this.error?.status,
+            statusText: this.error?.statusText,
+            message: this.errorData?.info || utils.getErrorStatusText( this.error?.status ),
         };
 
         // Show critical notification popup
@@ -415,6 +429,8 @@ class Page {
     }
 
     detach() {
+        if ( this.isDetached ) return;
+
         mw.hook( `${ id.config.prefix }.page.beforeDetach` ).fire( this );
 
         this.abort();

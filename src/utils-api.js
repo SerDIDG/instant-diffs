@@ -12,6 +12,62 @@ export function getForeignApi( origin ) {
     return id.local.mwForeignApi[ origin ];
 }
 
+export async function getSpecialPages( origin ) {
+    // Convert data array to the pairs
+    if ( utils.isEmptyObject( id.local.specialPages ) ) {
+        id.config.specialPages.forEach( name => {
+            id.local.specialPages[ name ] = name;
+        } );
+    }
+
+    // Try to get data from the local storage
+    if ( utils.isEmptyObject( id.local.specialPagesLocal ) ) {
+        id.local.specialPagesLocal = mw.storage.getObject( `${ id.config.prefix }-specialPagesLocal` ) || {};
+    }
+
+    // Ty to get data from the singleton
+    if (
+        !utils.isEmptyObject( id.local.specialPagesLocal ) &&
+        Object.keys( id.local.specialPagesLocal ).length === Object.keys( id.local.specialPages ).length
+    ) {
+        return id.local.specialPagesLocal;
+    }
+
+    // Set the fallback specialPages pairs
+    for ( const [ key, value ] of Object.entries( id.local.specialPages ) ) {
+        id.local.specialPagesLocal[ key ] = value;
+    }
+
+    // Request localized specialPages for the current content language
+    const api = getForeignApi( origin );
+    const data = await api.get( {
+        action: 'query',
+        titles: id.config.specialPages,
+        format: 'json',
+        formatversion: 2,
+        uselang: mw.config.get( 'wgContentLanguage' ),
+    } );
+
+    try {
+        // Set the localized specialPages pairs
+        if ( data.query.normalized ) {
+            data.query.normalized.forEach( item => {
+                id.local.specialPagesLocal[ item.from ] = item.to;
+            } );
+        }
+
+        // Cache data with expiry
+        mw.storage.setObject( `${ id.config.prefix }-specialPagesLocal`, id.local.specialPagesLocal, utils.defaults( 'storageExpiry' ) );
+
+        return id.local.specialPagesLocal;
+    } catch ( error ) {
+        utils.notifyError( 'error-api-generic', {
+            type: 'api',
+            message: error?.message || error,
+        }, null, true );
+    }
+}
+
 export async function getInterwikiMap( origin ) {
     // Try to get data from the local storage
     if ( utils.isEmpty( id.local.mwInterwikiMap ) ) {

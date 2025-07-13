@@ -5,6 +5,7 @@ import { getNamespaces } from './utils-api';
 import { getDependencies } from './utils-article';
 
 import Page from './Page';
+import view from './View';
 
 const { h } = utils;
 
@@ -103,12 +104,15 @@ class GlobalPage extends Page {
             params.torelative = utils.isValidDir( values.direction ) ? values.direction : 'prev';
         }
         if ( values.typeVariant === 'page' && utils.isValidID( values.curid ) ) {
-            params.fromid = values.curid ;
+            params.fromid = values.curid;
             params.torelative = 'cur';
         }
         return this.requestManager.get( params, this.article.getMW( 'api' ) || id.local.mwApi );
     }
 
+    /**
+     * Event that emits after the request successive.
+     */
     onRequestDone( data ) {
         this.data = data?.compare;
     }
@@ -147,11 +151,15 @@ class GlobalPage extends Page {
         this.setConfigs();
 
         // Render warning about foreign diff limitations
-        const $message = $( utils.msgDom( `dialog-notice-foreign-${ this.article.get( 'type' ) }`, this.article.get( 'origin' ), this.article.get( 'origin' ) ) );
-        this.renderWarning( $message, 'notice' );
+        this.renderForeignWarning();
 
         // Render diff table
         this.renderDiffTable();
+    }
+
+    renderForeignWarning() {
+        const $message = $( utils.msgDom( `dialog-notice-foreign-${ this.article.get( 'type' ) }`, this.article.get( 'origin' ), this.article.get( 'origin' ) ) );
+        this.renderWarning( $message, 'notice' );
     }
 
     collectData() {
@@ -259,6 +267,34 @@ class GlobalPage extends Page {
         if ( this.article.get( 'type' ) === 'revision' ) {
             utilsPage.processRevisionDiffTable( this.nodes.$table );
         }
+    }
+
+    renderErrorContent() {
+        super.renderErrorContent();
+
+        // Render warning about foreign diff limitations
+        this.renderForeignWarning();
+
+        // Try to parse error message for a missing id
+        const values = this.article.getValues();
+        const revid = this.errorData?.code === 'missingcontent' ? this.errorData.info.replace( /\D/g, '' ) : null;
+        const ids = [ values.oldid, values.diff, revid ].filter( num => !isNaN( num ) && num > 0 );
+
+        // Get values for mw.config
+        this.mwConfig.wgDiffOldId = Math.min( ...ids );
+        this.mwConfig.wgDiffNewId = Math.max( ...ids );
+
+        // Set additional config variables
+        this.setConfigs();
+
+        // Collect links that will be available in the navigation
+        if ( this.mwConfig.wgDiffOldId !== this.mwConfig.wgDiffNewId ) {
+            this.links.prev = utils.isValidID( this.mwConfig.wgDiffOldId );
+            this.links.next = utils.isValidID( this.mwConfig.wgDiffNewId );
+        }
+
+        // Set previous page as the initiator to render the back link
+        this.options.initiatorPage = view.getPreviousPage();
     }
 
     /******* REVISION *******/

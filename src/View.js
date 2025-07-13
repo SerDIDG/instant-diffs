@@ -314,6 +314,11 @@ class View {
         this.isRequesting = false;
         this.isProcessing = false;
 
+        // Detach Pages if exists
+        if ( this.previousPage ) {
+            this.previousPage.detach();
+            this.previousPage = null;
+        }
         if ( this.page ) {
             this.page.detach();
             this.page = null;
@@ -447,9 +452,8 @@ class View {
      */
     fire() {
         // Detach previous Page if exists
-        if ( this.previousPage instanceof Page ) {
+        if ( this.previousPage ) {
             this.previousPage.detach();
-            this.previousPage = null;
         }
 
         // Fire the Page hooks and events
@@ -487,6 +491,14 @@ class View {
      */
     getPage() {
         return this.page;
+    }
+
+    /**
+     * Get the Page instance.
+     * @returns {import('./Page').default} a Page instance
+     */
+    getPreviousPage() {
+        return this.previousPage;
     }
 
     /**

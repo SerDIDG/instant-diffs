@@ -214,6 +214,9 @@ class LocalPage extends Page {
         return this.requestManager.ajax( params );
     }
 
+    /**
+     * Event that emits after the request successive.
+     */
     onRequestDone( data ) {
         this.data = data;
     }

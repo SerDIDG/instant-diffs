@@ -2,6 +2,7 @@ import id from './id';
 import { config, local, timers } from './config';
 import * as utils from './utils';
 import { mixEventEmitterInObject } from './utils-oojs';
+import { getSpecialPages } from './utils-api';
 
 import './styles/app.less';
 
@@ -156,58 +157,9 @@ function prepare( require ) {
 
     // Get other dependencies
     return Promise.allSettled( [
-        getLocalizedTitles(),
+        getSpecialPages(),
         ...getMessages(),
     ] );
-}
-
-function getLocalizedTitles() {
-    // Convert to the key value format
-    id.config.specialPages.forEach( name => {
-        id.local.specialPages[ name ] = name;
-    } );
-
-    // Try to get cached specialPages from local storage
-    id.local.specialPagesLocal = mw.storage.getObject( `${ id.config.prefix }-specialPagesLocal` );
-    if (
-        id.local.specialPagesLocal &&
-        Object.keys( id.local.specialPagesLocal ).length === Object.keys( id.local.specialPages ).length
-    ) {
-        return true;
-    }
-
-    // Request localized specialPages for the current content language
-    const params = {
-        action: 'query',
-        titles: id.config.specialPages,
-        format: 'json',
-        formatversion: 2,
-        uselang: mw.config.get( 'wgContentLanguage' ),
-    };
-    return id.local.mwApi
-        .get( params )
-        .then( onRequestLocalizedTitlesDone );
-}
-
-function onRequestLocalizedTitlesDone( data ) {
-    if ( !data?.query?.pages ) return;
-
-    id.local.specialPagesLocal = {};
-
-    // Fallback for names of special pages
-    for ( const [ key, value ] of Object.entries( id.local.specialPages ) ) {
-        id.local.specialPagesLocal[ key ] = value;
-    }
-
-    // Localized names of special pages
-    if ( data.query.normalized ) {
-        data.query.normalized.forEach( item => {
-            id.local.specialPagesLocal[ item.from ] = item.to;
-        } );
-    }
-
-    // Cache localized special pages with expiry
-    mw.storage.setObject( `${ id.config.prefix }-specialPagesLocal`, id.local.specialPagesLocal, utils.defaults( 'storageExpiry' ) );
 }
 
 function getMessages() {
@@ -297,7 +249,18 @@ function app() {
     id.defaults ||= {};
     id.defaults = { ...id.config.defaults, ...id.defaults };
     id.utils = utils;
-    id.modules = { Article, Button, ViewButton, HistoryCompareButton, Page, LocalPage, GlobalPage, Link, view, settings };
+    id.modules = {
+        Article,
+        Button,
+        ViewButton,
+        HistoryCompareButton,
+        Page,
+        LocalPage,
+        GlobalPage,
+        Link,
+        view,
+        settings,
+    };
 
     // Track on run start time
     id.timers.run = Date.now();
