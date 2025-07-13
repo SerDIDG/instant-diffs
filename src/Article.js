@@ -13,6 +13,7 @@ class Article {
     values = {
         type: null,
         typeVariant: null,
+        origin: window.location.origin,
     };
 
     /**

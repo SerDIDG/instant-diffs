@@ -93,16 +93,17 @@ export async function getWBLabel( entityId, origin ) {
     if ( utils.isEmpty( entityId ) || !/^[QPL][0-9]+$/.test( entityId ) ) return;
 
     // Request data via API
+    const language = id.local.userLanguage;
     const api = getForeignApi( origin );
     const data = await api.get( {
         action: 'wbgetentities',
         props: 'labels',
         ids: entityId,
-        languages: id.local.userLanguage,
+        languages: language,
         languagefallback: 1,
         format: 'json',
         formatversion: 2,
-        uselang: id.local.userLanguage,
+        uselang: language,
     } );
 
     try {
@@ -112,7 +113,7 @@ export async function getWBLabel( entityId, origin ) {
                 .map( lemma => lemma.value )
                 .join( '/' );
         }
-        return entity.labels[ id.local.userLanguage ].value;
+        return entity.labels[ language ].value;
     } catch ( error ) {
         utils.notifyError( 'error-api-generic', {
             type: 'api',
