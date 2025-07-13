@@ -125,6 +125,9 @@ class GlobalPage extends Page {
             'parentheses',
             'talkpagelinktext',
             'contribslink',
+            'changeslist-nocomment',
+            'rev-deleted-user',
+            'rev-deleted-comment',
             'diff-empty',
         ];
         await utils.loadMessage( messages, { promise: false } );
@@ -200,6 +203,9 @@ class GlobalPage extends Page {
                 origin: this.article.get( 'origin' ),
                 timestamp: this.data.fromtimestamp,
                 user: this.data.fromuser,
+                userhidden: this.data.fromuserhidden,
+                comment: this.data.fromparsedcomment,
+                commenthidden: this.data.fromcommenthidden,
             } );
             utils.embed( deleted, this.nodes.table.deleted );
         } else {
@@ -217,6 +223,9 @@ class GlobalPage extends Page {
                 origin: this.article.get( 'origin' ),
                 timestamp: this.data.totimestamp,
                 user: this.data.touser,
+                userhidden: this.data.touserhidden,
+                comment: this.data.toparsedcomment,
+                commenthidden: this.data.tocommenthidden,
             } );
             utils.embed( added, this.nodes.table.added );
         } else {

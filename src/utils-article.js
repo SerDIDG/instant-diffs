@@ -174,7 +174,7 @@ export function getHref( article, articleParams, options ) {
  * @returns {string|undefined}
  */
 export function getHrefAbsolute( article, href ) {
-    const mwEndPointUrl = article.mw.endPointUrl || id.local.mwEndPointUrl;
+    const mwEndPointUrl = article?.mw.endPointUrl || id.local.mwEndPointUrl;
     try {
         return new URL( href, mwEndPointUrl.origin ).toString();
     } catch {

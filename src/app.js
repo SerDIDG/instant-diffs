@@ -289,15 +289,15 @@ function app() {
     id.isRunning = true;
 
     // Export to global scope
-    id.utils = utils;
     id.config = config;
     id.local = local;
     id.timers = timers;
-    id.api = { Button, ViewButton, HistoryCompareButton, Page, LocalPage, GlobalPage, Link, Article, view, settings };
     id.settings ||= {};
     id.settings = { ...id.config.settings, ...id.settings };
     id.defaults ||= {};
     id.defaults = { ...id.config.defaults, ...id.defaults };
+    id.utils = utils;
+    id.modules = { Article, Button, ViewButton, HistoryCompareButton, Page, LocalPage, GlobalPage, Link, view, settings };
 
     // Track on run start time
     id.timers.run = Date.now();

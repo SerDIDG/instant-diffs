@@ -42,7 +42,7 @@ export function renderDiffTable( body ) {
     // Render body
     if ( !utils.isEmpty( body ) ) {
         utils.setHTML( nodes.body, body );
-    } else if ( utils.isString( body ) ) {
+    } else if ( body === '' ) {
         nodes.notice = h( 'tr',
             h( 'td', { class: 'diff-notice', colSpan: 4 },
                 h( 'div', { class: 'mw-diff-empty' }, mw.msg( 'diff-empty' ) ),
@@ -68,6 +68,9 @@ export function renderDiffTableSide( data ) {
         origin: null,
         timestamp: null,
         user: null,
+        userhidden: false,
+        comment: null,
+        commenthidden: false,
         ...data,
     };
 
@@ -80,27 +83,6 @@ export function renderDiffTableSide( data ) {
         origin: data.origin,
     } );
 
-    const userTitle = new mw.Title( data.user, 2 ).getPrefixedText();
-    const userTalkTitle = new mw.Title( data.user, 3 ).getPrefixedText();
-    const userContribsTitle = new mw.Title( `Contributions/${ data.user }`, -1 ).getPrefixedText();
-    const userLinks = hf(
-        h( 'a', {
-                class: [ 'mw-redirect', 'mw-usertoollinks-talk' ],
-                title: userTalkTitle,
-                href: getHrefAbsolute( article, mw.util.getUrl( userTalkTitle ) ),
-            },
-            mw.msg( 'talkpagelinktext' ),
-        ),
-        ht( mw.msg( 'pipe-separator' ) ),
-        h( 'a', {
-                class: [ 'mw-redirect', 'mw-usertoollinks-talk' ],
-                title: userContribsTitle,
-                href: getHrefAbsolute( article, mw.util.getUrl( userContribsTitle ) ),
-            },
-            mw.msg( 'contribslink' ),
-        ),
-    );
-
     return hf(
         h( 'div', { id: `${ prefix }1` },
             h( 'strong',
@@ -108,17 +90,16 @@ export function renderDiffTableSide( data ) {
             ),
         ),
         h( 'div', { id: `${ prefix }2` },
-            h( 'a', {
-                    class: 'mw-userlink',
-                    title: userTitle,
-                    href: getHrefAbsolute( article, mw.util.getUrl( userTitle ) ),
-                },
-                h( 'bdi', data.user ),
-            ),
-            ht( mw.msg( 'word-separator' ) ),
-            h( 'span', { class: 'mw-usertoollinks' },
-                hj( mw.message( 'parentheses', userLinks ).parseDom() ),
-            ),
+            !data.userhidden
+                ? renderUserLink( article, data.user )
+                : h( 'span', { class: [ 'mw-userlink', 'history-deleted' ] }, mw.msg( 'rev-deleted-user' ) ),
+        ),
+        h( 'div', { id: `${ prefix }3` },
+            !data.commenthidden
+                ? !utils.isEmpty( data.comment )
+                    ? h( 'span', { class: [ 'comment', 'comment--without-parentheses' ], innerHTML: data.comment } )
+                    : h( 'span', { class: [ 'comment', 'mw-comment-none' ] }, mw.msg( 'changeslist-nocomment' ) )
+                : h( 'span', { class: [ 'comment', 'history-deleted' ] }, mw.msg( 'rev-deleted-comment' ) ),
         ),
     );
 }
@@ -139,6 +120,50 @@ export function processRevisionDiffTable( $table ) {
     } else {
         $table.addClass( 'instantDiffs-hidden' );
     }
+}
+
+/**
+ * Renders the diff table user link.
+ * @param {import('./Article').default} article
+ * @param {string} user
+ * @returns {DocumentFragment}
+ */
+export function renderUserLink( article, user ) {
+    const title = new mw.Title( user, 2 ).getPrefixedText();
+    const talkTitle = new mw.Title( user, 3 ).getPrefixedText();
+    const contribsTitle = new mw.Title( `Contributions/${ user }`, -1 ).getPrefixedText();
+
+    const links = hf(
+        h( 'a', {
+                class: [ 'mw-redirect', 'mw-usertoollinks-talk' ],
+                title: talkTitle,
+                href: getHrefAbsolute( article, mw.util.getUrl( talkTitle ) ),
+            },
+            mw.msg( 'talkpagelinktext' ),
+        ),
+        ht( mw.msg( 'pipe-separator' ) ),
+        h( 'a', {
+                class: [ 'mw-redirect', 'mw-usertoollinks-talk' ],
+                title: contribsTitle,
+                href: getHrefAbsolute( article, mw.util.getUrl( contribsTitle ) ),
+            },
+            mw.msg( 'contribslink' ),
+        ),
+    );
+
+    return hf(
+        h( 'a', {
+                class: 'mw-userlink',
+                title: title,
+                href: getHrefAbsolute( article, mw.util.getUrl( title ) ),
+            },
+            h( 'bdi', user ),
+        ),
+        ht( mw.msg( 'word-separator' ) ),
+        h( 'span', { class: 'mw-usertoollinks' },
+            hj( mw.message( 'parentheses', links ).parseDom() ),
+        ),
+    );
 }
 
 /**
