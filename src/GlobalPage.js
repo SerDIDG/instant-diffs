@@ -135,7 +135,7 @@ class GlobalPage extends Page {
             }
 
             // Set a project-specific formatted namespaces with canonical names.
-            // Will be used to format links to the project-specific pages.
+            // Will be used to format links to the project-specific articles.
             this.mwConfig.wgFormattedNamespaces = { ...mw.config.get( 'wgFormattedNamespaces' ), ...formattedNamespaces };
 
             // Set pairs with project-specific namespaces with both localized and canonical names.
