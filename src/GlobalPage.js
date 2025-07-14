@@ -112,11 +112,16 @@ class GlobalPage extends Page {
 
     /**
      * Event that emits after the request successive.
+     * Sets compare data to the class property.
      */
     onRequestDone( data ) {
         this.data = data?.compare;
     }
 
+    /**
+     * Request project-specific namespace list.
+     * @returns {Promise}
+     */
     async requestNamespaces() {
         const namespaces = await getNamespaces( this.article.get( 'origin' ) );
         if ( !utils.isEmptyObject( namespaces ) ) {
@@ -129,7 +134,12 @@ class GlobalPage extends Page {
                 namespaceIds[ value.canonicalDb ] = value.id;
             }
 
+            // Set a project-specific formatted namespaces with canonical names.
+            // Will be used to format links to the project-specific pages.
             this.mwConfig.wgFormattedNamespaces = { ...mw.config.get( 'wgFormattedNamespaces' ), ...formattedNamespaces };
+
+            // Set pairs with project-specific namespaces with both localized and canonical names.
+            // This is crucial to properly parse project article titles in the 'mw.Title' class.
             this.mwConfig.wgNamespaceIds = { ...mw.config.get( 'wgNamespaceIds' ), ...namespaceIds };
 
             // Set additional config variables
@@ -137,6 +147,10 @@ class GlobalPage extends Page {
         }
     }
 
+    /**
+     * Request MediaWiki interface messages is missing.
+     * @returns {Promise}
+     */
     async requestMessages() {
         const messages = [
             'revisionasof',
@@ -168,11 +182,6 @@ class GlobalPage extends Page {
 
         // Render diff table
         this.renderDiffTable();
-    }
-
-    renderForeignWarning() {
-        const $message = $( utils.msgDom( `dialog-notice-foreign-${ this.article.get( 'type' ) }`, this.article.get( 'origin' ), this.article.get( 'origin' ) ) );
-        this.renderWarning( $message, 'notice' );
     }
 
     collectData() {
@@ -306,6 +315,11 @@ class GlobalPage extends Page {
 
         // Set previous page as the initiator to render the back link
         this.options.initiatorPage = view.getPreviousPage();
+    }
+
+    renderForeignWarning() {
+        const $message = $( utils.msgDom( `dialog-notice-foreign-${ this.article.get( 'type' ) }`, this.article.get( 'origin' ), this.article.get( 'origin' ) ) );
+        this.renderWarning( $message, 'notice' );
     }
 
     /******* REVISION *******/

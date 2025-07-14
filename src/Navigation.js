@@ -340,7 +340,7 @@ class Navigation {
         }
 
         // Link that switch between revision and diff
-        if ( ![ 'page', 'compare' ].includes( this.article.get( 'typeVariant' ) ) ) {
+        if ( ![ 'page' ].includes( this.article.get( 'typeVariant' ) ) ) {
             this.buttons.mobileSwitch = this.renderSwitchLink( { name: 'mobileSwitch', ...buttonOptions } );
             items.push( this.buttons.mobileSwitch );
         }

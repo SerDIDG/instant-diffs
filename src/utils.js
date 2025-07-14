@@ -109,7 +109,7 @@ export function moduleRequire( name ) {
 }
 
 /**
- * Checks if a current runed version of Instant Diffs is different fron a last user.
+ * Checks if a current runed version of Instant Diffs is different from a last used.
  * @returns {boolean}
  */
 export function isNew() {

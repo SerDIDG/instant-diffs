@@ -9,7 +9,7 @@
  * @property {Object} settings
  * @property {Object} defaults
  * @property {Object} utils
- * @property {Object} api
+ * @property {Object} modules
  * @global
  */
 self.instantDiffs ||= {};

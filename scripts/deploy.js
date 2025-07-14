@@ -1,5 +1,8 @@
-// Adapted from https://github.com/wikimedia-gadgets/twinkle-starter/blob/master/scripts/deploy.js
-// (MIT Licence)
+/**
+ * Partially copied from:
+ * {@link https://github.com/wikimedia-gadgets/twinkle-starter/blob/master/scripts/deploy.js}
+ * (MIT Licence)
+ */
 
 const fs = require( 'fs/promises' );
 const { Mwn } = require( 'mwn' );

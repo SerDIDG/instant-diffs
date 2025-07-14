@@ -7,7 +7,7 @@ import Article from './Article';
 
 const { h, hf, ht, hj } = utils;
 
-/******* COMMON *******/
+/******* DIFF TABLE *******/
 
 /**
  * Renders the <table> structure for displaying diff table.
@@ -189,25 +189,25 @@ export function getUserDate( date ) {
 /**
  * Restore the Inline toggle switch button.
  * @param {JQuery} $container
+ * @returns {boolean} a render status
  */
 export function restoreInlineFormatToggle( $container ) {
-    let isRendered = false;
     if (
-        !$container || $container.length === 0 &&
+        !$container || $container.length === 0 ||
         mw.loader.getState( 'mediawiki.diff' ) !== 'ready'
     ) {
-        return isRendered;
+        return false;
     }
 
     const $inlineToggleSwitchLayout = $container.find( '#mw-diffPage-inline-toggle-switch-layout' );
     const inlineFormatToggle = getModuleExport( 'mediawiki.diff', './inlineFormatToggle.js' );
 
     try {
-        isRendered = true;
         inlineFormatToggle( $inlineToggleSwitchLayout );
+        return true;
     } catch {}
 
-    return isRendered;
+    return false;
 }
 
 /******* VISUAL EDITOR / DIFFS *******/
@@ -215,6 +215,7 @@ export function restoreInlineFormatToggle( $container ) {
 /**
  * Restore the Visual Diffs buttons.
  * @param {JQuery} $container
+ * @returns {boolean} a render status
  */
 export function restoreVisualDiffs( $container ) {
     if (
@@ -249,6 +250,7 @@ export function restoreVisualDiffs( $container ) {
  * Restore and implement a rollback link behavior. Partially copied from the MediaWiki Core:
  * {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/refs/heads/master/resources/src/mediawiki.misc-authed-curate/rollback.js}
  * @param {JQuery} $container
+ * @returns {boolean} a render status
  */
 export function restoreRollbackLink( $container ) {
     if ( !$container || $container.length === 0 ) return false;
@@ -266,6 +268,8 @@ export function restoreRollbackLink( $container ) {
             postRollback( e.target );
         },
     } );
+
+    return true;
 }
 
 function postRollback( link ) {
@@ -305,9 +309,10 @@ function postRollback( link ) {
  * Restore the WikiLambda app. Partially copied from the WikiLambda extension code:
  * {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/extensions/WikiLambda/+/refs/heads/master/resources/ext.wikilambda.app/index.js}
  * @param {JQuery} $container
+ * @returns {boolean} a render status
  */
 export function restoreWikiLambda( $container ) {
-    if ( !$container || $container.length === 0 ) return;
+    if ( !$container || $container.length === 0 ) return false;
 
     mw.loader.using( [ '@wikimedia/codex', 'ext.wikilambda.app' ] ).then( require => {
         const { createMwApp } = require( 'vue' );
@@ -328,6 +333,8 @@ export function restoreWikiLambda( $container ) {
                 .mount( $container.get( 0 ) );
         }
     } );
+
+    return true;
 }
 
 /******* FILE MEDIA INFO *******/

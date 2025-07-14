@@ -1,3 +1,8 @@
+/**
+ * Partially copied from:
+ * {@link https://github.com/jwbth/convenient-discussions/blob/main/buildI18n.js}
+ */
+
 const fs = require( 'fs' );
 const path = require( 'path' );
 
@@ -12,11 +17,6 @@ const DOMPurify = createDOMPurify( window );
 const warning = ( text ) => console.log( chalk.yellowBright( text ) );
 const code = chalk.inverse;
 const keyword = chalk.cyan;
-
-/**
- * Partially copied from:
- * {@link https://github.com/jwbth/convenient-discussions/blob/main/buildI18n.js}
- */
 
 const ALLOWED_TAGS = [
     'b',

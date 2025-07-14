@@ -74,7 +74,7 @@ export function getWindowManager() {
  * {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/refs/heads/master/resources/src/startup/mediawiki.loader.js#613}
  * @param {string} moduleName Module name from the registry
  * @param {string} relativePath Path of the file this is scoped to. Used for relative paths.
- * @return {Function}
+ * @returns {Function}
  */
 export function getModuleExport( moduleName, relativePath ) {
     const moduleObj = mw.loader.moduleRegistry[ moduleName ];

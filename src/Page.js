@@ -247,6 +247,9 @@ class Page {
         }
     }
 
+    /**
+     * Abort all requests that were added via request manager.
+     */
     abort() {
         if ( !this.isLoading ) return;
         this.requestManager.abort();
