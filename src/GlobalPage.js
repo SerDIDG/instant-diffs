@@ -124,8 +124,9 @@ class GlobalPage extends Page {
             const namespaceIds = {};
 
             for ( const value of Object.values( namespaces ) ) {
-                formattedNamespaces[ value.id ] = value.nameText;
-                namespaceIds[ value.nameDB ] = value.id;
+                formattedNamespaces[ value.id ] = value.canonical;
+                namespaceIds[ value.nameDb ] = value.id;
+                namespaceIds[ value.canonicalDb ] = value.id;
             }
 
             this.mwConfig.wgFormattedNamespaces = { ...mw.config.get( 'wgFormattedNamespaces' ), ...formattedNamespaces };
@@ -185,17 +186,15 @@ class GlobalPage extends Page {
         }
 
         // Get sections
-        try {
-            const $fromSectionLinks = $( this.data.fromparsedcomment ).find( 'a' );
-            if ( $fromSectionLinks.length > 0 ) {
-                this.data.fromsection = utils.getComponentFromUrl( 'hash', $fromSectionLinks.prop( 'href' ) );
-            }
+        const $fromSectionLinks = $( '<span>' ).html( this.data.fromparsedcomment ).find( '.autocomment a' );
+        if ( $fromSectionLinks.length > 0 ) {
+            this.data.fromsection = utils.getComponentFromUrl( 'hash', $fromSectionLinks.prop( 'href' ) );
+        }
 
-            const $toSectionLinks = $( this.data.toparsedcomment ).find( 'a' );
-            if ( $toSectionLinks.length > 0 ) {
-                this.data.tosection = utils.getComponentFromUrl( 'hash', $toSectionLinks.prop( 'href' ) );
-            }
-        } catch {}
+        const $toSectionLinks = $( '<span>' ).html( this.data.toparsedcomment ).find( '.autocomment a' );
+        if ( $toSectionLinks.length > 0 ) {
+            this.data.tosection = utils.getComponentFromUrl( 'hash', $toSectionLinks.prop( 'href' ) );
+        }
 
         // Set article values
         this.article.set( {

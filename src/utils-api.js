@@ -20,8 +20,8 @@ export async function getSpecialPages( origin ) {
         } );
     }
 
-    // Try to get data from the local storage
-    if ( utils.isEmptyObject( id.local.specialPagesLocal ) ) {
+    // Try to get cached data from the local storage
+    if ( utils.isEmptyObject( id.local.specialPagesLocal ) && !utils.isNew() ) {
         id.local.specialPagesLocal = mw.storage.getObject( `${ id.config.prefix }-specialPagesLocal` ) || {};
     }
 
@@ -69,8 +69,8 @@ export async function getSpecialPages( origin ) {
 }
 
 export async function getInterwikiMap( origin ) {
-    // Try to get data from the local storage
-    if ( utils.isEmpty( id.local.mwInterwikiMap ) ) {
+    // Try to get cached data from the local storage
+    if ( utils.isEmpty( id.local.mwInterwikiMap ) && !utils.isNew() ) {
         id.local.mwInterwikiMap = mw.storage.getObject( `${ id.config.prefix }-interwikiMap` ) || [];
     }
 
@@ -105,8 +105,8 @@ export async function getInterwikiMap( origin ) {
 }
 
 export async function getNamespaces( origin ) {
-    // Try to get data from the local storage
-    if ( utils.isEmptyObject( id.local.mwForeignNamespaces ) ) {
+    // Try to get cached data from the local storage
+    if ( utils.isEmptyObject( id.local.mwForeignNamespaces ) && !utils.isNew() ) {
         id.local.mwForeignNamespaces = mw.storage.getObject( `${ id.config.prefix }-namespaces` ) || {};
     }
 
@@ -129,8 +129,8 @@ export async function getNamespaces( origin ) {
     try {
         const namespaces = { ...data.query.namespaces };
         for ( const value of Object.values( namespaces ) ) {
-            value.nameText = value.name ?? value.canonical;
-            value.nameDB = value.nameText.trim().toLowerCase().replace( ' ', '_' );
+            value.nameDb = value.name?.trim().toLowerCase().replace( ' ', '_' ) || '';
+            value.canonicalDb = value.canonical?.trim().toLowerCase().replace( ' ', '_' ) || '';
         }
 
         // Cache data with expiry

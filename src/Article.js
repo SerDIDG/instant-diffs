@@ -198,6 +198,7 @@ class Article {
     setTitle() {
         try {
             this.mw.title = new mw.Title( this.values.title );
+            this.values.title = this.mw.title.getPrefixedDb();
             this.values.titleText = this.mw.title.getPrefixedText();
         } catch {}
 

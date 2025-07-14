@@ -109,6 +109,14 @@ export function moduleRequire( name ) {
 }
 
 /**
+ * Checks if a current runed version of Instant Diffs is different fron a last user.
+ * @returns {boolean}
+ */
+export function isNew() {
+    return id.local.lastVesrion !== id.config.version;
+}
+
+/**
  * Checks if a script is allowed to execute on the certain pages.
  * @returns {boolean}
  */

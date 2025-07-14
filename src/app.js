@@ -123,7 +123,6 @@ function prepare( require ) {
     // Mixin OO.EventEmitter to the classes after the OOJS dependencies loaded
     view.mixin();
     settings.mixin();
-
     mixEventEmitterInObject( view );
     mixEventEmitterInObject( settings );
     OO.mixinClass( Page, OO.EventEmitter );
@@ -142,6 +141,10 @@ function prepare( require ) {
     if ( mobileServer ) {
         id.local.mwServers.push( mobileServer );
     }
+
+    // Save the current version number to the local storage
+    id.local.lastVesrion = mw.storage.get( `${ id.config.prefix }-version` );
+    mw.storage.set( `${ id.config.prefix }-version`, id.config.version );
 
     // Init dom mutation observer
     id.local.mutationObserver = new MutationObserver( observeMutations );
