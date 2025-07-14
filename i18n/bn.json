@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"আফতাবুজ্জামান"
+		]
+	},
+	"script-name": "তাৎক্ষণিক পার্থক্য",
+	"script-name-short": "আইডি",
+	"diff-title": "সংস্করণগুলির মধ্যে পার্থক্য",
+	"diff-title-hidden": "সংস্করণগুলির মধ্যে পার্থক্য লুকিয়ে রাখা হয়েছে",
+	"action-cancel": "বাতিল",
+	"action-reload": "পুনঃলোড করুন",
+	"goto-prev": "পুরোনো",
+	"goto-next": "নতুনতর",
+	"goto-prev-diff": "পুরনো সম্পাদনা",
+	"goto-next-diff": "নতুনতর সম্পাদনা",
+	"goto-back-diff": "পিছনে",
+	"goto-prev-revision": "পুরোনো সংস্করণ",
+	"goto-next-revision": "নতুনতর সংস্করণ",
+	"goto-back-revision": "পিছনে",
+	"goto-diff": "সম্পাদনায় চলুন",
+	"goto-page": "পাতায় চলুন",
+	"goto-history": "ইতিহাস দেখুন",
+	"goto-talkpage": "আলোচনা",
+	"goto-settings": "সেটিংস",
+	"goto-menu": "কার্য",
+	"copy-link": "লিঙ্কটি অনুলিপি করুন",
+	"copy-link-copied": "লিঙ্কটি ক্লিপবোর্ডে অনুলিপি করা হয়েছে।",
+	"copy-link-error": "লিঙ্কটি অনুলিপি করা যায়নি।",
+	"copy-wikilink": "উইকিলিঙ্ক অনুলিপি করুন",
+	"copy-wikilink-page": "পাতা",
+	"copy-wikilink-diff": "পার্থক্য",
+	"copy-wikilink-revision": "সংস্করণ",
+	"copy-wikilink-example-title": "প্রধান পাতা",
+	"dialog-title-empty": "[শিরোনাম নেই]",
+	"dialog-title-not-found": "[পাওয়া যায়নি]",
+	"error-generic": "কিছু একটায় ত্রুটি হয়েছে: $4",
+	"error-wasted": "অপ্রত্যাশিত ত্রুটি",
+	"error-revision-badrevids": "সংশোধন পাওয়া যায়নি",
+	"error-revision-badpageids": "পাতা পাওয়া যায়নি",
+	"error-revision-missing": "পাতা পাওয়া যায়নি",
+	"error-revision-invalid": "পাতা পাওয়া যায়নি: $4"
+}
