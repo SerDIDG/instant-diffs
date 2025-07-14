@@ -2,6 +2,7 @@ import * as utils from './utils';
 
 /**
  * Class representing a button.
+ * @mixes OO.EventEmitter
  */
 class Button {
     /**
@@ -40,6 +41,9 @@ class Button {
         if ( !utils.isEmpty( this.options.href ) ) {
             this.options.tag = 'a';
         }
+
+        // Mixin constructor
+        OO.EventEmitter.call( this );
 
         // If a node was provided, process it, otherwise render a new node
         if ( this.options.node?.nodeType === 1 ) {

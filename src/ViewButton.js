@@ -18,12 +18,13 @@ class ViewButton extends Button {
      */
     constructor( options ) {
         super( {
+            article: {},
             ...options,
             ariaHaspopup: true,
             handler: () => this.openDialog(),
         } );
 
-        this.article = new Article();
+        this.article = new Article( this.options.article );
     }
 
     /**
@@ -47,6 +48,7 @@ class ViewButton extends Button {
      */
     onDialogRequest() {
         this.pending( true );
+        this.emit( 'loading' );
     }
 
     /**
@@ -54,17 +56,22 @@ class ViewButton extends Button {
      */
     onDialogLoad() {
         this.pending( false );
+        this.emit( 'loaded' );
     }
 
     /**
      * Event that emits after the View dialog opens.
      */
-    onDialogOpen() {}
+    onDialogOpen() {
+        this.emit( 'opened' );
+    }
 
     /**
      * Event that emits after the View dialog closes.
      */
-    onDialogClose() {}
+    onDialogClose() {
+        this.emit( 'closed' );
+    }
 
     /**
      * Get the Article instance.

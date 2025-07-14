@@ -234,7 +234,7 @@ class Page {
      * @returns {JQuery.Promise}
      */
     async requestWBLabel() {
-        if ( this.error ) return $.Deferred().resolve();
+        if ( this.error ) return $.Deferred().resolve().promise();
 
         const title = this.article.getMW( 'title' )?.getMain();
         const label = await getWBLabel( title, this.article.get( 'origin' ) );

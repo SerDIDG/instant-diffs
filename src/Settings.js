@@ -177,7 +177,7 @@ class Settings {
      */
     request() {
         // Guest settings can be stored only in the Local Storage
-        if ( id.local.mwIsAnon ) return $.Deferred().resolve();
+        if ( id.local.mwIsAnon ) return $.Deferred().resolve().promise();
 
         this.isRequesting = true;
 
@@ -211,7 +211,7 @@ class Settings {
         utils.setDefaults( options, true );
 
         // Guest settings can be stored only in the Local Storage
-        if ( id.local.mwIsAnon ) return $.Deferred().resolve();
+        if ( id.local.mwIsAnon ) return $.Deferred().resolve().promise();
 
         this.isSaving = true;
 

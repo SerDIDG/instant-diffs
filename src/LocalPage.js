@@ -119,7 +119,7 @@ class LocalPage extends Page {
      * @returns {JQuery.Promise}
      */
     requestPageDependencies() {
-        if ( this.error ) return $.Deferred().resolve();
+        if ( this.error ) return $.Deferred().resolve().promise();
 
         const params = {
             action: 'parse',

@@ -129,8 +129,8 @@ export async function getNamespaces( origin ) {
     try {
         const namespaces = { ...data.query.namespaces };
         for ( const value of Object.values( namespaces ) ) {
-            value.nameDb = value.name?.trim().toLowerCase().replace( ' ', '_' ) || '';
-            value.canonicalDb = value.canonical?.trim().toLowerCase().replace( ' ', '_' ) || '';
+            value.nameDb = value.name?.trim().toLowerCase().replace( / /g, '_' ) || '';
+            value.canonicalDb = value.canonical?.trim().toLowerCase().replace( / /g, '_' ) || '';
         }
 
         // Cache data with expiry

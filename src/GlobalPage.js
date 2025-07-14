@@ -129,7 +129,7 @@ class GlobalPage extends Page {
             const namespaceIds = {};
 
             for ( const value of Object.values( namespaces ) ) {
-                formattedNamespaces[ value.id ] = value.canonical;
+                formattedNamespaces[ value.id ] = value.canonical || '';
                 namespaceIds[ value.nameDb ] = value.id;
                 namespaceIds[ value.canonicalDb ] = value.id;
             }
@@ -329,7 +329,7 @@ class GlobalPage extends Page {
      * @returns {JQuery.Promise}
      */
     requestRevision() {
-        if ( this.error ) return $.Deferred().resolve();
+        if ( this.error ) return $.Deferred().resolve().promise();
 
         const params = {
             action: 'parse',

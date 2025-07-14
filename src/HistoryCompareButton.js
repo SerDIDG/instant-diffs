@@ -41,6 +41,7 @@ class HistoryCompareButton extends ViewButton {
         if ( !utils.defaults( 'highlightLine' ) ) return;
         this.nodes.$oldidLine.addClass( 'instantDiffs-line--highlight' );
         this.nodes.$diffLine.addClass( 'instantDiffs-line--highlight' );
+        super.onDialogOpen();
     }
 
     /**
@@ -50,6 +51,7 @@ class HistoryCompareButton extends ViewButton {
         if ( !utils.defaults( 'highlightLine' ) ) return;
         this.nodes.$oldidLine.removeClass( 'instantDiffs-line--highlight' );
         this.nodes.$diffLine.removeClass( 'instantDiffs-line--highlight' );
+        super.onDialogClose();
     }
 }
 

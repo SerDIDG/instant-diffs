@@ -94,7 +94,7 @@ export const config = {
     // Settings defaults
     defaults: {
         debug: '__debug__' === 'true',
-        storageExpiry: 60 * 60 * 24 * 14,                               // 14 days
+        storageExpiry: 60 * 60 * 24,                               // 1 day
         logTimers: true,
         showLink: false,
         showPageLink: true,

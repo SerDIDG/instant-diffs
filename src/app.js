@@ -125,6 +125,7 @@ function prepare( require ) {
     settings.mixin();
     mixEventEmitterInObject( view );
     mixEventEmitterInObject( settings );
+    OO.mixinClass( Button, OO.EventEmitter );
     OO.mixinClass( Page, OO.EventEmitter );
 
     // Prepare locale variables

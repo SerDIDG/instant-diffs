@@ -1,5 +1,5 @@
 import id from './id';
-import { isEmpty, isString, isValidDir, isValidID } from './utils';
+import { isEmpty, isEmptyObject, isString, isValidDir, isValidID } from './utils';
 import { getForeignApi } from './utils-api';
 import { getRevID } from './utils-article';
 
@@ -39,7 +39,7 @@ class Article {
     isHidden = false;
 
     constructor( values ) {
-        if ( values ) {
+        if ( !isEmptyObject( values ) ) {
             this.set( values );
         }
     }
