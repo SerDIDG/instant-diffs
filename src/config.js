@@ -338,6 +338,7 @@ export const local = {
     mwEndPointUrl: null,
     mwArticlePath: null,
     mwServers: [],
+    mwServerNames: [],
 
     linkSelector: null,
 

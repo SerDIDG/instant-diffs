@@ -1,4 +1,4 @@
-import { isEmpty, isEmptyObject, isString, isValidDir, isValidID } from './utils';
+import { isEmpty, isEmptyObject, isForeign, isString, isValidDir, isValidID } from './utils';
 import { getRevID } from './utils-article';
 
 /**
@@ -176,7 +176,7 @@ class Article {
      */
     setHostname() {
         // Set index and api endpoints
-        this.isForeign = this.values.hostname !== window.location.hostname;
+        this.isForeign = isForeign( this.values.hostname );
 
         this.mw.endPoint = `https://${ this.values.hostname }${ mw.util.wikiScript( 'index' ) }`;
         this.mw.endPointUrl = new URL( this.mw.endPoint );

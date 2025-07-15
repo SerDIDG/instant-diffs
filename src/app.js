@@ -152,7 +152,7 @@ function prepare( require ) {
 
     // Prepare locale variables
     id.local.mwIsAnon = mw.user?.isAnon?.() ?? true;
-    id.local.mwEndPoint = `https://${ mw.config.get( 'wgServerName' ) }${ mw.config.get( 'wgScript' ) }`;
+    id.local.mwEndPoint = `${ location.origin }${ mw.config.get( 'wgScript' ) }`;
     id.local.mwEndPointUrl = new URL( id.local.mwEndPoint );
     id.local.mwArticlePath = mw.config.get( 'wgArticlePath' ).replace( '$1', '' );
     id.local.titleText = new mw.Title( mw.config.get( 'wgPageName' ) ).getPrefixedText();
@@ -163,6 +163,7 @@ function prepare( require ) {
     if ( mobileServer ) {
         id.local.mwServers.push( mobileServer );
     }
+    id.local.mwServerNames = id.local.mwServers.map( server => server.replace( /^\/\//, '' ) );
 
     // Save the current version number to the local storage
     id.local.lastVesrion = mw.storage.get( `${ id.config.prefix }-version` );

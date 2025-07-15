@@ -195,7 +195,7 @@ function processHref( article, articleParams, options ) {
     };
 
     // Validate
-    if ( article.get( 'hostname' ) !== window.location.hostname ) {
+    if ( utils.isForeign( article.get( 'hostname' ) ) ) {
         options.relative = false;
     }
 

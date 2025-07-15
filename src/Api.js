@@ -1,5 +1,5 @@
 import id from './id';
-import { defaults, isEmpty, isEmptyObject, isNew, notifyError } from './utils';
+import { defaults, isEmpty, isEmptyObject, isForeign, isNew, notifyError } from './utils';
 
 class Api {
     /**
@@ -18,7 +18,7 @@ class Api {
      * @return {mw.Api|mw.ForeignApi}
      */
     static getApi( hostname ) {
-        if ( isEmpty( hostname ) || hostname === window.location.hostname ) {
+        if ( !isForeign( hostname ) ) {
             if ( !this.api ) {
                 this.api = new mw.Api();
             }

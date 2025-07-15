@@ -127,6 +127,10 @@ export function isAllowed() {
         !id.config.exclude.pages.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) );
 }
 
+export function isForeign( hostname ) {
+    return !isEmpty( hostname ) && !id.local.mwServerNames.includes( hostname );
+}
+
 /**
  * Calls a console object method with a script's prefix attached before the message.
  * @param {string} type

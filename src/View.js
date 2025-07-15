@@ -412,7 +412,7 @@ class View {
 
         // Get a Page controller dependent of local or global lists
         const hostname = article.get( 'hostname' );
-        const PageController = utils.isEmpty( hostname ) || hostname === window.location.hostname ? LocalPage : GlobalPage;
+        const PageController = !utils.isForeign( hostname ) ? LocalPage : GlobalPage;
 
         // Construct the Page instance
         this.page = new PageController( article, options );

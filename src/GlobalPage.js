@@ -94,6 +94,7 @@ class GlobalPage extends Page {
             fromrev: utils.isValidID( values.oldid ) ? values.oldid : undefined,
             fromrelative: utils.isValidDir( values.oldid ) ? values.oldid : undefined,
             torev: utils.isValidID( values.diff ) ? values.diff : undefined,
+            difftype: document.body.classList.contains( 'mw-mf' ) ? 'inline' : 'table',
             format: 'json',
             formatversion: 2,
             uselang: id.local.userLanguage,
