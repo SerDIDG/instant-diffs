@@ -269,7 +269,7 @@ class GlobalPage extends Page {
 
         // Append content
         this.nodes.$table = $( this.nodes.table.container ).appendTo( this.nodes.$body );
-        utils.addBaseToLinks( this.nodes.$table, this.article.get( 'hostname' ) );
+        utils.addBaseToLinks( this.nodes.$table, `https://${ this.article.get( 'hostname' ) }` );
 
         // Show or hide diff info table in the revision view
         if ( this.article.get( 'type' ) === 'revision' ) {
@@ -393,7 +393,7 @@ class GlobalPage extends Page {
 
         // Append content
         this.nodes.$revision = $( this.parse.text ).appendTo( this.nodes.$body );
-        utils.addBaseToLinks( this.nodes.$revision, this.article.get( 'hostname' ) );
+        utils.addBaseToLinks( this.nodes.$revision, `https://${ this.article.get( 'hostname' ) }` );
 
         // Get page dependencies
         const dependencies = [

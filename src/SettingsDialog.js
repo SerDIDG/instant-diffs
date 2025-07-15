@@ -430,6 +430,8 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     processLinksAttr( $container ) {
         const $links = $container.find( 'a:not(.jquery-confirmable-element)' );
         $links.each( ( i, node ) => node.setAttribute( 'target', '_blank' ) );
+
+        utils.addBaseToLinks( $container, id.config.origin );
     }
 
     getBodyHeight() {
