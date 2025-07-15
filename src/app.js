@@ -6,6 +6,7 @@ import { getSpecialPages } from './utils-api';
 
 import './styles/app.less';
 
+import Api from './Api';
 import Article from './Article';
 import Button from './Button';
 import Link from './Link';
@@ -130,7 +131,7 @@ function prepare( require ) {
 
     // Prepare locale variables
     id.local.mwIsAnon = mw.user?.isAnon?.() ?? true;
-    id.local.mwEndPoint = `https://${ mw.config.get('wgServerName') }${ mw.config.get( 'wgScript' ) }`;
+    id.local.mwEndPoint = `https://${ mw.config.get( 'wgServerName' ) }${ mw.config.get( 'wgScript' ) }`;
     id.local.mwEndPointUrl = new URL( id.local.mwEndPoint );
     id.local.mwArticlePath = mw.config.get( 'wgArticlePath' ).replace( '$1', '' );
     id.local.titleText = new mw.Title( mw.config.get( 'wgPageName' ) ).getPrefixedText();
@@ -253,14 +254,15 @@ function app() {
     id.defaults = { ...id.config.defaults, ...id.defaults };
     id.utils = utils;
     id.modules = {
+        Api,
         Article,
+        Link,
         Button,
         ViewButton,
         HistoryCompareButton,
         Page,
         LocalPage,
         GlobalPage,
-        Link,
         view,
         settings,
     };
