@@ -3,10 +3,9 @@ import * as utils from './utils';
 import { applyOoUiPolyfill, getWindowManager } from './utils-oojs';
 
 import Link from './Link';
-import Page from './Page';
+import Snapshot from './Snapshot';
 import LocalPage from './LocalPage';
 import GlobalPage from './GlobalPage';
-import Snapshot from './Snapshot';
 
 import './styles/view.less';
 
@@ -147,18 +146,18 @@ class View {
                 options.filterMWLine = true;
             }
 
-            id.local.snapshot = new Snapshot( options );
+            Snapshot.newInstance( options );
         }
 
         if ( this.link instanceof Link ) {
             const initiatorLink = this.link.getInitiatorLink();
-            if ( id.local.snapshot.hasLink( initiatorLink ) ) {
+            if ( Snapshot.instance.hasLink( initiatorLink ) ) {
                 this.previousInitiator = { ...this.initiator };
                 this.initiator.link = initiatorLink;
                 this.initiator.options = { ...this.options };
 
                 // Set only the initiator links for the current point of navigation
-                id.local.snapshot.setLink( this.initiator.link );
+                Snapshot.instance.setLink( this.initiator.link );
             }
         }
 
@@ -412,8 +411,8 @@ class View {
         };
 
         // Get a Page controller dependent of local or global lists
-        const origin = article.get( 'origin' );
-        const PageController = !origin || window.location.origin === origin ? LocalPage : GlobalPage;
+        const hostname = article.get( 'hostname' );
+        const PageController = utils.isEmpty( hostname ) || hostname === window.location.hostname ? LocalPage : GlobalPage;
 
         // Construct the Page instance
         this.page = new PageController( article, options );

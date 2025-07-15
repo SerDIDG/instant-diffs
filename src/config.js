@@ -159,6 +159,8 @@ export const config = {
 
     // MediaWiki config
     mwConfigBackup: [
+        'wgServer',
+        'wgServerName',
         'wgTitle',
         'wgPageName',
         'wgRelevantPageName',
@@ -332,12 +334,8 @@ export const local = {
     mwIsAnon: null,
     mwEndPoint: null,
     mwEndPointUrl: null,
-    mwApi: null,
-    mwForeignApi: {},
-    mwForeignNamespaces: {},
     mwArticlePath: null,
     mwServers: [],
-    mwInterwikiMap: [],
 
     linkSelector: null,
 
@@ -350,11 +348,6 @@ export const local = {
     specialPagesPathRegExp: null,
     specialPagesSearchRegExp: null,
     articlePathRegExp: null,
-
-    /**
-     * @type {import('./Snapshot').default}
-     */
-    snapshot: null,
 
     /**
      * @type {MutationObserver}

@@ -2,6 +2,8 @@ import hyperscript from 'hyperscript';
 
 import id from './id';
 
+import Api from './Api';
+
 /******* BASIC TYPES *******/
 
 /**
@@ -178,6 +180,15 @@ export function onSchedule( callback ) {
     } );
 }
 
+/**
+ * Formats string to the DB format.
+ * @param {string} str
+ * @return {string}
+ */
+export function spacesToUnderlines( str ) {
+    return str.replace( / /g, '_' );
+}
+
 /******* DEFAULTS *******/
 
 /**
@@ -321,7 +332,7 @@ export function loadMessage( messages, options ) {
         if ( missing.length === 0 ) return true;
     }
 
-    return id.local.mwApi.loadMessagesIfMissing( messages, {
+    return Api.getApi().loadMessagesIfMissing( messages, {
         uselang: id.local.userLanguage,
     } );
 }
@@ -719,7 +730,7 @@ export function setHTML( container, value ) {
 }
 
 /**
- * Add an origin to the link hrefs.
+ * Add a hostname to the link hrefs.
  * @author {@link https://github.com/jwbth Jack who built the house}
  * @param {JQuery} $content
  * @param {string} url
@@ -728,7 +739,7 @@ export function setHTML( container, value ) {
 export function addBaseToLinks( $content, url, hashOnly = false ) {
     let baseUrl;
     try {
-        baseUrl = new URL( url, location.origin );
+        baseUrl = new URL( url, `https://${ location.hostname }` );
     } catch {
         return;
     }
@@ -736,14 +747,14 @@ export function addBaseToLinks( $content, url, hashOnly = false ) {
         .find( 'a[href^="#"]' )
         .each( ( i, el ) => {
             $( el )
-                .attr( 'href', baseUrl.origin + baseUrl.pathname + $( el ).attr( 'href' ) );
+                .attr( 'href', 'https://' + baseUrl.hostname + baseUrl.pathname + $( el ).attr( 'href' ) );
         } );
     if ( !hashOnly ) {
         $content
             .find( 'a[href^="/"]:not([href^="//"])' )
             .each( ( i, el ) => {
                 $( el )
-                    .attr( 'href', baseUrl.origin + $( el ).attr( 'href' ).replace( /special:mylanguage\//i, '' ) )
+                    .attr( 'href', 'https://' + baseUrl.hostname + $( el ).attr( 'href' ).replace( /special:mylanguage\//i, '' ) )
                     .attr( 'title', ( $( el ).attr( 'title' ) || '' ).replace( /special:mylanguage\//i, '' ) );
             } );
     }

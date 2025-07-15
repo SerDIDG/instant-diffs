@@ -130,9 +130,8 @@ function prepare( require ) {
 
     // Prepare locale variables
     id.local.mwIsAnon = mw.user?.isAnon?.() ?? true;
-    id.local.mwEndPoint = `${ location.origin }${ mw.config.get( 'wgScript' ) }`;
+    id.local.mwEndPoint = `https://${ mw.config.get('wgServerName') }${ mw.config.get( 'wgScript' ) }`;
     id.local.mwEndPointUrl = new URL( id.local.mwEndPoint );
-    id.local.mwApi = new mw.Api();
     id.local.mwArticlePath = mw.config.get( 'wgArticlePath' ).replace( '$1', '' );
     id.local.titleText = new mw.Title( mw.config.get( 'wgPageName' ) ).getPrefixedText();
 

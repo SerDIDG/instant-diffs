@@ -6,6 +6,7 @@ import { getWikilink, getHref, getHrefAbsolute } from './utils-article';
 import Button from './Button';
 import Link from './Link';
 import Article from './Article';
+import Snapshot from './Snapshot';
 import settings from './Settings';
 import view from './View';
 
@@ -368,7 +369,7 @@ class Navigation {
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderSnapshotPrevLink() {
-        const link = id.local.snapshot.getPreviousLink();
+        const link = Snapshot.instance.getPreviousLink();
 
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-snapshot-prev' ),
@@ -396,7 +397,7 @@ class Navigation {
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
      */
     renderSnapshotNextLink() {
-        const link = id.local.snapshot.getNextLink();
+        const link = Snapshot.instance.getNextLink();
 
         const button = new OO.ui.ButtonWidget( {
             label: utils.msg( 'goto-snapshot-next' ),
@@ -428,7 +429,7 @@ class Navigation {
         if ( this.options.links.prev ) {
             const article = new Article( {
                 title: this.article.get( 'title' ),
-                origin: this.article.get( 'origin' ),
+                hostname: this.article.get( 'hostname' ),
                 oldid: mw.config.get( 'wgDiffOldId' ),
                 diff: this.article.get( 'type' ) === 'diff' ? 'prev' : null,
                 direction: this.article.get( 'type' ) === 'revision' ? 'prev' : null,
@@ -469,7 +470,7 @@ class Navigation {
         if ( this.options.links.next ) {
             const article = new Article( {
                 title: this.article.get( 'title' ),
-                origin: this.article.get( 'origin' ),
+                hostname: this.article.get( 'hostname' ),
                 oldid: mw.config.get( 'wgDiffNewId' ),
                 diff: this.article.get( 'type' ) === 'diff' ? 'next' : null,
                 direction: this.article.get( 'type' ) === 'revision' ? 'next' : null,

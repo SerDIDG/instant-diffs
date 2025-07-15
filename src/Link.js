@@ -2,6 +2,7 @@ import id from './id';
 import * as utils from './utils';
 import * as utilsLink from './utils-link';
 
+import Api from './Api';
 import Article from './Article';
 import Button from './Button';
 import view from './View';
@@ -184,7 +185,7 @@ class Link {
 
         // Get article values
         let articleValues = {
-            origin: this.url.origin,
+            hostname: this.url.hostname,
         };
 
         if ( id.local.specialPagesSearchRegExp.test( urlParts.title ) ) {
@@ -305,8 +306,7 @@ class Link {
             params.pageids = this.article.get( 'curid' );
         }
 
-        return id.local.mwApi
-            .get( params )
+        return Api.get( params )
             .then( this.onRequestRevisionDone.bind( this ) )
             .fail( this.onRequestRevisionError.bind( this ) );
     }
@@ -393,8 +393,7 @@ class Link {
             formatversion: 2,
             uselang: id.local.userLanguage,
         };
-        return id.local.mwApi
-            .get( params )
+        return Api.get( params )
             .then( this.onRequestDiffDone.bind( this ) )
             .fail( this.onRequestDiffError.bind( this ) );
     }

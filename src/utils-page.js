@@ -3,6 +3,7 @@ import * as utils from './utils';
 import { getModuleExport } from './utils-oojs';
 import { getHref, getHrefAbsolute } from './utils-article';
 
+import Api from './Api';
 import Article from './Article';
 
 const { h, hf, ht, hj } = utils;
@@ -65,7 +66,7 @@ export function renderDiffTableSide( data ) {
         title: null,
         revid: null,
         curRevid: null,
-        origin: null,
+        hostname: null,
         timestamp: null,
         user: null,
         userhidden: false,
@@ -80,7 +81,7 @@ export function renderDiffTableSide( data ) {
         type: 'revision',
         title: data.title,
         oldid: data.revid,
-        origin: data.origin,
+        hostname: data.hostname,
     } );
 
     return hf(
@@ -286,7 +287,7 @@ function postRollback( link ) {
         uselang: id.local.userLanguage,
     };
 
-    id.local.mwApi.post( params )
+    Api.post( params )
         .then( ( data ) => {
             mw.notify( $( utils.textDom( data?.rollback?.summary ) ) );
 

@@ -2,6 +2,8 @@ import id from './id';
 import * as utils from './utils';
 import { applyOoUiPolyfill, getWindowManager } from './utils-oojs';
 
+import Api from './Api';
+
 import './styles/settings.less';
 
 /**
@@ -189,8 +191,7 @@ class Settings {
             formatversion: 2,
             uselang: id.local.userLanguage,
         };
-        return id.local.mwApi
-            .post( params )
+        return Api.post( params )
             .always( this.onRequestResponse.bind( this ) );
     };
 
@@ -235,7 +236,8 @@ class Settings {
             JSON.stringify( options ),
         ];
 
-        return id.local.mwApi.saveOption.apply( id.local.mwApi, params )
+        const api = Api.getApi();
+        return api.saveOption.apply( api, params )
             .always( this.onSaveResponse.bind( this ) );
     }
 
@@ -251,7 +253,7 @@ class Settings {
             optionvalue: JSON.stringify( options ),
         };
 
-        return id.local.mwApi.postWithEditToken( params )
+        return Api.getApi().postWithEditToken( params )
             .always( this.onSaveResponse.bind( this ) );
     }
 

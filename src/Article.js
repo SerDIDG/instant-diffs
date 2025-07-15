@@ -1,6 +1,4 @@
-import id from './id';
 import { isEmpty, isEmptyObject, isString, isValidDir, isValidID } from './utils';
-import { getForeignApi } from './utils-api';
 import { getRevID } from './utils-article';
 
 /**
@@ -13,15 +11,13 @@ class Article {
     values = {
         type: null,
         typeVariant: null,
-        origin: window.location.origin,
+        hostname: window.location.hostname,
     };
 
     /**
      * @type {Object}
      */
-    mw = {
-        api: id.local.mwApi,
-    };
+    mw = {};
 
     /**
      * @type {boolean}
@@ -169,27 +165,21 @@ class Article {
             this.setTitle();
         }
 
-        // Set origin
-        if ( !isEmpty( this.values.origin ) ) {
-            this.setOrigin();
+        // Set hostname
+        if ( !isEmpty( this.values.hostname ) ) {
+            this.setHostname();
         }
     }
 
     /**
      * @private
      */
-    setOrigin() {
+    setHostname() {
         // Set index and api endpoints
-        this.isForeign = window.location.origin !== this.values.origin;
+        this.isForeign = this.values.hostname !== window.location.hostname;
 
-        this.mw.endPoint = `${ this.values.origin }${ mw.util.wikiScript( 'index' ) }`;
+        this.mw.endPoint = `https://${ this.values.hostname }${ mw.util.wikiScript( 'index' ) }`;
         this.mw.endPointUrl = new URL( this.mw.endPoint );
-
-        if ( this.isForeign ) {
-            this.mw.api = getForeignApi( this.values.origin );
-        } else {
-            this.mw.api = id.local.mwApi;
-        }
     }
 
     /**

@@ -1,11 +1,11 @@
 import id from './id';
 import * as utils from './utils';
 
+import Api from './Api';
 import RequestManager from './RequestManager';
 import Navigation from './Navigation';
 
 import './styles/page.less';
-import { getWBLabel } from './utils-api';
 
 /**
  * Class representing a Diff.
@@ -166,7 +166,7 @@ class Page {
         ];
 
         // Add a request for the wikidata label name
-        if ( this.article.get( 'origin' ).includes( 'www.wikidata.org' ) ) {
+        if ( this.article.get( 'hostname' ) === 'www.wikidata.org' ) {
             promises.push( this.requestWBLabel() );
         }
 
@@ -237,7 +237,7 @@ class Page {
         if ( this.error ) return $.Deferred().resolve().promise();
 
         const title = this.article.getMW( 'title' )?.getMain();
-        const label = await getWBLabel( title, this.article.get( 'origin' ) );
+        const label = await Api.getWBLabel( title, this.article.get( 'hostname' ) );
         if ( !utils.isEmpty( label ) ) {
             this.mwConfig.wbEntityId = title;
             this.article.setValue( 'wbLabel', label );

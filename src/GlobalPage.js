@@ -1,7 +1,7 @@
 import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
-import { getNamespaces } from './utils-api';
+import { getNamespaceConfig } from './utils-api';
 import { getDependencies } from './utils-article';
 
 import Page from './Page';
@@ -67,7 +67,7 @@ class GlobalPage extends Page {
         const promises = [];
 
         // Add a request for the wikidata label name
-        if ( this.article.get( 'origin' ).includes( 'www.wikidata.org' ) ) {
+        if ( this.article.get( 'hostname' ) === 'www.wikidata.org' ) {
             promises.push( this.requestWBLabel() );
         }
 
@@ -107,7 +107,7 @@ class GlobalPage extends Page {
             params.fromid = values.curid;
             params.torelative = 'cur';
         }
-        return this.requestManager.get( params, this.article.getMW( 'api' ) || id.local.mwApi );
+        return this.requestManager.get( params, this.article.get( 'hostname' ) );
     }
 
     /**
@@ -123,24 +123,9 @@ class GlobalPage extends Page {
      * @returns {Promise}
      */
     async requestNamespaces() {
-        const namespaces = await getNamespaces( this.article.get( 'origin' ) );
-        if ( !utils.isEmptyObject( namespaces ) ) {
-            const formattedNamespaces = {};
-            const namespaceIds = {};
-
-            for ( const value of Object.values( namespaces ) ) {
-                formattedNamespaces[ value.id ] = value.canonical || '';
-                namespaceIds[ value.nameDb ] = value.id;
-                namespaceIds[ value.canonicalDb ] = value.id;
-            }
-
-            // Set a project-specific formatted namespaces with canonical names.
-            // Will be used to format links to the project-specific articles.
-            this.mwConfig.wgFormattedNamespaces = { ...mw.config.get( 'wgFormattedNamespaces' ), ...formattedNamespaces };
-
-            // Set pairs with project-specific namespaces with both localized and canonical names.
-            // This is crucial to properly parse project article titles in the 'mw.Title' class.
-            this.mwConfig.wgNamespaceIds = { ...mw.config.get( 'wgNamespaceIds' ), ...namespaceIds };
+        const config = await getNamespaceConfig( this.article.get( 'hostname' ) );
+        if ( !utils.isEmptyObject( config ) ) {
+            this.mwConfig = { ...this.mwConfig, ...config };
 
             // Set additional config variables
             this.setConfigs();
@@ -186,6 +171,9 @@ class GlobalPage extends Page {
 
     collectData() {
         // Get values for mw.config
+        this.mwConfig.wgServer = `//${ this.article.get( 'hostname' ) }`;
+        this.mwConfig.wgServerName = this.article.get( 'hostname' );
+
         this.mwConfig.wgArticleId = this.data.toid;
         this.mwConfig.wgRevisionId = this.data.torevid;
         this.mwConfig.wgDiffOldId = this.data.fromrevid;
@@ -246,7 +234,7 @@ class GlobalPage extends Page {
                 title: this.data.fromtitle,
                 revid: this.data.fromrevid,
                 curRevid: this.mwConfig.wgCurRevisionId,
-                origin: this.article.get( 'origin' ),
+                hostname: this.article.get( 'hostname' ),
                 timestamp: this.data.fromtimestamp,
                 user: this.data.fromuser,
                 userhidden: this.data.fromuserhidden,
@@ -266,7 +254,7 @@ class GlobalPage extends Page {
                 title: this.data.totitle,
                 revid: this.data.torevid,
                 curRevid: this.mwConfig.wgCurRevisionId,
-                origin: this.article.get( 'origin' ),
+                hostname: this.article.get( 'hostname' ),
                 timestamp: this.data.totimestamp,
                 user: this.data.touser,
                 userhidden: this.data.touserhidden,
@@ -281,7 +269,7 @@ class GlobalPage extends Page {
 
         // Append content
         this.nodes.$table = $( this.nodes.table.container ).appendTo( this.nodes.$body );
-        utils.addBaseToLinks( this.nodes.$table, this.article.get( 'origin' ) );
+        utils.addBaseToLinks( this.nodes.$table, this.article.get( 'hostname' ) );
 
         // Show or hide diff info table in the revision view
         if ( this.article.get( 'type' ) === 'revision' ) {
@@ -318,7 +306,11 @@ class GlobalPage extends Page {
     }
 
     renderForeignWarning() {
-        const $message = $( utils.msgDom( `dialog-notice-foreign-${ this.article.get( 'type' ) }`, this.article.get( 'origin' ), this.article.get( 'origin' ) ) );
+        const $message = $( utils.msgDom(
+            `dialog-notice-foreign-${ this.article.get( 'type' ) }`,
+            `https://${ this.article.get( 'hostname' ) }`,
+            this.article.get( 'hostname' ),
+        ) );
         this.renderWarning( $message, 'notice' );
     }
 
@@ -350,7 +342,7 @@ class GlobalPage extends Page {
         }
 
         return this.requestManager
-            .get( params, this.article.getMW( 'api' ) || id.local.mwApi )
+            .get( params, this.article.get( 'hostname' ) )
             .then( ( data ) => this.onRequestRevisionDone( data, params ) )
             .fail( ( message, data ) => this.onRequestRevisionError( message, data, params ) );
     }
@@ -401,7 +393,7 @@ class GlobalPage extends Page {
 
         // Append content
         this.nodes.$revision = $( this.parse.text ).appendTo( this.nodes.$body );
-        utils.addBaseToLinks( this.nodes.$revision, this.article.get( 'origin' ) );
+        utils.addBaseToLinks( this.nodes.$revision, this.article.get( 'hostname' ) );
 
         // Get page dependencies
         const dependencies = [

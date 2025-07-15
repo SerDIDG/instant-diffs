@@ -9,6 +9,19 @@ import Link from './Link';
  */
 class Snapshot {
     /**
+     * @type {import('./Snapshot').default}
+     */
+    static instance;
+
+    /**
+     * Create a new snapshot instance.
+     * @param {Object} [options] configuration options
+     */
+    static newInstance( options ) {
+        this.instance = new Snapshot( options );
+    }
+
+    /**
      * @type {Object}
      */
     options = {};

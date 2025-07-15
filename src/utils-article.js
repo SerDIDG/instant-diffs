@@ -1,7 +1,7 @@
 import id from './id';
 import * as utils from './utils';
-import { getInterwikiMap } from './utils-api';
 
+import Api from './Api';
 import Article from './Article';
 
 export function getRevID( article ) {
@@ -71,11 +71,10 @@ export async function getWikilink( article ) {
 
     // Get project prefix for the foreign link
     if ( article.isForeign ) {
-        const interwikiMap = await getInterwikiMap();
-
+        const interwikiMap = await Api.getInterwikiMap();
         if ( interwikiMap ) {
             options.interwiki = interwikiMap
-                .filter( entry => entry.url.includes( article.get( 'origin' ) ) )
+                .filter( entry => entry.url.includes( article.get( 'hostname' ) ) )
                 .reduce( ( accumulator, entry ) => !accumulator || accumulator.prefix.length > entry.prefix.length ? entry : accumulator );
         }
     }
@@ -196,14 +195,14 @@ function processHref( article, articleParams, options ) {
     };
 
     // Validate
-    if ( window.location.origin !== article.get( 'origin' ) ) {
+    if ( article.get( 'hostname' ) !== window.location.hostname ) {
         options.relative = false;
     }
 
     // Get link's endpoint url
     const mwEndPointUrl = article.getMW( 'endPointUrl' ) || id.local.mwEndPointUrl;
 
-    // Get url with the current origin
+    // Get url with the current hostname
     let url;
     if ( !utils.isEmpty( article.get( 'title' ) ) ) {
         url = new URL( mw.util.getUrl( article.get( 'title' ), articleParams ), mwEndPointUrl.origin );
