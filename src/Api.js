@@ -187,6 +187,29 @@ class Api {
             }, null, true );
         }
     }
+
+    /******* PARSE *******/
+
+    static async parseWikitext( params, hostname ) {
+        params = {
+            action: 'parse',
+            contentmodel: 'wikitext',
+            format: 'json',
+            formatversion: 2,
+            uselang: id.local.language,
+            ...params,
+        };
+        const data = await this.post( params, hostname );
+
+        try {
+            return data.parse.text;
+        } catch ( error ) {
+            notifyError( 'error-api-generic', {
+                type: 'api',
+                message: error?.message || error,
+            }, null, true );
+        }
+    }
 }
 
 export default Api;

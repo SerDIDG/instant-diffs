@@ -16,7 +16,59 @@ const { h, ht } = utils;
  */
 class Link {
     /**
-     * @type {Element}
+     * @type {Map}
+     */
+    static stack = new Map();
+
+    /**
+     * Find links in the provided context.
+     * @param {JQuery} [$container]
+     * @returns {JQuery<Element>}
+     */
+    static findLinks( $container ) {
+        if ( typeof $container === 'undefined' ) {
+            $container = utils.getBodyContentNode();
+        }
+        return $container.find( id.local.linkSelector );
+    }
+
+    /**
+     * Add a link to the stack.
+     * @param {HTMLAnchorElement} node
+     * @param {import('./Link').default} link
+     */
+    static addLink( node, link ) {
+        this.stack.set( node, link );
+    }
+
+    /**
+     * Get a link from the stack.
+     * @param {HTMLAnchorElement} node
+     * @returns {import('./Link').default}
+     */
+    static getLink( node ) {
+        return this.stack.get( node );
+    }
+
+    /**
+     * Check is a link in the stack.
+     * @param {HTMLAnchorElement} node
+     * @returns {boolean}
+     */
+    static hasLink( node ) {
+        return this.stack.has( node );
+    }
+
+    /**
+     * Get all links from the stack.
+     * @return {MapIterator<import('./Link').default>}
+     */
+    static getLinks() {
+        return this.stack.values();
+    }
+
+    /**
+     * @type {HTMLAnchorElement}
      */
     node;
 
@@ -83,7 +135,7 @@ class Link {
 
     /**
      * Create a link instance.
-     * @param {Element} node a link node
+     * @param {HTMLAnchorElement} node a link node
      * @param {Object} [options] configuration options
      * @param {string} [options.behavior]
      * @param {string} [options.insertAfter]
@@ -159,9 +211,10 @@ class Link {
             },
         };
 
-        // Add a link node to the processed links set
-        id.local.links.set( this.node, this );
+        // Add a link instance to the stack
+        Link.addLink( this.node, this );
 
+        // Start link processing
         this.process();
     }
 
@@ -306,7 +359,7 @@ class Link {
             params.pageids = this.article.get( 'curid' );
         }
 
-        return Api.get( params )
+        return Api.get( params, this.article.get( 'hostname' ) )
             .then( this.onRequestRevisionDone.bind( this ) )
             .fail( this.onRequestRevisionError.bind( this ) );
     }
@@ -393,7 +446,7 @@ class Link {
             formatversion: 2,
             uselang: id.local.userLanguage,
         };
-        return Api.get( params )
+        return Api.get( params, this.article.get( 'hostname' ) )
             .then( this.onRequestDiffDone.bind( this ) )
             .fail( this.onRequestDiffError.bind( this ) );
     }
@@ -725,7 +778,7 @@ class Link {
 
     /**
      * Get a link's node.
-     * @returns {Element}
+     * @returns {HTMLAnchorElement}
      */
     getNode() {
         return this.node;

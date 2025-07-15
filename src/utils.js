@@ -400,13 +400,6 @@ export function notifyError( str, error, article, silent ) {
 
 /******* LINKS *******/
 
-export function getLinks( $container ) {
-    if ( typeof $container === 'undefined' ) {
-        $container = getBodyContentNode();
-    }
-    return $container.find( id.local.linkSelector );
-}
-
 export function getLabel( type ) {
     const label = id.config.labels[ type ];
     if ( !label ) return;
@@ -682,6 +675,12 @@ export function addClick( node, handler, useAltKey = true ) {
     node.addEventListener( 'keypress', callback );
 }
 
+/**
+ * Append en element to the provided context
+ * @param {HTMLElement|JQuery<HTMLElement>} node
+ * @param {HTMLElement|JQuery<HTMLElement>} container
+ * @param {('insertBefore'|'insertAfter'|'prependTo'|'appendTo')} [insertMethod]
+ */
 export function embed( node, container, insertMethod = 'appendTo' ) {
     if ( !container ) return;
 

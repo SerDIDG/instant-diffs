@@ -85,7 +85,7 @@ export async function getWikilink( article ) {
 
 /**
  * Gets article's formatted url href.
- * @param {import('./Article').default} article an Article instance
+ * @param {import('./Article').default|Object} article an Article instance
  * @param {Object} [articleParams]
  * @param {Object} [options]
  * @returns {string}

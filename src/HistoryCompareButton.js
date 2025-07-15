@@ -2,7 +2,6 @@ import id from './id';
 import * as utils from './utils';
 
 import ViewButton from './ViewButton';
-import view from './View';
 
 /**
  * Class representing a button that opens a View dialog on the history article.

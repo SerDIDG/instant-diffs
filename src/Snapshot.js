@@ -1,4 +1,3 @@
-import id from './id';
 import * as utils from './utils';
 
 import Link from './Link';
@@ -32,7 +31,7 @@ class Snapshot {
     link;
 
     /**
-     * @type {Array}
+     * @type {Array<Element>}
      */
     links = [];
 
@@ -49,7 +48,7 @@ class Snapshot {
             ...options,
         };
 
-        this.links = Array.from( utils.getLinks() );
+        this.links = Array.from( Link.findLinks() );
     }
 
     /**
@@ -121,7 +120,7 @@ class Snapshot {
         if ( currentIndex <= 0 ) return;
 
         const index = currentIndex - 1;
-        const link = id.local.links.get( this.links[ index ] );
+        const link = Link.getLink( this.links[ index ] );
         return this.isLinkValid( link ) ? link : this.getPreviousLink( index );
     }
 
@@ -137,7 +136,7 @@ class Snapshot {
         if ( currentIndex < 0 || currentIndex + 1 >= this.getLength() ) return;
 
         const index = currentIndex + 1;
-        const link = id.local.links.get( this.links[ index ] );
+        const link = Link.getLink( this.links[ index ] );
         return this.isLinkValid( link ) ? link : this.getNextLink( index );
     }
 }

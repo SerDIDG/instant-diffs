@@ -175,7 +175,7 @@ class Settings {
 
     /**
      * Request user options.
-     * @returns {Promise|boolean}
+     * @returns {mw.Api.Promise}
      */
     request() {
         // Guest settings can be stored only in the Local Storage
@@ -205,7 +205,7 @@ class Settings {
     /**
      * Save user options.
      * @param {Object} options
-     * @returns {Promise|boolean}
+     * @returns {mw.Api.Promise}
      */
     save( options ) {
         // Update settings stored in the Local Storage and in the local User Options
@@ -228,7 +228,7 @@ class Settings {
     /**
      * Post user options on the local project.
      * @param {Object} options
-     * @returns {Promise}
+     * @returns {mw.Api.Promise}
      */
     saveLocal( options ) {
         const params = [
@@ -244,7 +244,7 @@ class Settings {
     /**
      * Post user options on the global project.
      * @param {Object} options
-     * @returns {Promise}
+     * @returns {mw.Api.Promise}
      */
     saveGlobal( options ) {
         const params = {

@@ -1,6 +1,8 @@
 import id from './id';
 import * as utils from './utils';
 
+import Link from './Link';
+
 /******* CONVENIENT DISCUSSIONS *******/
 
 /**
@@ -74,7 +76,7 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
 
     // Process already rendered links
     if ( id.isRunCompleted ) {
-        for ( const link of id.local.links.values() ) {
+        for ( const link of Link.getLinks() ) {
             renderLink( link );
         }
     }

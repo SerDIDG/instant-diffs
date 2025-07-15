@@ -4,6 +4,7 @@ import * as utilsPage from './utils-page';
 import { getNamespaceConfig } from './utils-api';
 import { getDependencies } from './utils-article';
 
+import Api from './Api';
 import Page from './Page';
 import view from './View';
 
@@ -146,6 +147,7 @@ class GlobalPage extends Page {
             'talkpagelinktext',
             'contribslink',
             'changeslist-nocomment',
+            'rev-deleted-no-diff',
             'rev-deleted-user',
             'rev-deleted-comment',
             'diff-empty',
@@ -227,6 +229,11 @@ class GlobalPage extends Page {
         // Render table structure
         this.nodes.table = utilsPage.renderDiffTable( this.data.body );
 
+        // Render warning about hidden content
+        if ( this.data.fromtexthidden || this.data.totexthidden ) {
+            this.renderDeletedWarning();
+        }
+
         // Add deleted side content
         if ( this.data.fromid ) {
             const deleted = utilsPage.renderDiffTableSide( {
@@ -236,6 +243,7 @@ class GlobalPage extends Page {
                 curRevid: this.mwConfig.wgCurRevisionId,
                 hostname: this.article.get( 'hostname' ),
                 timestamp: this.data.fromtimestamp,
+                texthidden: this.data.fromtexthidden,
                 user: this.data.fromuser,
                 userhidden: this.data.fromuserhidden,
                 comment: this.data.fromparsedcomment,
@@ -256,6 +264,7 @@ class GlobalPage extends Page {
                 curRevid: this.mwConfig.wgCurRevisionId,
                 hostname: this.article.get( 'hostname' ),
                 timestamp: this.data.totimestamp,
+                texthidden: this.data.totexthidden,
                 user: this.data.touser,
                 userhidden: this.data.touserhidden,
                 comment: this.data.toparsedcomment,
@@ -267,7 +276,7 @@ class GlobalPage extends Page {
             this.nodes.table.added.classList.add( 'instantDiffs-hidden' );
         }
 
-        // Append content
+        // Append diff content
         this.nodes.$table = $( this.nodes.table.container ).appendTo( this.nodes.$body );
         utils.addBaseToLinks( this.nodes.$table, `https://${ this.article.get( 'hostname' ) }` );
 
@@ -311,7 +320,18 @@ class GlobalPage extends Page {
             `https://${ this.article.get( 'hostname' ) }`,
             this.article.get( 'hostname' ),
         ) );
-        this.renderWarning( $message, 'notice' );
+        this.nodes.$foreignWarning = this.renderWarning( $message, 'notice' );
+    }
+
+    async renderDeletedWarning() {
+        const message = await Api.parseWikitext( {
+            title: this.article.get( 'title' ),
+            text: mw.msg( 'rev-deleted-no-diff' ),
+        }, this.article.get( 'hostname' ) );
+        const $message = $( message ).find( 'p' );
+
+        this.nodes.$deleteWarning = this.renderWarning( $message, 'warning' );
+        utils.embed( this.nodes.$deleteWarning, this.nodes.$foreignWarning, 'insertAfter' );
     }
 
     /******* REVISION *******/

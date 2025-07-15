@@ -339,14 +339,44 @@ export const local = {
 
     linkSelector: null,
 
+    /**
+     * @type {Object<string, string>}
+     */
     specialPages: {},
+
+    /**
+     * @type {Object<string, string>}
+     */
     specialPagesLocal: {},
+
+    /**
+     * @type {Object<string, string>}
+     */
     specialPagesLocalPrefixed: {},
+
+    /**
+     * @type {Object<string, string>}
+     */
     specialPagesAliases: {},
+
+    /**
+     * @type {Object<string, string>}
+     */
     specialPagesAliasesPrefixed: {},
 
+    /**
+     * @type {RegExp}
+     */
     specialPagesPathRegExp: null,
+
+    /**
+     * @type {RegExp}
+     */
     specialPagesSearchRegExp: null,
+
+    /**
+     * @type {RegExp}
+     */
     articlePathRegExp: null,
 
     /**
@@ -358,11 +388,6 @@ export const local = {
      * @type {IntersectionObserver}
      */
     interactionObserver: null,
-
-    /**
-     * @type {Map}
-     */
-    links: new Map(),
 };
 
 /**

@@ -68,6 +68,7 @@ export function renderDiffTableSide( data ) {
         curRevid: null,
         hostname: null,
         timestamp: null,
+        texthidden: false,
         user: null,
         userhidden: false,
         comment: null,
@@ -87,7 +88,9 @@ export function renderDiffTableSide( data ) {
     return hf(
         h( 'div', { id: `${ prefix }1` },
             h( 'strong',
-                h( 'a', { href: getHref( article ) }, mw.msg( title, getUserDate( data.timestamp ) ) ),
+                !data.texthidden
+                    ? h( 'a', { href: getHref( article ) }, mw.msg( title, getUserDate( data.timestamp ) ) )
+                    : h( 'span', { class: 'history-deleted' }, mw.msg( title, getUserDate( data.timestamp ) ) ),
             ),
         ),
         h( 'div', { id: `${ prefix }2` },

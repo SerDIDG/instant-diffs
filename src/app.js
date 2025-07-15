@@ -60,6 +60,27 @@ function processContributionsPage() {
             $node.wrapInner( utils.renderPlaceholder() );
         }
     } );
+
+    // GlobalContributions Extension
+    if ( mw.config.get( 'wgCanonicalSpecialPageName' ) === 'GlobalContributions' ) {
+        processGlobalContributionsPage();
+    }
+}
+
+function processGlobalContributionsPage() {
+    // Fix relative links in the edit comments
+    // ToDo: remove after bug is fixed (T398108)
+    const $contributionsLines = $( '.mw-contributions-list li' );
+    $contributionsLines.each( ( i, node ) => {
+        const $node = $( node );
+        const $link = $node.find( 'a.mw-changeslist-date, a.mw-changeslist-history' );
+        if ( $link.length === 0 ) return;
+
+        try {
+            const url = new URL( $link.prop( 'href' ) );
+            utils.addBaseToLinks( $node, url.origin );
+        } catch {}
+    } );
 }
 
 function processGlobalWatchlistPage() {
@@ -347,8 +368,8 @@ function process( $context ) {
     id.timers.processStart = Date.now();
 
     // Get all links using the assembled selector and skip those already processed
-    const links = Array.from( utils.getLinks( $context ) )
-        .filter( ( node ) => !id.local.links.has( node ) )
+    const links = Array.from( Link.findLinks( $context ) )
+        .filter( ( node ) => !Link.hasLink( node ) )
         .map( ( node ) => new Link( node ) );
 
     // Track on process end time
@@ -368,7 +389,7 @@ function observeInteractions( entries ) {
     entries.forEach( entry => {
         if ( !entry.isIntersecting ) return;
 
-        const link = id.local.links.get( entry.target );
+        const link = Link.getLink( entry.target );
         if ( link ) {
             link.onIntersect();
         }

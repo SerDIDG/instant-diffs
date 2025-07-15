@@ -328,6 +328,7 @@ class Page {
     renderWarning( $content, type = 'warning' ) {
         const $box = utils.renderMessageBox( { $content, type } );
         utils.embed( $box, this.nodes.$body, 'prependTo' );
+        return $box;
     }
 
     renderNavigation() {
