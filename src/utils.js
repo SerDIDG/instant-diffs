@@ -491,7 +491,7 @@ export function getMobileServer() {
     /**
      * @type {string}
      */
-    const server = mw.config.get( 'wgServer' );
+    const server = mw.config.get( 'wgServer' ).replace( /^https?:/, '' );
 
     const prefix = new RegExp( `^//www\\.` ).test( server ) ? 'www.' : '';
 

@@ -163,7 +163,7 @@ function prepare( require ) {
     if ( mobileServer ) {
         id.local.mwServers.push( mobileServer );
     }
-    id.local.mwServerNames = id.local.mwServers.map( server => server.replace( /^\/\//, '' ) );
+    id.local.mwServerNames = id.local.mwServers.map( server => server.replace( /^(https?:)?\/\//, '' ) );
 
     // Save the current version number to the local storage
     id.local.lastVesrion = mw.storage.get( `${ id.config.prefix }-version` );
