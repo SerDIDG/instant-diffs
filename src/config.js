@@ -174,8 +174,10 @@ export const config = {
         'wgDiffNewId',
         'wgCanonicalSpecialPageName',
         'wgIsProbablyEditable',
-        'wgNamespaceIds',
         'wgFormattedNamespaces',
+        'wgNamespaceIds',
+        'wgCaseSensitiveNamespaces',
+        'wgContentNamespaces',
         'wbEntityId',                                                   // Wikibase
         'thanks-confirmation-required',
     ],
