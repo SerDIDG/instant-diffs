@@ -71,6 +71,17 @@ export const config = {
                 'wikibase.lexeme.styles',
             ],
         },
+
+        // Foreign lazy-loaded dependencies
+        foreign: {
+            revision: {
+                styles: {
+                    6: [                                                // File:
+                        'MediaWiki:Filepage.css',
+                    ],
+                },
+            },
+        },
     },
 
     // Settings list
@@ -334,6 +345,7 @@ export const local = {
     titleText: null,
 
     mwIsAnon: null,
+    mwIsMF: false,
     mwEndPoint: null,
     mwEndPointUrl: null,
     mwArticlePath: null,

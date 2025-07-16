@@ -2,7 +2,7 @@ import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
 import { getNamespaceConfig } from './utils-api';
-import { getDependencies } from './utils-article';
+import { addLinkTags, getDependencies, getForeignDependencies, removeLinkTags } from './utils-article';
 
 import Api from './Api';
 import Page from './Page';
@@ -29,6 +29,11 @@ class GlobalPage extends Page {
      * @type {Object}
      */
     parse;
+
+    /**
+     * @type {Array<HTMLLinkElement>}
+     */
+    linkTags = [];
 
     /**
      * Create a foreign diff instance.
@@ -94,7 +99,7 @@ class GlobalPage extends Page {
             fromrev: utils.isValidID( values.oldid ) ? values.oldid : undefined,
             fromrelative: utils.isValidDir( values.oldid ) ? values.oldid : undefined,
             torev: utils.isValidID( values.diff ) ? values.diff : undefined,
-            difftype: document.body.classList.contains( 'mw-mf' ) ? 'inline' : 'table',
+            difftype: id.local.mwIsMF ? 'inline' : 'table',
             format: 'json',
             formatversion: 2,
             uselang: id.local.userLanguage,
@@ -424,6 +429,21 @@ class GlobalPage extends Page {
             ...getDependencies( this.article ),
         ];
         mw.loader.load( utils.getDependencies( dependencies ) );
+
+        // Get page foreign dependencies
+        const foreignDependencies = getForeignDependencies( this.article );
+        this.linkTags = addLinkTags( foreignDependencies.styles );
+    }
+
+    /******* ACTIONS *******/
+
+    detach() {
+        if ( this.isDetached ) return;
+
+        super.detach();
+
+        // Remove link tags from the head, that was added to load styles for the foreign pages
+        removeLinkTags( this.linkTags );
     }
 }
 

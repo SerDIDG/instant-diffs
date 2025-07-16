@@ -151,6 +151,7 @@ function prepare( require ) {
     OO.mixinClass( Page, OO.EventEmitter );
 
     // Prepare locale variables
+    id.local.mwIsMF = document.body.classList.contains( 'mw-mf' );
     id.local.mwIsAnon = mw.user?.isAnon?.() ?? true;
     id.local.mwEndPoint = `${ location.origin }${ mw.config.get( 'wgScript' ) }`;
     id.local.mwEndPointUrl = new URL( id.local.mwEndPoint );

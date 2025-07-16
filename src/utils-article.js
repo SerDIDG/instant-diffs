@@ -36,22 +36,81 @@ export function getRevID( article ) {
     return false;
 }
 
+/**
+ * Gets an article dependencies.
+ * @param {import('./Article').default} article
+ * @return {Array<string>}
+ */
 export function getDependencies( article ) {
     let dependencies = [];
+
     const typeDependencies = id.config.dependencies[ article.get( 'type' ) ];
     if ( typeDependencies ) {
         // Set common dependencies
-        if ( typeDependencies[ '*' ] ) {
+        if ( utils.isArray( typeDependencies[ '*' ] ) ) {
             dependencies = dependencies.concat( typeDependencies[ '*' ] );
         }
 
         // Set namespace-specific dependencies
         const namespace = article.getMW( 'title' )?.getNamespaceId();
-        if ( typeDependencies[ namespace ] ) {
+        if ( utils.isArray( typeDependencies[ namespace ] ) ) {
             dependencies = dependencies.concat( typeDependencies[ namespace ] );
         }
     }
+
     return dependencies;
+}
+
+/**
+ * Gets a foreign article dependencies.
+ * @param {import('./Article').default} article
+ * @returns {Object<string, Array<string>>}
+ */
+export function getForeignDependencies( article ) {
+    let styles = [];
+
+    const typeDependencies = id.config.dependencies.foreign[ article.get( 'type' ) ];
+    if ( typeDependencies ) {
+        // Styles dependencies
+        const stylesDependencies = typeDependencies.styles;
+        if ( stylesDependencies ) {
+            // Set common dependencies
+            if ( utils.isArray( stylesDependencies[ '*' ] ) ) {
+                styles = styles.concat(
+                    stylesDependencies[ '*' ].map( title => getStyleHref( article, title ) ),
+                );
+            }
+
+            // Set namespace-specific dependencies
+            const namespace = article.getMW( 'title' )?.getNamespaceId();
+            if ( utils.isArray( stylesDependencies[ namespace ] ) ) {
+                styles = styles.concat(
+                    stylesDependencies[ namespace ].map( title => getStyleHref( article, title ) ),
+                );
+            }
+        }
+    }
+
+    return { styles };
+}
+
+/**
+ * Appends given urls array as link tags to the head.
+ * @param {Array<string>} urls
+ * @returns {Array<HTMLLinkElement>|undefined}
+ */
+export function addLinkTags( urls ) {
+    if ( utils.isEmpty( urls ) ) return;
+    return urls.map( url => mw.loader.addLinkTag?.( url ) );
+}
+
+/**
+ * Removes link tags from the head.
+ * @param {Array<HTMLLinkElement>} tags
+ */
+export function removeLinkTags( tags ) {
+    if ( utils.isEmpty( tags ) ) return;
+    tags.forEach( tag => tag?.remove() );
 }
 
 /******* FORMAT HREFS *******/
@@ -270,4 +329,11 @@ function processWikilink( article, articleParams, options ) {
         .replace( '$pref', prefix ? `${ prefix }:` : '' )
         .replace( '$href', options.href )
         .replace( '$msg', utils.msg( `copy-wikilink-${ options.type }` ) );
+}
+
+function getStyleHref( article, title ) {
+    const href = mw.util.getUrl( title, { action: 'raw', ctype: 'text/css' } );
+    return article.isForeign
+        ? getHrefAbsolute( article, href )
+        : href;
 }

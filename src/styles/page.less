@@ -27,6 +27,12 @@
 
     .cdx-message--block {
         margin-bottom: 1em;
+
+        // /* [Fix] Icon shrinking */
+        // /* ToDo: remove after bug is fixed (T398529) */
+        .cdx-message__icon {
+            flex: none;
+        }
     }
 
     #mw-fr-diff-headeritems {

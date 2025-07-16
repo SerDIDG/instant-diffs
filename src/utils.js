@@ -52,6 +52,15 @@ export function isFunction( value ) {
 }
 
 /**
+ * Checks if a value is an array.
+ * @param {*} value
+ * @returns {boolean}
+ */
+export function isArray( value ) {
+    return Array.isArray( value );
+}
+
+/**
  * Checks if a value is an object.
  * @param {*} value
  * @returns {boolean}
@@ -680,8 +689,8 @@ export function addClick( node, handler, useAltKey = true ) {
 }
 
 /**
- * Append en element to the provided context
- * @param {HTMLElement|JQuery<HTMLElement>} node
+ * Appends an element to the provided context.
+ * @param {HTMLElement|DocumentFragment|JQuery<HTMLElement>} node
  * @param {HTMLElement|JQuery<HTMLElement>} container
  * @param {('insertBefore'|'insertAfter'|'prependTo'|'appendTo')} [insertMethod]
  */
