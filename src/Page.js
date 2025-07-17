@@ -288,7 +288,6 @@ class Page {
             'instantDiffs-page',
             `instantDiffs-page--${ this.article.get( 'type' ) }`,
             'mw-body-content',
-            `mw-content-${ document.dir }`,
         ];
 
         const skinClasses = id.config.skinBodyClasses[ mw.config.get( 'skin' ) ];
