@@ -201,7 +201,7 @@ class Api {
 
     /**
      * Requests localized special page names.
-     * @param [hostname]
+     * @param {string} [hostname]
      * @returns {Promise<*|{}>}
      */
     static async getSpecialPages( hostname ) {
