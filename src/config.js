@@ -172,6 +172,8 @@ export const config = {
     mwConfigBackup: [
         'wgServer',
         'wgServerName',
+        'wgMobileServer',
+        'wgMobileServerName',
         'wgTitle',
         'wgPageName',
         'wgRelevantPageName',
