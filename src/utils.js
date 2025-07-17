@@ -2,8 +2,6 @@ import hyperscript from 'hyperscript';
 
 import id from './id';
 
-import Api from './Api';
-
 /******* BASIC TYPES *******/
 
 /**
@@ -326,30 +324,6 @@ export function getMsgParams( params ) {
     return params;
 }
 
-/**
- * Loads interface messages if missing.
- * @param {array|string} messages
- * @param {Object} [options]
- * @returns {mw.Api.Promise<[] | [boolean]>|boolean}
- */
-export function loadMessage( messages, options ) {
-    messages = typeof messages === 'string' ? [ messages ] : messages;
-    options = {
-        promise: true,
-        ...options,
-    };
-
-    // Return results as soon as possible
-    if ( !options.promise ) {
-        const missing = messages.filter( msg => !mw.message( msg ).exists() );
-        if ( missing.length === 0 ) return true;
-    }
-
-    return Api.getApi().loadMessagesIfMissing( messages, {
-        uselang: id.local.userLanguage,
-    } );
-}
-
 export function getErrorStatusText( status ) {
     if ( !Number.isInteger( status ) ) return;
 
@@ -423,9 +397,25 @@ export function getTarget( isInWindow ) {
     return defaults( 'openInNewTab' ) && isInWindow ? '_blank' : '_self';
 }
 
+export function getHref( href ) {
+    if ( /^\/\//.test( href ) ) {
+        href = `https:${ href }`;
+    }
+    return href;
+}
+
+export function getHostname( href ) {
+    try {
+        const url = new URL( getHref( href ) );
+        return url.hostname;
+    } catch {
+        return null;
+    }
+}
+
 export function getParamFromUrl( param, href ) {
     try {
-        const url = new URL( href );
+        const url = new URL( getHref( href ) );
         return url.searchParams.get( param );
     } catch {
         return null;
@@ -434,7 +424,7 @@ export function getParamFromUrl( param, href ) {
 
 export function getComponentFromUrl( param, href ) {
     try {
-        const url = new URL( href );
+        const url = new URL( getHref( href ) );
         return url[ param ];
     } catch {
         return null;
@@ -496,12 +486,12 @@ export function getRevisionSection( revision ) {
 
 /******* MW *******/
 
+/**
+ * Gets predicted mobile server.
+ * @return {string|undefined}
+ */
 export function getMobileServer() {
-    /**
-     * @type {string}
-     */
     const server = mw.config.get( 'wgServer' ).replace( /^https?:/, '' );
-
     const prefix = new RegExp( `^//www\\.` ).test( server ) ? 'www.' : '';
 
     const language = mw.config.get( 'wgContentLanguage' );
@@ -622,8 +612,6 @@ export function hj( $node ) {
 }
 
 export function clipboardWrite( text, callback ) {
-    if ( isEmpty( text ) ) return;
-
     const success = () => {
         mw.notify( msg( 'copy-link-copied' ), { tag: `${ id.config.prefix }-copyLink` } );
         isFunction( callback ) && callback( true );
@@ -633,6 +621,10 @@ export function clipboardWrite( text, callback ) {
         mw.notify( msg( 'copy-link-error' ), { tag: `${ id.config.prefix }-copyLink`, type: 'error' } );
         isFunction( callback ) && callback( false );
     };
+
+    if ( isEmpty( text ) || !isString( text ) ) {
+        return error();
+    }
 
     if ( navigator.clipboard?.writeText ) {
         navigator.clipboard.writeText( text )

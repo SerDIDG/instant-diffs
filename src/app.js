@@ -2,7 +2,6 @@ import id from './id';
 import { config, local, timers } from './config';
 import * as utils from './utils';
 import { mixEventEmitterInObject } from './utils-oojs';
-import { getSpecialPages } from './utils-api';
 
 import './styles/app.less';
 
@@ -156,15 +155,18 @@ function prepare( require ) {
     id.local.mwEndPoint = `${ location.origin }${ mw.config.get( 'wgScript' ) }`;
     id.local.mwEndPointUrl = new URL( id.local.mwEndPoint );
     id.local.mwArticlePath = mw.config.get( 'wgArticlePath' ).replace( '$1', '' );
-    id.local.titleText = new mw.Title( mw.config.get( 'wgPageName' ) ).getPrefixedText();
+    id.local.mwTitleText = new mw.Title( mw.config.get( 'wgPageName' ) ).getPrefixedText();
 
-    // Get hostnames (including mobile variants) used to assemble the link selector
-    id.local.mwServers.push( mw.config.get( 'wgServer' ) );
+    // Predict a mobile server name and add it to the mw.config
     const mobileServer = utils.getMobileServer();
-    if ( mobileServer ) {
-        id.local.mwServers.push( mobileServer );
-    }
-    id.local.mwServerNames = id.local.mwServers.map( server => server.replace( /^(https?:)?\/\//, '' ) );
+    mw.config.set( 'wgMobileServer', mobileServer );
+    mw.config.set( 'wgMobileServerName', utils.getHostname( mobileServer ) );
+
+    // Get hostnames (including predicted mobile variants) used to assemble the link selector
+    id.local.mwServers = [ mw.config.get( 'wgServer' ), mw.config.get( 'wgMobileServer' ) ]
+        .filter( value => !utils.isEmpty( value ) );
+    id.local.mwServerNames = [ mw.config.get( 'wgServerName' ), mw.config.get( 'wgMobileServerName' ) ]
+        .filter( value => !utils.isEmpty( value ) );
 
     // Save the current version number to the local storage
     id.local.lastVesrion = mw.storage.get( `${ id.config.prefix }-version` );
@@ -184,9 +186,27 @@ function prepare( require ) {
 
     // Get other dependencies
     return Promise.allSettled( [
-        getSpecialPages(),
+        Api.getSpecialPages(),
+        getSiteInfo(),
         ...getMessages(),
     ] );
+}
+
+async function getSiteInfo() {
+    const { general } = await Api.getSiteInfo( [ 'general' ] ) || {};
+    if ( !utils.isEmptyObject( general ) ) {
+        // Add a mobile server name to the mw.config
+        if ( !utils.isEmpty( general.mobileserver ) ) {
+            mw.config.set( 'wgMobileServer', general.mobileserver );
+            mw.config.set( 'wgMobileServerName', general.mobileservername );
+        }
+
+        // Get hostnames (including mobile variants) used to assemble the link selector
+        id.local.mwServers = [ general.server, general.mobileserver ]
+            .filter( value => !utils.isEmpty( value ) );
+        id.local.mwServerNames = [ general.servername, general.mobileservername ]
+            .filter( value => !utils.isEmpty( value ) );
+    }
 }
 
 function getMessages() {
@@ -226,9 +246,9 @@ function assembleLinkSelector() {
     } );
 
     // Assemble a link selector for the special pages
-    for ( const [ name, local ] of Object.entries( id.local.specialPagesLocal ) ) {
+    for ( const [ name, local ] of Object.entries( Api.specialPagesLocal ) ) {
         id.local.specialPagesLocalPrefixed[ name ] = new mw.Title( local ).getPrefixedDb();
-        id.local.specialPagesAliases[ name ] = utils.getSpecialPageAliases( id.local.specialPagesLocal, name );
+        id.local.specialPagesAliases[ name ] = utils.getSpecialPageAliases( Api.specialPagesLocal, name );
         id.local.specialPagesAliasesPrefixed[ name ] = utils.getSpecialPageAliases( id.local.specialPagesLocalPrefixed, name );
 
         id.local.specialPagesAliases[ name ].forEach( title => {

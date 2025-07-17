@@ -53,7 +53,7 @@ class GlobalPage extends Page {
      */
     loadProcess() {
         const promises = [
-            this.requestNamespaces(),
+            this.requestSiteInfo(),
             this.requestMessages(),
             this.request(),
         ];
@@ -73,7 +73,7 @@ class GlobalPage extends Page {
         const promises = [];
 
         // Add a request for the wikidata label name
-        if ( this.article.get( 'hostname' ) === 'www.wikidata.org' ) {
+        if ( this.article.getMW( 'serverName' ) === 'www.wikidata.org' ) {
             promises.push( this.requestWBLabel() );
         }
 
@@ -126,13 +126,27 @@ class GlobalPage extends Page {
     }
 
     /**
-     * Request project-specific namespace list.
+     * Request project-specific site info.
      * @returns {Promise}
      */
-    async requestNamespaces() {
-        const config = await getNamespaceConfig( this.article.get( 'hostname' ) );
-        if ( !utils.isEmptyObject( config ) ) {
-            this.mwConfig = { ...this.mwConfig, ...config };
+    async requestSiteInfo() {
+        const fields = [ 'general', 'namespaces', 'namespacealiases' ];
+        const data = await Api.getSiteInfo( fields, this.article.get( 'hostname' ) ) || {};
+        if ( !utils.isEmptyObject( data ) ) {
+            const general = data.general;
+            if ( !utils.isEmptyObject( general ) ) {
+                // Set article hostname to revalidate server names
+                this.article.set( { hostname: general.servername } );
+
+                this.mwConfig.wgServer = general.server;
+                this.mwConfig.wgServerName = general.servername;
+                this.mwConfig.mobileServer = general.mobileserver;
+                this.mwConfig.mobileServerName = general.mobileservername;
+            }
+
+            // Process namespace list into mw.config format
+            const namespaceConfig = getNamespaceConfig( this.article.get( 'hostname' ) );
+            this.mwConfig = { ...this.mwConfig, ...namespaceConfig };
 
             // Set additional config variables
             this.setConfigs();
@@ -158,7 +172,7 @@ class GlobalPage extends Page {
             'rev-deleted-comment',
             'diff-empty',
         ];
-        await utils.loadMessage( messages, { promise: false } );
+        await Api.loadMessage( messages );
     }
 
     /******* RENDER *******/
@@ -179,9 +193,6 @@ class GlobalPage extends Page {
 
     collectData() {
         // Get values for mw.config
-        this.mwConfig.wgServer = `//${ this.article.get( 'hostname' ) }`;
-        this.mwConfig.wgServerName = this.article.get( 'hostname' );
-
         this.mwConfig.wgArticleId = this.data.toid;
         this.mwConfig.wgRevisionId = this.data.torevid;
         this.mwConfig.wgDiffOldId = this.data.fromrevid;

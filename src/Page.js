@@ -166,7 +166,7 @@ class Page {
         ];
 
         // Add a request for the wikidata label name
-        if ( this.article.get( 'hostname' ) === 'www.wikidata.org' ) {
+        if ( this.article.getMW( 'serverName' ) === 'www.wikidata.org' ) {
             promises.push( this.requestWBLabel() );
         }
 

@@ -25,7 +25,7 @@ class HistoryCompareButton extends ViewButton {
 
         this.article.set( {
             type: 'diff',
-            title: id.local.titleText,
+            title: id.local.mwTitleText,
             oldid: this.nodes.$oldid.val(),
             diff: this.nodes.$diff.val(),
         } );

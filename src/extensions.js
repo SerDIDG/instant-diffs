@@ -68,7 +68,7 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
         if ( !link.extensions.cd.anchor ) return;
 
         let href = `#${ link.extensions.cd.anchor }`;
-        if ( title !== id.local.titleText ) {
+        if ( title !== id.local.mwTitleText ) {
             href = mw.util.getUrl( `${ title }${ href }` );
         }
         return href;

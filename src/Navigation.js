@@ -720,11 +720,16 @@ class Navigation {
         this.buttons.copyWikiHelper.pending( true );
 
         $.when( getWikilink( this.article ) )
-            .always( href => {
-                this.buttons.copyWikiHelper.pending( false );
-
+            .done( href => {
                 // Copy href to the clipboard
                 utils.clipboardWrite( href );
+            } )
+            .fail( () => {
+                // Show error message
+                utils.clipboardWrite( false );
+            } )
+            .always( () => {
+                this.buttons.copyWikiHelper.pending( false );
 
                 // Hide menu dropdown
                 this.toggleMenu( false );

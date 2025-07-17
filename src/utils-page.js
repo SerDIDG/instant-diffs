@@ -355,7 +355,7 @@ export async function restoreFileMediaInfo( $content ) {
         'wikibasemediainfo-filepage-fileinfo-heading',
         'wikibasemediainfo-filepage-structured-data-heading',
     ];
-    await utils.loadMessage( messages, { promise: false } );
+    await Api.loadMessage( messages );
 
     return renderFileMediaInfo( $content );
 }

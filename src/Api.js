@@ -1,5 +1,5 @@
 import id from './id';
-import { defaults, isEmpty, isEmptyObject, isForeign, isNew, notifyError } from './utils';
+import * as utils from './utils';
 
 class Api {
     /**
@@ -18,7 +18,7 @@ class Api {
      * @return {mw.Api|mw.ForeignApi}
      */
     static getApi( hostname ) {
-        if ( !isForeign( hostname ) ) {
+        if ( !utils.isForeign( hostname ) ) {
             if ( !this.api ) {
                 this.api = new mw.Api();
             }
@@ -53,38 +53,89 @@ class Api {
         return this.getApi( hostname ).post( params );
     }
 
-    /******* NAMESPACES *******/
+    /******* PARSE *******/
+
+    static async parseWikitext( params, hostname ) {
+        params = {
+            action: 'parse',
+            contentmodel: 'wikitext',
+            format: 'json',
+            formatversion: 2,
+            uselang: id.local.language,
+            ...params,
+        };
+        const data = await this.post( params, hostname );
+
+        try {
+            return data.parse.text;
+        } catch ( error ) {
+            utils.notifyError( 'error-api-generic', {
+                type: 'api',
+                message: error?.message || error,
+            }, null, true );
+        }
+    }
+
+    /******* MESSAGES *******/
 
     /**
-     * @type {Object}
+     *
+     * Requests interface messages if missing.
+     * @param {array|string} messages
+     * @param {string} [hostname]
+     * @returns {JQuery.Promise|mw.Api.Promise}
      */
-    static namespaces = {};
+    static loadMessage( messages, hostname ) {
+        messages = typeof messages === 'string' ? [ messages ] : messages;
+
+        // Return results as soon as possible
+        const missing = messages.filter( msg => !mw.message( msg ).exists() );
+        if ( missing.length === 0 ) return $.Deferred().resolve().promise();
+
+        return this.getApi( hostname ).loadMessagesIfMissing( messages, {
+            uselang: id.local.userLanguage,
+        } );
+    }
+
+    /******* SITE INFO *******/
 
     /**
-     * @type {Object}
+     * @type {Object<string, Object>}
      */
-    static namespaceAliases = {};
+    static siteInfo = {};
 
-    static async getNamespaces( hostname ) {
-        // Try to get cached data from the local storage
-        if ( !isNew() && isEmptyObject( this.namespaces ) ) {
-            this.namespaces = mw.storage.getObject( `${ id.config.prefix }-namespaces` ) || {};
-            this.namespaceAliases = mw.storage.getObject( `${ id.config.prefix }-namespaceAliases` ) || {};
+    /**
+     * @type {Object<string, Object>}
+     */
+    static siteInfoAliases = {};
+
+    /**
+     *
+     * @param {Array} fields
+     * @param {string} [hostname]
+     * @return {Promise<Object>}
+     */
+    static async getSiteInfo( fields = [], hostname ) {
+        if ( utils.isEmpty( hostname ) ) {
+            hostname = mw.config.get( 'wgServerName' );
         }
 
-        // Ty to get data from the singleton
-        if ( !isEmptyObject( this.namespaces[ hostname ] ) ) {
-            return {
-                namespaces: this.namespaces[ hostname ] || {},
-                namespaceAliases: this.namespaceAliases[ hostname ] || [],
-            };
+        // Try to get cached data from the local storage
+        if ( !utils.isNew() && utils.isEmptyObject( this.siteInfo ) ) {
+            this.siteInfo = mw.storage.getObject( `${ id.config.prefix }-siteInfo` ) || {};
+            this.processSiteInfo();
+        }
+
+        // Ty to get data from the static property
+        if ( !utils.isEmptyObject( this.siteInfoAliases[ hostname ] ) || !utils.isEmptyObject( this.siteInfo[ hostname ] ) ) {
+            return this.siteInfoAliases[ hostname ] || this.siteInfo[ hostname ];
         }
 
         // Request data via API
         const params = {
             action: 'query',
             meta: 'siteinfo',
-            siprop: [ 'namespaces', 'namespacealiases' ],
+            siprop: fields,
             format: 'json',
             formatversion: 2,
             uselang: id.local.userLanguage,
@@ -92,18 +143,114 @@ class Api {
         const data = await this.get( params, hostname );
 
         try {
-            // Cache data with expiry
-            this.namespaces[ hostname ] = data.query.namespaces || {};
-            this.namespaceAliases[ hostname ] = data.query.namespacealiases || [];
-            mw.storage.setObject( `${ id.config.prefix }-namespaces`, this.namespaces, defaults( 'storageExpiry' ) );
-            mw.storage.setObject( `${ id.config.prefix }-namespaceAliases`, this.namespaceAliases, defaults( 'storageExpiry' ) );
+            if ( !this.siteInfo[ hostname ] ) {
+                this.siteInfo[ hostname ] = {};
+            }
+            for ( const [ key, value ] of Object.entries( data.query ) ) {
+                this.siteInfo[ hostname ][ key ] = value;
+            }
 
-            return {
-                namespaces: this.namespaces[ hostname ],
-                namespaceAliases: this.namespaceAliases[ hostname ],
-            };
+            // Cache data with expiry
+            mw.storage.setObject( `${ id.config.prefix }-siteInfo`, this.siteInfo, utils.defaults( 'storageExpiry' ) );
+
+            this.processSiteInfoAliases( this.siteInfo[ hostname ] );
+            return this.siteInfo[ hostname ];
         } catch ( error ) {
-            notifyError( 'error-api-generic', {
+            utils.notifyError( 'error-api-generic', {
+                type: 'api',
+                message: error?.message || error,
+            }, null, true );
+        }
+    }
+
+    /**
+     * @private
+     */
+    static processSiteInfo() {
+        if ( utils.isEmptyObject( this.siteInfo ) ) return;
+
+        for ( const site of Object.values( this.siteInfo ) ) {
+            this.processSiteInfoAliases( site );
+        }
+    }
+
+    /**
+     * @private
+     */
+    static processSiteInfoAliases( site ) {
+        if ( utils.isEmptyObject( site?.general ) ) return;
+
+        this.siteInfoAliases[ site.general.servername ] = site;
+        if ( !utils.isEmpty( site.general.mobileserver ) ) {
+            site.general.mobileservername = utils.getHostname( site.general.mobileserver );
+            this.siteInfoAliases[ site.general.mobileservername ] = site;
+        }
+    }
+
+    /******* SPECIAL PAGES *******/
+
+    /**
+     * @type {Object<string, string>}
+     */
+    static specialPages = {};
+
+    /**
+     * @type {Object<string, string>}
+     */
+    static specialPagesLocal = {};
+
+    /**
+     * Requests localized special page names.
+     * @param [hostname]
+     * @returns {Promise<*|{}>}
+     */
+    static async getSpecialPages( hostname ) {
+        // Convert data array to the pairs
+        if ( utils.isEmptyObject( this.specialPages ) ) {
+            id.config.specialPages.forEach( name => {
+                this.specialPages[ name ] = name;
+            } );
+        }
+
+        // Try to get cached data from the local storage
+        if ( !utils.isNew() && utils.isEmptyObject( this.specialPagesLocal ) ) {
+            this.specialPagesLocal = mw.storage.getObject( `${ id.config.prefix }-specialPagesLocal` ) || {};
+        }
+
+        // Ty to get data from the static property
+        if ( !utils.isEmptyObject( this.specialPagesLocal ) ) {
+            return this.specialPagesLocal;
+        }
+
+        // Set the fallback specialPages pairs
+        for ( const [ key, value ] of Object.entries( this.specialPages ) ) {
+            this.specialPagesLocal[ key ] = value;
+        }
+
+        // Request localized specialPages for the current content language
+        const params = {
+            action: 'query',
+            titles: id.config.specialPages,
+            format: 'json',
+            formatversion: 2,
+            uselang: mw.config.get( 'wgContentLanguage' ),
+        };
+        const data = await Api.get( params, hostname );
+
+        try {
+            // Set the localized specialPages pairs
+            if ( data.query.normalized ) {
+                data.query.normalized.forEach( item => {
+                    this.specialPagesLocal[ item.from ] = item.to;
+                } );
+            }
+
+            // Cache data with expiry
+            mw.storage.setObject( `${ id.config.prefix }-specialPagesLocal`, this.specialPagesLocal, utils.defaults( 'storageExpiry' ) );
+
+            return this.specialPagesLocal;
+        } catch ( error ) {
+            utils.notifyError( 'error-api-generic', {
                 type: 'api',
                 message: error?.message || error,
             }, null, true );
@@ -119,12 +266,12 @@ class Api {
 
     static async getInterwikiMap( hostname ) {
         // Try to get cached data from the local storage
-        if ( !isNew() && isEmpty( this.interwikiMap ) ) {
+        if ( !utils.isNew() && utils.isEmpty( this.interwikiMap ) ) {
             this.interwikiMap = mw.storage.getObject( `${ id.config.prefix }-interwikiMap` ) || [];
         }
 
-        // Ty to get data from the singleton
-        if ( !isEmpty( this.interwikiMap ) ) {
+        // Ty to get data from the static property
+        if ( !utils.isEmpty( this.interwikiMap ) ) {
             return this.interwikiMap;
         }
 
@@ -142,11 +289,11 @@ class Api {
         try {
             // Cache data with expiry
             this.interwikiMap = data.query.interwikimap;
-            mw.storage.setObject( `${ id.config.prefix }-interwikiMap`, this.interwikiMap, defaults( 'storageExpiry' ) );
+            mw.storage.setObject( `${ id.config.prefix }-interwikiMap`, this.interwikiMap, utils.defaults( 'storageExpiry' ) );
 
             return this.interwikiMap;
         } catch ( error ) {
-            notifyError( 'error-api-generic', {
+            utils.notifyError( 'error-api-generic', {
                 type: 'api',
                 message: error?.message || error,
             }, null, true );
@@ -156,7 +303,7 @@ class Api {
     /******* WIKIBASE LABEL *******/
 
     static async getWBLabel( entityId, hostname ) {
-        if ( isEmpty( entityId ) || !/^[QPL][0-9]+$/.test( entityId ) ) return;
+        if ( utils.isEmpty( entityId ) || !/^[QPL][0-9]+$/.test( entityId ) ) return;
 
         // Request data via API
         const language = id.local.userLanguage;
@@ -181,30 +328,7 @@ class Api {
             }
             return entity.labels[ language ].value;
         } catch ( error ) {
-            notifyError( 'error-api-generic', {
-                type: 'api',
-                message: error?.message || error,
-            }, null, true );
-        }
-    }
-
-    /******* PARSE *******/
-
-    static async parseWikitext( params, hostname ) {
-        params = {
-            action: 'parse',
-            contentmodel: 'wikitext',
-            format: 'json',
-            formatversion: 2,
-            uselang: id.local.language,
-            ...params,
-        };
-        const data = await this.post( params, hostname );
-
-        try {
-            return data.parse.text;
-        } catch ( error ) {
-            notifyError( 'error-api-generic', {
+            utils.notifyError( 'error-api-generic', {
                 type: 'api',
                 message: error?.message || error,
             }, null, true );

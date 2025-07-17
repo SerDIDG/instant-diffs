@@ -133,7 +133,7 @@ export async function getWikilink( article ) {
         const interwikiMap = await Api.getInterwikiMap();
         if ( interwikiMap ) {
             options.interwiki = interwikiMap
-                .filter( entry => entry.url.includes( article.get( 'hostname' ) ) )
+                .filter( entry => entry.url.includes( article.getMW( 'serverName' ) ) )
                 .reduce( ( accumulator, entry ) => !accumulator || accumulator.prefix.length > entry.prefix.length ? entry : accumulator );
         }
     }

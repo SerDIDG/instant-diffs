@@ -342,27 +342,16 @@ export const config = {
 export const local = {
     language: null,
     messages: {},
-    titleText: null,
+    linkSelector: null,
 
     mwIsAnon: null,
     mwIsMF: false,
     mwEndPoint: null,
     mwEndPointUrl: null,
     mwArticlePath: null,
+    mwTitleText: null,
     mwServers: [],
     mwServerNames: [],
-
-    linkSelector: null,
-
-    /**
-     * @type {Object<string, string>}
-     */
-    specialPages: {},
-
-    /**
-     * @type {Object<string, string>}
-     */
-    specialPagesLocal: {},
 
     /**
      * @type {Object<string, string>}

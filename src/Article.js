@@ -1,6 +1,10 @@
 import { isEmpty, isEmptyObject, isForeign, isString, isValidDir, isValidID } from './utils';
 import { getRevID } from './utils-article';
 
+import Api from './Api';
+import id from './id';
+import * as utils from './utils';
+
 /**
  * Class representing an Article object.
  */
@@ -11,13 +15,16 @@ class Article {
     values = {
         type: null,
         typeVariant: null,
-        hostname: window.location.hostname,
+        hostname: location.hostname,
     };
 
     /**
      * @type {Object}
      */
-    mw = {};
+    mw = {
+        serverName: mw.config.get( 'wgServerName' ),
+        mobileServerName: mw.config.get( 'wgMobileServerName' ),
+    };
 
     /**
      * @type {boolean}
@@ -175,11 +182,21 @@ class Article {
      * @private
      */
     setHostname() {
-        // Set index and api endpoints
-        this.isForeign = isForeign( this.values.hostname );
+        // Set server names
+        const { general } = Api.siteInfoAliases[ this.values.hostname ] || {};
+        if ( !isEmptyObject( general ) ) {
+            this.values.hostname = id.local.mwIsMF && !utils.isEmpty( general.mobileservername ) ? general.mobileservername : general.servername;
+            this.mw.serverName = general.servername;
+            this.mw.mobileServerName = general.mobileservername;
+        }
 
+        // Set index and api endpoints
         this.mw.endPoint = `https://${ this.values.hostname }${ mw.util.wikiScript( 'index' ) }`;
         this.mw.endPointUrl = new URL( this.mw.endPoint );
+
+        // Check if article is from foreign interwiki
+        this.isForeign = isForeign( this.values.hostname );
+
     }
 
     /**
