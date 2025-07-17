@@ -1,9 +1,8 @@
+import id from './id';
 import { isEmpty, isEmptyObject, isForeign, isString, isValidDir, isValidID } from './utils';
-import { getRevID } from './utils-article';
+import { getHrefAbsolute, getRevID } from './utils-article';
 
 import Api from './Api';
-import id from './id';
-import * as utils from './utils';
 
 /**
  * Class representing an Article object.
@@ -167,14 +166,14 @@ class Article {
         // Get revision id if possible from the provided diff and oldid
         this.values.revid = getRevID( this );
 
-        // Set title
-        if ( !isEmpty( this.values.title ) ) {
-            this.setTitle();
-        }
-
         // Set hostname
         if ( !isEmpty( this.values.hostname ) ) {
             this.setHostname();
+        }
+
+        // Set title
+        if ( !isEmpty( this.values.title ) ) {
+            this.setTitle();
         }
     }
 
@@ -185,9 +184,12 @@ class Article {
         // Set server names
         const { general } = Api.siteInfoAliases[ this.values.hostname ] || {};
         if ( !isEmptyObject( general ) ) {
-            this.values.hostname = id.local.mwIsMF && !utils.isEmpty( general.mobileservername ) ? general.mobileservername : general.servername;
+            this.values.hostname = id.local.mwIsMF && !isEmpty( general.mobileservername ) ? general.mobileservername : general.servername;
             this.mw.serverName = general.servername;
             this.mw.mobileServerName = general.mobileservername;
+        } else {
+            this.mw.serverName = this.values.hostname;
+            this.mw.mobileServerName = this.values.hostname;
         }
 
         // Set index and api endpoints
@@ -196,7 +198,6 @@ class Article {
 
         // Check if article is from foreign interwiki
         this.isForeign = isForeign( this.values.hostname );
-
     }
 
     /**
@@ -215,6 +216,9 @@ class Article {
         }
 
         this.values.href = mw.util.getUrl( this.values.titleSection || this.values.title );
+        if ( this.isForeign ) {
+            this.values.href = getHrefAbsolute( this, this.values.href );
+        }
     }
 }
 
