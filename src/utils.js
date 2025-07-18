@@ -813,6 +813,15 @@ export function renderLabel( params ) {
     );
 }
 
+/**
+ * Renders a message box in the Codex styles.
+ * @param {Object} [params]
+ * @param {JQuery<HTMLElement>} [params.$content] a content element
+ * @param {string} [params.type] a notice type
+ * @returns {HTMLElement}
+ *
+ * ToDo: migrate to the mw.util.messageBox.
+ */
 export function renderMessageBox( params ) {
     params = {
         $content: null,

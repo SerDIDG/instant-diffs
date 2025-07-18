@@ -629,7 +629,7 @@ class Link {
 
         this.node.classList.remove( 'external' );
         this.node.classList.add( ...classes );
-        this.node.setAttribute( 'data-instantdiffs-link', this.options.behavior );
+        this.node.dataset.instantdiffsLink = this.options.behavior;
 
         this.actions.action = new Button( {
             node: this.node,
@@ -662,7 +662,7 @@ class Link {
         if ( !isReady ) return;
 
         this.onDialogRequest();
-        $.when( view.load() )
+        return $.when( view.load() )
             .always( () => this.onDialogLoad() );
     }
 

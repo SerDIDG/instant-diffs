@@ -40,9 +40,10 @@ export const config = {
         ],
         content: [
             'jquery.confirmable',
+            'mediawiki.codex.messagebox.styles',
+            'mediawiki.interface.helpers.styles',
             'mediawiki.diff',
             'mediawiki.diff.styles',
-            'mediawiki.interface.helpers.styles',
             'mediawiki.misc-authed-curate',
             'mediawiki.DateFormatter',
             'ext.flaggedRevs.basic',

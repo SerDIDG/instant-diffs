@@ -35,11 +35,12 @@ class ViewButton extends Button {
             onOpen: () => this.onDialogOpen(),
             onClose: () => this.onDialogClose(),
         };
+
         const isReady = view.setup( this, options );
         if ( !isReady ) return;
 
         this.onDialogRequest();
-        $.when( view.load() )
+        return $.when( view.load() )
             .always( () => this.onDialogLoad() );
     }
 
