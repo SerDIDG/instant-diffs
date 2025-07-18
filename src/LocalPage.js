@@ -291,7 +291,7 @@ class LocalPage extends Page {
         }
 
         // Get page title
-        const $links = $toLinks.add( $fromLinks );
+        const $links = $fromLinks.add( $toLinks );
         if ( utils.isEmpty( this.article.get( 'title' ) ) && $links.length > 0 ) {
             articleValues.title = utils.getParamFromUrl( 'title', $links.prop( 'href' ) ) || $links.prop( 'title' );
         }
