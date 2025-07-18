@@ -262,7 +262,7 @@ export function processDefaults() {
  * @return {Object}
  */
 export function getQueryDefaults() {
-    const settings = parseQuery( document.currentScript?.src )?.instantdiffdefaults || {};
+    const settings = parseQuery( document.currentScript?.src )?.instantdiffs || {};
     for ( const [ key, value ] of Object.entries( settings ) ) {
         settings[ key ] = value === 'true' ? true : value === 'false' ? false : value;
     }
