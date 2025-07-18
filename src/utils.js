@@ -130,7 +130,8 @@ export function isNew() {
  * @returns {boolean}
  */
 export function isAllowed() {
-    return id.config.include.actions.includes( mw.config.get( 'wgAction' ) ) &&
+    return !defaults( 'standalone' ) &&
+        id.config.include.actions.includes( mw.config.get( 'wgAction' ) ) &&
         !id.config.exclude.pages.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) );
 }
 
@@ -220,13 +221,18 @@ export function defaults( key ) {
 export function setDefaults( settings, saveUserOptions ) {
     id.defaults = { ...id.defaults, ...settings };
 
+    // Save options only declarative in the settings
+    const userSettings = Object.fromEntries(
+        Object.entries( id.defaults ).filter( ( [ key ] ) => key in id.settings ),
+    );
+
     // Save defaults in the Local Storage
-    mw.storage.setObject( `${ id.config.prefix }-settings`, id.defaults );
+    mw.storage.setObject( `${ id.config.prefix }-settings`, userSettings );
 
     // Save defaults to the local User Options
     if ( saveUserOptions && !id.local.mwIsAnon ) {
         try {
-            mw.user.options.set( id.config.settingsPrefix, JSON.stringify( id.defaults ) );
+            mw.user.options.set( id.config.settingsPrefix, JSON.stringify( userSettings ) );
         } catch {}
     }
 }
@@ -249,6 +255,18 @@ export function processDefaults() {
             setDefaults( settings, false );
         } catch {}
     }
+}
+
+/**
+ * Parses currentScript src href for the setting options.
+ * @return {Object}
+ */
+export function getQueryDefaults() {
+    const settings = parseQuery( document.currentScript?.src )?.instantdiffdefaults || {};
+    for ( const [ key, value ] of Object.entries( settings ) ) {
+        settings[ key ] = value === 'true' ? true : value === 'false' ? false : value;
+    }
+    return settings;
 }
 
 /******* MESSAGES *******/
@@ -404,31 +422,44 @@ export function getHref( href ) {
     return href;
 }
 
-export function getHostname( href ) {
+export function getURL( href ) {
     try {
-        const url = new URL( getHref( href ) );
-        return url.hostname;
+        return new URL( getHref( href ) );
     } catch {
         return null;
     }
 }
 
 export function getParamFromUrl( param, href ) {
-    try {
-        const url = new URL( getHref( href ) );
-        return url.searchParams.get( param );
-    } catch {
-        return null;
-    }
+    const url = getURL( href );
+    if ( !url ) return;
+    return url.searchParams.get( param );
 }
 
 export function getComponentFromUrl( param, href ) {
-    try {
-        const url = new URL( getHref( href ) );
-        return url[ param ];
-    } catch {
-        return null;
+    const url = getURL( href );
+    if ( !url ) return;
+    return url[ param ];
+}
+
+export function parseQuery( href ) {
+    const url = getURL( href );
+    if ( !url ) return;
+
+    const result = {};
+
+    for ( const [ key, value ] of url.searchParams ) {
+        const match = key.match( /^([^[]+)\[([^\]]+)\]$/ );
+        if ( match ) {
+            const [ , parent, child ] = match;
+            result[ parent ] = result[ parent ] || {};
+            result[ parent ][ child ] = value;
+        } else {
+            result[ key ] = value;
+        }
     }
+
+    return result;
 }
 
 /******* DIFF \ REVISION *******/

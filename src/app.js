@@ -160,7 +160,7 @@ function prepare( require ) {
     // Predict a mobile server name and add it to the mw.config
     const mobileServer = utils.getMobileServer();
     mw.config.set( 'wgMobileServer', mobileServer );
-    mw.config.set( 'wgMobileServerName', utils.getHostname( mobileServer ) );
+    mw.config.set( 'wgMobileServerName', utils.getComponentFromUrl( 'hostname', mobileServer ) );
 
     // Get hostnames (including predicted mobile variants) used to assemble the link selector
     id.local.mwServers = [ mw.config.get( 'wgServer' ), mw.config.get( 'wgMobileServer' ) ]
@@ -294,7 +294,7 @@ function app() {
     id.settings ||= {};
     id.settings = { ...id.config.settings, ...id.settings };
     id.defaults ||= {};
-    id.defaults = { ...id.config.defaults, ...id.defaults };
+    id.defaults = { ...id.config.defaults, ...utils.getQueryDefaults(), ...id.defaults };
     id.utils = utils;
     id.modules = {
         Api,

@@ -267,11 +267,16 @@ class LocalPage extends Page {
         const $fromLinks = this.nodes.$data.find( '#mw-diff-otitle1 strong > a, #differences-prevlink' );
         const $toLinks = this.nodes.$data.find( '#mw-diff-ntitle1 strong > a, #differences-nextlink' );
 
-        // Get diff and oldid values
+        // Get title, diff and oldid values
         if ( $fromLinks.length > 0 ) {
             const oldid = Number( utils.getParamFromUrl( 'oldid', $fromLinks.prop( 'href' ) ) );
             if ( utils.isValidID( oldid ) ) {
                 this.mwConfig.wgDiffOldId = oldid;
+            }
+
+            const title = utils.getParamFromUrl( 'title', $fromLinks.prop( 'href' ) ) || $fromLinks.prop( 'title' );
+            if ( !utils.isEmpty( title ) ) {
+                articleValues.title = title;
             }
         }
         if ( $toLinks.length > 0 ) {
@@ -288,12 +293,11 @@ class LocalPage extends Page {
                     articleValues.diff = diff;
                 }
             }
-        }
 
-        // Get page title
-        const $links = $fromLinks.add( $toLinks );
-        if ( utils.isEmpty( this.article.get( 'title' ) ) && $links.length > 0 ) {
-            articleValues.title = utils.getParamFromUrl( 'title', $links.prop( 'href' ) ) || $links.prop( 'title' );
+            const title = utils.getParamFromUrl( 'title', $toLinks.prop( 'href' ) ) || $toLinks.prop( 'title' );
+            if ( !utils.isEmpty( title ) ) {
+                articleValues.title = title;
+            }
         }
 
         // Populate section name

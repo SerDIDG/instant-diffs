@@ -219,7 +219,7 @@ class GlobalPage extends Page {
             curid: this.mwConfig.wgArticleId,
             curRevid: this.mwConfig.wgCurRevisionId,
             revid: this.mwConfig.wgRevisionId,
-            title: this.data.totitle,
+            title: this.data.totitle || this.data.fromtitle,
             section: this.data.tosection,
         } );
 

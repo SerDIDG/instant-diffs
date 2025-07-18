@@ -182,7 +182,7 @@ class Api {
 
         this.siteInfoAliases[ site.general.servername ] = site;
         if ( !utils.isEmpty( site.general.mobileserver ) ) {
-            site.general.mobileservername = utils.getHostname( site.general.mobileserver );
+            site.general.mobileservername = utils.getComponentFromUrl( 'hostname', site.general.mobileserver );
             this.siteInfoAliases[ site.general.mobileservername ] = site;
         }
     }
