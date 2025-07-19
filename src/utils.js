@@ -209,7 +209,7 @@ export function spacesToUnderlines( str ) {
  * @returns {*|object} a specific option, or the option's object
  */
 export function defaults( key ) {
-    return key ? id.defaults[ key ] : id.defaults;
+    return key ? id.local.defaults[ key ] : id.local.defaults;
 }
 
 /**
@@ -219,11 +219,11 @@ export function defaults( key ) {
  * @param {boolean} [saveUserOptions] save the setting options to the local User Options
  */
 export function setDefaults( settings, saveUserOptions ) {
-    id.defaults = { ...id.defaults, ...settings };
+    id.local.defaults = { ...id.local.defaults, ...settings };
 
     // Save options only declarative in the settings
     const userSettings = Object.fromEntries(
-        Object.entries( id.defaults ).filter( ( [ key ] ) => key in id.config.settings ),
+        Object.entries( id.local.defaults ).filter( ( [ key ] ) => key in id.config.settings ),
     );
 
     // Save defaults in the Local Storage
@@ -267,6 +267,15 @@ export function getQueryDefaults() {
         settings[ key ] = value === 'true' ? true : value === 'false' ? false : value;
     }
     return settings;
+}
+
+/**
+ * Gets a setting stored in the config.
+ * @param {string} [key] for specific option, or undefined for the option's object
+ * @returns {*|object} a specific option, or the option's object
+ */
+export function settings( key ) {
+    return key ? id.local.settings[ key ] : id.local.settings;
 }
 
 /******* MESSAGES *******/

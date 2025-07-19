@@ -21,26 +21,34 @@ import './styles/skins.less';
 
 /******* PAGE SPECIFIC ADJUSTMENTS *******/
 
-function applyPageSpecificAdjustments() {
-    if ( !utils.isAllowed() ) return;
+function applyPageAdjustments() {
+    if ( id.isPageAdjustmentsApplied || !utils.isAllowed() ) return;
+
+    id.isPageAdjustmentsApplied = true;
+
+    const specialPageName = mw.config.get( 'wgCanonicalSpecialPageName' );
+    const action = mw.config.get( 'wgAction' );
+
+    // Add a status to the body tag
+    document.body.classList.add( 'instantDiffs-enabled' );
 
     // Change Lists
-    if ( id.config.changeLists.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) ) ) {
+    if ( id.config.changeLists.includes( specialPageName ) ) {
         return processChangelistPage();
     }
 
     // User Contributions
-    if ( id.config.contributionLists.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) ) ) {
+    if ( id.config.contributionLists.includes( specialPageName ) ) {
         return processContributionsPage();
     }
 
     // GlobalWatchlist Extension
-    if ( mw.config.get( 'wgCanonicalSpecialPageName' ) === 'GlobalWatchlist' ) {
+    if ( specialPageName === 'GlobalWatchlist' ) {
         return processGlobalWatchlistPage();
     }
 
     // History
-    if ( mw.config.get( 'wgAction' ) === 'history' ) {
+    if ( action === 'history' ) {
         return processHistoryPage();
     }
 }
@@ -276,38 +284,36 @@ function assembleLinkSelector() {
 /******* BOOTSTRAP *******/
 
 function app() {
-    // Prevent multiple instances of the script from running
+    // Merge default options with user defined options
+    const settingOptions = { ...config.settings, ...id.settings };
+    const defaultOptions = { ...config.defaults, ...id.defaults, ...utils.getQueryDefaults() };
+
+    // Prevent multiple instances of the script from running.
+    // However, if a new instance is replacing a standalone instance,
+    // ensure it updates the config and starts processing content.
     if ( id.isRunning ) {
-        utils.notifyError( 'error-prepare-version', {
+        // Replace standalone instance with newer non-standalone instance
+        id.isReplaced = handleReplace( settingOptions, defaultOptions );
+
+        utils.notifyError( id.isReplaced ? 'error-prepare-replaced' : 'error-prepare-version', {
             type: 'version',
             message: `loaded: ${ id.config.version }, concurrent: ${ config.version }`,
         }, null, true );
         return;
     }
 
+    // Initialize application state
     id.isRunning = true;
 
     // Export to global scope
     id.config = config;
     id.local = local;
+    id.local.settings = settingOptions;
+    id.local.defaults = defaultOptions;
     id.timers = timers;
-    id.settings ||= {};
-    id.settings = { ...id.config.settings, ...id.settings };
-    id.defaults ||= {};
-    id.defaults = { ...id.config.defaults, ...utils.getQueryDefaults(), ...id.defaults };
     id.utils = utils;
     id.modules = {
-        Api,
-        Article,
-        Link,
-        Button,
-        ViewButton,
-        HistoryCompareButton,
-        Page,
-        LocalPage,
-        GlobalPage,
-        view,
-        settings,
+        Api, Article, Link, Button, ViewButton, HistoryCompareButton, Page, LocalPage, GlobalPage, view, settings,
     };
 
     // Track on run start time
@@ -323,6 +329,10 @@ function app() {
     require( './extensions.js' );
 
     // Load dependencies and prepare variables
+    load();
+}
+
+function load() {
     mw.loader.load( utils.origin( id.config.dependencies.styles ), 'text/css' );
     mw.loader.using( id.config.dependencies.main )
         .then( prepare )
@@ -339,7 +349,7 @@ function ready() {
     utils.processDefaults();
     utils.processMessages();
 
-    // Check if the script is enabled on the mobile skin (Minerva)
+    // Check if script is enabled on mobile skin (Minerva)
     if ( mw.config.get( 'skin' ) === 'minerva' && !utils.defaults( 'enableMobile' ) ) {
         utils.notifyError( 'error-prepare-mobile', { type: 'mobile' }, null, true );
         return;
@@ -347,9 +357,8 @@ function ready() {
 
     // Perform page-specific adjustments after preparation and call the ready state
     id.isReady = true;
-    document.body.classList.add( 'instantDiffs-enabled' );
     assembleLinkSelector();
-    applyPageSpecificAdjustments();
+    applyPageAdjustments();
 
     // Track on ready time
     id.timers.ready = Date.now();
@@ -360,6 +369,7 @@ function ready() {
     // Add process hook listeners
     mw.hook( 'wikipage.content' ).add( processContent );
     mw.hook( `${ id.config.prefix }.process` ).add( process );
+    mw.hook( `${ id.config.prefix }.replace` ).add( processReplace );
 }
 
 function processContent( $context ) {
@@ -390,7 +400,7 @@ function process( $context ) {
     id.timers.processStart = Date.now();
 
     // Get all links using the assembled selector and skip those already processed
-    const links = Array.from( Link.findLinks( $context ) )
+    const links = Array.from( id.modules.Link.findLinks( $context ) )
         .filter( ( node ) => !Link.hasLink( node ) )
         .map( ( node ) => new Link( node ) );
 
@@ -405,6 +415,36 @@ function process( $context ) {
 
     // Fire the process end hook
     mw.hook( `${ id.config.prefix }.processed` ).fire( links );
+}
+
+function handleReplace( settingOptions, defaultOptions ) {
+    if ( id.utils.defaults( 'standalone' ) && !defaultOptions.standalone ) {
+        // Call an internal hook to modify settings of the original instance.
+        // We want to use original instance because each new one will construct
+        // a new set of the modules with a new context.
+        mw.hook( `${ id.config.prefix }.replace` ).fire( settingOptions, defaultOptions );
+        return true;
+    }
+    return false;
+}
+
+function processReplace( settingOptions, defaultOptions ) {
+    if ( !settingOptions || !defaultOptions ) return;
+
+    id.local.settings = settingOptions;
+    id.local.defaults = defaultOptions;
+
+    if ( id.isReady ) {
+        utils.processDefaults();
+
+        // Reset time loggers
+        id.timers.run = Date.now();
+        id.timers.ready = Date.now();
+
+        // Start processing content
+        applyPageAdjustments();
+        processContent( utils.getBodyContentNode() );
+    }
 }
 
 function observeInteractions( entries ) {

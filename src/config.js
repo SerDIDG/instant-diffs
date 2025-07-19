@@ -344,8 +344,27 @@ export const config = {
  * Local variables.
  */
 export const local = {
-    language: null,
+    /**
+     * @type {Object<string, string>}
+     */
     messages: {},
+
+    /**
+     * @type {Object<string, boolean>}
+     */
+    settings: {},
+
+    /**
+     * @type {Object<string, *>}
+     */
+    defaults: {},
+
+    /**
+     * @type {Function}
+     */
+    require: null,
+
+    language: null,
     linkSelector: null,
 
     mwIsAnon: null,
