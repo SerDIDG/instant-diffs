@@ -1,6 +1,6 @@
 import id from './id';
-import { isEmpty, isEmptyObject, isForeign, isString, isValidDir, isValidID } from './utils';
-import { getHrefAbsolute, getRevID } from './utils-article';
+import * as utils from './utils';
+import * as utilsArticle from './utils-article';
 
 import Api from './Api';
 
@@ -8,6 +8,11 @@ import Api from './Api';
  * Class representing an Article object.
  */
 class Article {
+    /**
+     * @type {typeof utilsArticle}
+     */
+    static utils = utilsArticle;
+
     /**
      * @type {Object}
      */
@@ -41,7 +46,7 @@ class Article {
     isHidden = false;
 
     constructor( values ) {
-        if ( !isEmptyObject( values ) ) {
+        if ( !utils.isEmptyObject( values ) ) {
             this.set( values );
         }
     }
@@ -73,13 +78,13 @@ class Article {
      */
     validateValues( values ) {
         // Fix common user mistake with unnecessary pipeline following after the ids.
-        if ( !isEmpty( values.diff ) && isString( values.diff ) && values.diff.indexOf( '|' ) > -1 ) {
+        if ( !utils.isEmpty( values.diff ) && utils.isString( values.diff ) && values.diff.indexOf( '|' ) > -1 ) {
             values.diff = values.diff.split( '|' ).shift();
         }
-        if ( !isEmpty( values.oldid ) && isString( values.oldid ) && values.oldid.indexOf( '|' ) > -1 ) {
+        if ( !utils.isEmpty( values.oldid ) && utils.isString( values.oldid ) && values.oldid.indexOf( '|' ) > -1 ) {
             values.oldid = values.oldid.split( '|' ).shift();
         }
-        if ( !isEmpty( values.curid ) && isString( values.curid ) && values.curid.indexOf( '|' ) > -1 ) {
+        if ( !utils.isEmpty( values.curid ) && utils.isString( values.curid ) && values.curid.indexOf( '|' ) > -1 ) {
             values.curid = values.curid.split( '|' ).shift();
         }
 
@@ -90,12 +95,12 @@ class Article {
         if ( [ 0, '0', 'current' ].includes( values.diff ) ) {
             values.diff = 'cur';
         }
-        if ( !isValidDir( values.direction ) ) {
+        if ( !utils.isValidDir( values.direction ) ) {
             values.direction = 'prev';
         }
 
         // Validate section
-        if ( !isEmpty( values.section ) ) {
+        if ( !utils.isEmpty( values.section ) ) {
             values.section = values.section.replace( /^#/, '' );
         }
 
@@ -107,32 +112,32 @@ class Article {
      */
     validate() {
         // Check if a page type is a revision
-        if ( isValidID( this.values.oldid ) && isEmpty( this.values.diff ) ) {
+        if ( utils.isValidID( this.values.oldid ) && utils.isEmpty( this.values.diff ) ) {
             this.values.type = 'revision';
             return true;
         }
 
         // Check if a page type is a diff
-        if ( isValidID( this.values.diff ) || isValidID( this.values.oldid ) ) {
+        if ( utils.isValidID( this.values.diff ) || utils.isValidID( this.values.oldid ) ) {
             this.values.type = 'diff';
 
             // Swap parameters if oldid is a direction and a title is empty
-            if ( isEmpty( this.values.title ) && isValidDir( this.values.oldid ) ) {
+            if ( utils.isEmpty( this.values.title ) && utils.isValidDir( this.values.oldid ) ) {
                 const dir = this.values.oldid;
                 this.values.oldid = this.values.diff;
                 this.values.diff = dir;
             }
 
             // Swap parameters if oldid is empty: special pages do not have a page title attribute
-            if ( isEmpty( this.values.oldid ) ) {
+            if ( utils.isEmpty( this.values.oldid ) ) {
                 this.values.oldid = this.values.diff;
                 this.values.diff = this.values.direction;
             }
 
             // Fix a tenet bug
             if (
-                isValidID( this.values.oldid ) &&
-                isValidID( this.values.diff ) &&
+                utils.isValidID( this.values.oldid ) &&
+                utils.isValidID( this.values.diff ) &&
                 parseInt( this.values.oldid ) > parseInt( this.values.diff )
             ) {
                 const diff = this.values.oldid;
@@ -144,13 +149,13 @@ class Article {
         }
 
         // Check if a page type is a diff
-        if ( !isEmpty( this.values.title ) && isValidDir( this.values.diff ) ) {
+        if ( !utils.isEmpty( this.values.title ) && utils.isValidDir( this.values.diff ) ) {
             this.values.type = 'diff';
             return true;
         }
 
         // Check if a page type is a lastest revision
-        if ( isValidID( this.values.curid ) ) {
+        if ( utils.isValidID( this.values.curid ) ) {
             this.values.type = 'revision';
             this.values.typeVariant = 'page';
             return true;
@@ -164,15 +169,15 @@ class Article {
      */
     process() {
         // Get revision id if possible from the provided diff and oldid
-        this.values.revid = getRevID( this );
+        this.values.revid = utilsArticle.getRevID( this );
 
         // Set hostname
-        if ( !isEmpty( this.values.hostname ) ) {
+        if ( !utils.isEmpty( this.values.hostname ) ) {
             this.setHostname();
         }
 
         // Set title
-        if ( !isEmpty( this.values.title ) ) {
+        if ( !utils.isEmpty( this.values.title ) ) {
             this.setTitle();
         }
     }
@@ -183,8 +188,8 @@ class Article {
     setHostname() {
         // Set server names
         const { general } = Api.siteInfoAliases[ this.values.hostname ] || {};
-        if ( !isEmptyObject( general ) ) {
-            this.values.hostname = id.local.mwIsMF && !isEmpty( general.mobileservername ) ? general.mobileservername : general.servername;
+        if ( !utils.isEmptyObject( general ) ) {
+            this.values.hostname = id.local.mwIsMF && !utils.isEmpty( general.mobileservername ) ? general.mobileservername : general.servername;
             this.mw.serverName = general.servername;
             this.mw.mobileServerName = general.mobileservername;
         } else {
@@ -197,7 +202,7 @@ class Article {
         this.mw.endPointUrl = new URL( this.mw.endPoint );
 
         // Check if article is from foreign interwiki
-        this.isForeign = isForeign( this.values.hostname );
+        this.isForeign = utils.isForeign( this.values.hostname );
     }
 
     /**
@@ -210,14 +215,14 @@ class Article {
             this.values.titleText = this.mw.title.getPrefixedText();
         } catch {}
 
-        if ( !isEmpty( this.values.section ) ) {
+        if ( !utils.isEmpty( this.values.section ) ) {
             this.values.titleSection = [ this.values.title, this.values.section ].join( '#' );
             this.values.titleTextSection = [ this.values.titleText, this.values.section ].join( '#' );
         }
 
         this.values.href = mw.util.getUrl( this.values.titleSection || this.values.title );
         if ( this.isForeign ) {
-            this.values.href = getHrefAbsolute( this, this.values.href );
+            this.values.href = utilsArticle.getHrefAbsolute( this, this.values.href );
         }
     }
 }

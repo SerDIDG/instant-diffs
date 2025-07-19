@@ -69,6 +69,7 @@
     "dialog-notice-wikilambda": "WikiLambda app currently only shows the latest revision. See a [[phab:T397902|ticket]] on Phabricator.",
     "dialog-notice-foreign-diff": "You are viewing a foreign diff from [$1 $2]. Some features can be limited.",
     "dialog-notice-foreign-revision": "You are viewing a foreign revision from [$1 $2]. Some features can be limited.",
+    "dialog-notice-foreign-wikilambda": "WikiLambda app is not currently supported in the foreign revisions.",
 
     "settings-title": "Instant Diffs Settings",
     "settings-saved": "The settings have been saved successfully.\nReload the page to apply them.",

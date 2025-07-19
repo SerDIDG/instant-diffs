@@ -1,7 +1,13 @@
 import id from './id';
 import * as utils from './utils';
+import * as utilsApi from './utils-api';
 
 class Api {
+    /**
+     * @type {typeof utilsApi}
+     */
+    static utils = utilsApi;
+
     /**
      * @type {mw.Api}
      */

@@ -1,5 +1,6 @@
 import id from './id';
 import * as utils from './utils';
+import * as utilsPage from './utils-page';
 
 import Api from './Api';
 import RequestManager from './RequestManager';
@@ -12,6 +13,11 @@ import './styles/page.less';
  * @mixes OO.EventEmitter
  */
 class Page {
+    /**
+     * @type {typeof utilsPage}
+     */
+    static utils = utilsPage;
+
     /**
      * @type {string}
      */
@@ -177,7 +183,7 @@ class Page {
     /**
      * Event that emits after the load complete.
      */
-    onLoadResponse = () => {
+    onLoadResponse = async () => {
         this.isLoading = false;
         this.isLoaded = true;
 
@@ -189,9 +195,9 @@ class Page {
 
         // Render content and fire hooks
         if ( !utils.isEmpty( this.data ) ) {
-            this.renderSuccess();
+            await this.renderSuccess();
         } else
-            this.renderError();
+            await this.renderError();
     };
 
     /******* REQUESTS *******/
@@ -257,14 +263,14 @@ class Page {
 
     /******* RENDER *******/
 
-    renderSuccess() {
-        this.render();
+    async renderSuccess() {
+        await this.render();
 
         mw.hook( `${ id.config.prefix }.page.renderSuccess` ).fire( this );
         mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
     }
 
-    renderError() {
+    async renderError() {
         // Create error object
         this.error = {
             type: this.article.get( 'type' ),
@@ -277,13 +283,13 @@ class Page {
         // Show critical notification popup
         utils.notifyError( `error-${ this.error.type }-${ this.error.code }`, this.error, this.article );
 
-        this.render();
+        await this.render();
 
         mw.hook( `${ id.config.prefix }.page.renderError` ).fire( this );
         mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
     }
 
-    render() {
+    async render() {
         const classes = [
             'instantDiffs-page',
             `instantDiffs-page--${ this.article.get( 'type' ) }`,
@@ -308,25 +314,28 @@ class Page {
             .appendTo( this.nodes.$container );
 
         if ( this.error ) {
-            this.renderErrorContent();
+            await this.renderErrorContent();
         } else {
-            this.renderContent();
+            await this.renderContent();
         }
 
         this.renderNavigation();
     }
 
-    renderContent() {}
-
-    renderErrorContent() {
-        const message = utils.getErrorMessage( `error-${ this.error.type }-${ this.error.code }`, this.error, this.article );
-        const $message = $( `<p>${ message }</p>` );
-        this.renderWarning( $message );
+    async renderContent() {
+        // Restore functionally that not requires that elements are in the DOM
+        await this.restoreFunctionality();
     }
 
-    renderWarning( $content, type = 'warning' ) {
+    async renderErrorContent() {
+        const message = utils.getErrorMessage( `error-${ this.error.type }-${ this.error.code }`, this.error, this.article );
+        const $content = $( `<p>${ message }</p>` );
+        this.renderWarning( { $content } );
+    }
+
+    renderWarning( { $content, type = 'warning', container = this.nodes.$body, insertMethod = 'prependTo' } ) {
         const $box = utils.renderMessageBox( { $content, type } );
-        utils.embed( $box, this.nodes.$body, 'prependTo' );
+        utils.embed( $box, container, insertMethod );
         return $box;
     }
 
@@ -350,6 +359,21 @@ class Page {
 
             node.setAttribute( 'target', '_blank' );
         } );
+    }
+
+    /******* RESTORE FUNCTIONALITY *******/
+
+    async restoreFunctionality() {
+        if ( this.error ) return;
+
+        // Restore file media info
+        this.nodes.$mediaInfoView = this.nodes.$body.find( 'mediainfoview' );
+        if ( this.article.get( 'type' ) === 'revision' && this.nodes.$mediaInfoView.length > 0 ) {
+            const content = await utilsPage.restoreFileMediaInfo( this.nodes.$mediaInfoView );
+            if ( content ) {
+                utils.embed( content, this.nodes.$diffTitle, 'insertAfter' );
+            }
+        }
     }
 
     /******* ACTIONS *******/
@@ -402,8 +426,9 @@ class Page {
     }
 
     getArticleTitleText() {
-        if ( this.error ) return utils.msg( 'dialog-title-not-found' );
-        if ( utils.isEmpty( this.article.get( 'title' ) ) ) return utils.msg( 'dialog-title-empty' );
+        if ( utils.isEmpty( this.article.get( 'title' ) ) ) {
+            return utils.msg( this.error ? 'dialog-title-not-found' : 'dialog-title-empty' );
+        }
         if ( !utils.isEmpty( this.article.get( 'wbLabel' ) ) ) {
             return `${ this.article.get( 'wbLabel' ) } (${ this.article.get( 'titleText' ) })`;
         }

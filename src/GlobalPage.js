@@ -2,7 +2,7 @@ import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
 import { getNamespaceConfig } from './utils-api';
-import { addLinkTags, getDependencies, getForeignDependencies, removeLinkTags } from './utils-article';
+import { addLinkTags, getForeignDependencies, removeLinkTags } from './utils-article';
 
 import Api from './Api';
 import Page from './Page';
@@ -177,18 +177,22 @@ class GlobalPage extends Page {
 
     /******* RENDER *******/
 
-    renderContent() {
+    async render() {
+        await super.render();
+
+        // Render warning about foreign diff limitations
+        this.renderForeignWarning();
+    }
+
+    async renderContent() {
         // Collect missing data from the response
         this.collectData();
 
         // Set additional config variables
         this.setConfigs();
 
-        // Render warning about foreign diff limitations
-        this.renderForeignWarning();
-
         // Render diff table
-        this.renderDiffTable();
+        await this.renderDiffTable();
     }
 
     collectData() {
@@ -242,13 +246,13 @@ class GlobalPage extends Page {
         this.links.next = this.data.next && this.data.next !== this.data.torevid;
     }
 
-    renderDiffTable() {
+    async renderDiffTable() {
         // Render table structure
         this.nodes.table = utilsPage.renderDiffTable( this.data.body );
 
         // Render warning about hidden content
         if ( this.data.fromtexthidden || this.data.totexthidden ) {
-            this.renderDeletedWarning();
+            await this.renderDeletedWarning();
         }
 
         // Add deleted side content
@@ -303,11 +307,13 @@ class GlobalPage extends Page {
         }
     }
 
-    renderErrorContent() {
-        super.renderErrorContent();
-
-        // Render warning about foreign diff limitations
-        this.renderForeignWarning();
+    async renderErrorContent() {
+        // Render a custom error warning is a revision was hidden
+        if ( this.errorData?.code === 'missingcontent' ) {
+            await this.renderDeletedWarning();
+        } else {
+            await super.renderErrorContent();
+        }
 
         // Try to parse error message for a missing id
         const values = this.article.getValues();
@@ -332,12 +338,16 @@ class GlobalPage extends Page {
     }
 
     renderForeignWarning() {
-        const $message = $( utils.msgDom(
+        const $content = $( utils.msgDom(
             `dialog-notice-foreign-${ this.article.get( 'type' ) }`,
             `https://${ this.article.get( 'hostname' ) }`,
             this.article.get( 'hostname' ),
         ) );
-        this.nodes.$foreignWarning = this.renderWarning( $message, 'notice' );
+
+        this.nodes.$foreignWarning = this.renderWarning( {
+            $content,
+            type: 'notice',
+        } );
     }
 
     async renderDeletedWarning() {
@@ -345,10 +355,15 @@ class GlobalPage extends Page {
             title: this.article.get( 'title' ),
             text: mw.msg( 'rev-deleted-no-diff' ),
         }, this.article.get( 'hostname' ) );
-        const $message = $( message ).find( 'p' );
 
-        this.nodes.$deleteWarning = this.renderWarning( $message, 'warning' );
-        utils.embed( this.nodes.$deleteWarning, this.nodes.$foreignWarning, 'insertAfter' );
+        const $content = $( message ).find( 'p' );
+
+        this.nodes.$deleteWarning = this.renderWarning( {
+            $content,
+            type: 'warning',
+            container: this.nodes.$foreignWarning,
+            insertMethod: 'insertAfter',
+        } );
     }
 
     /******* REVISION *******/
@@ -398,17 +413,17 @@ class GlobalPage extends Page {
         utils.notifyError( `error-dependencies-${ type }`, error, this.article );
     }
 
-    onRequestRevisionDone( data, params ) {
+    async onRequestRevisionDone( data, params ) {
         // Render error if the parse request is completely failed
         this.parse = data?.parse;
         if ( !this.parse ) {
             return this.onRequestRevisionError( null, data, params );
         }
 
-        this.renderRevision();
+        await this.renderRevision();
     }
 
-    renderRevision() {
+    async renderRevision() {
         // Get values for mw.config
         this.mwConfig.wgArticleId = this.parse.pageid;
         this.mwConfig.wgRevisionId = Math.max( this.article.get( 'revid' ), this.parse.revid );
@@ -423,27 +438,46 @@ class GlobalPage extends Page {
 
         // Append title
         const title = this.mwConfig.wgRevisionId === this.mwConfig.wgCurRevisionId ? 'currentrev-asof' : 'revisionasof';
-        this.nodes.revisionTitle = h( 'h2', { class: 'diff-currentversion-title' },
+        this.nodes.diffTitle = h( 'h2', { class: 'diff-currentversion-title' },
             mw.msg( title, utilsPage.getUserDate( this.data.totimestamp ) ),
         );
-        this.nodes.$body.append( this.nodes.revisionTitle );
+        this.nodes.$diffTitle = $( this.nodes.diffTitle ).appendTo( this.nodes.$body );
 
-        // Append content
+        // Append and process content
         this.nodes.$revision = $( this.parse.text ).appendTo( this.nodes.$body );
+        await this.processRevision();
+
+        // Convert relative links to absolute
         utils.addBaseToLinks( this.nodes.$revision, `https://${ this.article.get( 'hostname' ) }` );
 
         // Get page dependencies
-        const dependencies = [
-            ...this.parse.modulestyles,
-            ...this.parse.modulescripts,
-            ...this.parse.modules,
-            ...getDependencies( this.article ),
-        ];
-        mw.loader.load( utils.getDependencies( dependencies ) );
+        utilsPage.requestDependencies( this.parse, this.article );
 
         // Get page foreign dependencies
         const foreignDependencies = getForeignDependencies( this.article );
         this.linkTags = addLinkTags( foreignDependencies.styles );
+    }
+
+    async processRevision() {
+        // Hide unsupported or unnecessary element
+        this.nodes.$body
+            .find( '#ext-wikilambda-app, .ext-wikilambda-view-nojsfallback, .mw-diff-slot-header, .mw-slot-header' )
+            .addClass( 'instantDiffs-hidden' );
+
+        // Render a notice about unsupported WikiLambda app
+        this.nodes.$wikiLambdaApp = this.nodes.$body.find( '#ext-wikilambda-app' );
+        if ( this.nodes.$wikiLambdaApp.length > 0 ) {
+            const $content = $( `<p>${ utils.msg( 'dialog-notice-foreign-wikilambda' ) }</p>` );
+            this.renderWarning( {
+                $content,
+                type: 'notice',
+                container: this.nodes.$wikiLambdaApp,
+                insertMethod: 'insertBefore',
+            } );
+        }
+
+        // Restore functionally that not requires that elements are in the DOM
+        await this.restoreFunctionality();
     }
 
     /******* ACTIONS *******/

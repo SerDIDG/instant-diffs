@@ -45,7 +45,7 @@ class LocalPage extends Page {
                 ( this.article.get( 'typeVariant' ) === 'page' && utils.isValidID( this.article.get( 'curid' ) ) )
             )
         ) {
-            promises.push( this.requestPageDependencies() );
+            promises.push( this.requestPage() );
         }
 
         return Promise.allSettled( promises )
@@ -118,7 +118,7 @@ class LocalPage extends Page {
      * Request page dependencies.
      * @returns {JQuery.Promise}
      */
-    requestPageDependencies() {
+    requestPage() {
         if ( this.error ) return $.Deferred().resolve().promise();
 
         const params = {
@@ -141,11 +141,11 @@ class LocalPage extends Page {
 
         return this.requestManager
             .get( params )
-            .then( ( data ) => this.onRequestPageDependenciesDone( data, params ) )
-            .fail( ( message, data ) => this.onRequestPageDependenciesError( message, data, params ) );
+            .then( ( data ) => this.onRequestPageDone( data, params ) )
+            .fail( ( message, data ) => this.onRequestPageError( message, data, params ) );
     }
 
-    onRequestPageDependenciesError( message, data, params ) {
+    onRequestPageError( message, data, params ) {
         this.isDependenciesLoaded = true;
 
         const error = {
@@ -160,13 +160,13 @@ class LocalPage extends Page {
         utils.notifyError( `error-dependencies-${ type }`, error, this.article, true );
     }
 
-    onRequestPageDependenciesDone( data, params ) {
+    onRequestPageDone( data, params ) {
         this.isDependenciesLoaded = true;
 
         // Render error if the parse request is completely failed
         const parse = data?.parse;
         if ( !parse ) {
-            return this.onRequestPageDependenciesError( null, data, params );
+            return this.onRequestPageError( null, data, params );
         }
 
         // Get values for mw.config
@@ -182,13 +182,7 @@ class LocalPage extends Page {
         this.setConfigs();
 
         // Get page dependencies
-        const dependencies = [
-            ...parse.modulestyles,
-            ...parse.modulescripts,
-            ...parse.modules,
-            ...getDependencies( this.article ),
-        ];
-        mw.loader.load( utils.getDependencies( dependencies ) );
+        utilsPage.requestDependencies( parse, this.article );
     }
 
     /******* REQUESTS *******/
@@ -223,7 +217,7 @@ class LocalPage extends Page {
 
     /******* RENDER *******/
 
-    renderContent() {
+    async renderContent() {
         // Parse and append all data coming from endpoint
         this.nodes.data = $.parseHTML( this.data );
         this.nodes.$data = $( this.nodes.data ).appendTo( this.nodes.$body );
@@ -245,7 +239,9 @@ class LocalPage extends Page {
         // Render a warning when revision was not found
         const $emptyMessage = this.nodes.$data.filter( 'p' );
         if ( $emptyMessage.length > 0 ) {
-            this.renderWarning( $emptyMessage );
+            this.renderWarning( {
+                $content: $emptyMessage,
+            } );
         }
 
         // Process diff table
@@ -257,8 +253,8 @@ class LocalPage extends Page {
             this.processRevision();
         }
 
-        // Restore functionally that not requires that elements are in the DOM
-        this.restoreFunctionality();
+        // Call a parent method that wraps a process
+        await super.renderContent();
     }
 
     collectData() {
@@ -428,19 +424,6 @@ class LocalPage extends Page {
 
     /******* RESTORE FUNCTIONALITY *******/
 
-    async restoreFunctionality() {
-        if ( this.error ) return;
-
-        // Restore file media info
-        this.nodes.$mediaInfoView = this.nodes.$data.find( 'mediainfoview' );
-        if ( this.article.get( 'type' ) === 'revision' && this.nodes.$mediaInfoView.length > 0 ) {
-            const content = await utilsPage.restoreFileMediaInfo( this.nodes.$mediaInfoView );
-            if ( content ) {
-                utils.embed( content, this.nodes.$diffTitle, 'insertAfter' );
-            }
-        }
-    }
-
     restoreFunctionalityEmbed() {
         if ( this.error ) return;
 
@@ -467,12 +450,16 @@ class LocalPage extends Page {
             this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', ( !hasVisibleChild || diffTablePrefixTools.length === 0 ) );
         }
 
-        // Restore WikiLambda app
-        this.nodes.$wikiLambdaApp = this.nodes.$data.filter( '#ext-wikilambda-app' );
+        // Render warning about WikiLambda app limitations
+        this.nodes.$wikiLambdaApp = this.nodes.$body.find( '#ext-wikilambda-app' );
         if ( this.nodes.$wikiLambdaApp.length > 0 ) {
-            // Render warning about current limitations
-            const $message = $( utils.msgDom( 'dialog-notice-wikilambda' ) );
-            this.renderWarning( $message );
+            const $content = $( utils.msgDom( 'dialog-notice-wikilambda' ) );
+            this.renderWarning( {
+                $content,
+                type: 'notice',
+                container: this.nodes.$wikiLambdaApp,
+                insertMethod: 'insertBefore',
+            } );
         }
     }
 
@@ -496,7 +483,7 @@ class LocalPage extends Page {
 
         // Request page dependencies lazily, so visually it appears faster than actually
         if ( this.article.get( 'type' ) === 'revision' && !this.isDependenciesLoaded ) {
-            await this.requestPageDependencies();
+            await this.requestPage();
         }
 
         // Restore functionally that requires page dependencies

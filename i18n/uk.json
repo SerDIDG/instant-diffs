@@ -62,6 +62,7 @@
 	"dialog-notice-wikilambda": "Додаток WikiLambda зараз показує лише останню версію. Див. [[phab:T397902|завдання]] на Phabricator.",
 	"dialog-notice-foreign-diff": "Ви переглядаєте зовнішню різницю версій з [$1 $2]. Деякі функції можуть бути обмежені.",
 	"dialog-notice-foreign-revision": "Ви переглядаєте зовнішню версію з [$1 $2]. Деякі функції можуть бути обмежені.",
+    "dialog-notice-foreign-wikilambda": "Додаток WikiLambda зараз не підтримується при перегляді зовнішньої версії.",
 	"settings-title": "Налаштування Instant Diffs",
 	"settings-saved": "Налаштування успішно збережено.\nПерезавантажте сторінку, щоб застосувати їх.",
 	"settings-saved-icon": "Іконка галочки",

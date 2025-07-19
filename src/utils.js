@@ -223,7 +223,7 @@ export function setDefaults( settings, saveUserOptions ) {
 
     // Save options only declarative in the settings
     const userSettings = Object.fromEntries(
-        Object.entries( id.defaults ).filter( ( [ key ] ) => key in id.settings ),
+        Object.entries( id.defaults ).filter( ( [ key ] ) => key in id.config.settings ),
     );
 
     // Save defaults in the Local Storage

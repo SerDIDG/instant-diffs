@@ -16,6 +16,11 @@ const { h, ht } = utils;
  */
 class Link {
     /**
+     * @type {typeof utilsLink}
+     */
+    static utils = utilsLink;
+
+    /**
      * @type {Map}
      */
     static stack = new Map();
