@@ -400,7 +400,7 @@ function process( $context ) {
     id.timers.processStart = Date.now();
 
     // Get all links using the assembled selector and skip those already processed
-    const links = Array.from( id.modules.Link.findLinks( $context ) )
+    const links = Array.from( Link.findLinks( $context ) )
         .filter( ( node ) => !Link.hasLink( node ) )
         .map( ( node ) => new Link( node ) );
 
