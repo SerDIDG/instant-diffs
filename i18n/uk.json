@@ -96,7 +96,7 @@
 	"error-offline": "Перевірте підключення до інтернету",
 	"error-wasted": "Несподівана помилка",
 	"error-prepare-generic": "Не вдалося підготувати конфігурацію: $4",
-	"error-prepare-version": "Скрипт вже був запущений: $4",
+	"error-prepare-version": "Скрипт вже запущений: $4",
 	"error-prepare-replaced": "Автономний екземпляр скрипту успішно заміщений: $4",
 	"error-prepare-mobile": "Скрипт вимкнено в налаштуваннях для мобільної теми (Minerva)",
 	"error-revision-generic": "Не вдалося завантажити дані версії «oldid=$1»: $4",
