@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Beta16",
 			"Serhio Magpie"
 		]
 	},
@@ -95,7 +96,8 @@
 	"error-offline": "Controlla la tua connessione a Internet",
 	"error-wasted": "Errore imprevisto",
 	"error-prepare-generic": "Impossibile preparare la configurazione: $4",
-	"error-prepare-version": "Lo script è già in esecuzione: $4",
+	"error-prepare-version": "Un'altra istanza è già in esecuzione: $4",
+	"error-prepare-replaced": "Istanza autonoma sostituita correttamente: $4",
 	"error-prepare-mobile": "Lo script è disabilitato nelle impostazioni per il tema mobile (Minerva)",
 	"error-revision-generic": "Impossibile caricare i dati della versione \"oldid=$1\": $4",
 	"error-revision-curid": "Impossibile caricare i dati della versione \"curid=$1\": $4",

@@ -83,7 +83,7 @@
 	"error-offline": "Tarkista internetyhteytesi.",
 	"error-wasted": "Odottamaton virhe",
 	"error-prepare-generic": "Konfiguraation valmistelu epäonnistui: $4",
-	"error-prepare-version": "Instanssi tästä skriptistä on jo käynnissä: $4",
+	"error-prepare-version": "Toinen instanssi on jo käynnissä: $4",
 	"error-prepare-mobile": "Skripti on poistettu käytöstä mobiiliulkoasussa (Minerva).",
 	"error-revision-generic": "Versiotietojen ”oldid=$1” lataaminen epäonnistui: $4",
 	"error-revision-curid": "Versiotietojen ”curid=$1” lataaminen epäonnistui: $4",

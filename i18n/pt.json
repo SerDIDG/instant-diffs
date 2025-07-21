@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"B3rnas",
 			"Mansil alfalb",
 			"Serhio Magpie"
 		]
@@ -63,6 +64,7 @@
 	"dialog-notice-wikilambda": "Atualmente, a aplicação WikiLambda mostra apenas a revisão mais recente. Veja um [[phab:T397902|pedido]] no Phabricator.",
 	"dialog-notice-foreign-diff": "Está a visualizar uma diferença externa de [$1 $2]. Algumas funcionalidades podem estar limitadas.",
 	"dialog-notice-foreign-revision": "Está a visualizar uma revisão externa de [$1 $2]. Algumas funcionalidades podem estar limitadas.",
+	"dialog-notice-foreign-wikilambda": "A aplicação WikiLambda não é atualmente suportada nas revisões estrangeiras.",
 	"settings-title": "Definições de Diferenças Instantâneas",
 	"settings-saved": "As definições foram guardadas com sucesso.\nRecarregue a página para aplicá-las.",
 	"settings-saved-icon": "Ícone de marca de verificação",
