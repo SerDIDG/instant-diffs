@@ -11,7 +11,7 @@ import view from './View';
 const { h } = utils;
 
 /**
- * Class representing a Foreign Diff.
+ * Class representing a Global Page.
  * @augments {import('./Page').default}
  */
 class GlobalPage extends Page {

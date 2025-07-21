@@ -2,12 +2,11 @@ import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
 import { executeModuleScript } from './utils-oojs';
-import { getDependencies } from './utils-article';
 
 import Page from './Page';
 
 /**
- * Class representing a LocalDiff.
+ * Class representing a Local Page.
  * @augments {import('./Page').default}
  */
 class LocalPage extends Page {

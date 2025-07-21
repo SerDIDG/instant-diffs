@@ -139,6 +139,12 @@ export function isForeign( hostname ) {
     return !isEmpty( hostname ) && !id.local.mwServerNames.includes( hostname );
 }
 
+export function isMF() {
+    return document.readyState === 'complete'
+        ? document.body.classList.contains( 'mw-mf' )
+        : !isEmpty( mw.config.get( 'wgMFMode' ) );
+}
+
 /**
  * Calls a console object method with a script's prefix attached before the message.
  * @param {string} type

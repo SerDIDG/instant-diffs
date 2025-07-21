@@ -9,7 +9,7 @@ import Navigation from './Navigation';
 import './styles/page.less';
 
 /**
- * Class representing a Diff.
+ * Class representing a Page.
  * @mixes OO.EventEmitter
  */
 class Page {
@@ -292,6 +292,7 @@ class Page {
     async render() {
         const classes = [
             'instantDiffs-page',
+            `instantDiffs-page--${ this.type }`,
             `instantDiffs-page--${ this.article.get( 'type' ) }`,
             'mw-body-content',
         ];
