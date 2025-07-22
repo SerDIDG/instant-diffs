@@ -69,7 +69,7 @@ class Deploy {
         } );
 
         // Push i18n files to the deployment targets
-        if ( deployConfig.build ) {
+        if ( !args.dev ) {
             const i18nDir = `${ deployConfig.outdir }${ deployConfig.i18n }`;
             const languages = await this.readDir( i18nDir );
             languages.forEach( file => {
