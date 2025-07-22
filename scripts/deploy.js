@@ -69,14 +69,16 @@ class Deploy {
         } );
 
         // Push i18n files to the deployment targets
-        const i18nDir = `${ deployConfig.outdir }${ deployConfig.i18n }`;
-        const languages = await this.readDir( i18nDir );
-        languages.forEach( file => {
-            this.deployTargets.push( {
-                file: `${ i18nDir }${ file }`,
-                target: `${ deployConfig.target }${ deployConfig.i18n }${ file }`,
+        if ( deployConfig.build ) {
+            const i18nDir = `${ deployConfig.outdir }${ deployConfig.i18n }`;
+            const languages = await this.readDir( i18nDir );
+            languages.forEach( file => {
+                this.deployTargets.push( {
+                    file: `${ i18nDir }${ file }`,
+                    target: `${ deployConfig.target }${ deployConfig.i18n }${ file }`,
+                } );
             } );
-        } );
+        }
     }
 
     async getApi() {
