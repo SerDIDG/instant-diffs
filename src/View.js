@@ -123,7 +123,7 @@ class View {
         if ( this.isRequesting || this.isProcessing ) return false;
 
         // Track on dialog process start time
-        id.timers.dialogProcesStart = Date.now();
+        id.timers.dialogProcesStart = mw.now();
 
         this.link = link;
         this.options = {
@@ -459,7 +459,7 @@ class View {
         $.when( this.page.fire() )
             .always( () => {
                 // Track on dialog process end time
-                id.timers.dialogProcesEnd = Date.now();
+                id.timers.dialogProcesEnd = mw.now();
 
                 // Log timers for the dialog process
                 if ( utils.defaults( 'logTimers' ) ) {

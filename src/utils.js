@@ -186,7 +186,7 @@ export function log( type, message, data = [] ) {
 export function logTimer( name, start, end ) {
     let diff = end - start;
     if ( diff < 1000 ) {
-        diff = `${ diff }ms`;
+        diff = `${ Math.round( diff ) }ms`;
     } else {
         diff = `${ ( diff / 1000 ).toFixed( 2 ) }s`;
     }
@@ -249,14 +249,21 @@ export function setDefaults( settings, saveUserOptions ) {
         Object.entries( id.local.defaults ).filter( ( [ key ] ) => key in id.config.settings ),
     );
 
-    // Save defaults in the Local Storage
+    // Save defaults to the Local Storage
     mw.storage.setObject( `${ id.config.prefix }-settings`, userSettings );
 
-    // Save defaults to the local User Options
-    if ( saveUserOptions && !id.local.mwIsAnon ) {
-        try {
-            mw.user.options.set( id.config.settingsPrefix, JSON.stringify( userSettings ) );
-        } catch {}
+    if ( saveUserOptions ) {
+        // Save defaults to the Greasemonkey storage
+        if ( defaults( 'GM' ) && isFunction( id.GM?.setValue ) ) {
+            id.GM.setValue( 'settings', JSON.stringify( userSettings ) );
+        }
+
+        // Save defaults to the local User Options
+        if ( !id.local.mwIsAnon ) {
+            try {
+                mw.user.options.set( id.config.settingsPrefix, JSON.stringify( userSettings ) );
+            } catch {}
+        }
     }
 }
 
@@ -264,12 +271,20 @@ export function setDefaults( settings, saveUserOptions ) {
  * Gets the setting options firstly from the Local Storage and sets,
  * then from the local User Options and sets.
  */
-export function processDefaults() {
+export async function processDefaults() {
     // Set settings stored in the Local Storage
     try {
         const settings = mw.storage.getObject( `${ id.config.prefix }-settings` );
         setDefaults( settings, false );
     } catch {}
+
+    // Set settings stored in the Greasemonkey storage
+    if ( defaults( 'GM' ) && isFunction( id.GM?.getValue ) ) {
+        try {
+            const settings = JSON.parse( await id.GM.getValue( 'settings' ) );
+            setDefaults( settings, false );
+        } catch {}
+    }
 
     // Set settings stored in the User Options
     if ( !id.local.mwIsAnon ) {

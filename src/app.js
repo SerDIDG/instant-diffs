@@ -316,7 +316,7 @@ function app() {
     };
 
     // Track on run start time
-    id.timers.run = Date.now();
+    id.timers.run = mw.now();
 
     // Bundle english language strings
     require( `../${ id.config.outdir }/instantDiffs-i18n/en.js` );
@@ -344,8 +344,8 @@ function load() {
         } );
 }
 
-function ready() {
-    utils.processDefaults();
+async function ready() {
+    await utils.processDefaults();
     utils.processMessages();
 
     // Check if script is enabled on mobile skin (Minerva)
@@ -360,7 +360,7 @@ function ready() {
     applyPageAdjustments();
 
     // Track on ready time
-    id.timers.ready = Date.now();
+    id.timers.ready = mw.now();
 
     // Fire the ready state hook
     mw.hook( `${ id.config.prefix }.ready` ).fire( id );
@@ -396,7 +396,7 @@ function process( $context ) {
     if ( !$context ) return;
 
     // Track on process start time
-    id.timers.processStart = Date.now();
+    id.timers.processStart = mw.now();
 
     // Get all links using the assembled selector and skip those already processed
     const links = Array.from( Link.findLinks( $context ) )
@@ -404,7 +404,7 @@ function process( $context ) {
         .map( ( node ) => new Link( node ) );
 
     // Track on process end time
-    id.timers.processEnd = Date.now();
+    id.timers.processEnd = mw.now();
 
     // Log timers for the process
     if ( utils.defaults( 'logTimers' ) && links.length > 0 ) {
@@ -427,18 +427,18 @@ function handleReplace( settingOptions, defaultOptions ) {
     return false;
 }
 
-function processReplace( settingOptions, defaultOptions ) {
+async function processReplace( settingOptions, defaultOptions ) {
     if ( !settingOptions || !defaultOptions ) return;
 
     id.local.settings = settingOptions;
     id.local.defaults = defaultOptions;
 
     if ( id.isReady ) {
-        utils.processDefaults();
+        await utils.processDefaults();
 
         // Reset time loggers
-        id.timers.run = Date.now();
-        id.timers.ready = Date.now();
+        id.timers.run = mw.now();
+        id.timers.ready = mw.now();
 
         // Start processing content
         applyPageAdjustments();

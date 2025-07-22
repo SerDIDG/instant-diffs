@@ -106,8 +106,9 @@ export const config = {
     // Settings defaults
     defaults: {
         debug: '__debug__' === 'true',
-        standalone: false,
-        storageExpiry: 60 * 60 * 24,                               // 1 day
+        GM: false,                                                      // Greasemonkey mode
+        standalone: false,                                              // Standalone mode
+        storageExpiry: 60 * 60 * 24,                                    // 1 day
         logTimers: true,
         showLink: false,
         showPageLink: true,
