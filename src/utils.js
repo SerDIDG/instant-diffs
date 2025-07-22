@@ -254,7 +254,7 @@ export function setDefaults( settings, saveUserOptions ) {
 
     if ( saveUserOptions ) {
         // Save defaults to the Greasemonkey storage
-        if ( defaults( 'GM' ) && isFunction( id.GM?.setValue ) ) {
+        if ( isFunction( id.GM?.setValue ) ) {
             id.GM.setValue( 'settings', JSON.stringify( userSettings ) );
         }
 
@@ -279,7 +279,7 @@ export async function processDefaults() {
     } catch {}
 
     // Set settings stored in the Greasemonkey storage
-    if ( defaults( 'GM' ) && isFunction( id.GM?.getValue ) ) {
+    if ( isFunction( id.GM?.getValue ) ) {
         try {
             const settings = JSON.parse( await id.GM.getValue( 'settings' ) );
             setDefaults( settings, false );
