@@ -28,6 +28,11 @@ class ViewProgressBar extends OO.ui.ProgressBarWidget {
         } );
     }
 
+    /**
+     * Toggle progress bar visibility.
+     * @param {boolean} value
+     * @param {boolean} [instant]
+     */
     toggleVisibility( value, instant ) {
         this.toggleDelay && clearTimeout( this.toggleDelay );
 
@@ -54,6 +59,13 @@ class ViewProgressBar extends OO.ui.ProgressBarWidget {
         }
     }
 
+    /**
+     * Calculate animation remaining time.
+     * @private
+     * @param {number} startTime
+     * @param {number} [duration]
+     * @return {number}
+     */
     calculateRemainingTime( startTime, duration = 1000 ) {
         const elapsed = Date.now() - startTime;
         const currentCycleTime = elapsed % duration;

@@ -158,7 +158,6 @@ function prepare( require ) {
     OO.mixinClass( Page, OO.EventEmitter );
 
     // Prepare locale variables
-    id.local.mwIsMF = utils.isMF();
     id.local.mwIsAnon = mw.user?.isAnon?.() ?? true;
     id.local.mwEndPoint = `${ location.origin }${ mw.config.get( 'wgScript' ) }`;
     id.local.mwEndPointUrl = new URL( id.local.mwEndPoint );
@@ -336,7 +335,7 @@ function load() {
     mw.loader.load( utils.origin( id.config.dependencies.styles ), 'text/css' );
     mw.loader.using( id.config.dependencies.main )
         .then( prepare )
-        .then( ready )
+        .then( () => $( ready ) )
         .fail( error => {
             utils.notifyError( 'error-prepare-generic', {
                 type: 'prepare',

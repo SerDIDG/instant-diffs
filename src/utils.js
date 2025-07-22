@@ -83,6 +83,9 @@ export function isToggleKey( event ) {
  */
 export function isActiveElement() {
     const nonTypeableInputs = [ 'button', 'submit', 'reset', 'file', 'checkbox', 'radio', 'range', 'color', 'image', 'hidden' ];
+    /**
+     * @type {HTMLElement}
+     */
     const element = document.activeElement;
     return !element ||
         element.contentEditable === 'true' ||
@@ -113,6 +116,11 @@ export function getDependencies( data ) {
     } );
 }
 
+/**
+ * Calls a module required function loaded via "mw.loader" and stored in the singleton.
+ * @param {string} name
+ * @return {*}
+ */
 export function moduleRequire( name ) {
     return id.local.require( name );
 }
@@ -135,10 +143,19 @@ export function isAllowed() {
         !id.config.exclude.pages.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) );
 }
 
+/**
+ * Checks if a hostname is foreign.
+ * @param {string} hostname
+ * @return {boolean}
+ */
 export function isForeign( hostname ) {
     return !isEmpty( hostname ) && !id.local.mwServerNames.includes( hostname );
 }
 
+/**
+ * Checks if the MobileFrontend extension is enabled.
+ * @return {boolean}
+ */
 export function isMF() {
     return document.readyState === 'complete'
         ? document.body.classList.contains( 'mw-mf' )

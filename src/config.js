@@ -368,7 +368,6 @@ export const local = {
     linkSelector: null,
 
     mwIsAnon: null,
-    mwIsMF: false,
     mwEndPoint: null,
     mwEndPointUrl: null,
     mwArticlePath: null,

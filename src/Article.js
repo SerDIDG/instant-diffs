@@ -189,7 +189,7 @@ class Article {
         // Set server names
         const { general } = Api.siteInfoAliases[ this.values.hostname ] || {};
         if ( !utils.isEmptyObject( general ) ) {
-            this.values.hostname = id.local.mwIsMF && !utils.isEmpty( general.mobileservername ) ? general.mobileservername : general.servername;
+            this.values.hostname = utils.isMF() && !utils.isEmpty( general.mobileservername ) ? general.mobileservername : general.servername;
             this.mw.serverName = general.servername;
             this.mw.mobileServerName = general.mobileservername;
         } else {

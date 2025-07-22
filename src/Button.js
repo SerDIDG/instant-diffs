@@ -97,7 +97,7 @@ class Button {
 
     /**
      * Append a button to the specified node.
-     * @param {Element} container
+     * @param {HTMLElement|JQuery<HTMLElement>} container
      * @param {string} [insertMethod]
      */
     embed( container, insertMethod ) {
@@ -121,7 +121,7 @@ class Button {
 
     /**
      * Get a button node.
-     * @returns {Element}
+     * @returns {HTMLElement}
      */
     getContainer() {
         return this.node;

@@ -99,7 +99,7 @@ class GlobalPage extends Page {
             fromrev: utils.isValidID( values.oldid ) ? values.oldid : undefined,
             fromrelative: utils.isValidDir( values.oldid ) ? values.oldid : undefined,
             torev: utils.isValidID( values.diff ) ? values.diff : undefined,
-            difftype: id.local.mwIsMF ? 'inline' : 'table',
+            difftype: utils.isMF() ? 'inline' : 'table',
             format: 'json',
             formatversion: 2,
             uselang: id.local.userLanguage,
