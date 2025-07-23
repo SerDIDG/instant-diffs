@@ -18,4 +18,4 @@
 ## See also
 * [Documentation](https://www.mediawiki.org/wiki/Instant_Diffs)
 * [Translations](https://translatewiki.net/wiki/Translating:Instant_Diffs)
-* [Feedback](https://www.mediawiki.org/wiki/Talk:Instant_Diffs)**
+* [Feedback](https://www.mediawiki.org/wiki/Talk:Instant_Diffs)
