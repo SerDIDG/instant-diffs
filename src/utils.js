@@ -227,7 +227,7 @@ export function spacesToUnderlines( str ) {
 /******* DEFAULTS *******/
 
 /**
- * Gets a setting option stored in the config.
+ * Gets a setting default stored in the config.
  * @param {string} [key] for specific option, or undefined for the option's object
  * @returns {*|object} a specific option, or the option's object
  */
@@ -236,8 +236,9 @@ export function defaults( key ) {
 }
 
 /**
- * Applies the setting options to the ID's singleton and saves to the Local Storage,
- * and if second parameter is true, also saves to the local User Options.
+ * Applies the setting defaults to the singleton and saves to the Local Storage.
+ * If second parameter is true, also saves to the Greasemonkey storage (if available)
+ * and to the local MW User Options.
  * @param {Object} settings the setting options data
  * @param {boolean} [saveUserOptions] save the setting options to the local User Options
  */
@@ -258,7 +259,7 @@ export function setDefaults( settings, saveUserOptions ) {
             id.GM.setValue( 'settings', JSON.stringify( userSettings ) );
         }
 
-        // Save defaults to the local User Options
+        // Save defaults to the local MW User Options
         if ( !id.local.mwIsAnon ) {
             try {
                 mw.user.options.set( id.config.settingsPrefix, JSON.stringify( userSettings ) );
@@ -268,35 +269,37 @@ export function setDefaults( settings, saveUserOptions ) {
 }
 
 /**
- * Gets the setting options firstly from the Local Storage and sets,
- * then from the local User Options and sets.
+ * Merges the settings defaults stored in the different storages:
+ * Local Storage, Greasemonkey storage (if available), local MW User Options;
+ * then sets them to the singleton without saving.
  */
 export async function processDefaults() {
-    // Set settings stored in the Local Storage
+    let settings = {};
+
+    // Get settings stored in the Local Storage
     try {
-        const settings = mw.storage.getObject( `${ id.config.prefix }-settings` );
-        setDefaults( settings, false );
+        settings = { ...settings, ...mw.storage.getObject( `${ id.config.prefix }-settings` ) };
     } catch {}
 
-    // Set settings stored in the Greasemonkey storage
+    // Get settings stored in the Greasemonkey storage
     if ( isFunction( id.GM?.getValue ) ) {
         try {
-            const settings = JSON.parse( await id.GM.getValue( 'settings' ) );
-            setDefaults( settings, false );
+            settings = { ...settings, ...JSON.parse( await id.GM.getValue( 'settings' ) ) };
         } catch {}
     }
 
-    // Set settings stored in the User Options
+    // Get settings stored in the local MW User Options
     if ( !id.local.mwIsAnon ) {
         try {
-            const settings = JSON.parse( mw.user.options.get( `${ id.config.settingsPrefix }-settings` ) );
-            setDefaults( settings, false );
+            settings = { ...settings, ...JSON.parse( mw.user.options.get( `${ id.config.settingsPrefix }-settings` ) ) };
         } catch {}
     }
+
+    setDefaults( settings, false );
 }
 
 /**
- * Parses currentScript src href for the setting options.
+ * Parses currentScript src href for the setting defaults.
  * @return {Object}
  */
 export function getQueryDefaults() {
@@ -308,7 +311,7 @@ export function getQueryDefaults() {
 }
 
 /**
- * Gets a setting stored in the config.
+ * Gets a setting option stored in the config.
  * @param {string} [key] for specific option, or undefined for the option's object
  * @returns {*|object} a specific option, or the option's object
  */
