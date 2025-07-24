@@ -91,7 +91,7 @@
 	"error-offline": "Iwwerpréift wgl. Är Internetverbindung",
 	"error-wasted": "Onerwaarte Feeler",
 	"error-prepare-generic": "D'Konfiguratioun konnt net virbereet ginn: $4",
-	"error-prepare-version": "Et leeft schonn eng Instanz vum Skript: $4",
+	"error-prepare-version": "Et leeft schonn eng aner Instanz: $4",
 	"error-prepare-mobile": "De Skript ass an den Astellunge vun der mobiller Benotzeruewerfläch (Minerva) desaktivéiert",
 	"error-revision-generic": "Versiounsdonnéeë fir „oldid=$1“ konnten net geluede gi: $4",
 	"error-revision-curid": "Versiounsdonnéeë fir „curid=$1“ konnten net geluede gi: $4",
