@@ -97,6 +97,11 @@ class Page {
     /**
      * @type {boolean}
      */
+    isConfigsChanged = false;
+
+    /**
+     * @type {boolean}
+     */
     isDetached = false;
 
     /**
@@ -454,11 +459,15 @@ class Page {
     }
 
     setConfigs() {
+        this.isConfigsChanged = true;
         this.configManager.apply();
         this.userOptionsManager.apply();
     }
 
     restoreConfigs() {
+        if ( !this.isConfigsChanged ) return;
+
+        this.isConfigsChanged = false;
         this.configManager.restore();
         this.userOptionsManager.restore();
     }

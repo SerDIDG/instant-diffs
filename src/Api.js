@@ -338,7 +338,7 @@ class Api {
     /******* WIKIBASE LABEL *******/
 
     /**
-     * Geta a localized page label form Wikibase.
+     * Geta a localized page label from Wikibase.
      * @param {string} entityId
      * @param {string} [hostname]
      * @param {import('./RequestManager').default} [requestManager]
