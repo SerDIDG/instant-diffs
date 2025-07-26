@@ -111,13 +111,14 @@ class Api {
         }
     }
 
-    /******* COMPARE *******/
+    /******* PAGE INFO *******/
 
-    static async getPageCurRevId( params, hostname, requestManager ) {
+    static async getPageInfo( params, hostname, requestManager ) {
         params = {
-            action: 'compare',
-            prop: [ 'ids' ],
-            torelative: 'cur',
+            action: 'query',
+            prop: [ 'info', 'pageprops' ],
+            inprop: [ 'watched' ],
+            intestactions: [ 'edit' ],
             format: 'json',
             formatversion: 2,
             uselang: id.local.userLanguage,
@@ -126,11 +127,8 @@ class Api {
         const api = requestManager ? requestManager : this;
 
         try {
-            const { compare } = await api.get( params, hostname );
-            return {
-                curid: compare.toid,
-                revid: compare.torevid,
-            };
+            const data = await api.get( params, hostname );
+            return data.query.pages[ 0 ];
         } catch ( error ) {
             this.log( error );
         }

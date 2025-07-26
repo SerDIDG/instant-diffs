@@ -741,8 +741,8 @@ class Navigation {
      * Action that opens the Settings dialog.
      */
     actionOpenSettings() {
-        settings.once( 'opening', () => this.onSettingsOpen() );
-        settings.once( 'closed', () => this.onSettingsClose() );
+        settings.once( 'opening', this.onSettingsOpen );
+        settings.once( 'closed', this.onSettingsClose );
 
         this.buttons.settingsHelper.pending( true );
 
@@ -753,16 +753,16 @@ class Navigation {
     /**
      * Event that emits after the Settings dialog opens.
      */
-    onSettingsOpen() {
+    onSettingsOpen = () => {
         this.toggleMenu( false );
-    }
+    };
 
     /**
      * Event that emits after the Settings dialog closes.
      */
-    onSettingsClose() {
+    onSettingsClose = () => {
         this.focusButton( 'menu' );
-    }
+    };
 
     /**
      * Set to the register currently executed switch action, like navigation, etc.

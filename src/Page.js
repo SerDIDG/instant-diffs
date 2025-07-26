@@ -146,6 +146,7 @@ class Page {
             wgDiffNewId: false,
             wgCanonicalSpecialPageName: false,
             wgIsProbablyEditable: false,
+            wgRelevantPageIsProbablyEditable: false,
             wbEntityId: false,
             'thanks-confirmation-required': true,
         } );
@@ -179,7 +180,7 @@ class Page {
      */
     loadProcess() {
         const promises = [
-            this.requestPageCurRevId(),
+            this.requestPageInfo(),
             this.request(),
         ];
 
@@ -251,29 +252,38 @@ class Page {
      * Request page current revision id.
      * @returns {Promise}
      */
-    async requestPageCurRevId() {
+    async requestPageInfo() {
         const oldid = Math.max( this.article.get( 'revid' ), this.article.get( 'oldid' ) );
         const pageid = this.article.get( 'curid' );
 
         const params = {};
         if ( utils.isValidID( oldid ) ) {
-            params.fromrev = oldid;
+            params.revids = oldid;
         } else if ( utils.isValidID( pageid ) ) {
-            params.fromid = pageid;
+            params.pageids = pageid;
         }
 
-        const data = await Api.getPageCurRevId( params, this.article.get( 'hostname' ), this.requestManager );
+        const data = await Api.getPageInfo( params, this.article.get( 'hostname' ), this.requestManager );
         if ( data ) {
             // Set values for mw.config
             this.configManager.setValues( {
-                wgArticleId: data.curid,
-                wgCurRevisionId: data.revid,
+                wgArticleId: data.pageid,
+                wgRelevantArticleId: data.pageid,
+                wgCurRevisionId: data.lastrevid,
+                wgContentLanguage: data.pagelanguage,
+                wgContentLanguageDir: data.pagelanguagedir,
+                wgPageContentModel: data.contentmodel,
+                wgIsProbablyEditable: data.actions?.edit,
+                wgRelevantPageIsProbablyEditable: data.actions?.edit,
+                wbEntityId: data.pageprops?.wikibase_item || this.configManager.get( 'wbEntityId' ),
             } );
 
             // Set article values
             this.article.setValues( {
-                curid: data.curid,
-                curRevid: data.revid,
+                curid: data.pageid,
+                curRevid: data.lastrevid,
+                watched: data.watched,
+                new: data.new,
             } );
 
             // Set additional config variables

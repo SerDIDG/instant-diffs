@@ -26,7 +26,7 @@ class LocalPage extends Page {
      */
     loadProcess() {
         const promises = [
-            this.requestPageCurRevId(),
+            this.requestPageInfo(),
             this.request(),
         ];
 
@@ -268,8 +268,16 @@ class LocalPage extends Page {
             } );
         }
 
-        // Save additional user options dependent of a page type
-        if ( this.article.get( 'type' ) !== 'diff' ) {
+        /**
+         * Save additional user options dependent of a page type.
+         * FixMe: See T346252 for the details about Visual Diffs.
+         * @type {Object}
+         */
+        const veConfig = mw.config.get( 'wgVisualEditorConfig' );
+        if (
+            this.article.get( 'type' ) !== 'diff' ||
+            !Object.prototype.hasOwnProperty.call( veConfig?.contentModels, this.configManager.get( 'wgPageContentModel' ) )
+        ) {
             this.userOptionsManager.set( 'visualeditor-diffmode-historical', 'source' );
         }
     }

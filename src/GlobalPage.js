@@ -55,7 +55,7 @@ class GlobalPage extends Page {
         const promises = [
             this.requestMessages(),
             this.requestSiteInfo(),
-            this.requestPageCurRevId(),
+            this.requestPageInfo(),
             this.request(),
         ];
 
@@ -142,8 +142,8 @@ class GlobalPage extends Page {
                 this.configManager.setValues( {
                     wgServer: general.server,
                     wgServerName: general.servername,
-                    mobileServer: general.mobileserver,
-                    mobileServerName: general.mobileservername,
+                    wgMobileServer: general.mobileserver,
+                    wgMobileServerName: general.mobileservername,
                 } );
             }
 

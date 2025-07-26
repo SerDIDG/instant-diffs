@@ -22,6 +22,7 @@ export function renderDiffTable( body ) {
             class: [
                 'diff',
                 'diff-type-table',
+                `diff-contentalign-${ mw.config.get( 'wgContentLanguageDir' ) === 'rtl' ? 'right' : 'left' }`,
                 `diff-editfont-${ mw.user.options.get( 'editfont' ) }`,
             ],
         },
@@ -355,7 +356,7 @@ export async function restoreFileMediaInfo( $content ) {
         'wikibasemediainfo-filepage-fileinfo-heading',
         'wikibasemediainfo-filepage-structured-data-heading',
     ];
-    await Api.loadMessage( messages  );
+    await Api.loadMessage( messages );
 
     return renderFileMediaInfo( $content );
 }
