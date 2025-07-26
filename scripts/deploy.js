@@ -25,6 +25,7 @@ const deployConfig = {
     dev: [
         'instantDiffs.test.css',
         'instantDiffs.test.js',
+        'instantDiffs.test.js.LEGAL.txt',
     ],
 };
 
