@@ -4,7 +4,7 @@
 class ConfigManager {
     /**
      * @private
-     * @type {Object<string|*>}
+     * @type {import('types-mediawiki/mw/Map').ExtensibleMap}
      */
     config = mw.config;
 
@@ -23,7 +23,7 @@ class ConfigManager {
     /**
      * Create a Config Manager instance.
      * @param {Object<string|*>} values key-value pairs
-     * @param {Object} [config] a config object to process
+     * @param {import('types-mediawiki/mw/Map').ExtensibleMap} [config] a config object to process
      */
     constructor( values, config ) {
         if ( config ) {
