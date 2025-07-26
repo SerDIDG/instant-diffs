@@ -3,6 +3,7 @@ import * as utils from './utils';
 import * as utilsPage from './utils-page';
 
 import Api from './Api';
+import ConfigManager from './ConfigManager';
 import RequestManager from './RequestManager';
 import Navigation from './Navigation';
 
@@ -51,38 +52,22 @@ class Page {
     /**
      * @type {Object}
      */
-    mwConfig = {
-        wgTitle: false,
-        wgPageName: false,
-        wgRelevantPageName: false,
-        wgPageContentModel: 'wikitext',
-        wgNamespaceNumber: false,
-        wgArticleId: false,
-        wgRelevantArticleId: false,
-        wgCurRevisionId: false,
-        wgRevisionId: false,
-        wgDiffOldId: false,
-        wgDiffNewId: false,
-        wgCanonicalSpecialPageName: false,
-        wgIsProbablyEditable: false,
-        wbEntityId: false,
-        'thanks-confirmation-required': true,
-    };
-
-    /**
-     * @type {Object}
-     */
-    mwUserOptions = {};
-
-    /**
-     * @type {Object}
-     */
     nodes = {};
 
     /**
      * @type {Object}
      */
     links = {};
+
+    /**
+     * @type {import('./ConfigManager').default}
+     */
+    configManager;
+
+    /**
+     * @type {import('./ConfigManager').default}
+     */
+    userOptionsManager;
 
     /**
      * @type {import('./RequestManager').default}
@@ -141,6 +126,26 @@ class Page {
             uselang: id.local.userLanguage,
         };
 
+        this.configManager = new ConfigManager( {
+            wgTitle: false,
+            wgPageName: false,
+            wgRelevantPageName: false,
+            wgPageContentModel: 'wikitext',
+            wgNamespaceNumber: false,
+            wgArticleId: false,
+            wgRelevantArticleId: false,
+            wgCurRevisionId: false,
+            wgRevisionId: false,
+            wgDiffOldId: false,
+            wgDiffNewId: false,
+            wgCanonicalSpecialPageName: false,
+            wgIsProbablyEditable: false,
+            wbEntityId: false,
+            'thanks-confirmation-required': true,
+        } );
+
+        this.userOptionsManager = new ConfigManager( {}, mw.user.options );
+
         this.requestManager = new RequestManager();
 
         // Mixin constructor
@@ -168,6 +173,7 @@ class Page {
      */
     loadProcess() {
         const promises = [
+            this.requestPageCurRevId(),
             this.request(),
         ];
 
@@ -204,7 +210,7 @@ class Page {
 
     /**
      * Request a diff content.
-     * @returns {JQuery.Promise|Promise}
+     * @returns {JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise}
      */
     request() {
         return this.requestProcess()
@@ -214,7 +220,7 @@ class Page {
 
     /**
      * Request process.
-     * @returns {JQuery.Promise|Promise}
+     * @returns {JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise}
      */
     requestProcess() {
         return this.requestManager.when();
@@ -236,16 +242,50 @@ class Page {
     }
 
     /**
-     * Request wikidata label name.
-     * @returns {JQuery.Promise}
+     * Request page current revision id.
+     * @returns {Promise}
+     */
+    async requestPageCurRevId() {
+        const oldid = Math.max( this.article.get( 'revid' ), this.article.get( 'oldid' ) );
+        const pageid = this.article.get( 'curid' );
+
+        const params = {};
+        if ( utils.isValidID( oldid ) ) {
+            params.fromrev = oldid;
+        } else if ( utils.isValidID( pageid ) ) {
+            params.fromid = pageid;
+        }
+
+        const data = await Api.getPageCurRevId( params, this.article.get( 'hostname' ), this.requestManager );
+        if ( data ) {
+            // Set values for mw.config
+            this.configManager.setValues( {
+                wgArticleId: data.curid,
+                wgCurRevisionId: data.revid,
+            } );
+
+            // Set article values
+            this.article.setValues( {
+                curid: data.curid,
+                curRevid: data.revid,
+            } );
+
+            // Set additional config variables
+            this.setConfigs();
+        }
+    }
+
+    /**
+     * Request a label name from Wikibase.
+     * @returns {Promise}
      */
     async requestWBLabel() {
         if ( this.error ) return $.Deferred().resolve().promise();
 
         const title = this.article.getMW( 'title' )?.getMain();
-        const label = await Api.getWBLabel( title, this.article.get( 'hostname' ) );
+        const label = await Api.getWBLabel( title, this.article.get( 'hostname' ), this.requestManager );
         if ( !utils.isEmpty( label ) ) {
-            this.mwConfig.wbEntityId = title;
+            this.configManager.set( 'wbEntityId', title );
             this.article.setValue( 'wbLabel', label );
 
             // Set additional config variables
@@ -414,8 +454,13 @@ class Page {
     }
 
     setConfigs() {
-        mw.config.set( this.mwConfig );
-        mw.user.options.set( this.mwUserOptions );
+        this.configManager.apply();
+        this.userOptionsManager.apply();
+    }
+
+    restoreConfigs() {
+        this.configManager.restore();
+        this.userOptionsManager.restore();
     }
 
     /**
@@ -466,6 +511,7 @@ class Page {
         mw.hook( `${ id.config.prefix }.page.beforeDetach` ).fire( this );
 
         this.abort();
+        this.restoreConfigs();
         this.getNavigation()?.detach();
         this.getContainer()?.detach();
         this.isDetached = true;

@@ -55,16 +55,6 @@ class View {
     /**
      * @type {Object}
      */
-    mwConfigBackup;
-
-    /**
-     * @type {Object}
-     */
-    mwUserOptionsBackup;
-
-    /**
-     * @type {Object}
-     */
     document = {};
 
     /**
@@ -323,16 +313,6 @@ class View {
             this.page = null;
         }
 
-        // Restore the mw.config to the initial state
-        if ( this.mwConfigBackup ) {
-            utils.restoreMWConfig( this.mwConfigBackup );
-            this.mwConfigBackup = null;
-        }
-        if ( this.mwUserOptionsBackup ) {
-            utils.restoreMWUserOptions( this.mwUserOptionsBackup );
-            this.mwUserOptionsBackup = null;
-        }
-
         if ( utils.isFunction( this.options.onClose ) ) {
             this.options.onClose( this );
         }
@@ -389,18 +369,9 @@ class View {
         // Show progress bar in the dialog
         this.dialog.toggleProgress( true );
 
-        // When the Page is about to change, restore the mw.config to the initial state
-        if ( this.mwConfigBackup ) {
-            utils.restoreMWConfig( this.mwConfigBackup );
-        }
-        if ( !this.mwConfigBackup ) {
-            this.mwConfigBackup = utils.backupMWConfig();
-        }
-        if ( this.mwUserOptionsBackup ) {
-            utils.restoreMWUserOptions( this.mwUserOptionsBackup );
-        }
-        if ( !this.mwUserOptionsBackup ) {
-            this.mwUserOptionsBackup = utils.backupMWUserOptions();
+        // When the Page is about to change, restore configs to the initial state
+        if ( this.previousPage ) {
+            this.previousPage.restoreConfigs();
         }
 
         // Get a Page params

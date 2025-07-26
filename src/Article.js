@@ -1,4 +1,3 @@
-import id from './id';
 import * as utils from './utils';
 import * as utilsArticle from './utils-article';
 
@@ -59,6 +58,12 @@ class Article {
 
     setValue( name, value ) {
         this.values[ name ] = value;
+    }
+
+    setValues( values ) {
+        for ( const [ name, value ] of Object.entries( values ) ) {
+            this.setValue( name, value );
+        }
     }
 
     get( name ) {

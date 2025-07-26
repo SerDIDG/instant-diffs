@@ -600,38 +600,6 @@ export function getBodyContentNode() {
     return $content;
 }
 
-export function backupMWConfig() {
-    const data = {};
-    id.config.mwConfigBackup.forEach( key => {
-        data[ key ] = mw.config.get( key );
-    } );
-    return data;
-}
-
-export function restoreMWConfig( data ) {
-    id.config.mwConfigBackup.forEach( key => {
-        if ( typeof data[ key ] !== 'undefined' ) {
-            mw.config.set( key, data[ key ] );
-        }
-    } );
-}
-
-export function backupMWUserOptions() {
-    const data = {};
-    id.config.mwUserOptionsBackup.forEach( key => {
-        data[ key ] = mw.user.options.get( key );
-    } );
-    return data;
-}
-
-export function restoreMWUserOptions( data ) {
-    id.config.mwUserOptionsBackup.forEach( key => {
-        if ( typeof data[ key ] !== 'undefined' ) {
-            mw.user.options.set( key, data[ key ] );
-        }
-    } );
-}
-
 export function getSpecialPageAliases( data, name ) {
     const namespace = 'Special';
     const localNamespace = mw.config.get( 'wgFormattedNamespaces' )[ '-1' ];

@@ -5,7 +5,7 @@ import Api from './Api';
  */
 class RequestManager {
     /**
-     * @type {Map<JQuery.jqXHR | mw.Api.Promise, JQuery.Promise>}
+     * @type {Map<JQuery.jqXHR|mw.Api.AbortablePromise, JQuery.Promise|mw.Api.AbortablePromise>}
      */
     items = new Map();
 
@@ -13,7 +13,7 @@ class RequestManager {
      * mw.Api.get wrapper.
      * @param {Object} params
      * @param {string} [hostname]
-     * @returns {mw.Api.Promise}
+     * @returns {mw.Api.AbortablePromise}
      */
     get( params, hostname ) {
         const request = Api.get( params, hostname );
@@ -24,7 +24,7 @@ class RequestManager {
     /**
      * $.ajax wrapper.
      * @param {Object} params
-     * @returns {JQuery.jqXHR|JQuery.Promise}
+     * @returns {JQuery.jqXHR}
      */
     ajax( params ) {
         const request = $.ajax( params );
@@ -34,6 +34,7 @@ class RequestManager {
 
     /**
      * $.when wrapper.
+     * @param {...*} args - arguments to pass to $.when
      * @returns {JQuery.Promise}
      */
     when( ...args ) {
@@ -49,8 +50,8 @@ class RequestManager {
 
     /**
      * Add promise to the set.
-     * @param {JQuery.jqXHR|mw.Api.Promise} request
-     * @returns {JQuery.Promise}
+     * @param {JQuery.jqXHR|mw.Api.AbortablePromise} request
+     * @returns {JQuery.Promise|mw.Api.AbortablePromise}
      */
     add( request ) {
         const promise = request.always( () => this.delete( request ) );
@@ -60,7 +61,7 @@ class RequestManager {
 
     /**
      * Delete promise from the set.
-     * @param {JQuery.jqXHR|mw.Api.Promise} request
+     * @param {JQuery.jqXHR|mw.Api.AbortablePromise} request
      */
     delete( request ) {
         this.items.delete( request );

@@ -59,27 +59,15 @@ class Api {
         return this.getApi( hostname ).post( params );
     }
 
-    /******* PARSE *******/
-
-    static async parseWikitext( params, hostname ) {
-        params = {
-            action: 'parse',
-            contentmodel: 'wikitext',
-            format: 'json',
-            formatversion: 2,
-            uselang: id.local.language,
-            ...params,
-        };
-        const data = await this.post( params, hostname );
-
-        try {
-            return data.parse.text;
-        } catch ( error ) {
-            utils.notifyError( 'error-api-generic', {
-                type: 'api',
-                message: error?.message || error,
-            }, null, true );
-        }
+    /**
+     * Logs an error.
+     * @param {Error} error
+     */
+    static log( error ) {
+        utils.notifyError( 'error-api-generic', {
+            type: 'api',
+            message: error?.message || error,
+        }, null, true );
     }
 
     /******* MESSAGES *******/
@@ -103,6 +91,51 @@ class Api {
         } );
     }
 
+    /******* PARSE *******/
+
+    static async parseWikitext( params, hostname ) {
+        params = {
+            action: 'parse',
+            contentmodel: 'wikitext',
+            format: 'json',
+            formatversion: 2,
+            uselang: id.local.language,
+            ...params,
+        };
+
+        try {
+            const { parse } = await this.post( params, hostname );
+            return parse.text;
+        } catch ( error ) {
+            this.log( error );
+        }
+    }
+
+    /******* COMPARE *******/
+
+    static async getPageCurRevId( params, hostname, requestManager ) {
+        params = {
+            action: 'compare',
+            prop: [ 'ids' ],
+            torelative: 'cur',
+            format: 'json',
+            formatversion: 2,
+            uselang: id.local.userLanguage,
+            ...params,
+        };
+        const api = requestManager ? requestManager : this;
+
+        try {
+            const { compare } = await api.get( params, hostname );
+            return {
+                curid: compare.toid,
+                revid: compare.torevid,
+            };
+        } catch ( error ) {
+            this.log( error );
+        }
+    }
+
     /******* SITE INFO *******/
 
     /**
@@ -116,12 +149,13 @@ class Api {
     static siteInfoAliases = {};
 
     /**
-     *
+     * Gets the project info.
      * @param {Array} fields
      * @param {string} [hostname]
+     * @param {import('./RequestManager').default} [requestManager]
      * @return {Promise<Object>}
      */
-    static async getSiteInfo( fields = [], hostname ) {
+    static async getSiteInfo( fields = [], hostname, requestManager ) {
         if ( utils.isEmpty( hostname ) ) {
             hostname = mw.config.get( 'wgServerName' );
         }
@@ -146,13 +180,15 @@ class Api {
             formatversion: 2,
             uselang: id.local.userLanguage,
         };
-        const data = await this.get( params, hostname );
+        const api = requestManager ? requestManager : this;
 
         try {
+            const { query } = await api.get( params, hostname );
+
             if ( !this.siteInfo[ hostname ] ) {
                 this.siteInfo[ hostname ] = {};
             }
-            for ( const [ key, value ] of Object.entries( data.query ) ) {
+            for ( const [ key, value ] of Object.entries( query ) ) {
                 this.siteInfo[ hostname ][ key ] = value;
             }
 
@@ -162,10 +198,7 @@ class Api {
             this.processSiteInfoAliases( this.siteInfo[ hostname ] );
             return this.siteInfo[ hostname ];
         } catch ( error ) {
-            utils.notifyError( 'error-api-generic', {
-                type: 'api',
-                message: error?.message || error,
-            }, null, true );
+            this.log( error );
         }
     }
 
@@ -241,12 +274,13 @@ class Api {
             formatversion: 2,
             uselang: mw.config.get( 'wgContentLanguage' ),
         };
-        const data = await Api.get( params, hostname );
 
         try {
+            const { query } = await Api.get( params, hostname );
+
             // Set the localized specialPages pairs
-            if ( data.query.normalized ) {
-                data.query.normalized.forEach( item => {
+            if ( query.normalized ) {
+                query.normalized.forEach( item => {
                     this.specialPagesLocal[ item.from ] = item.to;
                 } );
             }
@@ -256,10 +290,7 @@ class Api {
 
             return this.specialPagesLocal;
         } catch ( error ) {
-            utils.notifyError( 'error-api-generic', {
-                type: 'api',
-                message: error?.message || error,
-            }, null, true );
+            this.log( error );
         }
     }
 
@@ -290,25 +321,30 @@ class Api {
             formatversion: 2,
             uselang: id.local.userLanguage,
         };
-        const data = await this.get( params, hostname );
 
         try {
+            const { query } = await this.get( params, hostname );
+
             // Cache data with expiry
-            this.interwikiMap = data.query.interwikimap;
+            this.interwikiMap = query.interwikimap;
             mw.storage.setObject( `${ id.config.prefix }-interwikiMap`, this.interwikiMap, utils.defaults( 'storageExpiry' ) );
 
             return this.interwikiMap;
         } catch ( error ) {
-            utils.notifyError( 'error-api-generic', {
-                type: 'api',
-                message: error?.message || error,
-            }, null, true );
+            this.log( error );
         }
     }
 
     /******* WIKIBASE LABEL *******/
 
-    static async getWBLabel( entityId, hostname ) {
+    /**
+     * Geta a localized page label form Wikibase.
+     * @param {string} entityId
+     * @param {string} [hostname]
+     * @param {import('./RequestManager').default} [requestManager]
+     * @return {Promise<*|string>}
+     */
+    static async getWBLabel( entityId, hostname, requestManager ) {
         if ( utils.isEmpty( entityId ) || !/^[QPL][0-9]+$/.test( entityId ) ) return;
 
         // Request data via API
@@ -323,10 +359,12 @@ class Api {
             formatversion: 2,
             uselang: language,
         };
-        const data = await this.get( params, hostname );
+        const api = requestManager ? requestManager : this;
 
         try {
-            const entity = data.entities[ entityId ];
+            const { entities } = await api.get( params, hostname );
+
+            const entity = entities[ entityId ];
             if ( entity.type === 'lexeme' ) {
                 return Object.values( entity.lemmas )
                     .map( lemma => lemma.value )
@@ -334,10 +372,7 @@ class Api {
             }
             return entity.labels[ language ].value;
         } catch ( error ) {
-            utils.notifyError( 'error-api-generic', {
-                type: 'api',
-                message: error?.message || error,
-            }, null, true );
+            this.log( error );
         }
     }
 }

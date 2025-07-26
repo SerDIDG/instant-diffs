@@ -171,35 +171,7 @@ export const config = {
     // Path
     commonsAssetsPath: 'https://upload.wikimedia.org/wikipedia/commons',
 
-    // MediaWiki config
-    mwConfigBackup: [
-        'wgServer',
-        'wgServerName',
-        'wgMobileServer',
-        'wgMobileServerName',
-        'wgTitle',
-        'wgPageName',
-        'wgRelevantPageName',
-        'wgPageContentModel',
-        'wgNamespaceNumber',
-        'wgArticleId',
-        'wgRelevantArticleId',                                          // Article ID on the special pages
-        'wgCurRevisionId',
-        'wgRevisionId',
-        'wgDiffOldId',
-        'wgDiffNewId',
-        'wgCanonicalSpecialPageName',
-        'wgIsProbablyEditable',
-        'wgFormattedNamespaces',
-        'wgNamespaceIds',
-        'wgCaseSensitiveNamespaces',
-        'wgContentNamespaces',
-        'wbEntityId',                                                   // Wikibase
-        'thanks-confirmation-required',
-    ],
-    mwUserOptionsBackup: [
-        'visualeditor-diffmode-historical',
-    ],
+    // Skin-specific content classes
     skinBodyClasses: {
         'vector-2022': [ 'mw-body', 'vector-body' ],
         vector: [ 'vector-body' ],
