@@ -44,18 +44,35 @@ export function getRevID( article ) {
 export function getDependencies( article ) {
     let dependencies = [];
 
+    const pageDependencies = id.config.dependencies.page;
+    if ( pageDependencies ) {
+        dependencies = dependencies.concat(
+            getNamespaceDependencies( article, pageDependencies ),
+        );
+    }
+
     const typeDependencies = id.config.dependencies[ article.get( 'type' ) ];
     if ( typeDependencies ) {
-        // Set common dependencies
-        if ( utils.isArray( typeDependencies[ '*' ] ) ) {
-            dependencies = dependencies.concat( typeDependencies[ '*' ] );
-        }
+        dependencies = dependencies.concat(
+            getNamespaceDependencies( article, typeDependencies ),
+        );
+    }
 
-        // Set namespace-specific dependencies
-        const namespace = article.getMW( 'title' )?.getNamespaceId();
-        if ( utils.isArray( typeDependencies[ namespace ] ) ) {
-            dependencies = dependencies.concat( typeDependencies[ namespace ] );
-        }
+    return dependencies;
+}
+
+function getNamespaceDependencies( article, data ) {
+    let dependencies = [];
+
+    // Set common dependencies
+    if ( utils.isArray( data[ '*' ] ) ) {
+        dependencies = dependencies.concat( data[ '*' ] );
+    }
+
+    // Set namespace-specific dependencies
+    const namespace = article.getMW( 'title' )?.getNamespaceId();
+    if ( utils.isArray( data[ namespace ] ) ) {
+        dependencies = dependencies.concat( data[ namespace ] );
     }
 
     return dependencies;

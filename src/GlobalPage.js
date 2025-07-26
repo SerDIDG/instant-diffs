@@ -196,6 +196,9 @@ class GlobalPage extends Page {
 
         // Render diff table
         await this.renderDiffTable();
+
+        // Request lazy-loaded dependencies
+        this.requestDependencies();
     }
 
     collectData() {
@@ -465,7 +468,7 @@ class GlobalPage extends Page {
         utils.addBaseToLinks( this.nodes.$revision, `https://${ this.article.get( 'hostname' ) }` );
 
         // Get page dependencies
-        utilsPage.requestDependencies( this.parse, this.article );
+        this.requestDependencies( this.parse );
 
         // Get page foreign dependencies
         const foreignDependencies = getForeignDependencies( this.article );

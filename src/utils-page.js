@@ -1,30 +1,12 @@
 import id from './id';
 import * as utils from './utils';
 import { getModuleExport } from './utils-oojs';
-import { getDependencies, getHref, getHrefAbsolute } from './utils-article';
+import { getHref, getHrefAbsolute } from './utils-article';
 
 import Api from './Api';
 import Article from './Article';
 
 const { h, hf, ht, hj } = utils;
-
-/******* COMMON *******/
-
-/**
- * Request the pade dependencies.
- * @param {Object} data
- * @param {import('./Article')} article
- * @returns {JQuery.Promise}
- */
-export function requestDependencies( data, article ) {
-    const dependencies = [
-        ...data.modulestyles,
-        ...data.modulescripts,
-        ...data.modules,
-        ...getDependencies( article ),
-    ];
-    return mw.loader.using( utils.getDependencies( dependencies ) );
-}
 
 /******* DIFF TABLE *******/
 

@@ -24,6 +24,13 @@ export const config = {
             'mediawiki.ForeignApi',
             'mediawiki.Title',
         ],
+        settings: [
+            'oojs',
+            'oojs-ui-core',
+            'oojs-ui-widgets',
+            'oojs-ui-windows',
+            'oojs-ui.styles.icons-interactions',
+        ],
         window: [
             'oojs',
             'oojs-ui-core',
@@ -47,18 +54,18 @@ export const config = {
             'mediawiki.misc-authed-curate',
             'mediawiki.DateFormatter',
             'ext.flaggedRevs.basic',
-            'ext.thanks.corethank',
             'ext.visualEditor.diffPage.init',
-        ],
-        settings: [
-            'oojs',
-            'oojs-ui-core',
-            'oojs-ui-widgets',
-            'oojs-ui-windows',
-            'oojs-ui.styles.icons-interactions',
         ],
 
         // Lazy-loaded dependencies
+        page: {
+            '*': [
+                'ext.thanks.corethank',
+                'ext.checkUser.userInfoCard',
+                'ext.checkUser.styles',
+            ],
+        },
+
         revision: {
             6: [                                                        // File:
                 'filepage',

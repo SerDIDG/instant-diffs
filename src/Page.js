@@ -1,6 +1,7 @@
 import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
+import { getDependencies } from './utils-article';
 
 import Api from './Api';
 import ConfigManager from './ConfigManager';
@@ -371,6 +372,9 @@ class Page {
     async renderContent() {
         // Restore functionally that not requires that elements are in the DOM
         await this.restoreFunctionality();
+
+        // Request lazy-loaded dependencies
+        this.requestDependencies();
     }
 
     async renderErrorContent() {
@@ -405,6 +409,27 @@ class Page {
 
             node.setAttribute( 'target', '_blank' );
         } );
+    }
+
+    /**
+     * Request dependencies for the article and additional data modules.
+     * @param {Object} [data]
+     * @param {Array} [data.modulestyles]
+     * @param {Array} [data.modulescripts]
+     * @param {Array} [data.modules]
+     * @returns {JQuery.Promise}
+     */
+    requestDependencies( data = {} ) {
+        const { modulestyles = [], modulescripts = [], modules = [] } = data;
+
+        const dependencies = [
+            ...getDependencies( this.article ),
+            ...modulestyles,
+            ...modulescripts,
+            ...modules,
+        ];
+
+        return mw.loader.using( utils.getDependencies( dependencies ) );
     }
 
     /******* RESTORE FUNCTIONALITY *******/

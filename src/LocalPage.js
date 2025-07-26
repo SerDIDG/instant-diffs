@@ -126,7 +126,7 @@ class LocalPage extends Page {
         this.setConfigs();
 
         // Get page dependencies
-        utilsPage.requestDependencies( parse, this.article );
+        this.requestDependencies( parse );
     }
 
     /******* REQUESTS *******/
