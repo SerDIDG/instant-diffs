@@ -275,7 +275,7 @@ class Page {
                 wgPageContentModel: data.contentmodel,
                 wgIsProbablyEditable: data.actions?.edit,
                 wgRelevantPageIsProbablyEditable: data.actions?.edit,
-                wbEntityId: data.pageprops?.wikibase_item || this.configManager.get( 'wbEntityId' ),
+                wbEntityId: data.pageprops?.[ 'wikibase_item' ] || this.configManager.get( 'wbEntityId' ),
             } );
 
             // Set article values
@@ -284,6 +284,7 @@ class Page {
                 curRevid: data.lastrevid,
                 watched: data.watched,
                 new: data.new,
+                wbLabel: data.pageprops?.[ 'wikilambda-label-en' ] || this.article.get( 'wbLabel' ),
             } );
 
             // Set additional config variables

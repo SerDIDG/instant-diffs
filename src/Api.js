@@ -41,6 +41,7 @@ class Api {
 
     /**
      * mw.Api.get wrapper.
+     * // @param {import('types-mediawiki/api_params').UnknownApiParams} params
      * @param {Object} params
      * @param {string} [hostname]
      * @return {mw.Api.AbortablePromise}
@@ -51,6 +52,7 @@ class Api {
 
     /**
      * mw.Api.post wrapper.
+     * //@param {import('types-mediawiki/api_params').UnknownApiParams} params
      * @param {Object} params
      * @param {string} [hostname]
      * @return {mw.Api.AbortablePromise}
@@ -60,10 +62,21 @@ class Api {
     }
 
     /**
+     * mw.Api.watch wrapper.
+     * @param {string|Array<string>} pages
+     * @param {string} [expiry]
+     * @param {string} [hostname]
+     * @return {jQuery.Promise<mw.Api.WatchedPage|mw.Api.WatchedPage[]>}
+     */
+    static watch( pages, expiry, hostname ) {
+        return this.getApi( hostname ).watch( pages, expiry );
+    }
+
+    /**
      * Logs an error.
      * @param {Error} error
      */
-    static log( error ) {
+    static notifyError( error ) {
         utils.notifyError( 'error-api-generic', {
             type: 'api',
             message: error?.message || error,
@@ -107,7 +120,7 @@ class Api {
             const { parse } = await this.post( params, hostname );
             return parse.text;
         } catch ( error ) {
-            this.log( error );
+            this.notifyError( error );
         }
     }
 
@@ -130,7 +143,7 @@ class Api {
             const data = await api.get( params, hostname );
             return data.query.pages[ 0 ];
         } catch ( error ) {
-            this.log( error );
+            this.notifyError( error );
         }
     }
 
@@ -196,7 +209,7 @@ class Api {
             this.processSiteInfoAliases( this.siteInfo[ hostname ] );
             return this.siteInfo[ hostname ];
         } catch ( error ) {
-            this.log( error );
+            this.notifyError( error );
         }
     }
 
@@ -288,7 +301,7 @@ class Api {
 
             return this.specialPagesLocal;
         } catch ( error ) {
-            this.log( error );
+            this.notifyError( error );
         }
     }
 
@@ -329,7 +342,7 @@ class Api {
 
             return this.interwikiMap;
         } catch ( error ) {
-            this.log( error );
+            this.notifyError( error );
         }
     }
 
@@ -370,7 +383,7 @@ class Api {
             }
             return entity.labels[ language ].value;
         } catch ( error ) {
-            this.log( error );
+            this.notifyError( error );
         }
     }
 }

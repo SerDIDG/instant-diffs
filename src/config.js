@@ -1,5 +1,6 @@
 /**
  * Configuration.
+ * @type {Object<string, *>}
  */
 export const config = {
     version: '__version__',
@@ -47,12 +48,13 @@ export const config = {
         ],
         content: [
             'jquery.confirmable',
+            'mediawiki.DateFormatter',
             'mediawiki.codex.messagebox.styles',
             'mediawiki.interface.helpers.styles',
             'mediawiki.diff',
             'mediawiki.diff.styles',
             'mediawiki.misc-authed-curate',
-            'mediawiki.DateFormatter',
+            'mediawiki.page.watch.ajax',
             'ext.flaggedRevs.basic',
             'ext.visualEditor.diffPage.init',
         ],
@@ -322,6 +324,7 @@ export const config = {
 
 /**
  * Local variables.
+ * @type {Object<string, *>}
  */
 export const local = {
     /**
@@ -352,7 +355,15 @@ export const local = {
     mwEndPointUrl: null,
     mwArticlePath: null,
     mwTitleText: null,
+
+    /**
+     * @type {Array<string>}
+     */
     mwServers: [],
+
+    /**
+     * @type {Array<string>}
+     */
     mwServerNames: [],
 
     /**
@@ -398,5 +409,6 @@ export const local = {
 
 /**
  * Script timer loggers.
+ * @type {Object<string, Number>}
  */
 export const timers = {};
