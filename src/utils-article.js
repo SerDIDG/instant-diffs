@@ -1,8 +1,11 @@
 import id from './id';
 import * as utils from './utils';
+import { getModuleExport } from './utils-oojs';
 
 import Api from './Api';
 import Article from './Article';
+
+/******* VALUES *******/
 
 export function getRevID( article ) {
     const values = article.getValues();
@@ -35,6 +38,8 @@ export function getRevID( article ) {
 
     return false;
 }
+
+/******* DEPENDENCIES *******/
 
 /**
  * Gets an article dependencies.
@@ -353,4 +358,166 @@ function getStyleHref( article, title ) {
     return article.isForeign
         ? getHrefAbsolute( article, href )
         : href;
+}
+
+/******* WATCH \ UNWATCH *******/
+
+/**
+ * Adds or removes page from the watchlist.
+ * @param {import('./Article').default} article an Article instance
+ * @param {Function} callback
+ */
+export function setWatchStatus( article, callback ) {
+    preloadWatchNotice( article );
+
+    const preferredExpiry = mw.user.options.get( 'watchstar-expiry', 'infinity' );
+    const notificationId = 'mw-watchlink-notification';
+
+    const watched = article.get( 'watched' );
+    const hostname = article.get( 'hostname' );
+    const title = article.getMW( 'title' ).getPrefixedDb();
+
+    const action = watched
+        ? Api.unwatch( title, hostname )
+        : Api.watch( title, preferredExpiry, hostname );
+
+    return action
+        .then( ( response ) => {
+            showWatchNotice( article, response, callback );
+        } )
+        .fail( ( code, data ) => {
+            // Format error message
+            const $msg = Api.getApi().getErrorMessage( data );
+
+            // Report to user about the error
+            mw.notify( $msg, {
+                tag: 'watch-self',
+                type: 'error',
+                id: notificationId,
+            } );
+        } );
+}
+
+/**
+ * Preloads the watch star widget modules.
+ * Partially copied from:
+ * {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/2a828f2e72a181665e1f627e2f737abb75b74eb9/resources/src/mediawiki.page.watch.ajax/watch-ajax.js#350}
+ * @param {import('./Article').default} article an Article instance
+ */
+function preloadWatchNotice( article ) {
+    const config = getModuleExport( 'mediawiki.page.watch.ajax', 'config.json' );
+    const isWatchlistExpiryEnabled = config?.WatchlistExpiry || false;
+
+    // Preload the notification module for mw.notify
+    const modulesToLoad = [ 'mediawiki.notification' ];
+
+    // Preload watchlist expiry widget so it runs in parallel with the api call
+    if ( isWatchlistExpiryEnabled && !article.isForeign ) {
+        modulesToLoad.push( 'mediawiki.watchstar.widgets' );
+    }
+
+    mw.loader.load( modulesToLoad );
+}
+
+/**
+ * Shows a notification about watch status.
+ * Partially copied from:
+ * {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/2a828f2e72a181665e1f627e2f737abb75b74eb9/resources/src/mediawiki.page.watch.ajax/watch-ajax.js#350}
+ * @param {import('./Article').default} article an Article instance
+ * @param {Function} callback
+ * @param {Object} response
+ */
+function showWatchNotice( article, response, callback ) {
+    const config = getModuleExport( 'mediawiki.page.watch.ajax', 'config.json' );
+    const isWatchlistExpiryEnabled = config?.WatchlistExpiry || false;
+    const preferredExpiry = mw.user.options.get( 'watchstar-expiry', 'infinity' );
+    const notificationId = 'mw-watchlink-notification';
+
+    const isWatched = response.watched === true;
+    const mwTitle = article.getMW( 'title' );
+
+    let message = isWatched ? 'addedwatchtext' : 'removedwatchtext';
+    if ( mwTitle.isTalkPage() ) {
+        message += '-talk';
+    }
+
+    let notifyPromise;
+    let watchlistPopup;
+
+    // @since 1.35 - pop up notification will be loaded with OOUI
+    // only if Watchlist Expiry is enabled
+    if ( isWatchlistExpiryEnabled && !article.isForeign ) {
+        if ( isWatched ) {
+            if ( !preferredExpiry || mw.util.isInfinity( preferredExpiry ) ) {
+                // The message should include `infinite` watch period
+                message = mwTitle.isTalkPage() ? 'addedwatchindefinitelytext-talk' : 'addedwatchindefinitelytext';
+            } else {
+                message = mwTitle.isTalkPage() ? 'addedwatchexpirytext-talk' : 'addedwatchexpirytext';
+            }
+        }
+
+        notifyPromise = mw.loader.using( 'mediawiki.watchstar.widgets' ).then( ( require ) => {
+            const WatchlistExpiryWidget = require( 'mediawiki.watchstar.widgets' );
+
+            if ( !watchlistPopup ) {
+                const $message = mw.message( message, mwTitle.getPrefixedText(), preferredExpiry ).parseDom();
+                utils.addBaseToLinks( $message, `https://${ article.get( 'hostname' ) }` );
+                utils.addTargetToLinks( $message );
+
+                watchlistPopup = new WatchlistExpiryWidget(
+                    isWatched ? 'watch' : 'unwatch',
+                    article.getMW( 'title' ).getPrefixedDb(),
+                    response.expiry,
+                    ( ...args ) => updateWatchStatus( article, callback, [ ...args ] ),
+                    {
+                        message: $message,
+                        $link: $( '<a>' ),
+                    },
+                );
+            }
+
+            mw.notify( watchlistPopup.$element, {
+                tag: 'watch-self',
+                id: notificationId,
+                autoHideSeconds: 'short',
+            } );
+        } );
+    } else {
+        const $message = mw.message( message, mwTitle.getPrefixedText() ).parseDom();
+        utils.addBaseToLinks( $message, `https://${ article.get( 'hostname' ) }` );
+        utils.addTargetToLinks( $message );
+
+        notifyPromise = mw.notify( $message, {
+            tag: 'watch-self',
+            id: notificationId,
+        } );
+    }
+
+    // The notifications are stored as a promise and the watch link is only updated
+    // once it is resolved. Otherwise, if $wgWatchlistExpiry set, the loading of
+    // OOUI could cause a race condition and the link is updated before the popup
+    // actually is shown. See T263135
+    notifyPromise.always( () => {
+        updateWatchStatus( article, callback, [
+            $( '<a>' ),
+            isWatched ? 'unwatch' : 'watch',
+            'idle',
+            response.expiry,
+            'infinity',
+        ] );
+    } );
+}
+
+function updateWatchStatus( article, callback, [ titleOrLink, action, state, expiry, expirySelected ] ) {
+    // Update the article watch status
+    article.setValues( {
+        watched: action === 'unwatch',
+        expiry: expiry || 'infinity',
+        expirySelected: expirySelected || 'infinity',
+    } );
+
+    // Update related button
+    if ( utils.isFunction( callback ) ) {
+        callback( state );
+    }
 }

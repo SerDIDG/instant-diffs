@@ -796,21 +796,56 @@ export function addBaseToLinks( $content, url, hashOnly = false ) {
     } catch {
         return;
     }
+
+    const hashOnlyHandler = ( i, el ) => {
+        $( el )
+            .attr( 'href', 'https://' + baseUrl.hostname + baseUrl.pathname + $( el ).attr( 'href' ) );
+    };
+
+    const handler = ( i, el ) => {
+        $( el )
+            .attr( 'href', 'https://' + baseUrl.hostname + $( el ).attr( 'href' ).replace( /special:mylanguage\//i, '' ) )
+            .attr( 'title', ( $( el ).attr( 'title' ) || '' ).replace( /special:mylanguage\//i, '' ) );
+    };
+
+    $content
+        .filter( 'a[href^="#"]' )
+        .each( hashOnlyHandler );
+
     $content
         .find( 'a[href^="#"]' )
-        .each( ( i, el ) => {
-            $( el )
-                .attr( 'href', 'https://' + baseUrl.hostname + baseUrl.pathname + $( el ).attr( 'href' ) );
-        } );
+        .each( hashOnlyHandler );
+
     if ( !hashOnly ) {
         $content
+            .filter( 'a[href^="/"]:not([href^="//"])' )
+            .each( handler );
+
+        $content
             .find( 'a[href^="/"]:not([href^="//"])' )
-            .each( ( i, el ) => {
-                $( el )
-                    .attr( 'href', 'https://' + baseUrl.hostname + $( el ).attr( 'href' ).replace( /special:mylanguage\//i, '' ) )
-                    .attr( 'title', ( $( el ).attr( 'title' ) || '' ).replace( /special:mylanguage\//i, '' ) );
-            } );
+            .each( handler );
     }
+}
+
+export function addTargetToLinks( $content ) {
+    if ( !defaults( 'openInNewTab' ) ) return;
+
+    const handler = ( i, el ) => {
+        // Add target attribute only to links with non-empty href.
+        // Some scripts add links with href="#" - bypass those as well.
+        const href = el.getAttribute( 'href' );
+        if ( isEmpty( href ) || href === '#' ) return;
+
+        el.setAttribute( 'target', '_blank' );
+    };
+
+    $content
+        .filter( 'a:not(.mw-thanks-thank-link, .jquery-confirmable-element)' )
+        .each( handler );
+
+    $content
+        .find( 'a:not(.mw-thanks-thank-link, .jquery-confirmable-element)' )
+        .each( handler );
 }
 
 export function getPlaceholderClasses( modifiers = [] ) {

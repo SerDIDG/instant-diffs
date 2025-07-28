@@ -73,6 +73,16 @@ class Api {
     }
 
     /**
+     * mw.Api.unwatch wrapper.
+     * @param {string|Array<string>} pages
+     * @param {string} [hostname]
+     * @return {jQuery.Promise<mw.Api.WatchedPage|mw.Api.WatchedPage[]>}
+     */
+    static unwatch( pages, hostname ) {
+        return this.getApi( hostname ).unwatch( pages );
+    }
+
+    /**
      * Logs an error.
      * @param {Error} error
      */

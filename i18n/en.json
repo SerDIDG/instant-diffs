@@ -21,6 +21,8 @@
     "action-cancel": "Cancel",
     "action-close": "Close",
     "action-reload": "Reload",
+    "action-watch": "Watch",
+    "action-unwatch": "Unwatch",
 
     "goto-snapshot-prev": "Previous link on a page",
     "goto-snapshot-next": "Next link on a page",

@@ -1,7 +1,8 @@
 import id from './id';
 import * as utils from './utils';
+import * as utilsNav from './utils-navigation';
 import { renderOoUiElement } from './utils-oojs';
-import { getWikilink, getHref, getHrefAbsolute } from './utils-article';
+import { getWikilink, getHref, getHrefAbsolute, setWatchStatus } from './utils-article';
 
 import Button from './Button';
 import Link from './Link';
@@ -18,6 +19,11 @@ const { h, hf, ht } = utils;
  * Class representing a Page navigation bar.
  */
 class Navigation {
+    /**
+     * @type {typeof utilsNav}
+     */
+    static utils = utilsNav;
+
     /**
      * @type {import('./Page').default}
      */
@@ -246,28 +252,12 @@ class Navigation {
     renderMenuGroup( buttonOptions ) {
         const items = [];
 
-        // Copy a link to the clipboard
-        this.buttons.copy = new OO.ui.ButtonWidget( {
-            label: utils.msg( 'copy-link' ),
-            icon: 'link',
-            ...buttonOptions,
-        } );
-        this.buttons.copyHelper = new Button( {
-            node: this.buttons.copy.$button.get( 0 ),
-            handler: this.actionCopyLink.bind( this ),
-        } );
+        // Copy a link to the clipboard action
+        this.buttons.copy = this.renderCopyLink( buttonOptions );
         items.push( this.buttons.copy );
 
-        // Copy a wikilink to the clipboard
-        this.buttons.copyWiki = new OO.ui.ButtonWidget( {
-            label: utils.msg( 'copy-wikilink' ),
-            icon: 'wikiText',
-            ...buttonOptions,
-        } );
-        this.buttons.copyWikiHelper = new Button( {
-            node: this.buttons.copyWiki.$button.get( 0 ),
-            handler: this.actionCopyWikilink.bind( this ),
-        } );
+        // Copy a wikilink to the clipboard action
+        this.buttons.copyWiki = this.renderCopyWikiLink( buttonOptions );
         items.push( this.buttons.copyWiki );
 
         // Link to the revision or to the edit
@@ -289,18 +279,16 @@ class Navigation {
             // Link to the history
             this.buttons.history = this.renderHistoryLink( buttonOptions );
             items.push( this.buttons.history );
+
+            // Watch / unwatch star action
+            if ( !id.local.mwIsAnon ) {
+                this.buttons.watch = this.renderWatchLink( buttonOptions );
+                items.push( this.buttons.watch );
+            }
         }
 
         // Open Instant Diffs settings
-        this.buttons.settings = new OO.ui.ButtonWidget( {
-            label: utils.msg( 'goto-settings' ),
-            icon: 'settings',
-            ...buttonOptions,
-        } );
-        this.buttons.settingsHelper = new Button( {
-            node: this.buttons.settings.$button.get( 0 ),
-            handler: this.actionOpenSettings.bind( this ),
-        } );
+        this.buttons.settings = this.renderSettingsLink( buttonOptions );
         items.push( this.buttons.settings );
 
         // Separator
@@ -587,6 +575,46 @@ class Navigation {
     }
 
     /**
+     * Render a button that copies link to the clipboard.
+     * @param {Object} [options] button configuration options
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
+    renderCopyLink( options ) {
+        const button = new OO.ui.ButtonWidget( {
+            label: utils.msg( 'copy-link' ),
+            icon: 'link',
+            ...options,
+        } );
+
+        button.helper = new Button( {
+            node: button.$button.get( 0 ),
+            handler: this.actionCopyLink.bind( this ),
+        } );
+
+        return button;
+    }
+
+    /**
+     * Render a button that copies wikilink to the clipboard.
+     * @param {Object} [options] button configuration options
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
+    renderCopyWikiLink( options ) {
+        const button = new OO.ui.ButtonWidget( {
+            label: utils.msg( 'copy-wikilink' ),
+            icon: 'wikiText',
+            ...options,
+        } );
+
+        button.helper = new Button( {
+            node: button.$button.get( 0 ),
+            handler: this.actionCopyWikilink.bind( this ),
+        } );
+
+        return button;
+    }
+
+    /**
      * Render a button that navigates to the diff or to the revision.
      * @param {Object} [options] button configuration options
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
@@ -669,6 +697,46 @@ class Navigation {
     }
 
     /**
+     * Render a button that adds / removes page from the watchlist.
+     * @param {Object} [options] button configuration options
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
+    renderWatchLink( options ) {
+        const button = new OO.ui.ButtonWidget( {
+            ...options,
+        } );
+
+        button.helper = new Button( {
+            node: button.$button.get( 0 ),
+            handler: this.actionWatchPage.bind( this ),
+        } );
+
+        utilsNav.updateWatchLinkStatus( button, this.article );
+
+        return button;
+    }
+
+    /**
+     * Render a button that opens settings dialog.
+     * @param {Object} [options] button configuration options
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
+    renderSettingsLink( options ) {
+        const button = new OO.ui.ButtonWidget( {
+            label: utils.msg( 'goto-settings' ),
+            icon: 'settings',
+            ...options,
+        } );
+
+        button.helper = new Button( {
+            node: button.$button.get( 0 ),
+            handler: this.actionOpenSettings.bind( this ),
+        } );
+
+        return button;
+    }
+
+    /**
      * Render a button that shows a current version of the Instant Diffs and navigates to the homearticle.
      * @param {Object} [options] button configuration options
      * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
@@ -717,7 +785,7 @@ class Navigation {
      * Action that copies a formatted wikilink to the edit or revision to the clipboard.
      */
     actionCopyWikilink() {
-        this.buttons.copyWikiHelper.pending( true );
+        this.buttons.copyWiki.helper.pending( true );
 
         $.when( getWikilink( this.article ) )
             .done( href => {
@@ -729,7 +797,30 @@ class Navigation {
                 utils.clipboardWrite( false );
             } )
             .always( () => {
-                this.buttons.copyWikiHelper.pending( false );
+                this.buttons.copyWiki.helper.pending( false );
+
+                // Hide menu dropdown
+                this.toggleMenu( false );
+                this.focusButton( 'menu' );
+            } );
+    }
+
+    /**
+     * Action that adds / removes page from the watchlist.
+     */
+    actionWatchPage() {
+        this.buttons.watch.helper.pending( true );
+
+        $.when(
+            setWatchStatus(
+                this.article,
+                ( state ) => {
+                    this.buttons.watch.helper.pending( state === 'loading' );
+                    utilsNav.updateWatchLinkStatus( this.buttons.watch, this.article );
+                },
+            ) )
+            .always( () => {
+                this.buttons.watch.helper.pending( false );
 
                 // Hide menu dropdown
                 this.toggleMenu( false );
@@ -741,28 +832,14 @@ class Navigation {
      * Action that opens the Settings dialog.
      */
     actionOpenSettings() {
-        settings.once( 'opening', this.onSettingsOpen );
-        settings.once( 'closed', this.onSettingsClose );
+        settings.once( 'opening', () => this.toggleMenu( false ) );
+        settings.once( 'closed', () => this.focusButton( 'menu' ) );
 
-        this.buttons.settingsHelper.pending( true );
+        this.buttons.settings.helper.pending( true );
 
         $.when( settings.load() )
-            .always( () => this.buttons.settingsHelper.pending( false ) );
+            .always( () => this.buttons.settings.helper.pending( false ) );
     }
-
-    /**
-     * Event that emits after the Settings dialog opens.
-     */
-    onSettingsOpen = () => {
-        this.toggleMenu( false );
-    };
-
-    /**
-     * Event that emits after the Settings dialog closes.
-     */
-    onSettingsClose = () => {
-        this.focusButton( 'menu' );
-    };
 
     /**
      * Set to the register currently executed switch action, like navigation, etc.
@@ -777,6 +854,8 @@ class Navigation {
     getActionRegister() {
         return this.actionRegister;
     }
+
+    /******* HOTKEYS *******/
 
     /**
      * Event that emits when the View dialog fires hotkey event.

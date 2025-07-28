@@ -265,6 +265,8 @@ class Page {
 
         const data = await Api.getPageInfo( params, this.article.get( 'hostname' ), this.requestManager );
         if ( data ) {
+            const props = data.pageprops;
+
             // Set values for mw.config
             this.configManager.setValues( {
                 wgArticleId: data.pageid,
@@ -275,7 +277,9 @@ class Page {
                 wgPageContentModel: data.contentmodel,
                 wgIsProbablyEditable: data.actions?.edit,
                 wgRelevantPageIsProbablyEditable: data.actions?.edit,
-                wbEntityId: data.pageprops?.[ 'wikibase_item' ] || this.configManager.get( 'wbEntityId' ),
+                wbEntityId:
+                    props?.[ 'wikibase_item' ] ||
+                    this.configManager.get( 'wbEntityId' ),
             } );
 
             // Set article values
@@ -283,8 +287,12 @@ class Page {
                 curid: data.pageid,
                 curRevid: data.lastrevid,
                 watched: data.watched,
+                expiry: data.watchlistexpiry,
                 new: data.new,
-                wbLabel: data.pageprops?.[ 'wikilambda-label-en' ] || this.article.get( 'wbLabel' ),
+                label:
+                    props?.[ `wikilambda-label-${ id.local.userLanguage }` ] ||
+                    props?.[ 'wikilambda-label-en' ] ||
+                    this.article.get( 'label' ),
             } );
 
             // Set additional config variables
@@ -303,7 +311,7 @@ class Page {
         const label = await Api.getWBLabel( title, this.article.get( 'hostname' ), this.requestManager );
         if ( !utils.isEmpty( label ) ) {
             this.configManager.set( 'wbEntityId', title );
-            this.article.setValue( 'wbLabel', label );
+            this.article.setValue( 'label', label );
 
             // Set additional config variables
             this.setConfigs();
@@ -408,20 +416,6 @@ class Page {
         this.navigation.embed( this.nodes.$container, 'prependTo' );
     }
 
-    processLinksTaget() {
-        if ( !utils.defaults( 'openInNewTab' ) ) return;
-
-        const $links = this.nodes.$container.find( 'a:not(.mw-thanks-thank-link, .jquery-confirmable-element)' );
-        $links.each( ( i, node ) => {
-            // Add target attribute only to links with non-empty href.
-            // Some scripts add links with href="#" - bypass those as well.
-            const href = node.getAttribute( 'href' );
-            if ( utils.isEmpty( href ) || href === '#' ) return;
-
-            node.setAttribute( 'target', '_blank' );
-        } );
-    }
-
     /**
      * Request dependencies for the article and additional data modules.
      * @param {Object} [data]
@@ -484,7 +478,7 @@ class Page {
         }
 
         // Replace link target attributes after the hooks have fired
-        this.processLinksTaget();
+        utils.addTargetToLinks( this.nodes.$container );
 
         // Fire hook on complete
         mw.hook( `${ id.config.prefix }.page.complete` ).fire( this );
@@ -520,8 +514,8 @@ class Page {
         if ( utils.isEmpty( this.article.get( 'title' ) ) ) {
             return utils.msg( this.error ? 'dialog-title-not-found' : 'dialog-title-empty' );
         }
-        if ( !utils.isEmpty( this.article.get( 'wbLabel' ) ) ) {
-            return `${ this.article.get( 'wbLabel' ) } (${ this.article.get( 'titleText' ) })`;
+        if ( !utils.isEmpty( this.article.get( 'label' ) ) ) {
+            return `${ this.article.get( 'label' ) } (${ this.article.get( 'titleText' ) })`;
         }
         return this.article.get( 'titleText' );
     }

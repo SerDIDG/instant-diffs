@@ -293,13 +293,21 @@ function postRollback( link ) {
 
     Api.post( params )
         .then( ( data ) => {
-            mw.notify( $( utils.textDom( data?.rollback?.summary ) ) );
+            const $message = $( utils.textDom( data?.rollback?.summary ) );
+            utils.addBaseToLinks( $message, `https://${ article.get( 'hostname' ) }` );
+            utils.addTargetToLinks( $message );
+
+            mw.notify( $message, { tag: 'rollback' } );
 
             // Remove link wrapper (including the spinner).
             $( link ).closest( '.mw-rollback-link' ).remove();
         } )
         .catch( ( code, data ) => {
-            mw.notify( $( utils.textDom( data?.error?.info ) ), { type: 'error' } );
+            const $message = $( utils.textDom( data?.error?.info ) );
+            utils.addBaseToLinks( $message, `https://${ article.get( 'hostname' ) }` );
+            utils.addTargetToLinks( $message );
+
+            mw.notify( $message, { type: 'error', tag: 'rollback' } );
 
             // Restore the link. This allows the user to try again
             // (or open it in a new window, bypassing this ajax handler).

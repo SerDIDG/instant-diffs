@@ -1,5 +1,5 @@
 import * as utils from './utils';
-import { tweakUserOoUiClass } from './utils-oojs';
+import { fixFloatedElementsIsolation, tweakUserOoUiClass } from './utils-oojs';
 
 import DivLabelWidget from './DivLabelWidget';
 import ViewProgressBar from './ViewProgrssBar';
@@ -58,6 +58,9 @@ class ViewDialog extends OO.ui.MessageDialog {
 
     getSetupProcess( data ) {
         return super.getSetupProcess( data ).next( () => {
+            // Make floatable elements accessible
+            fixFloatedElementsIsolation();
+
             // Set a vertical scroll position to the top of the content
             this.container.$element.scrollTop( 0 );
 

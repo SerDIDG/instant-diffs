@@ -110,10 +110,18 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     }
 
     renderFinishPanel() {
-        // Icon: [[:File:Eo circle light-green checkmark.svg]] by Emoji One contributors and [[User:IagoQns]]
+        /**
+         * Icon "Eo circle light-green checkmark.svg"
+         * @author IagoQnsi
+         * @see {@link https://commons.wikimedia.org/wiki/User:IagoQnsi}
+         * @see {@link https://commons.wikimedia.org/wiki/File:Eo_circle_light-green_checkmark.svg}
+         * @type {string}
+         */
+        const image = '/6/6f/Eo_circle_light-green_checkmark.svg';
+
         const content = utils.renderSuccessBox( {
+            image,
             content: utils.msg( 'settings-saved' ),
-            image: '/6/6f/Eo_circle_light-green_checkmark.svg',
             alt: utils.msg( 'settings-saved-icon' ),
         } );
 
