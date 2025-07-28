@@ -348,13 +348,54 @@ export const local = {
      */
     require: null,
 
+    /**
+     * @type {string|null}
+     */
     language: null,
+
+    /**
+     * @type {string|null}
+     */
     linkSelector: null,
 
-    mwIsAnon: null,
+    /**
+     * @type {boolean}
+     */
+    mwIsAnon: true,
+
+    /**
+     * @type {string|null}
+     */
     mwEndPoint: null,
+
+    /**
+     * @type {URL}
+     */
     mwEndPointUrl: null,
+
+    /**
+     * @type {string|null}
+     */
+    mwAction: null,
+
+    /**
+     * @type {string|null}
+     */
     mwArticlePath: null,
+
+    /**
+     * @type {string|null}
+     */
+    mwCanonicalSpecialPageName: null,
+
+    /**
+     * @type {mw.Title}
+     */
+    mwTitle: null,
+
+    /**
+     * @type {string|null}
+     */
     mwTitleText: null,
 
     /**

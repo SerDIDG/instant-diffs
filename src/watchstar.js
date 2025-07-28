@@ -1,8 +1,12 @@
+import id from './id';
 import * as utils from './utils';
 import { getModuleExport } from './utils-oojs';
 import { getHrefAbsolute } from './utils-article';
 
 import Api from './Api';
+import view from './View';
+
+const notificationId = 'mw-watchlink-notification';
 
 /**
  * Adds or removes page from the watchlist.
@@ -14,17 +18,15 @@ export function setWatchStatus( article, button ) {
     preloadWatchNotice( article );
 
     const preferredExpiry = mw.user.options.get( 'watchstar-expiry', 'infinity' );
-    const notificationId = 'mw-watchlink-notification';
-
     const watched = article.get( 'watched' );
     const hostname = article.get( 'hostname' );
     const title = article.getMW( 'title' ).getPrefixedDb();
 
-    const action = watched
+    const request = watched
         ? Api.unwatch( title, hostname )
         : Api.watch( title, preferredExpiry, hostname );
 
-    return action
+    return request
         .then( ( response ) => {
             showWatchNotice( article, button, response );
         } )
@@ -48,8 +50,8 @@ export function setWatchStatus( article, button ) {
  * @param {import('./Article').default} article an Article instance
  */
 function preloadWatchNotice( article ) {
-    const config = getModuleExport( 'mediawiki.page.watch.ajax', 'config.json' );
-    const isWatchlistExpiryEnabled = config?.WatchlistExpiry || false;
+    const { WatchlistExpiry } = getModuleExport( 'mediawiki.page.watch.ajax', 'config.json' ) || {};
+    const isWatchlistExpiryEnabled = WatchlistExpiry || false;
 
     // Preload the notification module for mw.notify
     const modulesToLoad = [ 'mediawiki.notification' ];
@@ -74,7 +76,6 @@ function showWatchNotice( article, button, response ) {
     const config = getModuleExport( 'mediawiki.page.watch.ajax', 'config.json' );
     const isWatchlistExpiryEnabled = config?.WatchlistExpiry || false;
     const preferredExpiry = mw.user.options.get( 'watchstar-expiry', 'infinity' );
-    const notificationId = 'mw-watchlink-notification';
 
     const isWatched = response.watched === true;
     const mwTitle = article.getMW( 'title' );
@@ -152,7 +153,9 @@ function showWatchNotice( article, button, response ) {
 }
 
 /**
- * Sets the article's watch \ unwatch status and updates the button.
+ * Sets the article's watch \ unwatch status, updates related button;
+ * than if an article page matches a current page, fires a page update;
+ * that if current page is a watchlist, updates watchlist lines.
  * @param {import('./Article').default} article an Article instance
  * @param {OO.ui.ButtonWidget} button a OO.ui.ButtonWidget instance
  * @param {mw.Title|JQuery<HTMLElement>} titleOrLink
@@ -162,25 +165,37 @@ function showWatchNotice( article, button, response ) {
  * @param {string} expirySelected
  */
 function updateWatchStatus( article, button, [ titleOrLink, action, state, expiry, expirySelected ] ) {
+    const watched = action === 'unwatch';
+    expiry ||= 'infinity';
+    expirySelected ||= 'infinity';
+
     // Update the article watch status
-    article.setValues( {
-        watched: action === 'unwatch',
-        expiry: expiry || 'infinity',
-        expirySelected: expirySelected || 'infinity',
-    } );
+    article.setValues( { watched, expiry, expirySelected } );
 
     // Update related button
     button.helper?.pending( state === 'loading' );
     updateWatchLinkStatus( article, button );
+
+    // For the current page, also update page status, that triggers the hook 'wikipage.watchlistChange'
+    if ( id.local.mwTitleText === article.get( 'titleText' ) ) {
+        const { updatePageWatchStatus } = utils.moduleRequire( 'mediawiki.page.watch.ajax' ) || {};
+        updatePageWatchStatus?.( watched, expiry, expirySelected );
+    }
+
+    // For the watchlist, also update watchlist lines
+    if ( mw.user.options.get( 'watchlistunwatchlinks' ) && id.local.mwCanonicalSpecialPageName === 'Watchlist' ) {
+        updateWatchlistStatus( article, watched, expiry, expirySelected );
+    }
 }
 
 /**
  * Updates status of the watch \ unwatch button.
+ * Partially copied from:
+ * {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/2a828f2e72a181665e1f627e2f737abb75b74eb9/resources/src/mediawiki.page.watch.ajax/watch-ajax.js#18}
  * @param {import('./Article').default} article an Article instance
  * @param {OO.ui.ButtonWidget} button a OO.ui.ButtonWidget instance
  */
 export function updateWatchLinkStatus( article, button ) {
-    //const config = getModuleExport(  'mediawiki.page.watch.ajax', 'config.json' );
     const watched = article.get( 'watched' );
     const action = watched ? 'unwatch' : 'watch';
     const expiry = article.get( 'expiry' ) || 'infinity';
@@ -216,4 +231,99 @@ export function updateWatchLinkStatus( article, button ) {
     button.setTitle( mw.msg( `tooltip-ca-${ tooltipAction }`, daysLeftExpiry ) );
     button.setIcon( icon );
     button.setHref( getHrefAbsolute( article, href ) );
+}
+
+/******* WATCHLIST *******/
+
+/**
+ * Updates watch / unwatch status in the watchlist lines.
+ * Partially copied from:
+ * {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/9c590c2c37434ca7a2bd101b547ccf7dcc46b538/resources/src/mediawiki.special.watchlist/watchlist.js#114}
+ * @param {import('./Article').default} article an Article instance
+ * @param {boolean} watched
+ * @param {string} expiry
+ * @param {string} expirySelected
+ */
+function updateWatchlistStatus( article, watched, expiry, expirySelected ) {
+    if ( watched ) {
+        forEachMatchingTitle( article.get( 'titleText' ), ( rowTitle, $row, $link ) => {
+            $link
+                .text( mw.msg( 'watchlist-unwatch' ) )
+                .attr( 'title', mw.msg( 'tooltip-ca-unwatch' ) )
+                .attr( 'href', mw.util.getUrl( rowTitle, { action: 'unwatch' } ) )
+                .removeClass( 'mw-watch-link loading' )
+                .addClass( 'mw-unwatch-link' );
+
+            $row
+                .find( '.mw-changelist-line-inner-unwatched' )
+                .addBack( '.mw-enhanced-rc-nested' )
+                .removeClass( 'mw-changelist-line-inner-unwatched' );
+
+            $row
+                .find( '.mw-changesList-watchlistExpiry' )
+                .each( ( i, node ) => {
+                    // Add the missing semicolon (T266747)
+                    const $expiry = $( node );
+                    $expiry.next( '.mw-changeslist-separator' )
+                        .addClass( 'mw-changeslist-separator--semicolon' )
+                        .removeClass( 'mw-changeslist-separator' );
+
+                    // Remove the spaces before and after the expiry icon
+                    node.nextSibling.nodeValue = node.nextSibling.nodeValue.trimStart();
+                    node.previousSibling.nodeValue = node.previousSibling.nodeValue.trimEnd();
+
+                    // Remove the icon
+                    $expiry.remove();
+                } );
+        } );
+    } else {
+        forEachMatchingTitle( article.get( 'titleText' ), ( rowTitle, $row, $link ) => {
+            $link
+                .text( mw.msg( 'watchlist-unwatch-undo' ) )
+                .attr( 'title', mw.msg( 'tooltip-ca-watch' ) )
+                .attr( 'href', mw.util.getUrl( rowTitle, { action: 'watch' } ) )
+                .removeClass( 'mw-unwatch-link loading' )
+                .addClass( 'mw-watch-link' );
+
+            $row
+                .find( '.mw-changeslist-line-inner, .mw-enhanced-rc-nested' )
+                .addBack( '.mw-enhanced-rc-nested' ) // For matching log sub-entry
+                .addClass( 'mw-changelist-line-inner-unwatched' );
+        } );
+    }
+}
+
+/**
+ * Utility function for looping through each watchlist line that matches
+ * a certain page or its associated page (e.g. Talk).
+ * Partially copied from:
+ * {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/9c590c2c37434ca7a2bd101b547ccf7dcc46b538/resources/src/mediawiki.special.watchlist/watchlist.js#81}
+ * @param {string} title
+ * @param {Function} callback
+ */
+function forEachMatchingTitle( title, callback ) {
+    const mwTitle = mw.Title.newFromText( title );
+    const associatedMwTitle = mwTitle.isTalkPage() ? mwTitle.getSubjectPage() : mwTitle.getTalkPage();
+    const associatedTitle = associatedMwTitle.getPrefixedText();
+
+    $( '.mw-changeslist-line' ).each( ( i, node ) => {
+        const $line = $( node );
+        $line.find( '[data-target-page]' ).each( ( i, node ) => {
+            const $this = $( node );
+            const rowTitle = String( $this.data( 'targetPage' ) );
+
+            if ( rowTitle === title || rowTitle === associatedTitle ) {
+                // EnhancedChangesList groups log entries by performer rather than target page.
+                // Therefore...
+                // * If using OldChangesList, use the <li>
+                // * If using EnhancedChangesList and $this is part of a grouped log entry, use the <td> sub-entry
+                // * If using EnhancedChangesList and $this is not part of a grouped log entry, use the <table> grouped entry
+                const $row = $this.closest(
+                    'li, .mw-enhancedchanges-checkbox + table.mw-changeslist-log td[data-target-page], table',
+                );
+                const $link = $row.find( '.mw-unwatch-link, .mw-watch-link' );
+                callback( rowTitle, $row, $link );
+            }
+        } );
+    } );
 }

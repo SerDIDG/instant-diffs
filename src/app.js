@@ -26,29 +26,26 @@ function applyPageAdjustments() {
 
     id.isPageAdjustmentsApplied = true;
 
-    const specialPageName = mw.config.get( 'wgCanonicalSpecialPageName' );
-    const action = mw.config.get( 'wgAction' );
-
     // Add a status to the body tag
     document.body.classList.add( 'instantDiffs-enabled' );
 
     // Change Lists
-    if ( id.config.changeLists.includes( specialPageName ) ) {
+    if ( id.config.changeLists.includes( id.local.mwCanonicalSpecialPageName ) ) {
         return processChangelistPage();
     }
 
     // User Contributions
-    if ( id.config.contributionLists.includes( specialPageName ) ) {
+    if ( id.config.contributionLists.includes( id.local.mwCanonicalSpecialPageName ) ) {
         return processContributionsPage();
     }
 
     // GlobalWatchlist Extension
-    if ( specialPageName === 'GlobalWatchlist' ) {
+    if ( id.local.mwCanonicalSpecialPageName === 'GlobalWatchlist' ) {
         return processGlobalWatchlistPage();
     }
 
     // History
-    if ( action === 'history' ) {
+    if ( id.local.mwAction === 'history' ) {
         return processHistoryPage();
     }
 }
@@ -69,7 +66,7 @@ function processContributionsPage() {
     } );
 
     // GlobalContributions Extension
-    if ( mw.config.get( 'wgCanonicalSpecialPageName' ) === 'GlobalContributions' ) {
+    if ( id.local.mwCanonicalSpecialPageName === 'GlobalContributions' ) {
         processGlobalContributionsPage();
     }
 }
@@ -161,8 +158,11 @@ function prepare( require ) {
     id.local.mwIsAnon = mw.user?.isAnon?.() ?? true;
     id.local.mwEndPoint = `${ location.origin }${ mw.config.get( 'wgScript' ) }`;
     id.local.mwEndPointUrl = new URL( id.local.mwEndPoint );
-    id.local.mwArticlePath = mw.config.get( 'wgArticlePath' ).replace( '$1', '' );
-    id.local.mwTitleText = new mw.Title( mw.config.get( 'wgPageName' ) ).getPrefixedText();
+    id.local.mwAction = mw.config.get( 'wgAction' );
+    id.local.mwArticlePath = (/** @type {string} */ mw.config.get( 'wgArticlePath' ) ).replace( '$1', '' );
+    id.local.mwCanonicalSpecialPageName = mw.config.get( 'wgCanonicalSpecialPageName' );
+    id.local.mwTitle = new mw.Title( /** @type {string} */ mw.config.get( 'wgRelevantPageName' ) );
+    id.local.mwTitleText = id.local.mwTitle.getPrefixedText();
 
     // Predict a mobile server name and add it to the mw.config
     const mobileServer = utils.getMobileServer();
