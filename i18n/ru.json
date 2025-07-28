@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Iniquity",
+			"Okras",
 			"Serhio Magpie"
 		]
 	},
@@ -96,7 +97,8 @@
 	"error-offline": "Проверьте подключение к интернету",
 	"error-wasted": "Непредвиденная ошибка",
 	"error-prepare-generic": "Не удалось подготовить конфигурацию: $4",
-	"error-prepare-version": "Скрипт уже был запущен: $4",
+	"error-prepare-version": "Другой экземпляр уже запущен: $4",
+	"error-prepare-replaced": "Отдельный экземпляр успешно заменён: $4",
 	"error-prepare-mobile": "Скрипт отключён в настройках для мобильной темы (Minerva)",
 	"error-revision-generic": "Не удалось загрузить данные версии «oldid=$1»: $4",
 	"error-revision-curid": "Не удалось загрузить данные версии «curid=$1»: $4",
