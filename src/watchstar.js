@@ -228,8 +228,10 @@ export function updateWatchLinkStatus( article, button ) {
 
     button.setLabel( utils.msg( label ) );
     button.setTitle( mw.msg( `tooltip-ca-${ tooltipAction }`, daysLeftExpiry ) );
-    button.setIcon( icon );
     button.setHref( getHrefAbsolute( article, href ) );
+    if ( utils.defaults( 'showMenuIcons' ) ) {
+        button.setIcon( icon );
+    }
 }
 
 /******* WATCHLIST *******/
