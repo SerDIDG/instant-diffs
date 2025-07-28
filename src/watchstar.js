@@ -4,7 +4,6 @@ import { getModuleExport } from './utils-oojs';
 import { getHrefAbsolute } from './utils-article';
 
 import Api from './Api';
-import view from './View';
 
 const notificationId = 'mw-watchlink-notification';
 
@@ -73,8 +72,8 @@ function preloadWatchNotice( article ) {
  * @param {Object} response
  */
 function showWatchNotice( article, button, response ) {
-    const config = getModuleExport( 'mediawiki.page.watch.ajax', 'config.json' );
-    const isWatchlistExpiryEnabled = config?.WatchlistExpiry || false;
+    const { WatchlistExpiry } = getModuleExport( 'mediawiki.page.watch.ajax', 'config.json' ) || {};
+    const isWatchlistExpiryEnabled = WatchlistExpiry || false;
     const preferredExpiry = mw.user.options.get( 'watchstar-expiry', 'infinity' );
 
     const isWatched = response.watched === true;
@@ -262,9 +261,11 @@ function updateWatchlistStatus( article, watched, expiry, expirySelected ) {
             $row
                 .find( '.mw-changesList-watchlistExpiry' )
                 .each( ( i, node ) => {
-                    // Add the missing semicolon (T266747)
                     const $expiry = $( node );
-                    $expiry.next( '.mw-changeslist-separator' )
+
+                    // Add the missing semicolon (T266747)
+                    $expiry
+                        .next( '.mw-changeslist-separator' )
                         .addClass( 'mw-changeslist-separator--semicolon' )
                         .removeClass( 'mw-changeslist-separator' );
 
