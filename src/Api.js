@@ -140,7 +140,7 @@ class Api {
         params = {
             action: 'query',
             prop: [ 'info', 'pageprops' ],
-            inprop: [ 'watched' ],
+            inprop: [ 'watched', 'notificationtimestamp' ],
             intestactions: [ 'edit' ],
             format: 'json',
             formatversion: 2,
@@ -152,6 +152,24 @@ class Api {
         try {
             const data = await api.get( params, hostname );
             return data.query.pages[ 0 ];
+        } catch ( error ) {
+            this.notifyError( error );
+        }
+    }
+
+    static async markAsSeen( params, hostname ) {
+        params = {
+            action: 'setnotificationtimestamp',
+            redirects: 1,
+            format: 'json',
+            formatversion: 2,
+            uselang: id.local.userLanguage,
+            ...params,
+        };
+
+        try {
+            const data = await Api.getApi( hostname ).postWithEditToken( params );
+            return data.setnotificationtimestamp.notificationtimestamp;
         } catch ( error ) {
             this.notifyError( error );
         }

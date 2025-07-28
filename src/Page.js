@@ -288,6 +288,7 @@ class Page {
                 curRevid: data.lastrevid,
                 watched: data.watched,
                 expiry: data.watchlistexpiry,
+                notificationtimestamp: data.notificationtimestamp,
                 new: data.new,
                 label:
                     props?.[ `wikilambda-label-${ id.local.userLanguage }` ] ||
@@ -318,6 +319,32 @@ class Page {
         }
     }
 
+    markAsSeen() {
+        // Check if "mark as viewed" is allowed by user,
+        // then check if it's a foreign article, because local article will be marked automatically,
+        // then check if article has revision timestamp and last viewed timestamp.
+        if (
+            !utils.defaults( 'markWatchedLine' ) ||
+            !this.article.isForeign ||
+            utils.isEmpty( this.article.get( 'timestamp' ) ) ||
+            utils.isEmpty( this.article.get( 'notificationtimestamp' ) )
+        ) {
+            return;
+        }
+
+        // Check if revision timestamp is newer then last viewed timestamp
+        const lastTime = new Date( this.article.get( 'notificationtimestamp' ) ).getTime();
+        const revTime = new Date( this.article.get( 'timestamp' ) ).getTime();
+        if ( revTime < lastTime ) return;
+
+        // Mark revision and all earlier revisions as viewed
+        const params = {
+            titles: this.article.get( 'titleText' ),
+            newerthanrevid: this.article.get( 'revid' ),
+        };
+        Api.markAsSeen( params, this.article.get( 'hostname' ) );
+    }
+
     /**
      * Abort all requests that were added via request manager.
      */
@@ -330,6 +357,9 @@ class Page {
 
     async renderSuccess() {
         await this.render();
+
+        // Mark page as seen in watchlist
+        this.markAsSeen();
 
         mw.hook( `${ id.config.prefix }.page.renderSuccess` ).fire( this );
         mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );

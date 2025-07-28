@@ -247,7 +247,7 @@ export function updateWatchLinkStatus( article, button ) {
  */
 function updateWatchlistStatus( article, watched, expiry, expirySelected ) {
     if ( watched ) {
-        forEachMatchingTitle( article.get( 'titleText' ), ( rowTitle, $row, $link ) => {
+        forEachWatchlistMatchingTitle( article.get( 'titleText' ), ( rowTitle, $row, $link ) => {
             $link
                 .text( mw.msg( 'watchlist-unwatch' ) )
                 .attr( 'title', mw.msg( 'tooltip-ca-unwatch' ) )
@@ -280,7 +280,7 @@ function updateWatchlistStatus( article, watched, expiry, expirySelected ) {
                 } );
         } );
     } else {
-        forEachMatchingTitle( article.get( 'titleText' ), ( rowTitle, $row, $link ) => {
+        forEachWatchlistMatchingTitle( article.get( 'titleText' ), ( rowTitle, $row, $link ) => {
             $link
                 .text( mw.msg( 'watchlist-unwatch-undo' ) )
                 .attr( 'title', mw.msg( 'tooltip-ca-watch' ) )
@@ -304,7 +304,7 @@ function updateWatchlistStatus( article, watched, expiry, expirySelected ) {
  * @param {string} title
  * @param {Function} callback
  */
-function forEachMatchingTitle( title, callback ) {
+function forEachWatchlistMatchingTitle( title, callback ) {
     const mwTitle = mw.Title.newFromText( title );
     const associatedMwTitle = mwTitle.isTalkPage() ? mwTitle.getSubjectPage() : mwTitle.getTalkPage();
     const associatedTitle = associatedMwTitle.getPrefixedText();

@@ -242,6 +242,12 @@ class LocalPage extends Page {
             }
         }
 
+        // Populate timestamps
+        const $toTimestamp = this.nodes.$data.find( '#mw-diff-ntitle1 .mw-diff-timestamp' );
+        if ( $toTimestamp.length > 0 ) {
+            articleValues.timestamp = $toTimestamp.attr( 'data-timestamp' );
+        }
+
         // Populate section name
         const $toSectionLinks = this.nodes.$data.find( '#mw-diff-ntitle3 .autocomment a' );
         if ( utils.isEmpty( this.article.get( 'section' ) ) && $toSectionLinks.length > 0 ) {
