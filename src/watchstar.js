@@ -185,6 +185,11 @@ function updateWatchStatus( article, button, [ titleOrLink, action, state, expir
     if ( mw.user.options.get( 'watchlistunwatchlinks' ) && id.local.mwCanonicalSpecialPageName === 'Watchlist' ) {
         updateWatchlistStatus( article, watched, expiry, expirySelected );
     }
+
+    // For the global watchlist, also update watchlist lines
+    if ( id.local.mwCanonicalSpecialPageName === 'GlobalWatchlist' ) {
+        updateGlobalWatchlistStatus( article, watched, expiry, expirySelected );
+    }
 }
 
 /**
@@ -237,7 +242,7 @@ export function updateWatchLinkStatus( article, button ) {
 /******* WATCHLIST *******/
 
 /**
- * Updates watch / unwatch status in the watchlist lines.
+ * Updates watch / unwatch status in the Watchlist lines.
  * Partially copied from:
  * {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/9c590c2c37434ca7a2bd101b547ccf7dcc46b538/resources/src/mediawiki.special.watchlist/watchlist.js#114}
  * @param {import('./Article').default} article an Article instance
@@ -245,7 +250,7 @@ export function updateWatchLinkStatus( article, button ) {
  * @param {string} expiry
  * @param {string} expirySelected
  */
-function updateWatchlistStatus( article, watched, expiry, expirySelected ) {
+export function updateWatchlistStatus( article, watched, expiry, expirySelected ) {
     if ( watched ) {
         forEachWatchlistMatchingTitle( article.get( 'titleText' ), ( rowTitle, $row, $link ) => {
             $link
@@ -329,4 +334,19 @@ function forEachWatchlistMatchingTitle( title, callback ) {
             }
         } );
     } );
+}
+
+/**
+ * Updates watch / unwatch status in the Global Watchlist.
+ * @param {import('./Article').default} article an Article instance
+ * @param {boolean} watched
+ */
+export function updateGlobalWatchlistStatus( article, watched, expiry, expirySelected ) {
+    if ( !mw.globalwatchlist ) return;
+
+    const watchedSites = mw.globalwatchlist.watchedSites.siteList.find( entry => entry.site === article.get( 'hostname' ) );
+    if ( !watchedSites ) return;
+
+    // Use origTitle values instead of title or titleText, because title is formatted with canonical prefixes
+    watchedSites.processUpdateWatched( article.get( 'origTitle' ), !watched );
 }
