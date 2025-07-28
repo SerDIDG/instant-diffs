@@ -50,13 +50,13 @@ export function setWatchStatus( article, button ) {
  */
 function preloadWatchNotice( article ) {
     const { WatchlistExpiry } = getModuleExport( 'mediawiki.page.watch.ajax', 'config.json' ) || {};
-    const isWatchlistExpiryEnabled = WatchlistExpiry || false;
+    const isWatchlistExpiryEnabled = !article.isForeign && ( WatchlistExpiry || false );
 
     // Preload the notification module for mw.notify
     const modulesToLoad = [ 'mediawiki.notification' ];
 
     // Preload watchlist expiry widget so it runs in parallel with the api call
-    if ( isWatchlistExpiryEnabled && !article.isForeign ) {
+    if ( isWatchlistExpiryEnabled ) {
         modulesToLoad.push( 'mediawiki.watchstar.widgets' );
     }
 
@@ -73,11 +73,11 @@ function preloadWatchNotice( article ) {
  */
 function showWatchNotice( article, button, response ) {
     const { WatchlistExpiry } = getModuleExport( 'mediawiki.page.watch.ajax', 'config.json' ) || {};
-    const isWatchlistExpiryEnabled = WatchlistExpiry || false;
-    const preferredExpiry = mw.user.options.get( 'watchstar-expiry', 'infinity' );
+    const isWatchlistExpiryEnabled = !article.isForeign && ( WatchlistExpiry || false );
 
     const isWatched = response.watched === true;
     const mwTitle = article.getMW( 'title' );
+    const preferredExpiry = mw.user.options.get( 'watchstar-expiry', 'infinity' );
 
     let message = isWatched ? 'addedwatchtext' : 'removedwatchtext';
     if ( mwTitle.isTalkPage() ) {
@@ -89,7 +89,7 @@ function showWatchNotice( article, button, response ) {
 
     // @since 1.35 - pop up notification will be loaded with OOUI
     // only if Watchlist Expiry is enabled
-    if ( isWatchlistExpiryEnabled && !article.isForeign ) {
+    if ( isWatchlistExpiryEnabled ) {
         if ( isWatched ) {
             if ( !preferredExpiry || mw.util.isInfinity( preferredExpiry ) ) {
                 // The message should include `infinite` watch period
@@ -176,13 +176,19 @@ function updateWatchStatus( article, button, [ titleOrLink, action, state, expir
     updateWatchLinkStatus( article, button );
 
     // For the current page, also update page status, that triggers the hook 'wikipage.watchlistChange'
-    if ( id.local.mwTitleText === article.get( 'titleText' ) ) {
+    if (
+        !article.isForeign &&
+        id.local.mwTitleText === article.get( 'titleText' )
+    ) {
         const { updatePageWatchStatus } = utils.moduleRequire( 'mediawiki.page.watch.ajax' ) || {};
         updatePageWatchStatus?.( watched, expiry, expirySelected );
     }
 
     // For the watchlist, also update watchlist lines
-    if ( mw.user.options.get( 'watchlistunwatchlinks' ) && id.local.mwCanonicalSpecialPageName === 'Watchlist' ) {
+    if (
+        !article.isForeign &&
+        mw.user.options.get( 'watchlistunwatchlinks' ) && id.local.mwCanonicalSpecialPageName === 'Watchlist'
+    ) {
         updateWatchlistStatus( article, watched, expiry, expirySelected );
     }
 
