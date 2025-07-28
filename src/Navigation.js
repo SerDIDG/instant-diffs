@@ -1,8 +1,8 @@
 import id from './id';
 import * as utils from './utils';
-import * as utilsNav from './utils-navigation';
 import { renderOoUiElement } from './utils-oojs';
-import { getWikilink, getHref, getHrefAbsolute, setWatchStatus } from './utils-article';
+import { getWikilink, getHref, getHrefAbsolute } from './utils-article';
+import { setWatchStatus, updateWatchLinkStatus } from './watchstar';
 
 import Button from './Button';
 import Link from './Link';
@@ -19,11 +19,6 @@ const { h, hf, ht } = utils;
  * Class representing a Page navigation bar.
  */
 class Navigation {
-    /**
-     * @type {typeof utilsNav}
-     */
-    static utils = utilsNav;
-
     /**
      * @type {import('./Page').default}
      */
@@ -711,7 +706,7 @@ class Navigation {
             handler: this.actionWatchPage.bind( this ),
         } );
 
-        utilsNav.updateWatchLinkStatus( button, this.article );
+        updateWatchLinkStatus( this.article, button );
 
         return button;
     }
@@ -811,14 +806,7 @@ class Navigation {
     actionWatchPage() {
         this.buttons.watch.helper.pending( true );
 
-        $.when(
-            setWatchStatus(
-                this.article,
-                ( state ) => {
-                    this.buttons.watch.helper.pending( state === 'loading' );
-                    utilsNav.updateWatchLinkStatus( this.buttons.watch, this.article );
-                },
-            ) )
+        $.when( setWatchStatus( this.article, this.buttons.watch ) )
             .always( () => {
                 this.buttons.watch.helper.pending( false );
 
