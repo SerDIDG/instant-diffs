@@ -178,9 +178,10 @@ class Watch {
                         },
                     ];
 
-                    // Remove expiry argument for the MediaWiki < 1.45.0 (T265716).
+                    // Remove expiry argument that was added in 1.45.0 (T265716)
+                    // for the older MediaWiki versions.
                     if ( utils.semverCompare( mw.config.get( 'wgVersion' ), '1.45.0' ) < 0 ) {
-                        params.splice( 2, 0 );
+                        params.splice( 2, 1 );
                     }
 
                     // Construct a widget instance
