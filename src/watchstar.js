@@ -346,6 +346,8 @@ function forEachWatchlistMatchingTitle( title, callback ) {
  * Updates watch / unwatch status in the Global Watchlist.
  * @param {import('./Article').default} article an Article instance
  * @param {boolean} watched
+ * @param {string} expiry
+ * @param {string} expirySelected
  */
 export function updateGlobalWatchlistStatus( article, watched, expiry, expirySelected ) {
     if ( !mw.globalwatchlist ) return;
@@ -353,6 +355,6 @@ export function updateGlobalWatchlistStatus( article, watched, expiry, expirySel
     const watchedSites = mw.globalwatchlist.watchedSites.siteList.find( entry => entry.site === article.get( 'hostname' ) );
     if ( !watchedSites ) return;
 
-    // Use origTitle values instead of title or titleText, because title is formatted with canonical prefixes
+    // Use origTitle value instead of title or titleText, because article's title is formatted with canonical prefixes
     watchedSites.processUpdateWatched( article.get( 'origTitle' ), !watched );
 }
