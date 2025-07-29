@@ -118,13 +118,13 @@ export const config = {
         debug: '__debug__' === 'true',
         GM: false,                                                      // Greasemonkey mode
         standalone: false,                                              // Standalone mode
-        storageExpiry: 60 * 60 * 24,                                    // 1 day
+        storageExpiry: 60 * 60 * 24,                                    // Cache local storage for 1 day
         logTimers: true,
         showLink: false,
         showPageLink: true,
         highlightLine: true,
         markWatchedLine: true,
-        showDiffTools: false,
+        showDiffTools: true,
         showRevisionInfo: true,
         unHideDiffs: true,
         openInNewTab: true,

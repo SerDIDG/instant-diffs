@@ -284,6 +284,7 @@ class Page {
 
             // Set article values
             this.article.setValues( {
+                title: data.title,
                 curid: data.pageid,
                 curRevid: data.lastrevid,
                 watched: data.watched,

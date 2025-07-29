@@ -264,15 +264,7 @@ class LocalPage extends Page {
         this.article.set( articleValues );
 
         // Save the title values to the mw.config
-        const mwTitle = this.article.getMW( 'title' );
-        if ( mwTitle ) {
-            this.configManager.setValues( {
-                wgTitle: mwTitle.getMainText(),
-                wgPageName: mwTitle.getPrefixedDb(),
-                wgNamespaceNumber: mwTitle.getNamespaceId(),
-                wgRelevantPageName: mwTitle.getPrefixedDb(),
-            } );
-        }
+        this.configManager.setTitle( this.article.getMW( 'title' ) );
 
         /**
          * Save additional user options dependent of a page type.
