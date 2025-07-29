@@ -14,6 +14,7 @@ import LocalPage from './LocalPage';
 import GlobalPage from './GlobalPage';
 import ViewButton from './ViewButton';
 import HistoryCompareButton from './HistoryCompareButton';
+import Watch from './Watch';
 import view from './View';
 import settings from './Settings';
 
@@ -312,7 +313,18 @@ function app() {
     id.timers = timers;
     id.utils = utils;
     id.modules = {
-        Api, Article, Link, Button, ViewButton, HistoryCompareButton, Page, LocalPage, GlobalPage, view, settings,
+        Api,
+        Article,
+        Link,
+        Button,
+        ViewButton,
+        HistoryCompareButton,
+        Page,
+        LocalPage,
+        GlobalPage,
+        Watch,
+        view,
+        settings,
     };
 
     // Track on run start time

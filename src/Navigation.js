@@ -2,12 +2,13 @@ import id from './id';
 import * as utils from './utils';
 import { renderOoUiElement } from './utils-oojs';
 import { getWikilink, getHref, getHrefAbsolute } from './utils-article';
-import { setWatchStatus, updateWatchLinkStatus } from './watchstar';
+import { updateWatchButtonStatus } from './utils-watch';
 
 import Button from './Button';
 import Link from './Link';
 import Article from './Article';
 import Snapshot from './Snapshot';
+import Watch from './Watch';
 import settings from './Settings';
 import view from './View';
 
@@ -53,6 +54,11 @@ class Navigation {
      * @type {string}
      */
     actionRegister;
+
+    /**
+     * @type {import('./Watch').default}
+     */
+    watch;
 
     /**
      * @type {boolean}
@@ -706,7 +712,7 @@ class Navigation {
             handler: this.actionWatchPage.bind( this ),
         } );
 
-        updateWatchLinkStatus( this.article, button );
+        updateWatchButtonStatus( this.article, button );
 
         return button;
     }
@@ -804,9 +810,13 @@ class Navigation {
      * Action that adds / removes page from the watchlist.
      */
     actionWatchPage() {
+        if ( !this.watch ) {
+            this.watch = new Watch( this.article, this.buttons.watch );
+        }
+
         this.buttons.watch.helper.pending( true );
 
-        $.when( setWatchStatus( this.article, this.buttons.watch ) )
+        $.when( this.watch.request() )
             .always( () => {
                 this.buttons.watch.helper.pending( false );
 

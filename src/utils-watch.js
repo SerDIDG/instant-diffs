@@ -1,18 +1,12 @@
-import id from './id';
 import * as utils from './utils';
-import { getModuleExport } from './utils-oojs';
 import { getHrefAbsolute } from './utils-article';
-
-import Api from './Api';
-
-const notificationId = 'mw-watchlink-notification';
 
 /**
  * Gets how many expiry days left in the watchlist.
  * @param {string} expiry
  * @return {number|null}
  */
-function getDaysLeftExpiry( expiry ) {
+export function getDaysLeftExpiry( expiry ) {
     if ( !expiry || mw.util.isInfinity( expiry ) ) return null;
 
     const expiryDate = new Date( expiry );
@@ -24,223 +18,13 @@ function getDaysLeftExpiry( expiry ) {
 }
 
 /**
- * Adds or removes page from the watchlist.
- * @param {import('./Article').default} article an Article instance
- * @param {OO.ui.ButtonWidget} button a OO.ui.ButtonWidget instance
- * @returns {mw.Api.AbortablePromise}
- */
-export async function setWatchStatus( article, button ) {
-    await Api.loadMessage( [
-        'watchlist-expiring-days-full-text',
-        'watchlist-expiring-hours-full-text',
-        'tooltip-ca-watch',
-        'tooltip-ca-unwatch',
-        'tooltip-ca-unwatch-expiring',
-        'tooltip-ca-unwatch-expiring-hours',
-    ] );
-
-    preloadWatchNotice( article );
-
-    const hostname = article.get( 'hostname' );
-    const title = article.getMW( 'title' ).getPrefixedDb();
-    const preferredExpiry = mw.user.options.get( 'watchstar-expiry', 'infinity' );
-
-    const request = article.get( 'watched' )
-        ? Api.unwatch( title, hostname )
-        : Api.watch( title, preferredExpiry, hostname );
-
-    return request
-        .then( ( response ) => {
-            showWatchNotice( article, button, response );
-        } )
-        .fail( ( code, data ) => {
-            // Format error message
-            const $msg = Api.getApi().getErrorMessage( data );
-
-            // Report to user about the error
-            mw.notify( $msg, {
-                tag: 'watch-self',
-                type: 'error',
-                id: notificationId,
-            } );
-        } );
-}
-
-/**
- * Preloads the watch star widget modules.
- * Partially copied from:
- * {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/2a828f2e72a181665e1f627e2f737abb75b74eb9/resources/src/mediawiki.page.watch.ajax/watch-ajax.js#350}
- * @param {import('./Article').default} article an Article instance
- */
-function preloadWatchNotice( article ) {
-    const { WatchlistExpiry } = getModuleExport( 'mediawiki.page.watch.ajax', 'config.json' ) || {};
-    const isWatchlistExpiryEnabled = !article.isForeign && ( WatchlistExpiry || false );
-
-    // Preload the notification module for mw.notify
-    const modulesToLoad = [ 'mediawiki.notification' ];
-
-    // Preload watchlist expiry widget so it runs in parallel with the api call
-    if ( isWatchlistExpiryEnabled ) {
-        modulesToLoad.push( 'mediawiki.watchstar.widgets' );
-    }
-
-    mw.loader.load( modulesToLoad );
-}
-
-/**
- * Shows a notification about watch status.
- * Partially copied from:
- * {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/2a828f2e72a181665e1f627e2f737abb75b74eb9/resources/src/mediawiki.page.watch.ajax/watch-ajax.js#350}
- * @param {import('./Article').default} article an Article instance
- * @param {OO.ui.ButtonWidget} button a OO.ui.ButtonWidget instance
- * @param {Object} response
- */
-function showWatchNotice( article, button, response ) {
-    const { WatchlistExpiry } = getModuleExport( 'mediawiki.page.watch.ajax', 'config.json' ) || {};
-    const isWatchlistExpiryEnabled = !article.isForeign && ( WatchlistExpiry || false );
-
-    const isWatched = response.watched === true;
-    const mwTitle = article.getMW( 'title' );
-    const preferredExpiry = mw.user.options.get( 'watchstar-expiry', 'infinity' );
-
-    let message = isWatched ? 'addedwatchtext' : 'removedwatchtext';
-    if ( mwTitle.isTalkPage() ) {
-        message += '-talk';
-    }
-
-    let notifyPromise;
-    let watchlistPopup;
-
-    // @since 1.35 - pop up notification will be loaded with OOUI
-    // only if Watchlist Expiry is enabled
-    if ( isWatchlistExpiryEnabled ) {
-        if ( isWatched ) {
-            if ( mw.util.isInfinity( preferredExpiry ) ) {
-                // The message should include `infinite` watch period
-                message = mwTitle.isTalkPage() ? 'addedwatchindefinitelytext-talk' : 'addedwatchindefinitelytext';
-            } else {
-                message = mwTitle.isTalkPage() ? 'addedwatchexpirytext-talk' : 'addedwatchexpirytext';
-            }
-        }
-
-        notifyPromise = mw.loader.using( 'mediawiki.watchstar.widgets' ).then( ( require ) => {
-            const WatchlistExpiryWidget = require( 'mediawiki.watchstar.widgets' );
-
-            if ( !watchlistPopup ) {
-                const $message = mw.message( message, mwTitle.getPrefixedText(), preferredExpiry ).parseDom();
-                utils.addBaseToLinks( $message, `https://${ article.get( 'hostname' ) }` );
-                utils.addTargetToLinks( $message );
-
-                // Configure WatchlistExpiryWidget params
-                const params = [
-                    isWatched ? 'watch' : 'unwatch',
-                    article.getMW( 'title' ).getPrefixedDb(),
-                    ( ...args ) => updateWatchStatus( article, button, [ ...args ] ),
-                    {
-                        message: $message,
-                        $link: $( '<a>' ),
-                    },
-                ];
-
-                // Allow configurable default watchlist expiry was added in the 1.45.0-wmf.5 (T265716)
-                if ( utils.semverCompare( mw.config.get( 'wgVersion' ), '1.45.0' ) > -1 ) {
-                    params.splice( 2, 0, response.expiry );
-                }
-
-                watchlistPopup = new WatchlistExpiryWidget( ...params );
-            }
-
-            mw.notify( watchlistPopup.$element, {
-                tag: 'watch-self',
-                id: notificationId,
-                autoHideSeconds: 'short',
-            } );
-        } );
-    } else {
-        const $message = mw.message( message, mwTitle.getPrefixedText() ).parseDom();
-        utils.addBaseToLinks( $message, `https://${ article.get( 'hostname' ) }` );
-        utils.addTargetToLinks( $message );
-
-        notifyPromise = mw.notify( $message, {
-            tag: 'watch-self',
-            id: notificationId,
-        } );
-    }
-
-    // The notifications are stored as a promise and the watch link is only updated
-    // once it is resolved. Otherwise, if $wgWatchlistExpiry set, the loading of
-    // OOUI could cause a race condition and the link is updated before the popup
-    // actually is shown. See T263135
-    notifyPromise.always( () => {
-        updateWatchStatus( article, button, [
-            $( '<a>' ),
-            isWatched ? 'unwatch' : 'watch',
-            'idle',
-            response.expiry,
-            'infinity',
-        ] );
-    } );
-}
-
-/**
- * Sets the article's watch \ unwatch status, updates related button;
- * than if an article page matches a current page, fires a page update;
- * that if current page is a watchlist, updates watchlist lines.
- * @param {import('./Article').default} article an Article instance
- * @param {OO.ui.ButtonWidget} button a OO.ui.ButtonWidget instance
- * @param {mw.Title|JQuery<HTMLElement>} titleOrLink
- * @param {('watch', 'unwatch')} action
- * @param {('idle', 'loading')} state
- * @param {string} expiry
- * @param {string} expirySelected
- */
-function updateWatchStatus( article, button, [ titleOrLink, action, state, expiry, expirySelected ] ) {
-    const watched = action === 'unwatch';
-    expiry ||= 'infinity';
-    expirySelected ||= 'infinity';
-
-    // Update the article watch status
-    article.setValues( { watched, expiry, expirySelected } );
-
-    // Update related button
-    button.helper?.pending( state === 'loading' );
-    updateWatchLinkStatus( article, button );
-
-    // For the current page, also update page status, that triggers the hook 'wikipage.watchlistChange'
-    if (
-        !article.isForeign &&
-        id.local.mwTitleText === article.get( 'titleText' )
-    ) {
-        const { updatePageWatchStatus } = utils.moduleRequire( 'mediawiki.page.watch.ajax' ) || {};
-        updatePageWatchStatus?.( watched, expiry, expirySelected );
-    }
-
-    // Perform next updates only on the idle state
-    if ( state !== 'loading' ) {
-        // For the watchlist, also update watchlist lines.
-        if (
-            !article.isForeign &&
-            mw.user.options.get( 'watchlistunwatchlinks' ) &&
-            id.local.mwCanonicalSpecialPageName === 'Watchlist'
-        ) {
-            updateWatchlistStatus( article, watched, expiry );
-        }
-
-        // For the global watchlist, also update watchlist lines.
-        if ( id.local.mwCanonicalSpecialPageName === 'GlobalWatchlist' ) {
-            updateGlobalWatchlistStatus( article, watched, expiry );
-        }
-    }
-}
-
-/**
  * Updates status of the watch \ unwatch button.
  * Partially copied from:
  * {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/2a828f2e72a181665e1f627e2f737abb75b74eb9/resources/src/mediawiki.page.watch.ajax/watch-ajax.js#18}
  * @param {import('./Article').default} article an Article instance
  * @param {OO.ui.ButtonWidget} button a OO.ui.ButtonWidget instance
  */
-export function updateWatchLinkStatus( article, button ) {
+export function updateWatchButtonStatus( article, button ) {
     const watched = article.get( 'watched' );
     const action = watched ? 'unwatch' : 'watch';
     const expiry = article.get( 'expiry' ) || 'infinity';
@@ -369,11 +153,16 @@ function removeWatchlistExpiryStatus( $row, $expiry ) {
         node.previousSibling.nodeValue = node.previousSibling.nodeValue.trimEnd();
         node.nextSibling.nodeValue = node.nextSibling.nodeValue.trimStart();
 
+        // Add white-space for the line group in the grouped list
+        $this
+            .next( '.mw-changeslist-links' )
+            .before( ' ' );
+
         // Remove the icon
         $expiry.remove();
     } );
 
-    // Add white-space for the grouped lists
+    // Add white-space for the single line in the grouped list
     $row
         .find( '.mw-changeslist-line-inner-historyLink' )
         .prepend( ' ' );

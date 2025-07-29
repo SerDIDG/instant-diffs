@@ -96,7 +96,6 @@ class Api {
     /******* MESSAGES *******/
 
     /**
-     *
      * Requests interface messages if missing.
      * @param {array|string} messages
      * @param {string} [hostname]
