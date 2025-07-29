@@ -1,3 +1,5 @@
+import { isEmpty, isString } from './utils';
+
 /**
  * Class representing a Config Manager.
  */
@@ -52,6 +54,25 @@ class ConfigManager {
         for ( const [ key, value ] of Object.entries( values ) ) {
             this.set( key, value );
         }
+    }
+
+    /**
+     * Adds title related values.
+     * @param {mw.Title|string} title
+     */
+    setTitle( title ) {
+        if ( isEmpty( title ) ) return;
+
+        if ( isString( title ) ) {
+            title = new mw.Title( title );
+        }
+
+        this.setValues( {
+            wgTitle: title.getMainText(),
+            wgPageName: title.getPrefixedDb(),
+            wgNamespaceNumber: title.getNamespaceId(),
+            wgRelevantPageName: title.getPrefixedDb(),
+        } );
     }
 
     /**

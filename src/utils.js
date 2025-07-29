@@ -224,6 +224,19 @@ export function spacesToUnderlines( str ) {
     return str.replace( / /g, '_' );
 }
 
+/**
+ * Semantic Versioning Comparing
+ * @see {@link https://gist.github.com/iwill/a83038623ba4fef6abb9efca87ae9ccb}
+ * @see {@link https://semver.org/}
+ * @see {@link https://stackoverflow.com/a/65687141/456536}
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator/Collator#options}
+ */
+export function semverCompare( a, b ) {
+    a = a.split( '-' ).shift();
+    b = b.split( '-' ).shift();
+    return a.localeCompare( b, undefined, { numeric: true, sensitivity: 'case', caseFirst: 'upper' } );
+}
+
 /******* DEFAULTS *******/
 
 /**
@@ -796,21 +809,56 @@ export function addBaseToLinks( $content, url, hashOnly = false ) {
     } catch {
         return;
     }
+
+    const hashOnlyHandler = ( i, el ) => {
+        $( el )
+            .attr( 'href', 'https://' + baseUrl.hostname + baseUrl.pathname + $( el ).attr( 'href' ) );
+    };
+
+    const handler = ( i, el ) => {
+        $( el )
+            .attr( 'href', 'https://' + baseUrl.hostname + $( el ).attr( 'href' ).replace( /special:mylanguage\//i, '' ) )
+            .attr( 'title', ( $( el ).attr( 'title' ) || '' ).replace( /special:mylanguage\//i, '' ) );
+    };
+
+    $content
+        .filter( 'a[href^="#"]' )
+        .each( hashOnlyHandler );
+
     $content
         .find( 'a[href^="#"]' )
-        .each( ( i, el ) => {
-            $( el )
-                .attr( 'href', 'https://' + baseUrl.hostname + baseUrl.pathname + $( el ).attr( 'href' ) );
-        } );
+        .each( hashOnlyHandler );
+
     if ( !hashOnly ) {
         $content
+            .filter( 'a[href^="/"]:not([href^="//"])' )
+            .each( handler );
+
+        $content
             .find( 'a[href^="/"]:not([href^="//"])' )
-            .each( ( i, el ) => {
-                $( el )
-                    .attr( 'href', 'https://' + baseUrl.hostname + $( el ).attr( 'href' ).replace( /special:mylanguage\//i, '' ) )
-                    .attr( 'title', ( $( el ).attr( 'title' ) || '' ).replace( /special:mylanguage\//i, '' ) );
-            } );
+            .each( handler );
     }
+}
+
+export function addTargetToLinks( $content ) {
+    if ( !defaults( 'openInNewTab' ) ) return;
+
+    const handler = ( i, el ) => {
+        // Add target attribute only to links with non-empty href.
+        // Some scripts add links with href="#" - bypass those as well.
+        const href = el.getAttribute( 'href' );
+        if ( isEmpty( href ) || href === '#' ) return;
+
+        el.setAttribute( 'target', '_blank' );
+    };
+
+    $content
+        .filter( 'a:not(.mw-thanks-thank-link, .jquery-confirmable-element)' )
+        .each( handler );
+
+    $content
+        .find( 'a:not(.mw-thanks-thank-link, .jquery-confirmable-element)' )
+        .each( handler );
 }
 
 export function getPlaceholderClasses( modifiers = [] ) {

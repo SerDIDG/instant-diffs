@@ -135,9 +135,14 @@ class Deploy {
     }
 
     async savePages() {
-        await input( `> Press [Enter] to start deploying to ${ this.siteName } or [ctrl + C] to cancel` );
+        const action = await input( `> Press [Enter] to start deploying to ${ this.siteName } or [ctrl + C] to cancel` );
 
-        log( 'yellow', '--- starting deployment ---' );
+        if ( action === undefined ) {
+            log( 'yellow', '--- Terminated ---' );
+            return;
+        }
+
+        log( 'yellow', '--- Starting deployment ---' );
 
         for await ( const { file, target } of this.deployTargets ) {
             const fileText = await this.readFile( file );
@@ -153,7 +158,7 @@ class Deploy {
                 logError( error );
             }
         }
-        log( 'yellow', '--- end of deployment ---' );
+        log( 'yellow', '--- End of deployment ---' );
     }
 }
 

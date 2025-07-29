@@ -55,7 +55,7 @@ class GlobalPage extends Page {
         const promises = [
             this.requestMessages(),
             this.requestSiteInfo(),
-            this.requestPageCurRevId(),
+            this.requestPageInfo(),
             this.request(),
         ];
 
@@ -142,8 +142,8 @@ class GlobalPage extends Page {
                 this.configManager.setValues( {
                     wgServer: general.server,
                     wgServerName: general.servername,
-                    mobileServer: general.mobileserver,
-                    mobileServerName: general.mobileservername,
+                    wgMobileServer: general.mobileserver,
+                    wgMobileServerName: general.mobileservername,
                 } );
             }
 
@@ -209,9 +209,6 @@ class GlobalPage extends Page {
             wgDiffOldId: this.data.fromrevid,
             wgDiffNewId: this.data.torevid,
         } );
-        if ( !this.data.next ) {
-            this.configManager.set( 'wgCurRevisionId', this.data.torevid );
-        }
 
         // Get sections
         const $fromSectionLinks = $( '<span>' ).html( this.data.fromparsedcomment ).find( '.autocomment a' );
@@ -229,22 +226,14 @@ class GlobalPage extends Page {
             previd: this.data.prev,
             nextid: this.data.next,
             curid: this.configManager.get( 'wgArticleId' ),
-            curRevid: this.configManager.get( 'wgCurRevisionId' ),
             revid: this.configManager.get( 'wgRevisionId' ),
             title: this.data.totitle || this.data.fromtitle,
             section: this.data.tosection,
+            timestamp: this.data.totimestamp,
         } );
 
         // Save the title values to the mw.config
-        const mwTitle = this.article.getMW( 'title' );
-        if ( mwTitle ) {
-            this.configManager.setValues( {
-                wgTitle: mwTitle.getMainText(),
-                wgPageName: mwTitle.getPrefixedDb(),
-                wgNamespaceNumber: mwTitle.getNamespaceId(),
-                wgRelevantPageName: mwTitle.getPrefixedDb(),
-            } );
-        }
+        this.configManager.setTitle( this.article.getMW( 'title' ) );
 
         // Collect links that will be available in the navigation:
         // * For a revision, add the ability to navigate to the very first revision of the article;
@@ -271,7 +260,7 @@ class GlobalPage extends Page {
                 prefix: 'o',
                 title: this.data.fromtitle,
                 revid: this.data.fromrevid,
-                curRevid: this.configManager.get( 'wgCurRevisionId' ),
+                curRevid: this.article.get( 'curRevid' ),
                 hostname: this.article.get( 'hostname' ),
                 timestamp: this.data.fromtimestamp,
                 texthidden: this.data.fromtexthidden,
@@ -292,7 +281,7 @@ class GlobalPage extends Page {
                 prefix: 'n',
                 title: this.data.totitle,
                 revid: this.data.torevid,
-                curRevid: this.configManager.get( 'wgCurRevisionId' ),
+                curRevid: this.article.get( 'curRevid' ),
                 hostname: this.article.get( 'hostname' ),
                 timestamp: this.data.totimestamp,
                 texthidden: this.data.totexthidden,
@@ -453,7 +442,7 @@ class GlobalPage extends Page {
         this.setConfigs();
 
         // Append title
-        const title = this.configManager.get( 'wgRevisionId' ) === this.configManager.get( 'wgCurRevisionId' )
+        const title = this.article.get( 'revid' ) === this.article.get( 'curRevid' )
             ? 'currentrev-asof' : 'revisionasof';
         this.nodes.diffTitle = h( 'h2', { class: 'diff-currentversion-title' },
             mw.msg( title, utilsPage.getUserDate( this.data.totimestamp ) ),

@@ -4,6 +4,8 @@ import * as utils from './utils';
 import Api from './Api';
 import Article from './Article';
 
+/******* VALUES *******/
+
 export function getRevID( article ) {
     const values = article.getValues();
 
@@ -35,6 +37,8 @@ export function getRevID( article ) {
 
     return false;
 }
+
+/******* DEPENDENCIES *******/
 
 /**
  * Gets an article dependencies.

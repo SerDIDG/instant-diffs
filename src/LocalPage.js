@@ -26,7 +26,7 @@ class LocalPage extends Page {
      */
     loadProcess() {
         const promises = [
-            this.requestPageCurRevId(),
+            this.requestPageInfo(),
             this.request(),
         ];
 
@@ -242,6 +242,12 @@ class LocalPage extends Page {
             }
         }
 
+        // Populate timestamps
+        const $toTimestamp = this.nodes.$data.find( '#mw-diff-ntitle1 .mw-diff-timestamp' );
+        if ( $toTimestamp.length > 0 ) {
+            articleValues.timestamp = $toTimestamp.attr( 'data-timestamp' );
+        }
+
         // Populate section name
         const $toSectionLinks = this.nodes.$data.find( '#mw-diff-ntitle3 .autocomment a' );
         if ( utils.isEmpty( this.article.get( 'section' ) ) && $toSectionLinks.length > 0 ) {
@@ -258,19 +264,21 @@ class LocalPage extends Page {
         this.article.set( articleValues );
 
         // Save the title values to the mw.config
-        const mwTitle = this.article.getMW( 'title' );
-        if ( mwTitle ) {
-            this.configManager.setValues( {
-                wgTitle: mwTitle.getMainText(),
-                wgPageName: mwTitle.getPrefixedDb(),
-                wgNamespaceNumber: mwTitle.getNamespaceId(),
-                wgRelevantPageName: mwTitle.getPrefixedDb(),
-            } );
-        }
+        this.configManager.setTitle( this.article.getMW( 'title' ) );
 
-        // Save additional user options dependent of a page type
+        /**
+         * Save additional user options dependent of a page type.
+         * FixMe: See T346252 for the details about Visual Diffs.
+         * @type {Object}
+         */
         if ( this.article.get( 'type' ) !== 'diff' ) {
-            this.userOptionsManager.set( 'visualeditor-diffmode-historical', 'source' );
+            const veConfig = mw.config.get( 'wgVisualEditorConfig' );
+            if (
+                veConfig &&
+                !Object.prototype.hasOwnProperty.call( veConfig.contentModels, this.configManager.get( 'wgPageContentModel' ) )
+            ) {
+                this.userOptionsManager.set( 'visualeditor-diffmode-historical', 'source' );
+            }
         }
     }
 

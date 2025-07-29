@@ -146,6 +146,7 @@ class Page {
             wgDiffNewId: false,
             wgCanonicalSpecialPageName: false,
             wgIsProbablyEditable: false,
+            wgRelevantPageIsProbablyEditable: false,
             wbEntityId: false,
             'thanks-confirmation-required': true,
         } );
@@ -179,7 +180,7 @@ class Page {
      */
     loadProcess() {
         const promises = [
-            this.requestPageCurRevId(),
+            this.requestPageInfo(),
             this.request(),
         ];
 
@@ -251,29 +252,49 @@ class Page {
      * Request page current revision id.
      * @returns {Promise}
      */
-    async requestPageCurRevId() {
+    async requestPageInfo() {
         const oldid = Math.max( this.article.get( 'revid' ), this.article.get( 'oldid' ) );
         const pageid = this.article.get( 'curid' );
 
         const params = {};
         if ( utils.isValidID( oldid ) ) {
-            params.fromrev = oldid;
+            params.revids = oldid;
         } else if ( utils.isValidID( pageid ) ) {
-            params.fromid = pageid;
+            params.pageids = pageid;
         }
 
-        const data = await Api.getPageCurRevId( params, this.article.get( 'hostname' ), this.requestManager );
+        const data = await Api.getPageInfo( params, this.article.get( 'hostname' ), this.requestManager );
         if ( data ) {
+            const props = data.pageprops;
+
             // Set values for mw.config
             this.configManager.setValues( {
-                wgArticleId: data.curid,
-                wgCurRevisionId: data.revid,
+                wgArticleId: data.pageid,
+                wgRelevantArticleId: data.pageid,
+                wgCurRevisionId: data.lastrevid,
+                wgContentLanguage: data.pagelanguage,
+                wgContentLanguageDir: data.pagelanguagedir,
+                wgPageContentModel: data.contentmodel,
+                wgIsProbablyEditable: data.actions?.edit,
+                wgRelevantPageIsProbablyEditable: data.actions?.edit,
+                wbEntityId:
+                    props?.[ 'wikibase_item' ] ||
+                    this.configManager.get( 'wbEntityId' ),
             } );
 
             // Set article values
             this.article.setValues( {
-                curid: data.curid,
-                curRevid: data.revid,
+                title: data.title,
+                curid: data.pageid,
+                curRevid: data.lastrevid,
+                watched: data.watched,
+                expiry: data.watchlistexpiry,
+                notificationtimestamp: data.notificationtimestamp,
+                new: data.new,
+                label:
+                    props?.[ `wikilambda-label-${ id.local.userLanguage }` ] ||
+                    props?.[ 'wikilambda-label-en' ] ||
+                    this.article.get( 'label' ),
             } );
 
             // Set additional config variables
@@ -292,11 +313,37 @@ class Page {
         const label = await Api.getWBLabel( title, this.article.get( 'hostname' ), this.requestManager );
         if ( !utils.isEmpty( label ) ) {
             this.configManager.set( 'wbEntityId', title );
-            this.article.setValue( 'wbLabel', label );
+            this.article.setValue( 'label', label );
 
             // Set additional config variables
             this.setConfigs();
         }
+    }
+
+    markAsSeen() {
+        // Check if "mark as viewed" is allowed by user,
+        // then check if it's a foreign article, because local article will be marked automatically,
+        // then check if article has revision timestamp and last viewed timestamp.
+        if (
+            !utils.defaults( 'markWatchedLine' ) ||
+            !this.article.isForeign ||
+            utils.isEmpty( this.article.get( 'timestamp' ) ) ||
+            utils.isEmpty( this.article.get( 'notificationtimestamp' ) )
+        ) {
+            return;
+        }
+
+        // Check if revision timestamp is newer then last viewed timestamp
+        const lastTime = new Date( this.article.get( 'notificationtimestamp' ) ).getTime();
+        const revTime = new Date( this.article.get( 'timestamp' ) ).getTime();
+        if ( revTime < lastTime ) return;
+
+        // Mark revision and all earlier revisions as viewed
+        const params = {
+            titles: this.article.get( 'titleText' ),
+            newerthanrevid: this.article.get( 'revid' ),
+        };
+        Api.markAsSeen( params, this.article.get( 'hostname' ) );
     }
 
     /**
@@ -311,6 +358,9 @@ class Page {
 
     async renderSuccess() {
         await this.render();
+
+        // Mark page as seen in watchlist
+        this.markAsSeen();
 
         mw.hook( `${ id.config.prefix }.page.renderSuccess` ).fire( this );
         mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
@@ -397,20 +447,6 @@ class Page {
         this.navigation.embed( this.nodes.$container, 'prependTo' );
     }
 
-    processLinksTaget() {
-        if ( !utils.defaults( 'openInNewTab' ) ) return;
-
-        const $links = this.nodes.$container.find( 'a:not(.mw-thanks-thank-link, .jquery-confirmable-element)' );
-        $links.each( ( i, node ) => {
-            // Add target attribute only to links with non-empty href.
-            // Some scripts add links with href="#" - bypass those as well.
-            const href = node.getAttribute( 'href' );
-            if ( utils.isEmpty( href ) || href === '#' ) return;
-
-            node.setAttribute( 'target', '_blank' );
-        } );
-    }
-
     /**
      * Request dependencies for the article and additional data modules.
      * @param {Object} [data]
@@ -473,7 +509,7 @@ class Page {
         }
 
         // Replace link target attributes after the hooks have fired
-        this.processLinksTaget();
+        utils.addTargetToLinks( this.nodes.$container );
 
         // Fire hook on complete
         mw.hook( `${ id.config.prefix }.page.complete` ).fire( this );
@@ -509,8 +545,8 @@ class Page {
         if ( utils.isEmpty( this.article.get( 'title' ) ) ) {
             return utils.msg( this.error ? 'dialog-title-not-found' : 'dialog-title-empty' );
         }
-        if ( !utils.isEmpty( this.article.get( 'wbLabel' ) ) ) {
-            return `${ this.article.get( 'wbLabel' ) } (${ this.article.get( 'titleText' ) })`;
+        if ( !utils.isEmpty( this.article.get( 'label' ) ) ) {
+            return `${ this.article.get( 'label' ) } (${ this.article.get( 'titleText' ) })`;
         }
         return this.article.get( 'titleText' );
     }

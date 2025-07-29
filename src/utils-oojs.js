@@ -54,6 +54,18 @@ export function applyOoUiPolyfill() {
     }
 }
 
+export function fixFloatedElementsIsolation() {
+    $( [
+        '.mw-notification-area-overlay',
+        '.ext-checkuser-userinfocard-popover',
+    ] )
+        .each( ( i, node ) => {
+            $( node )
+                .removeAttr( 'aria-hidden' )
+                .removeAttr( 'inert' );
+        } );
+}
+
 export function renderOoUiElement( $element ) {
     return new OO.ui.Element( { $element } );
 }

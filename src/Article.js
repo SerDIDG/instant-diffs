@@ -214,6 +214,15 @@ class Article {
      * @private
      */
     setTitle() {
+        /**
+         * Save original title parameter, that will be used in the Global Watchlist.
+         * FixMe: add ability to format title with local prefixes.
+         * @see {import('./watchstar').updateGlobalWatchlistStatus}
+         */
+        if ( utils.isEmpty( this.values.origTitle ) ) {
+            this.values.origTitle = this.values.title;
+        }
+
         try {
             this.mw.title = new mw.Title( this.values.title );
             this.values.title = this.mw.title.getPrefixedDb();

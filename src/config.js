@@ -1,5 +1,6 @@
 /**
  * Configuration.
+ * @type {Object<string, *>}
  */
 export const config = {
     version: '__version__',
@@ -40,6 +41,7 @@ export const config = {
             'oojs-ui.styles.icons-content',
             'oojs-ui.styles.icons-alerts',
             'oojs-ui.styles.icons-interactions',
+            'oojs-ui.styles.icons-moderation',
             'oojs-ui.styles.icons-editing-core',
             'oojs-ui.styles.icons-editing-advanced',
             'oojs-ui.styles.icons-user',
@@ -47,12 +49,13 @@ export const config = {
         ],
         content: [
             'jquery.confirmable',
+            'mediawiki.DateFormatter',
             'mediawiki.codex.messagebox.styles',
             'mediawiki.interface.helpers.styles',
             'mediawiki.diff',
             'mediawiki.diff.styles',
             'mediawiki.misc-authed-curate',
-            'mediawiki.DateFormatter',
+            'mediawiki.page.watch.ajax',
             'ext.flaggedRevs.basic',
             'ext.visualEditor.diffPage.init',
         ],
@@ -115,13 +118,13 @@ export const config = {
         debug: '__debug__' === 'true',
         GM: false,                                                      // Greasemonkey mode
         standalone: false,                                              // Standalone mode
-        storageExpiry: 60 * 60 * 24,                                    // 1 day
+        storageExpiry: 60 * 60 * 24,                                    // Cache local storage for 1 day
         logTimers: true,
         showLink: false,
         showPageLink: true,
         highlightLine: true,
         markWatchedLine: true,
-        showDiffTools: false,
+        showDiffTools: true,
         showRevisionInfo: true,
         unHideDiffs: true,
         openInNewTab: true,
@@ -322,6 +325,7 @@ export const config = {
 
 /**
  * Local variables.
+ * @type {Object<string, *>}
  */
 export const local = {
     /**
@@ -344,15 +348,64 @@ export const local = {
      */
     require: null,
 
+    /**
+     * @type {string|null}
+     */
     language: null,
+
+    /**
+     * @type {string|null}
+     */
     linkSelector: null,
 
-    mwIsAnon: null,
+    /**
+     * @type {boolean}
+     */
+    mwIsAnon: true,
+
+    /**
+     * @type {string|null}
+     */
     mwEndPoint: null,
+
+    /**
+     * @type {URL}
+     */
     mwEndPointUrl: null,
+
+    /**
+     * @type {string|null}
+     */
+    mwAction: null,
+
+    /**
+     * @type {string|null}
+     */
     mwArticlePath: null,
+
+    /**
+     * @type {string|null}
+     */
+    mwCanonicalSpecialPageName: null,
+
+    /**
+     * @type {mw.Title}
+     */
+    mwTitle: null,
+
+    /**
+     * @type {string|null}
+     */
     mwTitleText: null,
+
+    /**
+     * @type {Array<string>}
+     */
     mwServers: [],
+
+    /**
+     * @type {Array<string>}
+     */
     mwServerNames: [],
 
     /**
@@ -398,5 +451,6 @@ export const local = {
 
 /**
  * Script timer loggers.
+ * @type {Object<string, Number>}
  */
 export const timers = {};

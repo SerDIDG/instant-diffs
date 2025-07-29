@@ -456,6 +456,14 @@ class View {
     }
 
     /**
+     * Get the Link instance.
+     * @returns {import('./Link').default} a Link instance
+     */
+    getLink() {
+        return this.link;
+    }
+
+    /**
      * Get the Page instance.
      * @returns {import('./Page').default} a Page instance
      */

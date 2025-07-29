@@ -41,6 +41,7 @@ class Api {
 
     /**
      * mw.Api.get wrapper.
+     * // @param {import('types-mediawiki/api_params').UnknownApiParams} params
      * @param {Object} params
      * @param {string} [hostname]
      * @return {mw.Api.AbortablePromise}
@@ -51,6 +52,7 @@ class Api {
 
     /**
      * mw.Api.post wrapper.
+     * //@param {import('types-mediawiki/api_params').UnknownApiParams} params
      * @param {Object} params
      * @param {string} [hostname]
      * @return {mw.Api.AbortablePromise}
@@ -60,10 +62,31 @@ class Api {
     }
 
     /**
+     * mw.Api.watch wrapper.
+     * @param {string|Array<string>} pages
+     * @param {string} [expiry]
+     * @param {string} [hostname]
+     * @return {jQuery.Promise<mw.Api.WatchedPage|mw.Api.WatchedPage[]>}
+     */
+    static watch( pages, expiry, hostname ) {
+        return this.getApi( hostname ).watch( pages, expiry );
+    }
+
+    /**
+     * mw.Api.unwatch wrapper.
+     * @param {string|Array<string>} pages
+     * @param {string} [hostname]
+     * @return {jQuery.Promise<mw.Api.WatchedPage|mw.Api.WatchedPage[]>}
+     */
+    static unwatch( pages, hostname ) {
+        return this.getApi( hostname ).unwatch( pages );
+    }
+
+    /**
      * Logs an error.
      * @param {Error} error
      */
-    static log( error ) {
+    static notifyError( error ) {
         utils.notifyError( 'error-api-generic', {
             type: 'api',
             message: error?.message || error,
@@ -107,17 +130,18 @@ class Api {
             const { parse } = await this.post( params, hostname );
             return parse.text;
         } catch ( error ) {
-            this.log( error );
+            this.notifyError( error );
         }
     }
 
-    /******* COMPARE *******/
+    /******* PAGE INFO *******/
 
-    static async getPageCurRevId( params, hostname, requestManager ) {
+    static async getPageInfo( params, hostname, requestManager ) {
         params = {
-            action: 'compare',
-            prop: [ 'ids' ],
-            torelative: 'cur',
+            action: 'query',
+            prop: [ 'info', 'pageprops' ],
+            inprop: [ 'watched', 'notificationtimestamp' ],
+            intestactions: [ 'edit' ],
             format: 'json',
             formatversion: 2,
             uselang: id.local.userLanguage,
@@ -126,13 +150,28 @@ class Api {
         const api = requestManager ? requestManager : this;
 
         try {
-            const { compare } = await api.get( params, hostname );
-            return {
-                curid: compare.toid,
-                revid: compare.torevid,
-            };
+            const data = await api.get( params, hostname );
+            return data.query.pages[ 0 ];
         } catch ( error ) {
-            this.log( error );
+            this.notifyError( error );
+        }
+    }
+
+    static async markAsSeen( params, hostname ) {
+        params = {
+            action: 'setnotificationtimestamp',
+            redirects: 1,
+            format: 'json',
+            formatversion: 2,
+            uselang: id.local.userLanguage,
+            ...params,
+        };
+
+        try {
+            const data = await Api.getApi( hostname ).postWithEditToken( params );
+            return data.setnotificationtimestamp.notificationtimestamp;
+        } catch ( error ) {
+            this.notifyError( error );
         }
     }
 
@@ -198,7 +237,7 @@ class Api {
             this.processSiteInfoAliases( this.siteInfo[ hostname ] );
             return this.siteInfo[ hostname ];
         } catch ( error ) {
-            this.log( error );
+            this.notifyError( error );
         }
     }
 
@@ -290,7 +329,7 @@ class Api {
 
             return this.specialPagesLocal;
         } catch ( error ) {
-            this.log( error );
+            this.notifyError( error );
         }
     }
 
@@ -331,7 +370,7 @@ class Api {
 
             return this.interwikiMap;
         } catch ( error ) {
-            this.log( error );
+            this.notifyError( error );
         }
     }
 
@@ -372,7 +411,7 @@ class Api {
             }
             return entity.labels[ language ].value;
         } catch ( error ) {
-            this.log( error );
+            this.notifyError( error );
         }
     }
 }
