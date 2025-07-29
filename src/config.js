@@ -56,7 +56,6 @@ export const config = {
             'mediawiki.diff.styles',
             'mediawiki.misc-authed-curate',
             'mediawiki.page.watch.ajax',
-            'mediawiki.watchstar.widgets',
             'ext.flaggedRevs.basic',
             'ext.visualEditor.diffPage.init',
         ],

@@ -131,16 +131,23 @@ function showWatchNotice( article, button, response ) {
                 utils.addBaseToLinks( $message, `https://${ article.get( 'hostname' ) }` );
                 utils.addTargetToLinks( $message );
 
-                watchlistPopup = new WatchlistExpiryWidget(
+                // Configure WatchlistExpiryWidget params
+                const params = [
                     isWatched ? 'watch' : 'unwatch',
                     article.getMW( 'title' ).getPrefixedDb(),
-                    response.expiry,
                     ( ...args ) => updateWatchStatus( article, button, [ ...args ] ),
                     {
                         message: $message,
                         $link: $( '<a>' ),
                     },
-                );
+                ];
+
+                // Allow configurable default watchlist expiry was added in the 1.45.0-wmf.5 (T265716)
+                if ( utils.semverCompare( mw.config.get( 'wgVersion' ), '1.45.0' ) > -1 ) {
+                    params.splice( 2, 0, response.expiry );
+                }
+
+                watchlistPopup = new WatchlistExpiryWidget( ...params );
             }
 
             mw.notify( watchlistPopup.$element, {

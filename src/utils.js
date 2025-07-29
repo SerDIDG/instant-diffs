@@ -224,6 +224,19 @@ export function spacesToUnderlines( str ) {
     return str.replace( / /g, '_' );
 }
 
+/**
+ * Semantic Versioning Comparing
+ * @see {@link https://gist.github.com/iwill/a83038623ba4fef6abb9efca87ae9ccb}
+ * @see {@link https://semver.org/}
+ * @see {@link https://stackoverflow.com/a/65687141/456536}
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator/Collator#options}
+ */
+export function semverCompare( a, b ) {
+    a = a.split( '-' ).shift();
+    b = b.split( '-' ).shift();
+    return a.localeCompare( b, undefined, { numeric: true, sensitivity: 'case', caseFirst: 'upper' } );
+}
+
 /******* DEFAULTS *******/
 
 /**
