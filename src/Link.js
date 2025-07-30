@@ -198,8 +198,11 @@ class Link {
         }
 
         // Check if a link was marked manually by the "data-instantdiffs-link" attribute:
-        // default | basic | event | none
+        // default | basic | event | none | link (deprecated)
         this.manual.behavior = this.node.dataset.instantdiffsLink;
+        if ( this.manual.behavior === 'link' ) {
+            this.manual.behavior = 'event';
+        }
         if ( [ 'default', 'basic', 'event', 'none' ].includes( this.manual.behavior ) ) {
             this.options.behavior = this.manual.behavior;
             this.manual.hasLink = true;
