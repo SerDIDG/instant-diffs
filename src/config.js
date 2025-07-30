@@ -73,6 +73,7 @@ export const config = {
                 'filepage',
                 'wikibase.mediainfo.filepage.styles',
                 'wikibase.mediainfo.statements',
+                'wikibase.mediainfo.statements.styles',
             ],
             14: [                                                       // Category:
                 'mediawiki.page.gallery.styles',
@@ -89,6 +90,7 @@ export const config = {
                 6: [                                                    // File:
                     'wikibase.mediainfo.filepage.styles',
                     'wikibase.mediainfo.statements',
+                    'wikibase.mediainfo.statements.styles',
                 ],
                 146: [                                                  // Lexeme:
                     'wikibase.lexeme.styles',
