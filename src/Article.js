@@ -97,7 +97,7 @@ class Article {
         if ( [ 0, '0' ].includes( values.oldid ) ) {
             delete values.oldid;
         }
-        if ( [ 0, '0', 'current' ].includes( values.diff ) ) {
+        if ( [ 0, '0', 'current', 'latest' ].includes( values.diff ) ) {
             values.diff = 'cur';
         }
         if ( !utils.isValidDir( values.direction ) ) {

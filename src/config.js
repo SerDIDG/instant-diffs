@@ -236,7 +236,7 @@ export const config = {
 
     linkSelector: [                                                     // $1 - server
         'a[data-instantdiffs-link]',
-        'a.external[href*="$1"]',
+        'a.external[href^="$1"]',
         'a.mw-changeslist-date',                                        // (revision)
         'a.mw-changeslist-diff',
         'a.mw-changeslist-diff-cur',

@@ -6,7 +6,7 @@ import Link from './Link';
 /******* CONVENIENT DISCUSSIONS *******/
 
 /**
- * {@link [[commons:User:JWBTH/CD]]}
+ * @see {@link [[commons:User:JWBTH/CD]]}
  */
 
 mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
@@ -96,7 +96,7 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
 /******* WIKI ED DIFF *******/
 
 /**
- * {@link [[:en:User:Cacycle/wikEdDiff]]}
+ * @see {@link [[:en:User:Cacycle/wikEdDiff]]}
  */
 
 mw.hook( `${ id.config.prefix }.page.beforeDetach` ).add(
@@ -122,8 +122,8 @@ mw.hook( `${ id.config.prefix }.page.beforeDetach` ).add(
 /******* TWINKLE *******/
 
 /**
- * {@link [[w:Wikipedia:Twinkle|Twinkle]]}
- * {@link [[meta:User:Xiplus/TwinkleGlobal|TwinkleGlobal]]}
+ * @see {@link [[w:Wikipedia:Twinkle|Twinkle]]}
+ * @see {@link [[meta:User:Xiplus/TwinkleGlobal|TwinkleGlobal]]}
  */
 
 mw.hook( `${ id.config.prefix }.page.complete` ).add(

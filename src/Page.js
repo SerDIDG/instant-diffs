@@ -537,6 +537,9 @@ class Page {
      * Fire hooks and events.
      */
     async fire() {
+        // Fire hook on ready
+        mw.hook( `${ id.config.prefix }.page.ready` ).fire( this );
+
         // Fire navigation events
         this.getNavigation()?.fire();
 

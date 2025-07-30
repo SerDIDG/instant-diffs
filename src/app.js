@@ -172,7 +172,8 @@ function prepare( require ) {
 
     // Get hostnames (including predicted mobile variants) used to assemble the link selector
     id.local.mwServers = [ mw.config.get( 'wgServer' ), mw.config.get( 'wgMobileServer' ) ]
-        .filter( value => !utils.isEmpty( value ) );
+        .filter( value => !utils.isEmpty( value ) )
+        .map( utils.getHref );
     id.local.mwServerNames = [ mw.config.get( 'wgServerName' ), mw.config.get( 'wgMobileServerName' ) ]
         .filter( value => !utils.isEmpty( value ) );
 
@@ -211,7 +212,8 @@ async function getSiteInfo() {
 
         // Get hostnames (including mobile variants) used to assemble the link selector
         id.local.mwServers = [ general.server, general.mobileserver ]
-            .filter( value => !utils.isEmpty( value ) );
+            .filter( value => !utils.isEmpty( value ) )
+            .map( utils.getHref );
         id.local.mwServerNames = [ general.servername, general.mobileservername ]
             .filter( value => !utils.isEmpty( value ) );
     }
