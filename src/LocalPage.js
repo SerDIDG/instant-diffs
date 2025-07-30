@@ -21,19 +21,11 @@ class LocalPage extends Page {
     isDependenciesLoaded = false;
 
     /**
-     * Load process that combines multiple requests into the one promise.
-     * @returns {Promise}
+     * Get promise array for the main load request.
+     * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
      */
-    loadProcess() {
-        const promises = [
-            this.requestPageInfo(),
-            this.request(),
-        ];
-
-        // Add a request for the wikidata label name
-        if ( this.article.getMW( 'serverName' ) === 'www.wikidata.org' ) {
-            promises.push( this.requestWBLabel() );
-        }
+    getLoadPromises() {
+        const promises = super.getLoadPromises();
 
         // Try to load page dependencies in parallel to the main request:
         // * for the revision view we need to know actual revision id;
@@ -47,8 +39,7 @@ class LocalPage extends Page {
             promises.push( this.requestPage() );
         }
 
-        return Promise.allSettled( promises )
-            .then( this.onLoadResponse );
+        return promises;
     }
 
     /******* DEPENDENCIES *******/

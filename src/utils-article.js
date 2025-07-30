@@ -1,5 +1,6 @@
 import id from './id';
 import * as utils from './utils';
+import { isWbContentModel } from './utils-api';
 
 import Api from './Api';
 import Article from './Article';
@@ -48,6 +49,7 @@ export function getRevID( article ) {
 export function getDependencies( article ) {
     let dependencies = [];
 
+    // Page common dependencies
     const pageDependencies = id.config.dependencies.page;
     if ( pageDependencies ) {
         dependencies = dependencies.concat(
@@ -55,6 +57,7 @@ export function getDependencies( article ) {
         );
     }
 
+    // Type-specific dependencies
     const typeDependencies = id.config.dependencies[ article.get( 'type' ) ];
     if ( typeDependencies ) {
         dependencies = dependencies.concat(
@@ -67,6 +70,7 @@ export function getDependencies( article ) {
 
 function getNamespaceDependencies( article, data ) {
     let dependencies = [];
+    if ( utils.isEmpty( data ) ) return dependencies;
 
     // Set common dependencies
     if ( utils.isArray( data[ '*' ] ) ) {
@@ -88,31 +92,91 @@ function getNamespaceDependencies( article, data ) {
  * @returns {Object<string, Array<string>>}
  */
 export function getForeignDependencies( article ) {
+    let modules = [];
     let styles = [];
+    let links = [];
 
-    const typeDependencies = id.config.dependencies.foreign[ article.get( 'type' ) ];
+    const typeDependencies = id.config.foreignDependencies[ article.get( 'type' ) ];
     if ( typeDependencies ) {
-        // Styles dependencies
-        const stylesDependencies = typeDependencies.styles;
-        if ( stylesDependencies ) {
-            // Set common dependencies
-            if ( utils.isArray( stylesDependencies[ '*' ] ) ) {
-                styles = styles.concat(
-                    stylesDependencies[ '*' ].map( title => getStyleHref( article, title ) ),
-                );
-            }
+        // Modules
+        modules = modules.concat(
+            getNamespaceDependencies( article, typeDependencies ),
+        );
 
-            // Set namespace-specific dependencies
-            const namespace = article.getMW( 'title' )?.getNamespaceId();
-            if ( utils.isArray( stylesDependencies[ namespace ] ) ) {
+        // Styles only
+        styles = styles.concat(
+            getNamespaceDependencies( article, typeDependencies.styles ),
+        );
+
+        // Content model-specific dependencies
+        if ( isWbContentModel( mw.config.get( 'wgPageContentModel' ) ) ) {
+            const wikibaseDependencies = typeDependencies.wikibase;
+            if ( wikibaseDependencies ) {
+                // Modules
+                modules = modules.concat(
+                    getNamespaceDependencies( article, wikibaseDependencies ),
+                );
+
+                // Styles only
                 styles = styles.concat(
-                    stylesDependencies[ namespace ].map( title => getStyleHref( article, title ) ),
+                    wikibaseDependencies.styles.all,
+                    utils.isMF() ? wikibaseDependencies.styles.mobile : wikibaseDependencies.styles.desktop,
                 );
             }
         }
+
+        // Styles dependencies
+        links = links.concat( getForeignStylesDependencies( article, typeDependencies.links ) );
     }
 
-    return { styles };
+    return { modules, styles, links };
+}
+
+function getForeignStylesDependencies( article, data ) {
+    let styles = [];
+    if ( utils.isEmpty( data ) ) return styles;
+
+    // Set common dependencies
+    if ( utils.isArray( data[ '*' ] ) ) {
+        styles = styles.concat(
+            data[ '*' ].map( title => getStyleHref( article, title ) ),
+        );
+    }
+
+    // Set namespace-specific dependencies
+    const namespace = article.getMW( 'title' )?.getNamespaceId();
+    if ( utils.isArray( data[ namespace ] ) ) {
+        styles = styles.concat(
+            data[ namespace ].map( title => getStyleHref( article, title ) ),
+        );
+    }
+
+    return styles;
+}
+
+export function loadForeignDependencies( article, data  ) {
+    const dependencies = utils.getMissingDependencies( data );
+    const hostname = article.get( 'hostname' );
+    const action = mw.util.wikiScript( 'load' );
+    const params = $.param( {
+        modules: dependencies.join( '|' ),
+        skin: mw.config.get( 'skin' ),
+    } );
+
+    mw.loader.load( `https://${ hostname }${ action }?${ params }` );
+}
+
+export function loadForeignStylesDependencies( article, data  ) {
+    const dependencies = utils.getMissingDependencies( data );
+    const hostname = article.get( 'hostname' );
+    const action = mw.util.wikiScript( 'load' );
+    const params = $.param( {
+        modules: dependencies.join( '|' ),
+        only: 'styles',
+        skin: mw.config.get( 'skin' ),
+    } );
+
+    mw.loader.load( `https://${ hostname }${ action }?${ params }`, 'text/css' );
 }
 
 /**

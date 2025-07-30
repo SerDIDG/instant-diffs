@@ -60,7 +60,6 @@ export const config = {
             'ext.visualEditor.diffPage.init',
         ],
 
-        // Lazy-loaded dependencies
         page: {
             '*': [
                 'ext.thanks.corethank',
@@ -82,13 +81,38 @@ export const config = {
                 'wikibase.lexeme.styles',
             ],
         },
+    },
 
-        // Foreign lazy-loaded dependencies
-        foreign: {
-            revision: {
+    foreignDependencies: {
+        revision: {
+            styles: {
+                6: [                                                    // File:
+                    'wikibase.mediainfo.filepage.styles',
+                    'wikibase.mediainfo.statements',
+                ],
+                146: [                                                  // Lexeme:
+                    'wikibase.lexeme.styles',
+                ],
+            },
+
+            links: {
+                6: [                                                    // File:
+                    'MediaWiki:Filepage.css',
+                ],
+            },
+
+            wikibase: {
                 styles: {
-                    6: [                                                // File:
-                        'MediaWiki:Filepage.css',
+                    all: [
+                        'jquery.wikibase.toolbar.styles',
+                        'wikibase.view.ControllerViewFactory',
+                        'wikibase.alltargets',
+                    ],
+                    desktop: [
+                        'wikibase.desktop',
+                    ],
+                    mobile: [
+                        'wikibase.mobile',
                     ],
                 },
             },
@@ -225,6 +249,7 @@ export const config = {
         '.diff-type-table #differences-prevlink',                       // [[Special:Diff]]
         '.diff-type-table #differences-nextlink',                       // [[Special:Diff]]
         'a.ext-globalwatchlist-diff',                                   // [[Special:GlobalWatchlist]]
+        '.wikibase-statementview-references a',                         // Wikibase statements references
     ],
 
     changeLists: [
@@ -294,6 +319,8 @@ export const config = {
             '.mw-fr-pending-changes-table',
             '#mw-revision-nav',                                         // [[Special:PermanentLink]]
             '.mw-pt-translate-header',                                  // Page header added by the Translate extension
+            '.mw-specialpage-summary',                                  // Page header on certain Special pages
+            '.wikibase-statementview-references',                       // Wikibase statement references
         ],
     },
     mwLinkDiffOnly: {

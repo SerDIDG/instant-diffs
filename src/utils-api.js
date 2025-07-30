@@ -1,4 +1,5 @@
-import { isEmptyObject, spacesToUnderlines } from './utils';
+import id from './id';
+import { isEmpty, isEmptyObject, spacesToUnderlines } from './utils';
 
 import Api from './Api';
 
@@ -39,4 +40,44 @@ export function getNamespaceConfig( hostname ) {
             .filter( ( value ) => value.content )
             .map( ( value ) => value.id ),
     };
+}
+
+/**
+ * Checks if a title meets the Wikibase entity criteria
+ * @param {string} title
+ * @return {boolean}
+ */
+export function isProbablyWbTitle( title ) {
+    return !isEmpty( title ) && /^[QPL][0-9]+$/.test( title );
+}
+
+/**
+ * Checks if a content model meets the Wikibase entity criteria
+ * @param {string} contentModel
+ * @return {boolean}
+ */
+export function isWbContentModel( contentModel ) {
+    return !isEmpty( contentModel ) && contentModel.includes( 'wikibase' );
+}
+
+/**
+ * Gets a label for the Wikibse EntitySchema from the display title.
+ * @param {string} displayTitle
+ * @return {string|*}
+ */
+export function getEntitySchemaLabel( displayTitle ) {
+    const $html = $( displayTitle );
+    return $html.find( '.entityschema-title-label' ).text();
+}
+
+/**
+ * Gets a label for the Wikilambda entity from the page props.
+ * @param {Object} props
+ * @return {string|*}
+ */
+export function getWikilambdaLabel( props ) {
+    return !isEmptyObject( props ) && (
+        props[ `wikilambda-label-${ id.local.userLanguage }` ] ||
+        props[ 'wikilambda-label-en' ]
+    );
 }

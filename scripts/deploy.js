@@ -119,7 +119,7 @@ class Deploy {
         }
     }
 
-    // TODO: read last saved commit hash and use that to construct a meaningful summary
+    // ToDo: read last saved commit hash and use that to construct a meaningful summary
     async makeEditSummary() {
         const sha = execSync( 'git rev-parse --short HEAD' ).toString( 'utf8' ).trim();
         const version = args.dev ? pkg.version : pkg.version.split( '+' ).shift();

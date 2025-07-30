@@ -31,7 +31,7 @@
         // /* [Fix] Icon shrinking */
         // /* ToDo: remove after bug is fixed (T398529) */
         .cdx-message__icon {
-            flex: none;
+            flex-shrink: 0;
         }
     }
 
@@ -79,6 +79,29 @@
     // /* Hide table of contents */
     #toc {
         display: none;
+    }
+
+    // /*** FOREIGN RELATED STYLES ***/
+
+    &--foreign {
+        .wikibase-statementgroupview {
+            // /* Reset right margin in the wikibase statements */
+            .wikibase-snakview-body {
+                margin-right: 0 !important;
+            }
+
+            // /* Uncollapse all statement sources */
+            .wikibase-initially-collapsed {
+                display: block !important;
+            }
+        }
+
+        .wikibase-entitytermsview {
+            // /* Reset position of the edit link in the languages box */
+            .wikibase-toolbar-container {
+                position: relative;
+            }
+        }
     }
 }
 

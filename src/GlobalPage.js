@@ -1,8 +1,8 @@
 import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
+import * as utilsArticle from './utils-article';
 import { getNamespaceConfig } from './utils-api';
-import { addLinkTags, getForeignDependencies, removeLinkTags } from './utils-article';
 
 import Api from './Api';
 import Page from './Page';
@@ -48,43 +48,31 @@ class GlobalPage extends Page {
     }
 
     /**
-     * Load process that chains multiple requests into one promise.
-     * @returns {Promise}
+     * Get promise array for the main load request.
+     * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
      */
-    loadProcess() {
-        const promises = [
+    getLoadPromises() {
+        return [
             this.requestMessages(),
             this.requestSiteInfo(),
-            this.requestPageInfo(),
-            this.request(),
+            ...super.getLoadPromises(),
         ];
-
-        const promise = Promise.allSettled( promises )
-            .then( this.onLoadResponse );
-
-        return promise.then( this.loadProcessSecondary );
     }
 
     /**
-     * Secondary load process that chains multiple requests into one promise.
-     * Process fires in a chain only after the main request because it needs additional data.
-     * @returns {Promise}
+     * Get promise array for the secondary load request.
+     * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
      */
-    loadProcessSecondary = () => {
-        const promises = [];
-
-        // Add a request for the wikidata label name
-        if ( this.article.getMW( 'serverName' ) === 'www.wikidata.org' ) {
-            promises.push( this.requestWBLabel() );
-        }
+    getLoadSecondaryPromises() {
+        const promises = super.getLoadSecondaryPromises();
 
         // Add a request for the revision view
         if ( this.article.get( 'type' ) === 'revision' ) {
             promises.push( this.requestRevision() );
         }
 
-        return Promise.allSettled( promises );
-    };
+        return promises;
+    }
 
     /******* REQUESTS *******/
 
@@ -371,7 +359,7 @@ class GlobalPage extends Page {
 
     /**
      * Request revision.
-     * @returns {JQuery.Promise}
+     * @returns {Promise}
      */
     requestRevision() {
         if ( this.error ) return $.Deferred().resolve().promise();
@@ -460,8 +448,7 @@ class GlobalPage extends Page {
         this.requestDependencies( this.parse );
 
         // Get page foreign dependencies
-        const foreignDependencies = getForeignDependencies( this.article );
-        this.linkTags = addLinkTags( foreignDependencies.styles );
+        this.requestForeignDependencies();
     }
 
     async processRevision() {
@@ -486,6 +473,15 @@ class GlobalPage extends Page {
         await this.restoreFunctionality();
     }
 
+    requestForeignDependencies() {
+        const dependencies = utilsArticle.getForeignDependencies( this.article );
+
+        utilsArticle.loadForeignDependencies( this.article, dependencies.modules );
+        utilsArticle.loadForeignStylesDependencies( this.article, dependencies.styles );
+
+        this.linkTags = utilsArticle.addLinkTags( dependencies.links );
+    }
+
     /******* ACTIONS *******/
 
     detach() {
@@ -494,7 +490,7 @@ class GlobalPage extends Page {
         super.detach();
 
         // Remove link tags from the head, that was added to load styles for the foreign pages
-        removeLinkTags( this.linkTags );
+        utilsArticle.removeLinkTags( this.linkTags );
     }
 }
 

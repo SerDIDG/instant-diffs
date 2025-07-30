@@ -2,6 +2,7 @@ import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
 import { getDependencies } from './utils-article';
+import { getEntitySchemaLabel, getWikilambdaLabel, isWbContentModel } from './utils-api';
 
 import Api from './Api';
 import ConfigManager from './ConfigManager';
@@ -179,18 +180,43 @@ class Page {
      * @returns {JQuery.Promise|Promise}
      */
     loadProcess() {
-        const promises = [
+        const promises = this.getLoadPromises();
+
+        return Promise.allSettled( promises )
+            .then( this.onLoadResponse )
+            .then( this.loadProcessSecondary );
+    }
+
+    /**
+     * Secondary load process that chains multiple requests into one promise.
+     * Process fires in a chain only after the main request because it needs additional data.
+     * @returns {Promise}
+     */
+    loadProcessSecondary = () => {
+        const promises = this.getLoadSecondaryPromises();
+
+        return Promise.allSettled( promises );
+    };
+
+    /**
+     * Get promise array for the main load request.
+     * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
+     */
+    getLoadPromises() {
+        return [
             this.requestPageInfo(),
             this.request(),
         ];
+    }
 
-        // Add a request for the wikidata label name
-        if ( this.article.getMW( 'serverName' ) === 'www.wikidata.org' ) {
-            promises.push( this.requestWBLabel() );
-        }
-
-        return Promise.allSettled( promises )
-            .then( this.onLoadResponse );
+    /**
+     * Get promise array for the secondary load request.
+     * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
+     */
+    getLoadSecondaryPromises() {
+        return [
+            this.requestWBLabel(),
+        ];
     }
 
     /**
@@ -265,7 +291,8 @@ class Page {
 
         const data = await Api.getPageInfo( params, this.article.get( 'hostname' ), this.requestManager );
         if ( data ) {
-            const props = data.pageprops;
+            const props = data.pageprops || {};
+            const entity = data.entityterms || {};
 
             // Set values for mw.config
             this.configManager.setValues( {
@@ -278,7 +305,8 @@ class Page {
                 wgIsProbablyEditable: data.actions?.edit,
                 wgRelevantPageIsProbablyEditable: data.actions?.edit,
                 wbEntityId:
-                    props?.[ 'wikibase_item' ] ||
+                    props[ 'wikibase_item' ] ||
+                    ( isWbContentModel( data.contentmodel ) && data.title ) ||
                     this.configManager.get( 'wbEntityId' ),
             } );
 
@@ -292,8 +320,9 @@ class Page {
                 notificationtimestamp: data.notificationtimestamp,
                 new: data.new,
                 label:
-                    props?.[ `wikilambda-label-${ id.local.userLanguage }` ] ||
-                    props?.[ 'wikilambda-label-en' ] ||
+                    ( isWbContentModel( data.contentmodel ) && entity.label?.[ 0 ] ) ||
+                    ( data.contentmodel === 'EntitySchema' && getEntitySchemaLabel( props[ 'displaytitle' ] ) ) ||
+                    ( data.contentmodel === 'zobject' && getWikilambdaLabel( props ) ) ||
                     this.article.get( 'label' ),
             } );
 
@@ -307,7 +336,17 @@ class Page {
      * @returns {Promise}
      */
     async requestWBLabel() {
-        if ( this.error ) return $.Deferred().resolve().promise();
+        // Check if there are no errors,
+        // then check if a label is empty,
+        // then check is it's a wikibase entity content model,
+        // otherwise terminate.
+        if (
+            this.error ||
+            !utils.isEmpty( this.article.get( 'label' ) ) ||
+            !isWbContentModel( this.configManager.get( 'wgPageContentModel' ) )
+        ) {
+            return $.Deferred().resolve().promise();
+        }
 
         const title = this.article.getMW( 'title' )?.getMain();
         const label = await Api.getWBLabel( title, this.article.get( 'hostname' ), this.requestManager );
@@ -321,10 +360,13 @@ class Page {
     }
 
     markAsSeen() {
-        // Check if "mark as viewed" is allowed by user,
+        // Check if there are no errors,
+        // then check if the "mark as viewed" option is allowed by user,
         // then check if it's a foreign article, because local article will be marked automatically,
-        // then check if article has revision timestamp and last viewed timestamp.
+        // then check if an article has revision timestamp and last viewed timestamp,
+        // otherwise terminate.
         if (
+            this.error ||
             !utils.defaults( 'markWatchedLine' ) ||
             !this.article.isForeign ||
             utils.isEmpty( this.article.get( 'timestamp' ) ) ||
@@ -393,6 +435,12 @@ class Page {
             'mw-body-content',
         ];
 
+        const bodyClasses = [
+            'instantDiffs-page-body',
+            `instantDiffs-page-body--${ this.type }`,
+            `instantDiffs-page-body--${ this.article.get( 'type' ) }`,
+        ];
+
         const skinClasses = id.config.skinBodyClasses[ mw.config.get( 'skin' ) ];
         if ( skinClasses ) {
             classes.push( ...skinClasses );
@@ -407,7 +455,7 @@ class Page {
             .appendTo( this.nodes.$container );
 
         this.nodes.$body = $( '<div>' )
-            .addClass( 'instantDiffs-page-body' )
+            .addClass( bodyClasses )
             .appendTo( this.nodes.$container );
 
         if ( this.error ) {

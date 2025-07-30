@@ -117,6 +117,18 @@ export function getDependencies( data ) {
 }
 
 /**
+ * Filters list from the available dependencies.
+ * @param {Array} data
+ * @returns {Array}
+ */
+export function getMissingDependencies( data ) {
+    return data.filter( item => {
+        const state = mw.loader.getState( item );
+        return ![ 'ready', 'registered' ].includes( state );
+    } );
+}
+
+/**
  * Calls a module required function loaded via "mw.loader" and stored in the singleton.
  * @param {string} name
  * @return {*}

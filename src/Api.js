@@ -93,10 +93,22 @@ class Api {
         }, null, true );
     }
 
+    /******* TOKENS *******/
+
+    static getAuthToken( hostname ) {
+        const params = {
+            action: 'centralauthtoken',
+            format: 'json',
+            formatversion: 2,
+            uselang: id.local.language,
+        };
+        return this.get( params, hostname );
+    }
+
     /******* MESSAGES *******/
 
     /**
-     * Requests interface messages if missing.
+     * Gets the interface messages if missing.
      * @param {array|string} messages
      * @param {string} [hostname]
      * @returns {JQuery.Promise|mw.Api.Promise}
@@ -108,13 +120,20 @@ class Api {
         const missing = messages.filter( msg => !mw.message( msg ).exists() );
         if ( missing.length === 0 ) return $.Deferred().resolve().promise();
 
-        return this.getApi( hostname ).loadMessagesIfMissing( messages, {
-            uselang: id.local.userLanguage,
-        } );
+        return this.getApi( hostname )
+            .loadMessagesIfMissing( messages, {
+                uselang: id.local.userLanguage,
+            } );
     }
 
     /******* PARSE *******/
 
+    /**
+     * Gets a parsed wikitext.
+     * @param {Object} params
+     * @param {string} [hostname]
+     * @return {Promise<*|string>}
+     */
     static async parseWikitext( params, hostname ) {
         params = {
             action: 'parse',
@@ -136,14 +155,17 @@ class Api {
     /******* PAGE INFO *******/
 
     static async getPageInfo( params, hostname, requestManager ) {
+        const language = id.local.userLanguage;
         params = {
             action: 'query',
-            prop: [ 'info', 'pageprops' ],
+            prop: [ 'info', 'pageprops', 'entityterms' ],
             inprop: [ 'watched', 'notificationtimestamp' ],
+            wbetterms: [ 'label' ],
+            wbetlanguage: language,
             intestactions: [ 'edit' ],
             format: 'json',
             formatversion: 2,
-            uselang: id.local.userLanguage,
+            uselang: language,
             ...params,
         };
         const api = requestManager ? requestManager : this;
@@ -191,7 +213,7 @@ class Api {
      * @param {Array} fields
      * @param {string} [hostname]
      * @param {import('./RequestManager').default} [requestManager]
-     * @return {Promise<Object>}
+     * @return {Promise<*|{}>}
      */
     static async getSiteInfo( fields = [], hostname, requestManager ) {
         if ( utils.isEmpty( hostname ) ) {
@@ -383,9 +405,8 @@ class Api {
      * @return {Promise<*|string>}
      */
     static async getWBLabel( entityId, hostname, requestManager ) {
-        if ( utils.isEmpty( entityId ) || !/^[QPL][0-9]+$/.test( entityId ) ) return;
+        if ( !utilsApi.isProbablyWbTitle( entityId ) ) return;
 
-        // Request data via API
         const language = id.local.userLanguage;
         const params = {
             action: 'wbgetentities',
@@ -401,13 +422,14 @@ class Api {
 
         try {
             const { entities } = await api.get( params, hostname );
-
             const entity = entities[ entityId ];
+
             if ( entity.type === 'lexeme' ) {
                 return Object.values( entity.lemmas )
                     .map( lemma => lemma.value )
                     .join( '/' );
             }
+
             return entity.labels[ language ].value;
         } catch ( error ) {
             this.notifyError( error );
