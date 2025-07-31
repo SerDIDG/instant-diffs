@@ -19,6 +19,8 @@
 	"action-cancel": "ناگارل",
 	"action-close": "تړل",
 	"action-reload": "بيابارول",
+	"action-watch": "څارل",
+	"action-unwatch": "نه‌څارل",
 	"goto-snapshot-prev": "په يو مخ کې مخکينۍ تړنه",
 	"goto-snapshot-next": "په يو مخ کې راتلونکې تړنه",
 	"goto-view-diff": "بدلونونه ښودل",
@@ -111,6 +113,7 @@
 	"error-dependencies-generic": "د تړاوونو بارولو کې پاتې راغی: $4",
 	"error-dependencies-revid": "د \"oldid=$1\" مخ تړاونو بارولو کې پاتې راغی: $4",
 	"error-dependencies-curid": "د \"curid=$1\" مخ تړاوونو بارولو کې پاتې راغی: $4",
+	"error-global-watchlist": "د ټوليز کتنلړ ای‌پي‌ای ترسره کولو کې پاتې راغی: $4",
 	"error-setting-request": "کارن خوښنو بارولو کې پاتې راغی: $4",
 	"error-setting-save": "کارن خوښنو خوندي‌کولو کې پاتې راغی: $4"
 }

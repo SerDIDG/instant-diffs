@@ -18,6 +18,8 @@
 	"action-cancel": "Peruuta",
 	"action-close": "Sulje",
 	"action-reload": "Päivitä",
+	"action-watch": "Tarkkaile",
+	"action-unwatch": "Lopeta tarkkailu",
 	"goto-snapshot-prev": "Edellinen linkki sivulla",
 	"goto-snapshot-next": "Seuraava linkki sivulla",
 	"goto-view-diff": "Näytä muutokset",

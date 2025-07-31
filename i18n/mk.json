@@ -18,6 +18,8 @@
 	"action-cancel": "Откажи",
 	"action-close": "Затвори",
 	"action-reload": "Превчитај",
+	"action-watch": "Набљудувај",
+	"action-unwatch": "Прекини набљудување",
 	"goto-snapshot-prev": "Претходна врска на страница",
 	"goto-snapshot-next": "Следна врска на страница",
 	"goto-view-diff": "Прикажи промени",
@@ -112,6 +114,7 @@
 	"error-dependencies-generic": "Не успеав да ги вчитам зависностите: $4",
 	"error-dependencies-revid": "Не успеав да ги вчитам зависностите на страницата \"oldid=$1\": $4",
 	"error-dependencies-curid": "Не успеав да ги вчитам зависностите на страницата \"curid=$1\": $4",
+	"error-global-watchlist": "Не успеав да го пуштам приложникот на Глобалните набљудувани: $4",
 	"error-setting-request": "Не можев да ги вчитам корисничките поставки: $4",
 	"error-setting-save": "Не можев да ги зачувам корисничките поставки: $4"
 }

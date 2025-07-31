@@ -20,6 +20,8 @@
 	"action-cancel": "Annuler",
 	"action-close": "Fermer",
 	"action-reload": "Recharger",
+	"action-watch": "Suivre",
+	"action-unwatch": "Ne plus suivre",
 	"goto-snapshot-prev": "Lien précédent sur la page",
 	"goto-snapshot-next": "Lien suivant sur la page",
 	"goto-view-diff": "Afficher les modifications",
@@ -97,7 +99,7 @@
 	"error-server": "Erreur du serveur, veuillez réessayer plus tard",
 	"error-offline": "Veuillez vérifier votre connexion Internet",
 	"error-wasted": "Erreur inattendue",
-	"error-prepare-generic": "Impossible de préparer la configuration : $4",
+	"error-prepare-generic": "Échec de la préparation de la configuration : $4",
 	"error-prepare-version": "Une autre instance est déjà en cours d’exécution : $4",
 	"error-prepare-replaced": "L’instance séparée a bien été remplacée : $4",
 	"error-prepare-mobile": "Le script est désactivé dans les paramètres pour le thème mobile (Minerva)",
@@ -114,6 +116,7 @@
 	"error-dependencies-generic": "Échec du chargement des dépendances : $4",
 	"error-dependencies-revid": "Échec du chargement des dépendances de la page « oldid=$1 » : $4",
 	"error-dependencies-curid": "Échec du chargement des dépendances de la page « curid=$1 » : $4",
+	"error-global-watchlist": "Échec d’exécution de l’API Global Watchlist : $4",
 	"error-setting-request": "Échec du chargement des options utilisateur : $4",
 	"error-setting-save": "Échec de l’enregistrement des options utilisateur : $4"
 }

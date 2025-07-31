@@ -20,6 +20,8 @@
 	"action-cancel": "Отменить",
 	"action-close": "Закрыть",
 	"action-reload": "Перезагрузить",
+	"action-watch": "Следить",
+	"action-unwatch": "Перестать следить",
 	"goto-snapshot-prev": "Предыдущая ссылка на странице",
 	"goto-snapshot-next": "Следующая ссылка на странице",
 	"goto-view-diff": "Показать изменения",

@@ -18,8 +18,8 @@
 	"action-cancel": "Label for the button that cancels and closes the dialog.\n\n{{identical|Cancel}}",
 	"action-close": "Label for the button that closes the dialog.\n\n{{identical|Close}}",
 	"action-reload": "Label for the button that reloads the page after saving settings in the dialog.\n\n{{identical|Reload}}",
-    "action-watch": "Label for the button that adds page to the watchlist.\n\n{{identical|Watch}}",
-    "action-unwatch": "Label for the button that removes page from the watchlist.\n\n{{identical|Unwatch}}",
+	"action-watch": "Label for the button that adds page to the watchlist.\n\n{{identical|Watch}}",
+	"action-unwatch": "Label for the button that removes page from the watchlist.\n\n{{identical|Unwatch}}",
 	"goto-snapshot-prev": "Label for the button that navigates to the previous link on the page.\n\nDisplayed in the Instant Diffs dialog navigation.",
 	"goto-snapshot-next": "Label for the button that navigates to the next link on the page.\n\nDisplayed in the Instant Diffs dialog navigation.",
 	"goto-view-diff": "Label for the button that switches view to the diff.\n\nDisplayed in the Instant Diffs dialog navigation.",
@@ -114,7 +114,7 @@
 	"error-dependencies-generic": "Generic error message.\n\n* $4: error info text.",
 	"error-dependencies-revid": "Generic error message.\n\n* $1: oldid.\n* $4: error info text.",
 	"error-dependencies-curid": "Generic error message.\n\n* $1: curid.\n* $4: error info text.",
-    "error-global-watchlist": "Generic error message when script failed to execute Global Watchlist API.\n\n* $4: error info text.",
+	"error-global-watchlist": "Generic error message when script failed to execute Global Watchlist API.\n\n* $4: error info text.",
 	"error-setting-request": "Text of an error notification. Used as an error message in the Settings dialog.\n\n* $4: error info text.",
 	"error-setting-save": "Text of an error notification. Used as an error message in the Settings dialog.\n\n* $4: error info text."
 }

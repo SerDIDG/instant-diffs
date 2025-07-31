@@ -18,8 +18,8 @@
 	"action-cancel": "Відмінити",
 	"action-close": "Закрити",
 	"action-reload": "Перезавантажити",
-    "action-watch": "Слідкувати",
-    "action-unwatch": "Припинити слідкувати",
+	"action-watch": "Слідкувати",
+	"action-unwatch": "Припинити слідкувати",
 	"goto-snapshot-prev": "Попереднє посилання на сторінці",
 	"goto-snapshot-next": "Наступне посилання на сторінці",
 	"goto-view-diff": "Різниця версій",
@@ -114,7 +114,7 @@
 	"error-dependencies-generic": "Не вдалося завантажити залежності: $4",
 	"error-dependencies-revid": "Не вдалося завантажити залежності сторінки «curid=$1»: $4",
 	"error-dependencies-curid": "Не вдалося завантажити залежності сторінки «oldid=$1»: $4",
-    "error-global-watchlist": "Не вдалося виконати Global Watchlist API: $4",
+	"error-global-watchlist": "Не вдалося виконати Global Watchlist API: $4",
 	"error-setting-request": "Не вдалося завантажити налаштування користувача: $4",
 	"error-setting-save": "Не вдалося зберегти налаштування користувача: $4"
 }

@@ -18,6 +18,8 @@
 	"action-cancel": "取消",
 	"action-close": "關閉",
 	"action-reload": "重新載入",
+	"action-watch": "監視",
+	"action-unwatch": "取消監視",
 	"goto-snapshot-prev": "頁面裡的上一個連結",
 	"goto-snapshot-next": "頁面裡的下一個連結",
 	"goto-view-diff": "顯示更改",
@@ -112,6 +114,7 @@
 	"error-dependencies-generic": "無法載入相依：$4",
 	"error-dependencies-revid": "無法載入頁面相依「oldid=$1」：$4",
 	"error-dependencies-curid": "無法載入頁面相依「curid=$1」：$4",
+	"error-global-watchlist": "執行全域監視清單 API 失敗：$4",
 	"error-setting-request": "無法載入使用者選項：$4",
 	"error-setting-save": "無法儲存使用者選項：$4"
 }
