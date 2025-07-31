@@ -3,6 +3,18 @@ import * as utils from './utils';
 
 import Link from './Link';
 
+/******* EXTENSION: TRANSLATE *******/
+
+mw.hook( 'mw.translate.editor.showTranslationHelpers' ).add(
+    /**
+     * @param {Object} helpers
+     * @param {JQuery<HTMLElement>} $context
+     */
+    ( helpers, $context ) => {
+        mw.hook( `${ id.config.prefix }.process` ).fire( $context );
+    },
+);
+
 /******* CONVENIENT DISCUSSIONS *******/
 
 /**
