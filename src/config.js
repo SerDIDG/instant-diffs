@@ -252,7 +252,7 @@ export const config = {
         '.diff-type-table #differences-nextlink',                       // [[Special:Diff]]
         'a.ext-globalwatchlist-diff',                                   // [[Special:GlobalWatchlist]]
         '.wikibase-statementview-references a',                         // Wikibase statements references
-        'a.edit-summary-time',                                           // [[Extension:Translate]]
+        'a.edit-summary-time',                                          // [[Extension:Translate]]
     ],
 
     changeLists: [
@@ -324,7 +324,7 @@ export const config = {
             '.mw-pt-translate-header',                                  // Page header added by the Translate extension
             '.mw-specialpage-summary',                                  // Page header on certain Special pages
             '.wikibase-statementview-references',                       // Wikibase statement references
-            '.tux-message-editor',                                       // [[Extension:Translate]]
+            '.tux-message-editor',                                      // [[Extension:Translate]]
         ],
     },
     mwLinkDiffOnly: {

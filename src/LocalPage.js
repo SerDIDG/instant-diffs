@@ -4,6 +4,7 @@ import * as utilsPage from './utils-page';
 import { executeModuleScript } from './utils-oojs';
 
 import Page from './Page';
+import { isVisualDiffsAvailable } from './utils-page';
 
 /**
  * Class representing a Local Page.
@@ -262,14 +263,11 @@ class LocalPage extends Page {
          * FixMe: See T346252 for the details about Visual Diffs.
          * @type {Object}
          */
-        if ( this.article.get( 'type' ) !== 'diff' ) {
-            const veConfig = mw.config.get( 'wgVisualEditorConfig' );
-            if (
-                veConfig &&
-                !Object.prototype.hasOwnProperty.call( veConfig.contentModels, this.configManager.get( 'wgPageContentModel' ) )
-            ) {
-                this.userOptionsManager.set( 'visualeditor-diffmode-historical', 'source' );
-            }
+        if (
+            this.article.get( 'type' ) !== 'diff' &&
+            !utilsPage.isVisualDiffsAvailable( this.configManager.get( 'wgPageContentModel' ) )
+        ) {
+            this.userOptionsManager.set( 'visualeditor-diffmode-historical', 'source' );
         }
     }
 

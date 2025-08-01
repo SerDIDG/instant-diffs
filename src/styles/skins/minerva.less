@@ -46,6 +46,9 @@
             width: calc(var(--font-size-medium, 1rem) + 4px);
             display: inline-block;
         }
+        
+        // /* [Fix] Hide user icon if checkuser extension is enabled. */
+        #instantDiffs--pageSpecific.fix-userlink--ext-checkuser();
     }
 }
 
@@ -74,7 +77,7 @@
 
 /******* PAGE SPECIFIC ADJUSTMENTS *******/
 
-#instantDiffs-line--pageSpecific () {
+#instantDiffs--pageSpecific () {
     // /* [Fix] Hide the user icon in lists that were loaded from dependencies after the View dialog opens. */
     .fix-userlink {
         .mw-userlink {
@@ -98,15 +101,63 @@
         }
     }
 
+    .fix-userlink--ext-checkuser {
+        .ext-checkuser-userinfocard-button + .mw-userlink {
+            &::before {
+                display: none !important;
+            }
+        }
+    }
+
     // /* [Fix] Display user tools in lists that were loaded from dependencies after the View dialog opens. */
     .fix-usertoollinks {
         .mw-usertoollinks {
             display: inline !important;
         }
     }
+
+    .fix-ext-checkuser--float {
+        .ext-checkuser-userinfocard-button {
+            float: left;
+            clear: left;
+            padding-top: 0;
+
+            & + .mw-userlink {
+                float: left;
+                clear: none;
+                padding-top: 0;
+
+                & + .mw-usertoollinks {
+                    float: left;
+                    clear: right;
+                    padding-top: 0;
+                }
+            }
+        }
+
+        .mw-changeslist-log-entry {
+            .ext-checkuser-userinfocard-button {
+                float: none;
+                clear: both;
+
+                & + .mw-userlink {
+                    float: none;
+                    clear: both;
+
+                    & + .mw-usertoollinks {
+                        float: none;
+                        clear: both;
+                    }
+                }
+            }
+        }
+    }
 }
 
 .instantDiffs-line {
+    // /* [Fix] Hide user icon if checkuser extension is enabled. */
+    #instantDiffs--pageSpecific.fix-userlink--ext-checkuser();
+
     // /* [Fix] Reset the minoredit styles that were loaded from dependencies after the View dialog opens. */
     .minoredit {
         font-size: inherit;
@@ -121,29 +172,42 @@
     }
 }
 
+&.mw-special-Watchlist {
+    .instantDiffs-line {
+        #instantDiffs--pageSpecific.fix-ext-checkuser--float();
+    }
+}
+
 &.mw-special-Recentchanges {
     .instantDiffs-line {
-        #instantDiffs-line--pageSpecific.fix-userlink();
-        #instantDiffs-line--pageSpecific.fix-usertoollinks();
+        #instantDiffs--pageSpecific.fix-userlink();
+        #instantDiffs--pageSpecific.fix-usertoollinks();
+        #instantDiffs--pageSpecific.fix-ext-checkuser--float();
     }
 }
 
 &.mw-special-Recentchangeslinked {
     .instantDiffs-line {
-        #instantDiffs-line--pageSpecific.fix-userlink();
-        #instantDiffs-line--pageSpecific.fix-userlink--width();
-        #instantDiffs-line--pageSpecific.fix-usertoollinks();
+        #instantDiffs--pageSpecific.fix-userlink();
+        #instantDiffs--pageSpecific.fix-userlink--width();
+        #instantDiffs--pageSpecific.fix-usertoollinks();
+        #instantDiffs--pageSpecific.fix-ext-checkuser--float();
     }
 }
 
 &:not(.mw-mf-amc-disabled) {
     .instantDiffs-line {
-        #instantDiffs-line--pageSpecific.fix-userlink();
-        #instantDiffs-line--pageSpecific.fix-usertoollinks();
+        #instantDiffs--pageSpecific.fix-userlink();
+        #instantDiffs--pageSpecific.fix-usertoollinks();
+
+        // /* [UI] Show actual revision link instead of timestamp on Minerva */
+        .mw-changeslist-date {
+            display: inline;
+        }
     }
 
     .instantDiffs-line--history {
-        #instantDiffs-line--pageSpecific.fix-userlink--width();
+        #instantDiffs--pageSpecific.fix-userlink--width();
     }
 }
 
@@ -228,11 +292,16 @@
     .instantDiffs-line {
         // /* [UI] Show actual revision link instead of timestamp on Minerva */
         .mw-changeslist-date {
-            display: inline-block;
+            display: inline;
         }
 
         .mw-changeslist-time {
             display: none;
+        }
+
+        // /* [Fix] Checkuser extension icon position. */
+        .ext-checkuser-userinfocard-button {
+            float: left;
         }
 
         // /* [Fix] Hide the user icon in lists that were loaded from dependencies after the View dialog opens. */

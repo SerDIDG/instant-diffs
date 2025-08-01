@@ -192,7 +192,7 @@ export function getUserDate( date ) {
 /******* INLINE FORMAT TOGGLE *******/
 
 /**
- * Restore the Inline toggle switch button.
+ * Restores the Inline toggle switch button.
  * @param {JQuery} $container
  * @returns {boolean} a render status
  */
@@ -218,7 +218,7 @@ export function restoreInlineFormatToggle( $container ) {
 /******* VISUAL EDITOR / DIFFS *******/
 
 /**
- * Restore the Visual Diffs buttons.
+ * Restores the Visual Diffs buttons.
  * @param {JQuery} $container
  * @returns {boolean} a render status
  */
@@ -227,6 +227,7 @@ export function restoreVisualDiffs( $container ) {
         !$container || $container.length === 0 ||
         !utils.isValidID( mw.config.get( 'wgDiffOldId' ) ) ||
         !utils.isValidID( mw.config.get( 'wgDiffNewId' ) ) ||
+        !isVisualDiffsAvailable( mw.config.get( 'wgPageContentModel' ) ) ||
         mw.loader.getState( 'ext.visualEditor.diffPage.init' ) !== 'ready'
     ) {
         return false;
@@ -249,11 +250,21 @@ export function restoreVisualDiffs( $container ) {
     return true;
 }
 
+/**
+ * Checks if the Visual Diffs can execute on the specified content model.
+ * @param {string} contentModel
+ * @return {boolean}
+ */
+export function isVisualDiffsAvailable( contentModel ) {
+    const veConfig = mw.config.get( 'wgVisualEditorConfig' );
+    return veConfig && Object.prototype.hasOwnProperty.call( veConfig.contentModels, contentModel );
+}
+
 /******* ROLLBACK *******/
 
 /**
- * Restore and implement a rollback link behavior. Partially copied from the MediaWiki Core:
- * {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/refs/heads/master/resources/src/mediawiki.misc-authed-curate/rollback.js}
+ * Restores and implement a rollback link behavior. Partially copied from the MediaWiki Core:
+ * @see {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/refs/heads/master/resources/src/mediawiki.misc-authed-curate/rollback.js}
  * @param {JQuery} $container
  * @returns {boolean} a render status
  */
@@ -319,8 +330,8 @@ function postRollback( link ) {
 /******* WIKILAMBDA *******/
 
 /**
- * Restore the WikiLambda app. Partially copied from the WikiLambda extension code:
- * {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/extensions/WikiLambda/+/refs/heads/master/resources/ext.wikilambda.app/index.js}
+ * Restores the WikiLambda app. Partially copied from the WikiLambda extension code:
+ * @see {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/extensions/WikiLambda/+/refs/heads/master/resources/ext.wikilambda.app/index.js}
  * @param {JQuery} $container
  * @returns {boolean} a render status
  */
@@ -353,7 +364,7 @@ export function restoreWikiLambda( $container ) {
 /******* FILE MEDIA INFO *******/
 
 /**
- * Partially restore file media info.
+ * Partially restores file media info.
  * @param {JQuery<HTMLElement>} $content
  * @returns {Element|undefined}
  */
