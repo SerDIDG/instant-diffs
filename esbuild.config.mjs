@@ -20,7 +20,7 @@ const strings = {
     include: /\.js$/,
     __outdir__: outdir,
     __version__: version,
-    __origin__: 'https://mediawiki.org',
+    __origin__: 'https://www.mediawiki.org',
     __styles__: `/w/index.php?title=User:Serhio_Magpie/${ outfile }.css&action=raw&ctype=text/css`,
     __messages__: '/w/index.php?title=User:Serhio_Magpie/instantDiffs-i18n/$lang.js&action=raw&ctype=text/javascript',
     __debug__: process.argv.includes( '--start' ),
