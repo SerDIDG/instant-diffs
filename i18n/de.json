@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Serhio Magpie"
+			"Serhio Magpie",
+			"SomeRandomDeveloper"
 		]
 	},
 	"script-name": "Instant Diffs",
@@ -18,6 +19,8 @@
 	"action-cancel": "Abbrechen",
 	"action-close": "Schließen",
 	"action-reload": "Neu laden",
+	"action-watch": "Beobachten",
+	"action-unwatch": "Nicht mehr beobachten",
 	"goto-snapshot-prev": "Vorheriger Link auf der Seite",
 	"goto-snapshot-next": "Nächster Link auf der Seite",
 	"goto-view-diff": "Änderungen anzeigen",

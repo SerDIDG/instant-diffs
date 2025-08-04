@@ -18,6 +18,8 @@
 	"action-cancel": "Ofbriechen",
 	"action-close": "Zoumaachen",
 	"action-reload": "Nei lueden",
+	"action-watch": "Iwwerwaachen",
+	"action-unwatch": "Net méi iwwerwaachen",
 	"goto-snapshot-prev": "Virege Link op enger Säit",
 	"goto-snapshot-next": "Nächste Link op enger Säit",
 	"goto-view-diff": "Ännerunge weisen",
