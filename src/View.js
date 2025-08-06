@@ -418,6 +418,20 @@ class View {
     /******* ACTIONS *******/
 
     /**
+     * Refresh view contents.
+     * @returns {Promise|boolean}
+     */
+    refresh() {
+        if ( this.isRequesting || this.isProcessing ) return false;
+
+        // Track on dialog process start time
+        id.timers.dialogProcesStart = mw.now();
+
+        // Start loading process
+        this.load();
+    }
+
+    /**
      * Fire hooks in the attached Page.
      */
     fire() {

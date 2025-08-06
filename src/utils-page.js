@@ -5,6 +5,7 @@ import { getHref, getHrefAbsolute } from './utils-article';
 
 import Api from './Api';
 import Article from './Article';
+import view from './View';
 
 const { h, hf, ht, hj } = utils;
 
@@ -305,17 +306,18 @@ function postRollback( link ) {
     Api.post( params )
         .then( ( data ) => {
             const $message = $( utils.textDom( data?.rollback?.summary ) );
-            utils.addBaseToLinks( $message, `https://${ article.get( 'hostname' ) }` );
             utils.addTargetToLinks( $message );
 
             mw.notify( $message, { tag: 'rollback' } );
 
             // Remove link wrapper (including the spinner).
             $( link ).closest( '.mw-rollback-link' ).remove();
+
+            // Refresh view contents
+            view.refresh();
         } )
         .catch( ( code, data ) => {
             const $message = $( utils.textDom( data?.error?.info ) );
-            utils.addBaseToLinks( $message, `https://${ article.get( 'hostname' ) }` );
             utils.addTargetToLinks( $message );
 
             mw.notify( $message, { type: 'error', tag: 'rollback' } );
