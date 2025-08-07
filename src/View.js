@@ -428,7 +428,7 @@ class View {
         id.timers.dialogProcesStart = mw.now();
 
         // Start loading process
-        this.load();
+        return this.load();
     }
 
     /**
