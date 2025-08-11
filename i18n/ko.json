@@ -18,6 +18,8 @@
 	"action-cancel": "취소",
 	"action-close": "닫기",
 	"action-reload": "다시 불러오기",
+	"action-watch": "주시",
+	"action-unwatch": "주시 해제",
 	"goto-snapshot-prev": "문서의 이전 링크",
 	"goto-snapshot-next": "문서의 다음 링크",
 	"goto-view-diff": "차이 보기",
