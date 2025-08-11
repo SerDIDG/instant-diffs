@@ -244,12 +244,14 @@ export const config = {
         '.mw-changeslist-line a.extiw',                                 // [[Special:Watchlist]] (foreign wiki link)
         '.mw-fr-reviewlink a',                                          // [[Special:Watchlist]] (FlaggedRevs link)
         '.mw-enhanced-rc-time a',                                       // [[Special:Watchlist]] (revision)
+        //'.mw-undelete-revlist a',                                     // [[Special:Undelete]]
         '.mw-history-histlinks a',
         '.mw-diff-bytes + a',
         '.mw-fr-pending-changes-table a.cdx-docs-link',
         '#mw-revision-nav a',                                           // [[Special:PermanentLink]]
         '.diff-type-table #differences-prevlink',                       // [[Special:Diff]]
         '.diff-type-table #differences-nextlink',                       // [[Special:Diff]]
+        'li[data-afl-log-id] a',                                        // [[Special:AbuseLog]]
         'a.ext-globalwatchlist-diff',                                   // [[Special:GlobalWatchlist]]
         '.wikibase-statementview-references a',                         // Wikibase statements references
         'a.edit-summary-time',                                          // [[Extension:Translate]]
@@ -275,7 +277,9 @@ export const config = {
             '.mw-changeslist-line',                                     // Changelists
             '.mw-contributions-list li',                                // User contribution
             '.cdx-table tr',                                            // [[Special:PendingChanges]]
+            '.mw-special-AbuseLog li[data-afl-log-id]',                 // [[Special:AbuseLog]]
             '.ext-globalwatchlist-site li',                             // [[Special:GlobalWatchlist]]
+            //'.mw-undelete-revlist li',                                // [[Special:Undelete]]
         ],
         seen: [
             'mw-changeslist-line-not-watched',
@@ -310,7 +314,6 @@ export const config = {
         ],
         closestTo: [
             '.mw-changeslist-line',                                     // [[Special:Watchlist]]
-            '.ext-globalwatchlist-site',                                // [[Special:GlobalWatchlist]]
             '.mw-pager-navigation-bar + ul',
             '.mw-history-histlinks',
             '.mw-fr-hist-difflink',
@@ -320,10 +323,14 @@ export const config = {
             '#mw-fr-revisiontag-edit',
             '#mw-fr-revision-tag-edit',
             '.mw-fr-pending-changes-table',
+            '#mw-fr-revision-messages',                                 // Warning about pending changes at the top of the page
+            //'.mw-undelete-revlist',                                   // [[Special:Undelete]]
             '#mw-revision-nav',                                         // [[Special:PermanentLink]]
             '.mw-pt-translate-header',                                  // Page header added by the Translate extension
             '.mw-specialpage-summary',                                  // Page header on certain Special pages
+            '.mw-special-AbuseLog li[data-afl-log-id]',                 // [[Special:AbuseLog]]
             '.wikibase-statementview-references',                       // Wikibase statement references
+            '.ext-globalwatchlist-site',                                // [[Special:GlobalWatchlist]]
             '.tux-message-editor',                                      // [[Extension:Translate]]
         ],
     },
