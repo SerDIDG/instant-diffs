@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"IKhitron",
-			"Serhio Magpie"
+			"Serhio Magpie",
+			"YaronSh"
 		]
 	},
 	"script-name": "Instant Diffs",
@@ -19,6 +20,8 @@
 	"action-cancel": "ביטול",
 	"action-close": "סגירה",
 	"action-reload": "טען מחדש",
+	"action-watch": "מעקב",
+	"action-unwatch": "הפסקת מעקב",
 	"goto-snapshot-prev": "הקישור הקודם בדף",
 	"goto-snapshot-next": "הקישור הבא בדף",
 	"goto-view-diff": "הצג שינויים",
@@ -96,7 +99,8 @@
 	"error-offline": "בדוק את חיבור האינטרנט שלך",
 	"error-wasted": "שגיאה בלתי צפויה",
 	"error-prepare-generic": "נכשלה הכנת ההגדרות: $4",
-	"error-prepare-version": "הסקריפט כבר רץ: $4",
+	"error-prepare-version": "מופע אחר כבר רץ: $4",
+	"error-prepare-replaced": "המופע העצמאי הוחלף בהצלחה: $4",
 	"error-prepare-mobile": "הסקריפט מושבת בהגדרות עבור ערכת העיצוב לנייד (Minerva)",
 	"error-revision-generic": "נכשלה הטענת נתוני הגרסה \"oldid=$1\": $4",
 	"error-revision-curid": "נכשלה הטענת נתוני הגרסה \"curid=$1\": $4",
