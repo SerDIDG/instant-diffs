@@ -19,10 +19,6 @@ export function getSplitSpecialUrl( title ) {
             values.oldid = titleParts[ 2 ];
             return values;
         }
-        if ( titleParts[ 1 ] === 'page' ) {
-            values.curid = titleParts[ 2 ];
-            return values;
-        }
         return values;
     }
 
