@@ -239,7 +239,7 @@ class Link {
         }
 
         // Exclude links with specific action parameters
-        if ( id.config.linkExclude.actions.includes( this.url.searchParams.get( 'action' ) ) ) return;
+        if ( id.config.exclude.linkActions.includes( this.url.searchParams.get( 'action' ) ) ) return;
 
         // Get article values
         let articleValues = {

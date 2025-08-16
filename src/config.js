@@ -164,13 +164,11 @@ export const config = {
 
     // Including / excluding rules
     include: {
-        actions: [ 'view', 'history' ],
+        pageActions: [ 'view', 'history' ],
     },
     exclude: {
         pages: [],
-    },
-    linkExclude: {
-        actions: [ 'history' ],
+        linkActions: [ 'edit', 'history' ],
     },
 
     // Action labels
@@ -252,6 +250,8 @@ export const config = {
         '.diff-type-table #differences-prevlink',                       // [[Special:Diff]]
         '.diff-type-table #differences-nextlink',                       // [[Special:Diff]]
         'li[data-afl-log-id] a',                                        // [[Special:AbuseLog]]
+        'li[class^="mw-tag"] a',                                        // [[Special:EditTags]]
+        'li.mw-logline-tag a',                                          // [[Special:EditTags]]
         'a.ext-globalwatchlist-diff',                                   // [[Special:GlobalWatchlist]]
         '.wikibase-statementview-references a',                         // Wikibase statements references
         'a.edit-summary-time',                                          // [[Extension:Translate]]
@@ -278,6 +278,8 @@ export const config = {
             '.mw-contributions-list li',                                // User contribution
             '.cdx-table tr',                                            // [[Special:PendingChanges]]
             '.mw-special-AbuseLog li[data-afl-log-id]',                 // [[Special:AbuseLog]]
+            '.mw-special-EditTags li[class^="mw-tag"]',                 // [[Special:EditTags]]
+            '.mw-special-EditTags li.mw-logline-tag',                   // [[Special:EditTags]]
             '.ext-globalwatchlist-site li',                             // [[Special:GlobalWatchlist]]
             //'.mw-undelete-revlist li',                                // [[Special:Undelete]]
         ],
@@ -329,6 +331,8 @@ export const config = {
             '.mw-pt-translate-header',                                  // Page header added by the Translate extension
             '.mw-specialpage-summary',                                  // Page header on certain Special pages
             '.mw-special-AbuseLog li[data-afl-log-id]',                 // [[Special:AbuseLog]]
+            '.mw-special-EditTags li[class^="mw-tag"]',                 // [[Special:EditTags]]
+            '.mw-special-EditTags li.mw-logline-tag',                   // [[Special:EditTags]]
             '.wikibase-statementview-references',                       // Wikibase statement references
             '.ext-globalwatchlist-site',                                // [[Special:GlobalWatchlist]]
             '.tux-message-editor',                                      // [[Extension:Translate]]

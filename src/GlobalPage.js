@@ -441,8 +441,8 @@ class GlobalPage extends Page {
         this.nodes.$revision = $( this.parse.text ).appendTo( this.nodes.$body );
         await this.processRevision();
 
-        // Convert relative links to absolute
-        utils.addBaseToLinks( this.nodes.$revision, `https://${ this.article.get( 'hostname' ) }` );
+        // Convert relative links to the absolute including hashes
+        utils.addBaseToLinks( this.nodes.$revision, this.article.get( 'href' ) );
 
         // Get page dependencies
         this.requestDependencies( this.parse );

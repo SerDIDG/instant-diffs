@@ -226,7 +226,7 @@ class Page {
         this.isLoading = false;
         this.isLoaded = true;
 
-        // The Diff can be already detached from the DOM
+        // The Page can be already detached from the DOM
         if ( this.isDetached ) return;
 
         // Do mot render content when request was programmatically aborted

@@ -11,6 +11,8 @@ mw.hook( 'mw.translate.editor.showTranslationHelpers' ).add(
      * @param {JQuery<HTMLElement>} $context
      */
     ( helpers, $context ) => {
+        if ( !$context || !utils.isAllowed() ) return;
+
         mw.hook( `${ id.config.prefix }.process` ).fire( $context );
     },
 );

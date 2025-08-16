@@ -151,7 +151,7 @@ export function isNew() {
  */
 export function isAllowed() {
     return !defaults( 'standalone' ) &&
-        id.config.include.actions.includes( mw.config.get( 'wgAction' ) ) &&
+        id.config.include.pageActions.includes( mw.config.get( 'wgAction' ) ) &&
         !id.config.exclude.pages.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) );
 }
 
