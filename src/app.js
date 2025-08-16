@@ -74,18 +74,21 @@ function processContributionsPage() {
 
 function processGlobalContributionsPage() {
     // Fix relative links in the edit comments
-    // ToDo: remove after bug is fixed (T398108)
-    const $contributionsLines = $( '.mw-contributions-list li' );
-    $contributionsLines.each( ( i, node ) => {
-        const $node = $( node );
-        const $link = $node.find( 'a.mw-changeslist-date, a.mw-changeslist-history' );
-        if ( $link.length === 0 ) return;
+    // The bug was fixed in MediaWiki 1.45.0 (T398108)
+    // ToDo: deprecated fix
+    if ( utils.semverCompare( mw.config.get( 'wgVersion' ), '1.45.0' ) < 0 ) {
+        const $contributionsLines = $( '.mw-contributions-list li' );
+        $contributionsLines.each( ( i, node ) => {
+            const $node = $( node );
+            const $link = $node.find( 'a.mw-changeslist-date, a.mw-changeslist-history' );
+            if ( $link.length === 0 ) return;
 
-        try {
-            const url = new URL( $link.prop( 'href' ) );
-            utils.addBaseToLinks( $node, url.origin );
-        } catch {}
-    } );
+            try {
+                const url = new URL( $link.prop( 'href' ) );
+                utils.addBaseToLinks( $node, url.origin );
+            } catch {}
+        } );
+    }
 }
 
 function processGlobalWatchlistPage() {

@@ -30,7 +30,7 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
      * @param {import('./Link').default} link
      */
     const renderLink = ( link ) => {
-        if ( !link.isProcessed || !link.config.showPageLink || link.getArticle().isForeign || link.actions.cd ) return;
+        if ( !link.isProcessed || !link.options.showPageLink || link.getArticle().isForeign || link.actions.cd ) return;
 
         link.extensions.cd = {};
         link.extensions.cd.href = getHref( link );

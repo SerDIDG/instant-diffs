@@ -233,20 +233,20 @@ export const config = {
     sectionRegExp: /^\/\*\s*(.*?)\s*\*\/.*$/,
 
     linkSelector: [                                                     // $1 - server
-        'a[data-instantdiffs-link]',
+        'a[data-instantdiffs-link]',                                    // Manually marked links
         'a.external[href^="$1"]',
-        'a.mw-changeslist-date',                                        // (revision)
-        'a.mw-changeslist-diff',
-        'a.mw-changeslist-diff-cur',
-        'a.mw-changeslist-groupdiff',
-        '.mw-changeslist-line a.extiw',                                 // [[Special:Watchlist]] (foreign wiki link)
-        '.mw-fr-reviewlink a',                                          // [[Special:Watchlist]] (FlaggedRevs link)
-        '.mw-enhanced-rc-time a',                                       // [[Special:Watchlist]] (revision)
-        //'.mw-undelete-revlist a',                                     // [[Special:Undelete]]
-        '.mw-history-histlinks a',
+        'a.mw-changeslist-date',                                        // Changelists (revision)
+        'a.mw-changeslist-diff',                                        // Changelists (diff)
+        'a.mw-changeslist-diff-cur',                                    // Changelists (diff to current)
+        'a.mw-changeslist-groupdiff',                                   // Changelists (diffs in group)
+        '.mw-changeslist-line a.extiw',                                 // Changelists (foreign wiki link)
+        '.mw-fr-reviewlink a',                                          // Changelists (FlaggedRevs link)
+        '.mw-enhanced-rc-time a',                                       // Changelists (revision)
+        '.mw-history-histlinks a',                                      // Page history
         '.mw-diff-bytes + a',
-        '.mw-fr-pending-changes-table a.cdx-docs-link',
-        '#mw-revision-nav a',                                           // [[Special:PermanentLink]]
+        '.mw-contributions-list .comment a',                            // Edit summary in the contributions
+        '.mw-fr-pending-changes-table a.cdx-docs-link',                 // [[Special:PendingChanges]]
+        '#mw-revision-nav a',                                           // [[Special:PermanentLink]] / Revision
         '.diff-type-table #differences-prevlink',                       // [[Special:Diff]]
         '.diff-type-table #differences-nextlink',                       // [[Special:Diff]]
         'li[data-afl-log-id] a',                                        // [[Special:AbuseLog]]
@@ -255,6 +255,7 @@ export const config = {
         'a.ext-globalwatchlist-diff',                                   // [[Special:GlobalWatchlist]]
         '.wikibase-statementview-references a',                         // Wikibase statements references
         'a.edit-summary-time',                                          // [[Extension:Translate]]
+        //'.mw-undelete-revlist a',                                     // [[Special:Undelete]]
     ],
 
     changeLists: [
@@ -275,8 +276,8 @@ export const config = {
     mwLine: {
         selector: [
             '.mw-changeslist-line',                                     // Changelists
-            '.mw-contributions-list li',                                // User contribution
-            '.cdx-table tr',                                            // [[Special:PendingChanges]]
+            '.mw-contributions-list li',                                // Contributions
+            '.mw-fr-pending-changes-table tr',                          // [[Special:PendingChanges]]
             '.mw-special-AbuseLog li[data-afl-log-id]',                 // [[Special:AbuseLog]]
             '.mw-special-EditTags li[class^="mw-tag"]',                 // [[Special:EditTags]]
             '.mw-special-EditTags li.mw-logline-tag',                   // [[Special:EditTags]]
@@ -297,7 +298,7 @@ export const config = {
     mwLineTitle: {
         selector: [
             '.mw-changeslist-title',                                    // Changelists
-            '.mw-contributions-title',                                  // User contribution
+            '.mw-contributions-title',                                  // Contributions
             '.mw-newpages-pagename',                                    // [[Special:Newpages]]
             '.mw-fr-pending-changes-page-title',                        // [[Special:PendingChanges]]
         ],
@@ -307,35 +308,27 @@ export const config = {
             'differences-prevlink',                                     // [[Special:Diff]]
             'differences-nextlink',                                     // [[Special:Diff]]
         ],
-        hasClass: [
-            'mw-changeslist-date',
-            'mw-changeslist-diff',
-            'mw-changeslist-diff-cur',
-            'mw-changeslist-groupdiff',
-            'mw-newpages-time',                                         // [[Special:Newpages]]
-        ],
         closestTo: [
-            '.mw-changeslist-line',                                     // [[Special:Watchlist]]
+            '.mw-changeslist-line',                                     // Changelists
+            '.mw-contributions-list',                                   // Contributions
             '.mw-pager-navigation-bar + ul',
-            '.mw-history-histlinks',
             '.mw-fr-hist-difflink',
-            '.mw-fr-reviewlink',                                        // [[Special:Watchlist]]
             '#mw-fr-reviewnotice',
             '#mw-fr-revisiontag',
             '#mw-fr-revisiontag-edit',
             '#mw-fr-revision-tag-edit',
-            '.mw-fr-pending-changes-table',
             '#mw-fr-revision-messages',                                 // Warning about pending changes at the top of the page
-            //'.mw-undelete-revlist',                                   // [[Special:Undelete]]
-            '#mw-revision-nav',                                         // [[Special:PermanentLink]]
-            '.mw-pt-translate-header',                                  // Page header added by the Translate extension
             '.mw-specialpage-summary',                                  // Page header on certain Special pages
+            '#mw-revision-nav',                                         // [[Special:PermanentLink]] / Revision
+            '.mw-fr-pending-changes-table',                             // [[Special:PendingChanges]]
             '.mw-special-AbuseLog li[data-afl-log-id]',                 // [[Special:AbuseLog]]
             '.mw-special-EditTags li[class^="mw-tag"]',                 // [[Special:EditTags]]
             '.mw-special-EditTags li.mw-logline-tag',                   // [[Special:EditTags]]
             '.wikibase-statementview-references',                       // Wikibase statement references
             '.ext-globalwatchlist-site',                                // [[Special:GlobalWatchlist]]
             '.tux-message-editor',                                      // [[Extension:Translate]]
+            '.mw-pt-translate-header',                                  // Page header added by [[Extension:Translate]]
+            //'.mw-undelete-revlist',                                   // [[Special:Undelete]]
         ],
     },
     mwLinkDiffOnly: {
@@ -344,7 +337,7 @@ export const config = {
             'differences-nextlink',                                     // [[Special:Diff]]
         ],
         closestTo: [
-            '#mw-revision-nav',                                         // [[Special:PermanentLink]]
+            '#mw-revision-nav',                                         // [[Special:PermanentLink]] / Revision
         ],
     },
     mwLinkPrepend: {
@@ -352,15 +345,16 @@ export const config = {
             'differences-nextlink',                                     // [[Special:Diff]]
         ],
     },
-    mwLinkExclude: {
-        closestTo: [
-            '.comment',                                                 // Edit summary in the changelists
-        ],
-    },
     mwLinkAltTitle: {
         closestTo: [
             '.mw-fr-reviewlink',                                        // [[Special:Watchlist]]
             '.mw-history-histlinks',                                    // History page
+        ],
+    },
+    mwLinkContent: {
+        closestTo: [
+            '.mw-parser-output',
+            '.comment',                                                 // Edit summary in the changelists
         ],
     },
 };
