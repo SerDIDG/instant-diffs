@@ -1,9 +1,9 @@
 /**
  * Partially copied from:
- * {@link https://github.com/jwbth/convenient-discussions/blob/main/misc/utils.js}
- * /
+ * @see {@link https://github.com/jwbth/convenient-discussions/blob/main/misc/utils.js}
+ */
 
- /**
+/**
  * @param {string} string
  * @return {string}
  */

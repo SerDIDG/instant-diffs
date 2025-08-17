@@ -79,7 +79,7 @@ class Snapshot {
         if ( !isLink ) return false;
 
         // Check if link is valid
-        const isProcessed = link.isProcessed || ( link.hasRequest && !link.isLoaded );
+        const isProcessed = link.isValid && ( link.isProcessed || ( link.hasRequest && !link.isLoaded ) );
         if ( !isProcessed ) return false;
 
         // Check filter rules

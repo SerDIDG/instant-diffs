@@ -1,6 +1,6 @@
 /**
  * Partially copied from:
- * {@link https://github.com/wikimedia-gadgets/twinkle-starter/blob/master/scripts/deploy.js}
+ * @see {@link https://github.com/wikimedia-gadgets/twinkle-starter/blob/master/scripts/deploy.js}
  * (MIT Licence)
  */
 
@@ -12,20 +12,21 @@ const chalk = require( 'chalk' );
 const minimist = require( 'minimist' );
 const pkg = require( '../package.json' );
 
+// Project config
+const env = require( '../env.json' );
+const project = env[ process.env.PROJECT ];
+
 const deployConfig = {
-    outdir: 'dist/',
-    i18n: 'instantDiffs-i18n/',
-    target: 'User:Serhio Magpie/',
     build: [
-        'instantDiffs.css',
-        'instantDiffs.js',
-        'instantDiffs.js.LEGAL.txt',
-        'instantDiffs-i18n.json',
+        `${ project.name }.css`,
+        `${ project.name }.js`,
+        `${ project.name }.js.LEGAL.txt`,
+        `${ project.name }-i18n.json`,
     ],
     dev: [
-        'instantDiffs.test.css',
-        'instantDiffs.test.js',
-        'instantDiffs.test.js.LEGAL.txt',
+        `${ project.name }.test.css`,
+        `${ project.name }.test.js`,
+        `${ project.name }.test.js.LEGAL.txt`,
     ],
 };
 
@@ -64,19 +65,19 @@ class Deploy {
         const files = args.dev ? deployConfig.dev : deployConfig.build;
         files.forEach( file => {
             this.deployTargets.push( {
-                file: `${ deployConfig.outdir }${ file }`,
-                target: `${ deployConfig.target }${ file }`,
+                file: `${ project.dir }/${ file }`,
+                target: `${ project.target }${ file }`,
             } );
         } );
 
         // Push i18n files to the deployment targets
         if ( !args.dev ) {
-            const i18nDir = `${ deployConfig.outdir }${ deployConfig.i18n }`;
-            const languages = await this.readDir( i18nDir );
+            const dir = `${ project.dir }/${ project.name }-i18n`;
+            const languages = await this.readDir( dir );
             languages.forEach( file => {
                 this.deployTargets.push( {
-                    file: `${ i18nDir }${ file }`,
-                    target: `${ deployConfig.target }${ deployConfig.i18n }${ file }`,
+                    file: `${ dir }/${ file }`,
+                    target: `${ project.i18n }${ file }`,
                 } );
             } );
         }
@@ -94,6 +95,16 @@ class Deploy {
             if ( !this.config.password ) {
                 this.config.password = await input( '> Enter bot password', 'password' );
             }
+        }
+
+        if ( !this.config.apiUrl ) {
+            if ( Object.keys( this.config ).length ) {
+                log( 'yellow', 'Tip: you can avoid this prompt by setting the apiUrl as well in credentials.json' );
+            }
+            const site = await input( '> Enter sitename (eg. en.wikipedia.org)' );
+            this.config.apiUrl = `https://${ site }/w/api.php`;
+        } else {
+
         }
         if ( args.testwiki ) {
             this.config.apiUrl = `https://test.wikipedia.org/w/api.php`;

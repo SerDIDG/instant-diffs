@@ -1,6 +1,6 @@
 {
     "name": "instant-diffs",
-    "version": "4.6.0+build.1",
+    "version": "4.6.0+build.2",
     "description": "A JavaScript tool that enhances MediaWiki diff links with interactive functionality.",
     "keywords": [
         "wikipedia",
@@ -29,20 +29,33 @@
     },
     "main": "src/app.js",
     "scripts": {
-        "start": "npm run buildI18n && node esbuild.config.mjs --start --dev",
-        "dev": "npm run buildI18n && node esbuild.config.mjs --build --dev",
-        "build": "npm run buildI18n && node esbuild.config.mjs --build",
-        "testwiki": "npm run buildI18n && node esbuild.config.mjs --build --testwiki",
         "buildI18n": "node ./scripts/buildI18n",
-        "deploy": "npm run build && node ./scripts/deploy.js",
+
+        "start": "npm run buildI18n && node esbuild.config.mjs --start --dev",
+        "start:local": "cross-env PROJECT=local npm run start",
+
+        "dev": "npm run buildI18n && node esbuild.config.mjs --build --dev",
+        "dev:testwiki": "cross-env PROJECT=testwiki npm run dev",
+        "dev:mediawiki": "cross-env PROJECT=mediawiki npm run dev",
+
+        "build": "npm run buildI18n && node esbuild.config.mjs --build",
+        "build:testwiki": "cross-env PROJECT=testwiki npm run build",
+        "build:mediawiki": "cross-env PROJECT=mediawiki npm run build",
+
         "deploy-dev": "npm run dev && node ./scripts/deploy.js --dev",
-        "deploy-testwiki": "npm run testwiki && node ./scripts/deploy.js --testwiki"
+        "deploy-dev:testwiki": "cross-env PROJECT=testwiki npm run deploy-dev",
+        "deploy-dev:mediawiki": "cross-env PROJECT=mediawiki npm run deploy-dev",
+
+        "deploy": "npm run build && node ./scripts/deploy.js",
+        "deploy:testwiki": "cross-env PROJECT=testwiki npm run deploy",
+        "deploy:mediawiki": "cross-env PROJECT=mediawiki npm run deploy"
     },
     "devDependencies": {
         "@fal-works/esbuild-plugin-global-externals": "^2.1.2",
         "@types/oojs-ui": "^0.49.4",
         "@wikimedia/codex-design-tokens": "^2.0.0",
         "chalk": "^4.1.2",
+        "cross-env": "^10.0.0",
         "dompurify": "^3.2.6",
         "esbuild": "0.25.5",
         "esbuild-plugin-copy": "^2.1.1",

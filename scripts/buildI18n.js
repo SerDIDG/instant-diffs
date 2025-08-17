@@ -1,6 +1,6 @@
 /**
  * Partially copied from:
- * {@link https://github.com/jwbth/convenient-discussions/blob/main/buildI18n.js}
+ * @see {@link https://github.com/jwbth/convenient-discussions/blob/main/buildI18n.js}
  */
 
 const fs = require( 'fs' );
@@ -8,10 +8,10 @@ const path = require( 'path' );
 
 const chalk = require( 'chalk' );
 const createDOMPurify = require( 'dompurify' );
-const { JSDOM } = require('jsdom');
+const { JSDOM } = require( 'jsdom' );
 const { replaceEntitiesInI18n, unhideText, hideText } = require( './utils' );
 
-const window = new JSDOM('').window;
+const window = new JSDOM( '' ).window;
 const DOMPurify = createDOMPurify( window );
 
 const warning = ( text ) => console.log( chalk.yellowBright( text ) );
@@ -37,6 +37,10 @@ const ALLOWED_TAGS = [
     'ul',
     'var',
 ];
+
+// Project config
+const env = require( '../env.json' );
+const project = env[ process.env.PROJECT ];
 
 DOMPurify.addHook( 'uponSanitizeElement', ( currentNode, data, config ) => {
     if (
@@ -143,13 +147,12 @@ instantDiffs.i18n ||= {};
 instantDiffs.i18n['${ lang }'] = ${ jsonText };
 `;
 
-        fs.mkdirSync( './dist/instantDiffs-i18n/', { recursive: true } );
-        fs.writeFileSync( `./dist/instantDiffs-i18n/${ lang }.js`, text );
+        fs.mkdirSync( `./${ project.dir }/${ project.name }-i18n/`, { recursive: true } );
+        fs.writeFileSync( `./${ project.dir }/${ project.name }-i18n/${ lang }.js`, text );
     }
 }
 
 const i18nListText = JSON.stringify( Object.keys( i18n ), null, '\t' ) + '\n';
-fs.mkdirSync( './data', { recursive: true } );
-fs.writeFileSync( './dist/instantDiffs-i18n.json', i18nListText );
+fs.writeFileSync( `./${ project.dir }/${ project.name }-i18n.json`, i18nListText );
 
-console.log('Internationalization files have been built successfully.');
+console.log( 'Internationalization files have been built successfully.' );

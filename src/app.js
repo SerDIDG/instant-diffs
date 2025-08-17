@@ -335,10 +335,10 @@ function app() {
     // Track on run start time
     id.timers.run = mw.now();
 
-    // Bundle english language strings
-    require( `../${ id.config.outdir }/instantDiffs-i18n/en.js` );
+    // Bundle language strings
+    require( `../${ id.config.outdir }/${ id.config.outname }-i18n/en.js` );
 
-    // Pre-process english language strings
+    // Pre-process language strings
     utils.processMessages();
 
     // Bundle extensions
@@ -420,17 +420,21 @@ function process( $context ) {
         .filter( ( node ) => !Link.hasLink( node ) )
         .map( ( node ) => new Link( node ) );
 
+    // Get only processed links
+    const processedLinks = links.filter( link => link.isValid );
+
     // Track on process end time
     id.timers.processEnd = mw.now();
 
     // Log timers for the process
     if ( utils.defaults( 'logTimers' ) && links.length > 0 ) {
-        utils.log( 'info', `links processed: ${ links.length }` );
+        utils.log( 'info', `links found: ${ links.length }` );
+        utils.log( 'info', `links processed: ${ processedLinks.length }` );
         utils.logTimer( 'process time', id.timers.processStart, id.timers.processEnd );
     }
 
     // Fire the process end hook
-    mw.hook( `${ id.config.prefix }.processed` ).fire( links );
+    mw.hook( `${ id.config.prefix }.processed` ).fire( processedLinks );
 }
 
 function handleReplace( settingOptions, defaultOptions ) {

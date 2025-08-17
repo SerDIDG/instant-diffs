@@ -1,39 +1,43 @@
-import { readFile } from 'fs/promises';
+import fs from 'fs/promises';
 import * as esbuild from 'esbuild';
 import { replace } from 'esbuild-plugin-replace';
 import { lessLoader } from 'esbuild-plugin-less';
 
 // Read package.json
 const pkg = JSON.parse(
-    await readFile( new URL( './package.json', import.meta.url ) ),
+    await fs.readFile( new URL( './package.json', import.meta.url ) ),
 );
 
-// Folder where bundle will saving
-const outdir = 'dist';
-const outfile = 'instantDiffs' + ( process.argv.includes( '--dev' ) ? '.test' : '' );
+// Read env.json
+const env = JSON.parse(
+    await fs.readFile( new URL( './env.json', import.meta.url ) ),
+);
 
-// Get a script's version
+// Package config
 const version = process.argv.includes( '--dev' ) ? pkg.version : pkg.version.split( '+' ).shift();
+const postfix = ( process.argv.includes( '--dev' ) ? '.test' : '' );
+
+// Project config
+const project = env[ process.env.PROJECT ];
+project.target = project.target.replace( '$name', project.name ) + postfix;
+project.i18n = project.i18n.replace( '$name', project.name );
 
 // String to replace in the files
 const strings = {
     include: /\.js$/,
-    __outdir__: outdir,
+    __outname__: project.name,
+    __outdir__: project.dir,
     __version__: version,
     __origin__: 'https://www.mediawiki.org',
-    __styles__: `/w/index.php?title=User:Serhio_Magpie/${ outfile }.css&action=raw&ctype=text/css`,
-    __messages__: '/w/index.php?title=User:Serhio_Magpie/instantDiffs-i18n/$lang.js&action=raw&ctype=text/javascript',
+    __styles__: `/w/index.php?title=${ project.target }.css&action=raw&ctype=text/css`,
+    __messages__: `/w/index.php?title=${ project.i18n }$lang.js&action=raw&ctype=text/javascript`,
     __debug__: process.argv.includes( '--start' ),
 };
 
 if ( process.argv.includes( '--start' ) ) {
-    strings.__origin__ = 'http://localhost:8000';
-    strings.__styles__ = `/${ outfile }.css`;
-    strings.__messages__ = '/instantDiffs-i18n/$lang.js';
-}
-
-if ( process.argv.includes( '--testwiki' ) ) {
-    strings.__origin__ = 'https://test.wikipedia.org';
+    strings.__origin__ = project.server;
+    strings.__styles__ = `${ project.target }.css`;
+    strings.__messages__ = `${ project.i18n }$lang.js`;
 }
 
 // Prepend a banner and footer
@@ -45,7 +49,7 @@ const banner = `/**
  * Licenses: ${ pkg.license }
  * Documentation: ${ pkg.homepage }
  *
- * For license information please see: https://mediawiki.org/wiki/User:Serhio_Magpie/instantDiffs.js.LEGAL.txt
+ * For license information please see: https://www.mediawiki.org/wiki/User:Serhio_Magpie/instantDiffs.js.LEGAL.txt
  */
  /* <nowiki> */`;
 
@@ -57,7 +61,7 @@ const config = {
     entryPoints: [ 'src/app.js' ],
     bundle: true,
     treeShaking: true,
-    outfile: `${ outdir }/${ outfile }.js`,
+    outfile: `${ project.dir }/${ project.name }${ postfix }.js`,
     format: 'iife',
     banner: {
         js: banner,
@@ -95,7 +99,7 @@ if ( process.argv.includes( '--start' ) ) {
         .then( async ( ctx ) => {
             await ctx.watch();
             await ctx.serve( {
-                servedir: outdir,
+                servedir: project.dir,
                 onRequest: ( { remoteAddress, method, path, status, timeInMS } ) => {
                     console.info( remoteAddress, status, `"${ method } ${ path }" [${ timeInMS }ms]` );
                 },
