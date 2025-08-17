@@ -1,10 +1,12 @@
 import fs from 'fs/promises';
 import minimist from 'minimist';
+import chalk from 'chalk';
 import * as esbuild from 'esbuild';
 import { replace } from 'esbuild-plugin-replace';
 import { lessLoader } from 'esbuild-plugin-less';
 
 const args = minimist( process.argv.slice( 2 ) );
+const warning = ( text ) => console.log( chalk.yellowBright( text ) );
 
 // Package config
 const pkg = JSON.parse(
@@ -18,6 +20,10 @@ const env = JSON.parse(
     await fs.readFile( new URL( './env.json', import.meta.url ) ),
 );
 const project = env[ process.env.PROJECT ];
+if ( !project ) {
+    warning( 'Please provide a valid PROJECT environment variable.' );
+    process.exit( 1 );
+}
 project.target = project.target.replace( '$name', project.name ) + postfix;
 project.i18n = project.i18n.replace( '$name', project.name );
 
@@ -105,7 +111,7 @@ if ( args.start ) {
             } );
         } )
         .catch( ( e ) => {
-            console.error( e );
+            warning( e );
             process.exit( 1 );
         } );
 }

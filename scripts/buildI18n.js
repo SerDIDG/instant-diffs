@@ -41,6 +41,10 @@ const ALLOWED_TAGS = [
 // Project config
 const env = require( '../env.json' );
 const project = env[ process.env.PROJECT ];
+if ( !project ) {
+    warning( 'Please provide a valid PROJECT environment variable.' );
+    process.exit( 1 );
+}
 
 DOMPurify.addHook( 'uponSanitizeElement', ( currentNode, data, config ) => {
     if (
