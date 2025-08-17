@@ -59,12 +59,9 @@ class Deploy {
     }
 
     async getCredentials() {
-        this.credentials = {
-            username: project.username,
-            password: project.password,
-        };
+        this.credentials = { ...project.credentials };
 
-        if ( !isEmpty( project.server ) ) {
+        if ( isEmpty( this.credentials.apiUrl ) && !isEmpty( project.server ) ) {
             this.credentials.apiUrl = `${ project.server }/w/api.php`;
         }
     }
