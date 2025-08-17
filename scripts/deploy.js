@@ -10,11 +10,18 @@ const { execSync } = require( 'child_process' );
 const prompts = require( 'prompts' );
 const chalk = require( 'chalk' );
 const minimist = require( 'minimist' );
+const { isEmpty } = require( './utils' );
+
+const args = minimist( process.argv.slice( 2 ) );
+
+// Package config
 const pkg = require( '../package.json' );
+const version = args.dev ? pkg.version : pkg.version.split( '+' ).shift();
 
 // Project config
 const env = require( '../env.json' );
 const project = env[ process.env.PROJECT ];
+project.i18n = project.i18n.replace( '$name', project.name );
 
 const deployConfig = {
     build: [
@@ -43,7 +50,7 @@ class Deploy {
         if ( !isGitWorkDirClean() ) {
             log( 'red', '[WARN] Git working directory is not clean.' );
         }
-        this.config = this.loadConfig();
+        await this.getCredentials();
         await this.getDeployTargets();
         await this.getApi();
         await this.login();
@@ -51,12 +58,14 @@ class Deploy {
         await this.savePages();
     }
 
-    loadConfig() {
-        try {
-            return require( __dirname + '/credentials.json' );
-        } catch ( e ) {
-            log( 'red', 'No credentials.json file found.' );
-            return {};
+    async getCredentials() {
+        this.credentials = {
+            username: project.username,
+            password: project.password,
+        };
+
+        if ( !isEmpty( project.server ) ) {
+            this.credentials.apiUrl = `${ project.server }/w/api.php`;
         }
     }
 
@@ -66,7 +75,7 @@ class Deploy {
         files.forEach( file => {
             this.deployTargets.push( {
                 file: `${ project.dir }/${ file }`,
-                target: `${ project.target }${ file }`,
+                target: project.target.replace( '$name', file ),
             } );
         } );
 
@@ -84,40 +93,28 @@ class Deploy {
     }
 
     async getApi() {
-        this.api = new Mwn( this.config );
+        this.api = new Mwn( this.credentials );
         try {
             this.api.initOAuth();
             this.usingOAuth = true;
         } catch ( e ) {
-            if ( !this.config.username ) {
-                this.config.username = await input( '> Enter username' );
+            if ( !this.credentials.username ) {
+                this.credentials.username = await input( '> Enter username' );
             }
-            if ( !this.config.password ) {
-                this.config.password = await input( '> Enter bot password', 'password' );
+            if ( !this.credentials.password ) {
+                this.credentials.password = await input( '> Enter bot password', 'password' );
             }
         }
 
-        if ( !this.config.apiUrl ) {
-            if ( Object.keys( this.config ).length ) {
-                log( 'yellow', 'Tip: you can avoid this prompt by setting the apiUrl as well in credentials.json' );
+        if ( !this.credentials.apiUrl ) {
+            if ( Object.keys( this.credentials ).length ) {
+                log( 'yellow', 'Tip: you can avoid this prompt by setting the server as well in env.json' );
             }
-            const site = await input( '> Enter sitename (eg. en.wikipedia.org)' );
-            this.config.apiUrl = `https://${ site }/w/api.php`;
-        } else {
+            const site = await input( '> Enter server (eg. en.wikipedia.org)' );
+            this.credentials.apiUrl = `https://${ site }/w/api.php`;
+        }
 
-        }
-        if ( args.testwiki ) {
-            this.config.apiUrl = `https://test.wikipedia.org/w/api.php`;
-        } else {
-            if ( !this.config.apiUrl ) {
-                if ( Object.keys( this.config ).length ) {
-                    log( 'yellow', 'Tip: you can avoid this prompt by setting the apiUrl as well in credentials.json' );
-                }
-                const site = await input( '> Enter sitename (eg. en.wikipedia.org)' );
-                this.config.apiUrl = `https://${ site }/w/api.php`;
-            }
-        }
-        this.api.setOptions( this.config );
+        this.api.setOptions( this.credentials );
     }
 
     async login() {
@@ -133,7 +130,6 @@ class Deploy {
     // ToDo: read last saved commit hash and use that to construct a meaningful summary
     async makeEditSummary() {
         const sha = execSync( 'git rev-parse --short HEAD' ).toString( 'utf8' ).trim();
-        const version = args.dev ? pkg.version : pkg.version.split( '+' ).shift();
         this.editSummary = `[${ sha }] [v${ version }]: Updated from repository.`;
     }
 
@@ -196,5 +192,4 @@ function log( color, ...args ) {
     console.log( chalk[ color ]( ...args ) );
 }
 
-const args = minimist( process.argv.slice( 2 ) );
 new Deploy().deploy();

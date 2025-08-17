@@ -1,23 +1,22 @@
 import fs from 'fs/promises';
+import minimist from 'minimist';
 import * as esbuild from 'esbuild';
 import { replace } from 'esbuild-plugin-replace';
 import { lessLoader } from 'esbuild-plugin-less';
 
-// Read package.json
+const args = minimist( process.argv.slice( 2 ) );
+
+// Package config
 const pkg = JSON.parse(
     await fs.readFile( new URL( './package.json', import.meta.url ) ),
 );
+const version = args.dev ? pkg.version : pkg.version.split( '+' ).shift();
+const postfix = args.dev ? '.test' : '';
 
-// Read env.json
+// Project config
 const env = JSON.parse(
     await fs.readFile( new URL( './env.json', import.meta.url ) ),
 );
-
-// Package config
-const version = process.argv.includes( '--dev' ) ? pkg.version : pkg.version.split( '+' ).shift();
-const postfix = ( process.argv.includes( '--dev' ) ? '.test' : '' );
-
-// Project config
 const project = env[ process.env.PROJECT ];
 project.target = project.target.replace( '$name', project.name ) + postfix;
 project.i18n = project.i18n.replace( '$name', project.name );
@@ -34,13 +33,13 @@ const strings = {
     __debug__: process.argv.includes( '--start' ),
 };
 
-if ( process.argv.includes( '--start' ) ) {
+if ( args.start ) {
     strings.__origin__ = project.server;
     strings.__styles__ = `${ project.target }.css`;
     strings.__messages__ = `${ project.i18n }$lang.js`;
 }
 
-// Prepend a banner and footer
+// Prepend a banner and a footer
 const banner = `/**
  * Instant Diffs
  *
@@ -78,7 +77,7 @@ const config = {
 };
 
 // Build process
-if ( process.argv.includes( '--build' ) ) {
+if ( args.build ) {
     await esbuild
         .build( {
             ...config,
@@ -89,7 +88,7 @@ if ( process.argv.includes( '--build' ) ) {
 }
 
 // Serve process
-if ( process.argv.includes( '--start' ) ) {
+if ( args.start ) {
     await esbuild
         .context( {
             ...config,

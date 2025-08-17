@@ -15,6 +15,40 @@
 * Fully adapts to mobile devices, especially optimized for the [Minerva](https://www.mediawiki.org/wiki/Skin:Minerva_Neue) skin.
 * Offers a wide range of customization settings that are saved globally across all [Wikimedia](https://meta.wikimedia.org/wiki/Wikimedia_movement) projects.
 
+## Deployment
+Install [Node.js](https://nodejs.org/en/download) and package dependencies:
+```
+npm install
+```
+
+Make a copy of the environment variables file, configure your project, and fill in all necessary fields:
+
+*Unix:*
+```
+cp env.json.example env.json
+```
+
+*Windows (PowerShell):*
+```
+Copy-Item env.json.example env.json
+```
+
+Start the deployment process by providing a project configuration name (*mediawiki*, for example):
+```
+cross-env PROJECT=mediawiki npm run deploy
+```
+
+## Define a gadget
+If you deploy the script as a gadget, remember to define the gadget in your wiki's `MediaWiki:Gadgets-definition` page with a configuration like this:
+```
+* instantDiffs [ResourceLoader | dependencies=site, mediawiki.api, mediawiki.util, mediawiki.storage, mediawiki.notification, mediawiki.Title, oojs] | instantDiffs.js | instantDiffs.css
+```
+
+If you want to preload a language other than English, link the language file to the end of the definition, for example:
+```
+instantDiffs.js | instantDiffs.css | instantDiffs-i18n/uk.js
+```
+
 ## See also
 * [Documentation](https://www.mediawiki.org/wiki/Instant_Diffs)
 * [Translations](https://translatewiki.net/wiki/Translating:Instant_Diffs)
