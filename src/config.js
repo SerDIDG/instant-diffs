@@ -300,7 +300,7 @@ export const config = {
         selector: [
             '.mw-changeslist-title',                                    // Changelists
             '.mw-contributions-title',                                  // Contributions
-            '.mw-newpages-pagename',                                    // [[Special:Newpages]]
+            '.mw-newpages-pagename',                                    // [[Special:NewPages]]
             '.mw-fr-pending-changes-page-title',                        // [[Special:PendingChanges]]
         ],
     },
@@ -309,9 +309,17 @@ export const config = {
             'differences-prevlink',                                     // [[Special:Diff]]
             'differences-nextlink',                                     // [[Special:Diff]]
         ],
+        hasClass: [
+            'mw-changeslist-date',
+            'mw-changeslist-diff',
+            'mw-changeslist-diff-cur',
+            'mw-changeslist-groupdiff',
+            'mw-newpages-time',                                         // [[Special:NewPages]]
+        ],
         closestTo: [
             '.mw-changeslist-line',                                     // Changelists
             '.mw-contributions-list',                                   // Contributions
+            '.mw-history-histlinks',                                    // Page History
             '.mw-pager-navigation-bar + ul',
             '.mw-fr-hist-difflink',
             '#mw-fr-reviewnotice',

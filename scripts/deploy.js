@@ -40,7 +40,7 @@ const deployConfig = {
 class Deploy {
     deployTargets = [];
 
-    config = {};
+    credentials = {};
 
     siteName;
 
