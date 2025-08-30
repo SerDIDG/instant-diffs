@@ -238,6 +238,25 @@ function getMessages() {
         } );
 }
 
+function assembleSpecialPages() {
+    for ( const [ name, local ] of Object.entries( Api.specialPagesLocal ) ) {
+        id.local.specialPagesLocalPrefixed[ name ] = new mw.Title( local ).getPrefixedDb();
+        id.local.specialPagesAliases[ name ] = utils.getSpecialPageAliases( Api.specialPagesLocal, name );
+        id.local.specialPagesAliasesPrefixed[ name ] = utils.getSpecialPageAliases( id.local.specialPagesLocalPrefixed, name );
+
+        if ( id.config.specialPagesLinks.includes( name ) ) {
+            id.local.specialPagesLinksAliases[ name ] = id.local.specialPagesAliases[ name ];
+            id.local.specialPagesLinksAliasesPrefixed[ name ] = id.local.specialPagesAliasesPrefixed[ name ];
+        }
+    }
+
+    // Make the flat versions of special pages aliases for optimization purposes
+    id.local.specialPagesAliasesFlat = Object.values( id.local.specialPagesAliases ).flat();
+    id.local.specialPagesAliasesPrefixedFlat = Object.values( id.local.specialPagesAliasesPrefixed ).flat();
+    id.local.specialPagesLinksAliasesFlat = Object.values( id.local.specialPagesLinksAliases ).flat();
+    id.local.specialPagesLinksAliasesPrefixedFlat = Object.values( id.local.specialPagesLinksAliasesPrefixed ).flat();
+}
+
 function assembleLinkSelector() {
     // Assemble RegExp for testing for mwArticlePath
     id.local.articlePathRegExp = new RegExp(
@@ -259,27 +278,21 @@ function assembleLinkSelector() {
     } );
 
     // Assemble a link selector for the special pages
-    for ( const [ name, local ] of Object.entries( Api.specialPagesLocal ) ) {
-        id.local.specialPagesLocalPrefixed[ name ] = new mw.Title( local ).getPrefixedDb();
-        id.local.specialPagesAliases[ name ] = utils.getSpecialPageAliases( Api.specialPagesLocal, name );
-        id.local.specialPagesAliasesPrefixed[ name ] = utils.getSpecialPageAliases( id.local.specialPagesLocalPrefixed, name );
+    id.local.specialPagesLinksAliasesFlat.forEach( title => {
+        linkSelector.push(
+            id.config.specialPagesLinksSelector.replaceAll( '$1', title ),
+        );
+    } );
 
-        id.local.specialPagesAliases[ name ].forEach( title => {
-            linkSelector.push(
-                id.config.specialPagesSelector.replaceAll( '$1', title ),
-            );
-        } );
-    }
-
-    // Assemble RegExp for testing page titles in the links
-    const specialPagesAliasesPrefixed = Object.values( id.local.specialPagesAliasesPrefixed ).flat().join( '|' );
-    id.local.specialPagesPathRegExp = new RegExp(
-        id.config.specialPagesPathRegExp
+    // Assemble RegExp for testing special page titles in the links
+    const specialPagesJoined = id.local.specialPagesLinksAliasesPrefixedFlat.join( '|' );
+    id.local.specialPagesLinksPathRegExp = new RegExp(
+        id.config.specialPagesLinksPathRegExp
             .replaceAll( '$1', id.local.mwArticlePath )
-            .replaceAll( '$2', specialPagesAliasesPrefixed ),
+            .replaceAll( '$2', specialPagesJoined ),
     );
-    id.local.specialPagesSearchRegExp = new RegExp(
-        id.config.specialPagesSearchRegExp.replaceAll( '$1', specialPagesAliasesPrefixed ),
+    id.local.specialPagesLinksSearchRegExp = new RegExp(
+        id.config.specialPagesLinksSearchRegExp.replaceAll( '$1', specialPagesJoined ),
     );
 
     // Join a link selector assembled results
@@ -373,6 +386,7 @@ async function ready() {
 
     // Perform page-specific adjustments after preparation and call the ready state
     id.isReady = true;
+    assembleSpecialPages();
     assembleLinkSelector();
     applyPageAdjustments();
 

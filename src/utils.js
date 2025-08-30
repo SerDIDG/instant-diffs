@@ -640,6 +640,14 @@ export function getSpecialPageAliases( data, name ) {
     return [ ...new Set( values ) ];
 }
 
+export function getCanonicalSpecialPage( value ) {
+    if ( isEmpty( value ) ) return;
+    const title = new mw.Title( value ).getPrefixedDb();
+    const [ name ] = Object.entries( id.local.specialPagesAliasesPrefixed )
+        .find( ( [ name, aliases ] ) => aliases.includes( title ) );
+    return name;
+}
+
 /******* ELEMENTS *******/
 
 export function h( tag, props = {}, ...children ) {

@@ -166,6 +166,13 @@ class Article {
             return true;
         }
 
+        // Check if a page type is a lastest revision
+        if ( utils.getCanonicalSpecialPage( this.values.title ) === 'Special:ComparePages' ) {
+            this.values.type = 'diff';
+            this.values.typeVariant = 'comparePages';
+            return true;
+        }
+
         return false;
     }
 

@@ -220,15 +220,15 @@ class Link {
             hostname: this.url.hostname,
         };
 
-        if ( id.local.specialPagesSearchRegExp.test( urlParts.title ) ) {
+        if ( id.local.specialPagesLinksSearchRegExp.test( urlParts.title ) ) {
             // Get components from splitting url title
             articleValues = { ...articleValues, ...utilsLink.getSplitSpecialUrl( urlParts.title ) };
-        } else if ( id.local.specialPagesPathRegExp.test( urlParts.pathname ) ) {
+        } else if ( id.local.specialPagesLinksPathRegExp.test( urlParts.pathname ) ) {
             // Get components from splitting url pathname
             articleValues = { ...articleValues, ...utilsLink.getSplitSpecialUrl( urlParts.pathnameNormalized ) };
         } else {
             // Get components from url search parameters
-            [ 'title', 'curid', 'oldid', 'diff', 'direction' ].forEach( name => {
+            [ 'title', 'curid', 'oldid', 'diff', 'direction', 'page1', 'rev1', 'page2', 'rev2' ].forEach( name => {
                 articleValues[ name ] = this.url.searchParams.get( name );
             } );
 
@@ -349,14 +349,17 @@ class Link {
     }
 
     request() {
-        switch ( this.article.get( 'type' ) ) {
-            case 'revision':
-                this.requestRevision();
-                break;
+        const type = this.article.get( 'type' );
+        const typeVariant = this.article.get( 'typeVariant' );
 
-            case 'diff':
-                this.requestDiff();
-                break;
+        if ( type === 'revision' ) {
+            return this.requestRevision();
+        }
+        if ( type === 'diff' && typeVariant === 'comparePages' ) {
+            return this.requestCompare();
+        }
+        if ( type === 'diff' ) {
+            return this.requestDiff();
         }
     }
 
@@ -506,6 +509,69 @@ class Link {
 
         // Set article values
         this.article.set( {
+            title: utils.getCompareTitle( this.compare ),
+            section: utils.getCompareSection( this.compare ),
+        } );
+        this.article.isHidden = utils.isCompareHidden( this.compare );
+
+        this.renderSuccess();
+    }
+
+    /******* REQUEST COMPARE *******/
+
+    requestCompare() {
+        if ( this.isLoading ) return;
+
+        this.isLoading = true;
+        this.error = null;
+
+        const params = {
+            action: 'compare',
+            prop: [ 'title', 'ids', 'timestamp', 'user', 'comment' ],
+            fromrev: utils.isValidID( this.article.get( 'rev1' ) ) ? this.article.get( 'rev1' ) : undefined,
+            fromtitle: !utils.isEmpty( this.article.get( 'page1' ) ) ? this.article.get( 'page1' ) : undefined,
+            torev: utils.isValidID( this.article.get( 'rev12' ) ) ? this.article.get( 'rev12' ) : undefined,
+            totitle: !utils.isEmpty( this.article.get( 'page2' ) ) ? this.article.get( 'page2' ) : undefined,
+            format: 'json',
+            formatversion: 2,
+            uselang: id.local.userLanguage,
+        };
+        return Api.get( params, this.article.get( 'hostname' ) )
+            .then( this.onRequestCompareDone.bind( this ) )
+            .fail( this.onRequestCompareError.bind( this ) );
+    }
+
+    onRequestCompareError( error, data ) {
+        this.isLoading = false;
+
+        this.error = {
+            type: 'diff',
+        };
+
+        if ( data?.error ) {
+            this.error.code = data.error.code;
+            this.error.message = data.error.info;
+        } else {
+            this.error.message = error;
+            utils.notifyError( 'error-diff-generic', this.error, this.article, true );
+        }
+
+        this.renderError();
+    }
+
+    onRequestCompareDone( data ) {
+        this.isLoading = false;
+
+        // Render error if the compare request is completely failed
+        this.compare = data?.compare;
+        if ( !this.compare ) {
+            return this.onRequestDiffError( null, data );
+        }
+
+        // Set article values
+        this.article.set( {
+            oldid: this.compare.fromrevid,
+            diff: this.compare.torevid,
             title: utils.getCompareTitle( this.compare ),
             section: utils.getCompareSection( this.compare ),
         } );

@@ -225,10 +225,17 @@ export const config = {
         'Special:PermanentLink',
         'Special:MobileDiff',
         'Special:Redirect',
+        'Special:ComparePages',
     ],
-    specialPagesSearchRegExp: '^($1)',                                  // $1 - joined specialPages
-    specialPagesPathRegExp: '$1($2)',                                   // $1 - article path, $2 - joined specialPages
-    specialPagesSelector: 'a[title^="$1"]',                             // $1 - each of the specialPages
+    specialPagesLinks: [
+        'Special:Diff',
+        'Special:PermanentLink',
+        'Special:MobileDiff',
+        'Special:Redirect',
+    ],
+    specialPagesLinksSearchRegExp: '^($1)',                             // $1 - joined specialPages
+    specialPagesLinksPathRegExp: '$1($2)',                              // $1 - article path, $2 - joined specialPages
+    specialPagesLinksSelector: 'a[title^="$1"]',                        // $1 - each of the specialPages
 
     articlePathRegExp: '^($1)',                                         // $1 - article path
     sectionRegExp: /^\/\*\s*(.*?)\s*\*\/.*$/,
@@ -464,19 +471,49 @@ export const local = {
     specialPagesAliases: {},
 
     /**
+     * @type {Array<string>}
+     */
+    specialPagesAliasesFlat: [],
+
+    /**
      * @type {Object<string, string>}
      */
     specialPagesAliasesPrefixed: {},
 
     /**
-     * @type {RegExp}
+     * @type {Array<string>}
      */
-    specialPagesPathRegExp: null,
+    specialPagesAliasesPrefixedFlat: [],
+
+    /**
+     * @type {Object<string, string>}
+     */
+    specialPagesLinksAliases: {},
+
+    /**
+     * @type {Array<string>}
+     */
+    specialPagesLinksAliasesFlat: [],
+
+    /**
+     * @type {Object<string, string>}
+     */
+    specialPagesLinksAliasesPrefixed: {},
+
+    /**
+     * @type {Array<string>}
+     */
+    specialPagesLinksAliasesPrefixedFlat: [],
 
     /**
      * @type {RegExp}
      */
-    specialPagesSearchRegExp: null,
+    specialPagesLinksPathRegExp: null,
+
+    /**
+     * @type {RegExp}
+     */
+    specialPagesLinksSearchRegExp: null,
 
     /**
      * @type {RegExp}
