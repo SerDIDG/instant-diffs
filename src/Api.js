@@ -154,6 +154,25 @@ class Api {
 
     /******* PAGE INFO *******/
 
+    static async getCompare( params, hostname, requestManager ) {
+        params = {
+            action: 'compare',
+            prop: [ 'title', 'ids', 'timestamp', 'comment' ],
+            format: 'json',
+            formatversion: 2,
+            uselang: id.local.userLanguage,
+            ...params,
+        };
+        const api = requestManager ? requestManager : this;
+
+        try {
+            const data = await api.get( params, hostname );
+            return data.compare;
+        } catch ( error ) {
+            this.notifyError( error );
+        }
+    }
+
     static async getPageInfo( params, hostname, requestManager ) {
         const language = id.local.userLanguage;
         params = {

@@ -41,6 +41,8 @@
     "goto-revision": "Go to revision",
     "goto-page": "Go to page",
     "goto-comment": "Go to message",
+    "goto-edit": "Edit",
+    "goto-source": "View source",
     "goto-history": "View history",
     "goto-talkpage": "Discussion",
     "goto-settings": "Settings",

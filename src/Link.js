@@ -374,7 +374,7 @@ class Link {
         const params = {
             action: 'query',
             prop: 'revisions',
-            rvprop: [ 'ids', 'timestamp', 'user', 'comment', 'content' ],
+            rvprop: [ 'ids', 'timestamp', 'comment', 'content' ],
             rvslots: 'main',
             rvsection: 0,
             format: 'json',
@@ -389,11 +389,11 @@ class Link {
         }
 
         return Api.get( params, this.article.get( 'hostname' ) )
-            .then( this.onRequestRevisionDone.bind( this ) )
-            .fail( this.onRequestRevisionError.bind( this ) );
+            .then( this.onRequestRevisionDone )
+            .fail( this.onRequestRevisionError );
     }
 
-    onRequestRevisionError( error, data ) {
+    onRequestRevisionError = ( error, data ) => {
         this.isLoading = false;
 
         this.error = {
@@ -410,9 +410,9 @@ class Link {
         }
 
         this.renderError();
-    }
+    };
 
-    onRequestRevisionDone( data ) {
+    onRequestRevisionDone = ( data ) => {
         this.isLoading = false;
 
         // Render error if the query request is completely failed
@@ -454,7 +454,7 @@ class Link {
         this.article.isHidden = utils.isRevisionHidden( this.revision );
 
         this.renderSuccess();
-    }
+    };
 
     /******* REQUEST DIFF *******/
 
@@ -466,7 +466,7 @@ class Link {
 
         const params = {
             action: 'compare',
-            prop: [ 'title', 'ids', 'timestamp', 'user', 'comment' ],
+            prop: [ 'title', 'ids', 'timestamp', 'comment' ],
             fromrev: utils.isValidID( this.article.get( 'oldid' ) ) ? this.article.get( 'oldid' ) : undefined,
             fromtitle: !utils.isEmpty( this.article.get( 'title' ) ) ? this.article.get( 'title' ) : undefined,
             torev: utils.isValidID( this.article.get( 'diff' ) ) ? this.article.get( 'diff' ) : undefined,
@@ -476,11 +476,11 @@ class Link {
             uselang: id.local.userLanguage,
         };
         return Api.get( params, this.article.get( 'hostname' ) )
-            .then( this.onRequestDiffDone.bind( this ) )
-            .fail( this.onRequestDiffError.bind( this ) );
+            .then( this.onRequestDiffDone )
+            .fail( this.onRequestDiffError );
     }
 
-    onRequestDiffError( error, data ) {
+    onRequestDiffError = ( error, data ) => {
         this.isLoading = false;
 
         this.error = {
@@ -496,9 +496,9 @@ class Link {
         }
 
         this.renderError();
-    }
+    };
 
-    onRequestDiffDone( data ) {
+    onRequestDiffDone = ( data ) => {
         this.isLoading = false;
 
         // Render error if the compare request is completely failed
@@ -515,7 +515,7 @@ class Link {
         this.article.isHidden = utils.isCompareHidden( this.compare );
 
         this.renderSuccess();
-    }
+    };
 
     /******* REQUEST COMPARE *******/
 
@@ -525,23 +525,24 @@ class Link {
         this.isLoading = true;
         this.error = null;
 
+        const values = this.article.getValues();
         const params = {
             action: 'compare',
-            prop: [ 'title', 'ids', 'timestamp', 'user', 'comment' ],
-            fromrev: utils.isValidID( this.article.get( 'rev1' ) ) ? this.article.get( 'rev1' ) : undefined,
-            fromtitle: !utils.isEmpty( this.article.get( 'page1' ) ) ? this.article.get( 'page1' ) : undefined,
-            torev: utils.isValidID( this.article.get( 'rev12' ) ) ? this.article.get( 'rev12' ) : undefined,
-            totitle: !utils.isEmpty( this.article.get( 'page2' ) ) ? this.article.get( 'page2' ) : undefined,
+            prop: [ 'title', 'ids', 'timestamp', 'comment' ],
+            fromrev: utils.isValidID( values.rev1 ) ? values.rev1 : undefined,
+            fromtitle: !utils.isEmpty( values.page1 ) ? values.page1 : undefined,
+            torev: utils.isValidID( values.rev2 ) ? values.rev2 : undefined,
+            totitle: !utils.isEmpty( values.page2 ) ? values.page2 : undefined,
             format: 'json',
             formatversion: 2,
             uselang: id.local.userLanguage,
         };
         return Api.get( params, this.article.get( 'hostname' ) )
-            .then( this.onRequestCompareDone.bind( this ) )
-            .fail( this.onRequestCompareError.bind( this ) );
+            .then( this.onRequestCompareDone )
+            .fail( this.onRequestCompareError );
     }
 
-    onRequestCompareError( error, data ) {
+    onRequestCompareError = ( error, data ) => {
         this.isLoading = false;
 
         this.error = {
@@ -557,9 +558,9 @@ class Link {
         }
 
         this.renderError();
-    }
+    };
 
-    onRequestCompareDone( data ) {
+    onRequestCompareDone = ( data ) => {
         this.isLoading = false;
 
         // Render error if the compare request is completely failed
@@ -572,13 +573,15 @@ class Link {
         this.article.set( {
             oldid: this.compare.fromrevid,
             diff: this.compare.torevid,
+            page1: this.compare.fromtitle,
+            page2: this.compare.totitle,
             title: utils.getCompareTitle( this.compare ),
             section: utils.getCompareSection( this.compare ),
         } );
         this.article.isHidden = utils.isCompareHidden( this.compare );
 
         this.renderSuccess();
-    }
+    };
 
     /******* RENDER *******/
 

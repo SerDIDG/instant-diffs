@@ -206,6 +206,35 @@ export const config = {
     // Path
     commonsAssetsPath: 'https://upload.wikimedia.org/wikipedia/commons',
 
+    // Page lists
+    changeLists: [
+        'Watchlist',
+        'Recentchanges',
+        'Recentchangeslinked',
+    ],
+    contributionLists: [
+        'Contributions',
+        'GlobalContributions',
+    ],
+    otherLists: [
+        'Newpages',
+        'PendingChanges',
+        'GlobalWatchlist',
+    ],
+    specialPages: [
+        'Special:Diff',
+        'Special:PermanentLink',
+        'Special:MobileDiff',
+        'Special:Redirect',
+        'Special:ComparePages',
+    ],
+
+    nonEditableContentModels: [
+        'wikibase-item',
+        'wikibase-property',
+        'wikibase-lexeme',
+    ],
+
     // Skin-specific content classes
     skinBodyClasses: {
         'vector-2022': [ 'mw-body', 'vector-body' ],
@@ -220,13 +249,6 @@ export const config = {
     contentSelector: '#mw-content-text',
 
     // Link selectors
-    specialPages: [
-        'Special:Diff',
-        'Special:PermanentLink',
-        'Special:MobileDiff',
-        'Special:Redirect',
-        'Special:ComparePages',
-    ],
     specialPagesLinks: [
         'Special:Diff',
         'Special:PermanentLink',
@@ -264,21 +286,6 @@ export const config = {
         '.wikibase-statementview-references a',                         // Wikibase statements references
         'a.edit-summary-time',                                          // [[Extension:Translate]]
         //'.mw-undelete-revlist a',                                     // [[Special:Undelete]]
-    ],
-
-    changeLists: [
-        'Watchlist',
-        'Recentchanges',
-        'Recentchangeslinked',
-    ],
-    contributionLists: [
-        'Contributions',
-        'GlobalContributions',
-    ],
-    otherLists: [
-        'Newpages',
-        'PendingChanges',
-        'GlobalWatchlist',
     ],
 
     mwLine: {

@@ -84,7 +84,7 @@ class GlobalPage extends Page {
         const values = this.article.getValues();
         const params = {
             action: 'compare',
-            prop: [ 'diff', 'ids', 'parsedcomment', 'rel', 'timestamp', 'title', 'user' ],
+            prop: [ 'title', 'ids', 'rel', 'timestamp', 'user', 'diff', 'parsedcomment' ],
             fromrev: utils.isValidID( values.oldid ) ? values.oldid : undefined,
             fromrelative: utils.isValidDir( values.oldid ) ? values.oldid : undefined,
             torev: utils.isValidID( values.diff ) ? values.diff : undefined,
@@ -93,9 +93,17 @@ class GlobalPage extends Page {
             formatversion: 2,
             uselang: id.local.userLanguage,
         };
+
         if ( values.type === 'diff' && !utils.isValidID( values.diff ) ) {
             params.torelative = utils.isValidDir( values.diff ) ? values.diff : 'prev';
         }
+        if ( values.type === 'comparePages' ) {
+            params.fromre = utils.isValidID( values.rev1 ) ? values.rev1 : undefined;
+            params.fromtitle = !utils.isEmpty( values.page1 ) ? values.page1 : undefined;
+            params.torev = utils.isValidID( values.rev2 ) ? values.rev2 : undefined;
+            params.totitle = !utils.isEmpty( values.page2 ) ? values.page2 : undefined;
+        }
+
         if ( values.type === 'revision' && !utils.isValidID( values.diff ) ) {
             params.torelative = utils.isValidDir( values.direction ) ? values.direction : 'prev';
         }
@@ -103,6 +111,7 @@ class GlobalPage extends Page {
             params.fromid = values.curid;
             params.torelative = 'cur';
         }
+
         return this.requestManager.get( params, this.article.get( 'hostname' ) );
     }
 

@@ -1,6 +1,7 @@
 import id from './id';
 import * as utils from './utils';
 import { renderOoUiElement } from './utils-oojs';
+import { isEditableContentModel } from './utils-api';
 import { getWikilink, getHref, getHrefAbsolute } from './utils-article';
 import { updateWatchButtonStatus } from './utils-watch';
 
@@ -275,6 +276,12 @@ class Navigation {
             if ( this.article.getMW( 'title' ).canHaveTalkPage() ) {
                 this.buttons.talkPage = this.renderTalkPageLink( buttonOptions );
                 items.push( this.buttons.talkPage );
+            }
+
+            // Link to the edit / view source
+            if ( isEditableContentModel( mw.config.get( 'wgPageContentModel' ) ) ) {
+                this.buttons.edit = this.renderEditLink( buttonOptions );
+                items.push( this.buttons.edit );
             }
 
             // Link to the history
@@ -676,6 +683,24 @@ class Navigation {
             href: getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
             icon: iconSet[ this.article.getMW( 'title' ).getNamespaceId() ] || iconSet.default,
+            ...options,
+        } );
+    }
+
+    /**
+     * Render a button that navigates to the page edit.
+     * @param {Object} [options] button configuration options
+     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     */
+    renderEditLink( options ) {
+        const isEditable = mw.config.get( 'wgIsProbablyEditable' );
+        const href = mw.util.getUrl( this.article.get( 'title' ), { action: 'edit' } );
+
+        return new OO.ui.ButtonWidget( {
+            label: utils.msg( isEditable ? 'goto-edit' : 'goto-source' ),
+            href: getHrefAbsolute( this.article, href ),
+            target: utils.getTarget( true ),
+            icon: isEditable ? 'edit' : 'editLock',
             ...options,
         } );
     }

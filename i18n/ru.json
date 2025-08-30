@@ -39,6 +39,8 @@
 	"goto-revision": "Перейти к версии",
 	"goto-page": "Перейти к странице",
 	"goto-comment": "Перейти к сообщению",
+    "goto-edit": "Править",
+    "goto-source": "Просмотреть код",
 	"goto-history": "Просмотреть историю",
 	"goto-talkpage": "Обсуждение",
 	"goto-settings": "Настройки",

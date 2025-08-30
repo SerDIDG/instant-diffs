@@ -37,6 +37,8 @@
 	"goto-revision": "Перейти до версії",
 	"goto-page": "Перейти до сторінки",
 	"goto-comment": "Перейти до повідомлення",
+    "goto-edit": "Редагувати",
+    "goto-source": "Переглянути код",
 	"goto-history": "Переглянути історію",
 	"goto-talkpage": "Обговорення",
 	"goto-settings": "Налаштування",

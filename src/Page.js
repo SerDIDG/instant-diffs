@@ -172,7 +172,18 @@ class Page {
         this.error = null;
         this.errorData = null;
 
-        return this.loadPromise = this.loadProcess();
+        return this.loadPromise = this.preloadProcess();
+    }
+
+    /**
+     * Preload process that combines multiple requests into the one promise.
+     * @returns {JQuery.Promise|Promise}
+     */
+    preloadProcess() {
+        const promises = this.getPreloadPromises();
+
+        return Promise.allSettled( promises )
+            .then( this.loadProcess.bind( this ) );
     }
 
     /**
@@ -197,6 +208,14 @@ class Page {
 
         return Promise.allSettled( promises );
     };
+
+    /**
+     * Get promise array for the preload request.
+     * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
+     */
+    getPreloadPromises() {
+        return [];
+    }
 
     /**
      * Get promise array for the main load request.
@@ -598,6 +617,9 @@ class Page {
         }
         if ( !utils.isEmpty( this.article.get( 'label' ) ) ) {
             return `${ this.article.get( 'label' ) } (${ this.article.get( 'titleText' ) })`;
+        }
+        if ( this.article.get( 'typeVariant' ) === 'comparePages' ) {
+            return `${ this.article.get( 'page1' ) } → ${ this.article.get( 'page2' ) }`;
         }
         return this.article.get( 'titleText' );
     }

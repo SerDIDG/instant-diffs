@@ -3,8 +3,8 @@ import * as utils from './utils';
 import * as utilsPage from './utils-page';
 import { executeModuleScript } from './utils-oojs';
 
+import Api from './Api';
 import Page from './Page';
-import { isVisualDiffsAvailable } from './utils-page';
 
 /**
  * Class representing a Local Page.
@@ -20,6 +20,16 @@ class LocalPage extends Page {
      * @type {boolean}
      */
     isDependenciesLoaded = false;
+
+    /**
+     * Get promise array for the preload request.
+     * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
+     */
+    getPreloadPromises() {
+        return [
+            this.requestCompare(),
+        ];
+    }
 
     /**
      * Get promise array for the main load request.
@@ -124,15 +134,54 @@ class LocalPage extends Page {
     /******* REQUESTS *******/
 
     /**
+     * Request compare pages.
+     * @returns {Promise}
+     */
+    async requestCompare() {
+        const values = this.article.getValues();
+
+        // Check if it's a comparePages type variant of the diff,
+        // then check if an oldid and a diff is not the valid ids,
+        // otherwise terminate.
+        if (
+            values.typeVariant !== 'comparePages' ||
+            ( utils.isValidID( values.oldid ) && utils.isValidID( values.diff ) )
+        ) {
+            return $.Deferred().resolve().promise();
+        }
+
+        const params = {
+            fromrev: utils.isValidID( values.rev1 ) ? values.rev1 : undefined,
+            fromtitle: !utils.isEmpty( values.page1 ) ? values.page1 : undefined,
+            torev: utils.isValidID( values.rev2 ) ? values.rev2 : undefined,
+            totitle: !utils.isEmpty( values.page2 ) ? values.page2 : undefined,
+        };
+
+        const data = await Api.getCompare( params, values.hostname, this.requestManager );
+        if ( data ) {
+            // Set article values
+            this.article.set( {
+                oldid: data.fromrevid,
+                diff: data.torevid,
+                page1: data.fromtitle,
+                page2: data.totitle,
+                title: utils.getCompareTitle( data ),
+                section: utils.getCompareSection( data ),
+            } );
+        }
+    }
+
+    /**
      * Request process to get diff html content.
      * @returns {JQuery.jqXHR}
      */
     requestProcess() {
+        const values = this.article.getValues();
         const page = {
-            title: !utils.isEmpty( this.article.get( 'title' ) ) ? this.article.get( 'title' ) : undefined,
-            diff: !utils.isEmpty( this.article.get( 'diff' ) ) ? this.article.get( 'diff' ) : this.article.get( 'direction' ),
-            oldid: !utils.isEmpty( this.article.get( 'oldid' ) ) ? this.article.get( 'oldid' ) : undefined,
-            curid: !utils.isEmpty( this.article.get( 'curid' ) ) ? this.article.get( 'curid' ) : undefined,
+            title: !utils.isEmpty( values.title ) ? values.title : undefined,
+            diff: !utils.isEmpty( values.diff ) ? values.diff : values.direction,
+            oldid: !utils.isEmpty( values.oldid ) ? values.oldid : undefined,
+            curid: !utils.isEmpty( values.curid ) ? values.curid : undefined,
         };
 
         const params = {

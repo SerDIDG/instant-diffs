@@ -61,6 +61,15 @@ export function isWbContentModel( contentModel ) {
 }
 
 /**
+ * Checks if a content model is probably editable.
+ * @param {string} contentModel
+ * @return {boolean}
+ */
+export function isEditableContentModel( contentModel ) {
+    return !id.config.nonEditableContentModels.includes( contentModel );
+}
+
+/**
  * Gets a label for the Wikibse EntitySchema from the display title.
  * @param {string} displayTitle
  * @return {string|*}

@@ -167,7 +167,11 @@ class Article {
         }
 
         // Check if a page type is a lastest revision
-        if ( utils.getCanonicalSpecialPage( this.values.title ) === 'Special:ComparePages' ) {
+        if (
+            utils.getCanonicalSpecialPage( this.values.title ) === 'Special:ComparePages' &&
+            ( !utils.isEmpty( this.values.page1 ) || utils.isValidID( this.values.rev1 ) ) &&
+            ( !utils.isEmpty( this.values.page2 ) || utils.isValidID( this.values.rev2 ) )
+        ) {
             this.values.type = 'diff';
             this.values.typeVariant = 'comparePages';
             return true;
