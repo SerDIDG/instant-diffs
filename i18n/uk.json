@@ -12,6 +12,8 @@
 	"revision-title-hidden": "Вміст версії приховано",
 	"compare-label": "$1",
 	"compare-title": "Порівняти вибрані версії ($1)",
+    "compare-pages-title": "Різниця між сторінками",
+    "compare-pages-title-hidden": "Різниця між сторінками прихована",
 	"page-title": "Перейти до сторінки",
 	"comment-title": "Перейти до повідомлення",
 	"action-save": "Зберегти",

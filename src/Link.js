@@ -695,7 +695,8 @@ class Link {
     }
 
     renderLinkAction() {
-        const title = this.getLinkTitle( `${ this.article.get( 'type' ) }-title` );
+        const type = this.article.get( 'typeVariant' ) === 'comparePages' ? 'compare-pages' : this.article.get( 'type' );
+        const title = this.getLinkTitle( `${ type }-title` );
 
         if ( !utils.defaults( 'showLink' ) ) {
             return this.mutateLinkAction( title );

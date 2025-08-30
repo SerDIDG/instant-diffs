@@ -37,6 +37,8 @@
 	"goto-revision": "Ir para a revisão",
 	"goto-page": "Ir para a página",
 	"goto-comment": "Ir para a mensagem",
+    "goto-edit": "Editar",
+    "goto-source": "Ver fonte",
 	"goto-history": "Ver histórico",
 	"goto-talkpage": "Discussão",
 	"goto-settings": "Definições",

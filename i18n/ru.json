@@ -14,6 +14,8 @@
 	"revision-title-hidden": "Содержимое версии скрыто",
 	"compare-label": "$1",
 	"compare-title": "Сравнить выбранные версии ($1)",
+    "compare-pages-title": "Различия между страницами",
+    "compare-pages-title-hidden": "Различия между страницами скрыта",
 	"page-title": "Перейти к странице",
 	"comment-title": "Перейти к сообщению",
 	"action-save": "Сохранить",

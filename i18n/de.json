@@ -38,6 +38,8 @@
 	"goto-revision": "Zur Version springen",
 	"goto-page": "Zur Seite springen",
 	"goto-comment": "Zur Nachricht springen",
+    "goto-edit": "Bearbeiten",
+    "goto-source": "Quelltext anzeigen",
 	"goto-history": "Versionsgeschichte",
 	"goto-talkpage": "Diskussion",
 	"goto-settings": "Einstellungen",

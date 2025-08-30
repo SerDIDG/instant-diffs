@@ -14,6 +14,8 @@
     "revision-title-hidden": "Revision content is hidden",
     "compare-label": "$1",
     "compare-title": "Compare selected revisions ($1)",
+    "compare-pages-title": "Difference between pages",
+    "compare-pages-title-hidden": "Difference between pages is hidden",
     "page-title": "Go to page",
     "comment-title": "Go to message",
 
