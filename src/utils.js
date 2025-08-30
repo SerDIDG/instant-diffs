@@ -642,10 +642,15 @@ export function getSpecialPageAliases( data, name ) {
 
 export function getCanonicalSpecialPage( value ) {
     if ( isEmpty( value ) ) return;
-    const title = new mw.Title( value ).getPrefixedDb();
-    const [ name ] = Object.entries( id.local.specialPagesAliasesPrefixed )
-        .find( ( [ name, aliases ] ) => aliases.includes( title ) );
-    return name;
+
+    try {
+        const title = new mw.Title( value ).getPrefixedDb();
+        for ( const [ name, aliases ] of Object.entries( id.local.specialPagesAliasesPrefixed ) ) {
+            if ( aliases.includes( title ) ) {
+                return name;
+            }
+        }
+    } catch {}
 }
 
 /******* ELEMENTS *******/
