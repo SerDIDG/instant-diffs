@@ -4,7 +4,7 @@
             "Serhio Magpie"
         ]
     },
-    
+
     "script-name": "Instant Diffs",
     "script-name-short": "ID",
 
@@ -121,8 +121,10 @@
     "error-revision-missing": "Page not found",
     "error-revision-invalid": "Page not found: $4",
     "error-diff-generic": "Failed to load revision compare data \"oldid=$1\", \"diff=$2\": $4",
+    "error-diff-compare-pages": "Failed to load page compare data \"page1=$1\", \"page2=$2\": $4",
     "error-diff-missingcontent": "Revision is hidden",
     "error-diff-nosuchrevid": "Revision not found",
+    "error-diff-missingtitle": "Page not found",
     "error-api-generic": "Failed to request api: $4",
     "error-dependencies-generic": "Failed to load dependencies: $4",
     "error-dependencies-revid": "Failed to load page dependencies \"oldid=$1\": $4",

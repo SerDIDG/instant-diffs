@@ -438,8 +438,8 @@ export function getErrorMessage( str, error, article ) {
 
     let message = msg(
         str,
-        article.oldid || article.curid,
-        article.diff,
+        article.oldid || article.curid || article.page1 || article.rev1,
+        article.diff || article.page2 || article.rev2,
         article.titleText || article.title,
         error.message || msg( 'error-wasted' ),
     );

@@ -566,7 +566,7 @@ class Link {
         // Render error if the compare request is completely failed
         this.compare = data?.compare;
         if ( !this.compare ) {
-            return this.onRequestDiffError( null, data );
+            return this.onRequestCompareError( null, data );
         }
 
         // Set article values

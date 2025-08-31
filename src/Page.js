@@ -378,6 +378,9 @@ class Page {
         }
     }
 
+    /**
+     * Mark edit as seen in the watchlist.
+     */
     markAsSeen() {
         // Check if there are no errors,
         // then check if the "mark as viewed" option is allowed by user,
@@ -428,10 +431,17 @@ class Page {
     }
 
     async renderError() {
+        const type = this.article.get( 'type' );
+        const typeVariant = this.article.get( 'typeVariant' );
+
         // Create error object
+        const code = typeVariant === 'page'
+            ? 'curid' : typeVariant === 'comparePages'
+                ? 'compare-pages' : 'generic';
+
         this.error = {
-            type: this.article.get( 'type' ),
-            code: this.article.get( 'typeVariant' ) === 'page' ? 'curid' : 'generic',
+            type,
+            code,
             status: this.error?.status,
             statusText: this.error?.statusText,
             message: this.errorData?.info || utils.getErrorStatusText( this.error?.status ),
@@ -611,17 +621,28 @@ class Page {
         return this.article;
     }
 
+    /**
+     * Get the formated page title.
+     * Uses as the Dialog's title.
+     * @returns {string}
+     */
     getArticleTitleText() {
-        if ( utils.isEmpty( this.article.get( 'title' ) ) ) {
-            return utils.msg( this.error ? 'dialog-title-not-found' : 'dialog-title-empty' );
+        const values = this.article.getValues();
+
+        let title;
+        if ( values.typeVariant === 'comparePages' && !utils.isEmpty( values.page1 ) && !utils.isEmpty( values.page2 ) ) {
+            title = `${ values.page1 } → ${ values.page2 }`;
+        } else if ( !utils.isEmpty( values.titleText ) ) {
+            title = values.titleText;
+        } else {
+            title = utils.msg( this.error ? 'dialog-title-not-found' : 'dialog-title-empty' );
         }
-        if ( !utils.isEmpty( this.article.get( 'label' ) ) ) {
-            return `${ this.article.get( 'label' ) } (${ this.article.get( 'titleText' ) })`;
+
+        if ( !utils.isEmpty( values.label ) ) {
+            return `${ values.label } (${ title })`;
         }
-        if ( this.article.get( 'typeVariant' ) === 'comparePages' ) {
-            return `${ this.article.get( 'page1' ) } → ${ this.article.get( 'page2' ) }`;
-        }
-        return this.article.get( 'titleText' );
+
+        return title;
     }
 
     getArticleParams() {

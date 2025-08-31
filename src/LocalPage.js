@@ -87,6 +87,9 @@ class LocalPage extends Page {
             .fail( ( message, data ) => this.onRequestPageError( message, data, params ) );
     }
 
+    /**
+     * Event that emits after the page request failed.
+     */
     onRequestPageError( message, data, params ) {
         this.isDependenciesLoaded = true;
 
@@ -102,6 +105,9 @@ class LocalPage extends Page {
         utils.notifyError( `error-dependencies-${ type }`, error, this.article, true );
     }
 
+    /**
+     * Event that emits after the page request successive.
+     */
     onRequestPageDone( data, params ) {
         this.isDependenciesLoaded = true;
 
@@ -137,13 +143,15 @@ class LocalPage extends Page {
      * Request compare pages.
      * @returns {Promise}
      */
-    async requestCompare() {
+    requestCompare() {
         const values = this.article.getValues();
 
-        // Check if it's a comparePages type variant of the diff,
+        // Check if there are no errors,
+        // then check if it's a comparePages type variant of the diff,
         // then check if an oldid and a diff is not the valid ids,
         // otherwise terminate.
         if (
+            this.error ||
             values.typeVariant !== 'comparePages' ||
             ( utils.isValidID( values.oldid ) && utils.isValidID( values.diff ) )
         ) {
@@ -151,31 +159,60 @@ class LocalPage extends Page {
         }
 
         const params = {
+            action: 'compare',
+            prop: [ 'title', 'ids', 'timestamp', 'comment' ],
             fromrev: utils.isValidID( values.rev1 ) ? values.rev1 : undefined,
             fromtitle: !utils.isEmpty( values.page1 ) ? values.page1 : undefined,
             torev: utils.isValidID( values.rev2 ) ? values.rev2 : undefined,
             totitle: !utils.isEmpty( values.page2 ) ? values.page2 : undefined,
+            format: 'json',
+            formatversion: 2,
+            uselang: id.local.userLanguage,
         };
 
-        const data = await Api.getCompare( params, values.hostname, this.requestManager );
-        if ( data ) {
-            // Set article values
-            this.article.set( {
-                oldid: data.fromrevid,
-                diff: data.torevid,
-                page1: data.fromtitle,
-                page2: data.totitle,
-                title: utils.getCompareTitle( data ),
-                section: utils.getCompareSection( data ),
-            } );
-        }
+        return this.requestManager
+            .get( params )
+            .then( this.onRequestCompareDone )
+            .fail( this.onRequestCompareError );
     }
+
+    /**
+     * Event that emits after the compare request failed.
+     */
+    onRequestCompareError = ( error, data ) => {
+        this.onRequestError( error, data );
+    };
+
+    /**
+     * Event that emits after the compare request successive.
+     */
+    onRequestCompareDone = ( data ) => {
+        // Render error if the compare request is completely failed
+        const compare = data?.compare;
+        if ( !compare ) {
+            return this.onRequestCompareError( null, data );
+        }
+
+        // Set article values
+        this.article.set( {
+            oldid: compare.fromrevid,
+            diff: compare.torevid,
+            page1: compare.fromtitle,
+            page2: compare.totitle,
+            title: utils.getCompareTitle( compare ),
+            section: utils.getCompareSection( compare ),
+        } );
+    };
 
     /**
      * Request process to get diff html content.
      * @returns {JQuery.jqXHR}
      */
     requestProcess() {
+        // Check if there are no errors,
+        // otherwise terminate.
+        if ( this.error ) return $.Deferred().resolve().promise();
+
         const values = this.article.getValues();
         const page = {
             title: !utils.isEmpty( values.title ) ? values.title : undefined,
@@ -191,13 +228,6 @@ class LocalPage extends Page {
         };
 
         return this.requestManager.ajax( params );
-    }
-
-    /**
-     * Event that emits after the request successive.
-     */
-    onRequestDone( data ) {
-        this.data = data;
     }
 
     /******* RENDER *******/
