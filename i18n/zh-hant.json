@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kly"
+			"Kly",
+			"Serhio Magpie"
 		]
 	},
 	"script-name": "Instant Diffs",
@@ -12,6 +13,8 @@
 	"revision-title-hidden": "修訂內容為隱藏",
 	"compare-label": "$1",
 	"compare-title": "比較所選的修訂（$1）",
+	"compare-pages-title": "頁面之間差異",
+	"compare-pages-title-hidden": "頁面之間差異被隱藏掉",
 	"page-title": "前往頁面",
 	"comment-title": "前往訊息",
 	"action-save": "儲存",
@@ -37,6 +40,8 @@
 	"goto-revision": "前往修訂",
 	"goto-page": "前往頁面",
 	"goto-comment": "前往訊息",
+	"goto-edit": "編輯",
+	"goto-source": "檢視原始碼",
 	"goto-history": "查看歷史",
 	"goto-talkpage": "討論",
 	"goto-settings": "設定",
@@ -108,8 +113,10 @@
 	"error-revision-missing": "找不到頁面",
 	"error-revision-invalid": "找不到頁面：$4",
 	"error-diff-generic": "無法載入修訂比較資料「oldid=$1」，「diff=$2」：$4",
+	"error-diff-compare-pages": "無法載入頁面來比較資料「page1=$1」，「page2=$2」：$4",
 	"error-diff-missingcontent": "修訂為隱藏",
 	"error-diff-nosuchrevid": "找不到修訂",
+	"error-diff-missingtitle": "找不到頁面",
 	"error-api-generic": "請求 API 失敗：$4",
 	"error-dependencies-generic": "無法載入相依：$4",
 	"error-dependencies-revid": "無法載入頁面相依「oldid=$1」：$4",

@@ -1,6 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
+			"Bisang",
+			"Serhio Magpie",
 			"Ykhwong"
 		]
 	},
@@ -12,6 +14,8 @@
 	"revision-title-hidden": "판 내용이 숨겨져 있습니다",
 	"compare-label": "$1",
 	"compare-title": "선택한 판을 비교하기 ($1)",
+	"compare-pages-title": "문서 사이의 차이",
+	"compare-pages-title-hidden": "페이지 간 차이가 숨겨져 있습니다",
 	"page-title": "문서로 이동",
 	"comment-title": "메시지로 이동",
 	"action-save": "저장",
@@ -37,6 +41,8 @@
 	"goto-revision": "판으로 이동",
 	"goto-page": "문서로 이동",
 	"goto-comment": "메시지로 이동",
+	"goto-edit": "편집",
+	"goto-source": "원본 보기",
 	"goto-history": "역사 보기",
 	"goto-talkpage": "토론",
 	"goto-settings": "설정",
@@ -78,8 +84,10 @@
 	"error-revision-missing": "문서를 찾을 수 없습니다",
 	"error-revision-invalid": "문서를 찾을 수 없습니다: $4",
 	"error-diff-generic": "판 비교 데이터 \"oldid=$1\", \"diff=$2\" 불러오기 실패: $4",
+	"error-diff-compare-pages": "페이지 비교 데이터 \"page1=$1\", \"page2=$2\"를 로드라는 데 실패했습니다: $4",
 	"error-diff-missingcontent": "판이 숨겨져 있습니다",
 	"error-diff-nosuchrevid": "판을 찾을 수 없습니다",
+	"error-diff-missingtitle": "문서를 찾을 수 없습니다",
 	"error-api-generic": "API 요청 실패: $4",
 	"error-dependencies-generic": "의존성 불러오기 실패: $4",
 	"error-dependencies-revid": "문서 의존성 \"oldid=$1\" 불러오기 실패: $4",

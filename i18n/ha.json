@@ -1,22 +1,27 @@
 {
 	"@metadata": {
 		"authors": [
-			"Gwanki"
+			"Gwanki",
+			"Serhio Magpie"
 		]
 	},
 	"script-name": "Bambancin Nan take",
 	"revision-title-hidden": "Abun dubawa yana ɓoye",
 	"page-title": "Je zuwa shafi",
 	"comment-title": "Je zuwa saƙo",
+	"action-save": "Ajiye",
 	"action-cancel": "Sokewa",
 	"action-close": "Rufe",
 	"action-reload": "Sake kaya",
+	"action-watch": "Bin sawu",
+	"action-unwatch": "Daina bin sawu",
 	"goto-snapshot-next": "Hanya ta gaba a shafi",
 	"goto-prev": "Tsoho",
 	"goto-back-diff": "Baya",
 	"goto-back-revision": "Baya",
 	"goto-diff": "Jeka don gyarawa",
 	"goto-comment": "Je zuwa saƙo",
+	"goto-edit": "Gyara",
 	"goto-history": "Duba tarihi",
 	"goto-talkpage": "Mahawara",
 	"goto-menu": "Ayyuka",

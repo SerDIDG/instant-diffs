@@ -39,6 +39,8 @@
 	"goto-revision": "מעבר לגרסה",
 	"goto-page": "מעבר לדף",
 	"goto-comment": "מעבר להודעה",
+	"goto-edit": "עריכה",
+	"goto-source": "הצגת מקור",
 	"goto-history": "היסטוריית הגרסאות",
 	"goto-talkpage": "דיון",
 	"goto-settings": "הגדרות",

@@ -3,6 +3,7 @@
 		"authors": [
 			"Bananax47",
 			"Derugon",
+			"Pyschobbens",
 			"Serhio Magpie"
 		]
 	},
@@ -14,6 +15,8 @@
 	"revision-title-hidden": "Le contenu de la version est masqué",
 	"compare-label": "$1",
 	"compare-title": "Comparer les versions sélectionnées ($1)",
+	"compare-pages-title": "Différence entre les pages",
+	"compare-pages-title-hidden": "La différence entre les pages est masquée",
 	"page-title": "Aller à la page",
 	"comment-title": "Aller au message",
 	"action-save": "Enregistrer",
@@ -39,8 +42,8 @@
 	"goto-revision": "Aller à la version",
 	"goto-page": "Aller à la page",
 	"goto-comment": "Aller au message",
-    "goto-edit": "Modifier",
-    "goto-source": "Voir le texte source",
+	"goto-edit": "Modifier",
+	"goto-source": "Voir le texte source",
 	"goto-history": "Voir l’historique",
 	"goto-talkpage": "Discussion",
 	"goto-settings": "Paramètres",
@@ -112,8 +115,10 @@
 	"error-revision-missing": "Page introuvable",
 	"error-revision-invalid": "Page introuvable : $4",
 	"error-diff-generic": "Échec du chargement des données de comparaison « oldid=$1, diff=$2 » : $4",
+	"error-diff-compare-pages": "Échec du chargement des données de comparaison de page « page1= $1 », « page2= $2 » : $4",
 	"error-diff-missingcontent": "Version masquée",
 	"error-diff-nosuchrevid": "Version introuvable",
+	"error-diff-missingtitle": "Page non trouvée",
 	"error-api-generic": "Échec de la requête API : $4",
 	"error-dependencies-generic": "Échec du chargement des dépendances : $4",
 	"error-dependencies-revid": "Échec du chargement des dépendances de la page « oldid=$1 » : $4",

@@ -38,6 +38,8 @@
 	"goto-revision": "Πήγαινε στην αναθεώρηση",
 	"goto-page": "Μετάβαση στη σελίδα",
 	"goto-comment": "Μετάβαση στο μήνυμα",
+	"goto-edit": "Επεξεργασία",
+	"goto-source": "Προβολή κώδικα",
 	"goto-history": "Προβολή ιστορικού",
 	"goto-talkpage": "Συζήτηση",
 	"goto-settings": "Ρυθμίσεις",

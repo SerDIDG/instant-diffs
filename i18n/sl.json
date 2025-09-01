@@ -1,11 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Eleassar"
+			"Eleassar",
+			"Serhio Magpie"
 		]
 	},
 	"diff-title": "Razlika med redakcijama",
 	"diff-title-hidden": "Razlika med redakcijama je skrita",
+	"action-save": "Shrani",
 	"action-cancel": "Prekliči",
 	"action-close": "Zapri",
 	"action-reload": "Znova naloži",
@@ -28,6 +30,8 @@
 	"goto-revision": "Pojdi na redakcijo",
 	"goto-page": "Pojdi na stran",
 	"goto-comment": "Pojdi na sporočilo",
+	"goto-edit": "Uredi",
+	"goto-source": "Izvorno besedilo",
 	"goto-history": "Ogled zgodovine",
 	"goto-talkpage": "Razprava",
 	"goto-settings": "Nastavitve",

@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Samoasambia"
+			"Samoasambia",
+			"Serhio Magpie"
 		]
 	},
 	"script-name": "Instant Diffs",
@@ -37,6 +38,8 @@
 	"goto-revision": "Siirry versioon",
 	"goto-page": "Siirry sivulle",
 	"goto-comment": "Siirry viestiin",
+	"goto-edit": "Muokkaa",
+	"goto-source": "Näytä lähdekoodi",
 	"goto-history": "Näytä historia",
 	"goto-talkpage": "Keskustelu",
 	"goto-settings": "Asetukset",

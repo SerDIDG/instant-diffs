@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Paloi Sciurala"
+			"Paloi Sciurala",
+			"Serhio Magpie"
 		]
 	},
 	"script-name": "Instant Diffs",
@@ -18,6 +19,8 @@
 	"action-cancel": "Anulare",
 	"action-close": "Închide",
 	"action-reload": "Reîncarcă",
+	"action-watch": "Urmărește",
+	"action-unwatch": "Nu mai urmări",
 	"goto-snapshot-prev": "Legătura precedentă de pe o pagină",
 	"goto-snapshot-next": "Următoarea legătură de pe o pagină",
 	"goto-view-diff": "Arată schimbările",
@@ -35,6 +38,8 @@
 	"goto-revision": "Mergi la versiune",
 	"goto-page": "Mergi la pagină",
 	"goto-comment": "Mergi la mesaj",
+	"goto-edit": "Modificare",
+	"goto-source": "Vedeți sursa",
 	"goto-history": "Istoric",
 	"goto-talkpage": "Discuție",
 	"goto-settings": "Setări",

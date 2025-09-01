@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Serhio Magpie",
 			"Shirayuki"
 		]
 	},
@@ -13,6 +14,8 @@
 	"action-cancel": "キャンセル",
 	"action-close": "閉じる",
 	"action-reload": "再読み込み",
+	"action-watch": "ウォッチ",
+	"action-unwatch": "ウォッチ解除",
 	"goto-view-diff": "差分を表示",
 	"goto-view-revision": "版を表示",
 	"goto-view-unpatrolled": "査読待ちの変更",
@@ -27,6 +30,8 @@
 	"goto-revision": "版を表示",
 	"goto-page": "ページへ移動",
 	"goto-comment": "メッセージへ移動",
+	"goto-edit": "編集",
+	"goto-source": "ソースを閲覧",
 	"goto-history": "履歴を表示",
 	"goto-talkpage": "議論",
 	"goto-settings": "設定",

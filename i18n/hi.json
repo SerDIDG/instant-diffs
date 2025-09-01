@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Abijeet Patro",
-			"Saurmandal"
+			"Saurmandal",
+			"Serhio Magpie"
 		]
 	},
 	"script-name": "त्वरित अंतर",
@@ -38,6 +39,8 @@
 	"goto-revision": "अवतरण पर जाएँ",
 	"goto-page": "पृष्ठ पर जाएँ",
 	"goto-comment": "संदेश पर जाएँ",
+	"goto-edit": "सम्पादन",
+	"goto-source": "स्रोत देखें",
 	"goto-history": "इतिहास देखें",
 	"goto-talkpage": "चर्चा",
 	"goto-settings": "सेटिंग्स",
