@@ -355,10 +355,10 @@ class Link {
         if ( type === 'revision' ) {
             return this.requestRevision();
         }
-        if ( type === 'diff' && typeVariant === 'comparePages' ) {
-            return this.requestCompare();
-        }
         if ( type === 'diff' ) {
+            if ( typeVariant === 'comparePages' ) {
+                return this.requestCompare();
+            }
             return this.requestDiff();
         }
     }

@@ -223,9 +223,7 @@ async function getSiteInfo() {
 }
 
 function getMessages() {
-    /**
-     * @type {string}
-     */
+    /** @type {string} */
     const userLanguage = mw.config.get( 'wgUserLanguage' );
 
     return [ 'en', userLanguage ]
