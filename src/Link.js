@@ -643,7 +643,7 @@ class Link {
         if ( this.options.behavior !== 'event' ) {
             this.renderWrapper();
 
-            if ( this.mw.hasLink || this.revision || this.compare ) {
+            if ( this.mw.hasLink || this.manual.hasLink || this.revision || this.compare ) {
                 this.renderLinkAction();
             }
             if ( this.options.showPageLink ) {

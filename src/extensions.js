@@ -153,3 +153,35 @@ mw.hook( `${ id.config.prefix }.page.complete` ).add(
         } );
     },
 );
+
+/******* SKIN: CITIZEN *******/
+
+/**
+ * @see {@link https://www.mediawiki.org/wiki/Skin:Citizen}
+ */
+
+mw.hook( 'wikipage.content' ).add( () => {
+    /**
+     * Adds support for the "Last modified" link in the sidebar.
+     * @param {HTMLAnchorElement} link
+     * @param {HTMLElement} container
+     */
+    const renderLastMod = ( link, container ) => {
+        if ( !utils.isAllowed() ) return;
+
+        try {
+            const url = new URL( link.href );
+            url.searchParams.set( 'diff', 'current' );
+            link.href = url.href;
+
+            link.dataset.instantdiffsLink = 'basic';
+            mw.hook( `${ id.config.prefix }.process` ).fire( $( container ) );
+        } catch {}
+    };
+
+    const lastModLink = document.querySelector( '#citizen-lastmod-relative' );
+    const lastModSidebar = document.querySelector( '#citizen-sidebar-lastmod' );
+    if ( lastModLink && lastModSidebar ) {
+        renderLastMod( lastModLink, lastModSidebar );
+    }
+} );

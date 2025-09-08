@@ -14,3 +14,21 @@
     --instantDiffs-line-height: var(--line-height, 1.6);
     --instantDiffs-view-radius: var(--border-radius-medium);
 }
+
+/******* EXTENSION *******/
+
+#citizen-lastmod-relative {
+    &.instantDiffs-link {
+        &.is-insertBefore {
+            &::after {
+                margin-right: auto;
+            }
+        }
+
+        &.is-insertAfter {
+            &::after {
+                margin-left: auto;
+            }
+        }
+    }
+}
