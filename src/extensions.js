@@ -171,8 +171,10 @@ mw.hook( 'wikipage.content' ).add( () => {
     const renderLastMod = ( link, container ) => {
         try {
             const url = new URL( link.href );
-            url.searchParams.set( 'diff', 'current' );
-            link.href = url.href;
+            if ( utils.isEmpty( url.searchParams.get( 'diff' ) ) ) {
+                url.searchParams.set( 'diff', 'cur' );
+                link.href = url.href;
+            }
 
             link.dataset.instantdiffsLink = 'basic';
             link.dataset.instantdiffsAltTitle = 'true';

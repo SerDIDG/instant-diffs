@@ -300,12 +300,15 @@ class Page {
     async requestPageInfo() {
         const oldid = Math.max( this.article.get( 'revid' ), this.article.get( 'oldid' ) );
         const pageid = this.article.get( 'curid' );
+        const title = this.article.get( 'title' );
 
         const params = {};
         if ( utils.isValidID( oldid ) ) {
             params.revids = oldid;
         } else if ( utils.isValidID( pageid ) ) {
             params.pageids = pageid;
+        } else if ( !utils.isEmpty( title ) ) {
+            params.titles = title;
         }
 
         const data = await Api.getPageInfo( params, this.article.get( 'hostname' ), this.requestManager );
