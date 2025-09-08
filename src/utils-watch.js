@@ -20,7 +20,7 @@ export function getDaysLeftExpiry( expiry ) {
 /**
  * Updates status of the watch \ unwatch button.
  * Partially copied from:
- * {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/2a828f2e72a181665e1f627e2f737abb75b74eb9/resources/src/mediawiki.page.watch.ajax/watch-ajax.js#18}
+ * @see {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/2a828f2e72a181665e1f627e2f737abb75b74eb9/resources/src/mediawiki.page.watch.ajax/watch-ajax.js#18}
  * @param {import('./Article').default} article an Article instance
  * @param {OO.ui.ButtonWidget} button a OO.ui.ButtonWidget instance
  */
@@ -63,7 +63,7 @@ export function updateWatchButtonStatus( article, button ) {
 /**
  * Updates watch / unwatch status in the Watchlist lines.
  * Partially copied from:
- * {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/9c590c2c37434ca7a2bd101b547ccf7dcc46b538/resources/src/mediawiki.special.watchlist/watchlist.js#114}
+ * @see {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/9c590c2c37434ca7a2bd101b547ccf7dcc46b538/resources/src/mediawiki.special.watchlist/watchlist.js#114}
  * @param {import('./Article').default} article an Article instance
  * @param {boolean} watched
  * @param {string} expiry
@@ -213,7 +213,7 @@ function renderWatchlistExpiryStatus( $row, message ) {
  * Utility function for looping through each watchlist line that matches
  * a certain page or its associated page (e.g. Talk).
  * Partially copied from:
- * {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/9c590c2c37434ca7a2bd101b547ccf7dcc46b538/resources/src/mediawiki.special.watchlist/watchlist.js#81}
+ * @see {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/9c590c2c37434ca7a2bd101b547ccf7dcc46b538/resources/src/mediawiki.special.watchlist/watchlist.js#81}
  * @param {string} title
  * @param {forEachWatchlistLinesCallback} callback
  */

@@ -121,7 +121,7 @@ class Watch {
     /**
      * Shows a notification about watch status.
      * Partially copied from:
-     * {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/2a828f2e72a181665e1f627e2f737abb75b74eb9/resources/src/mediawiki.page.watch.ajax/watch-ajax.js#350}
+     * @see {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/2a828f2e72a181665e1f627e2f737abb75b74eb9/resources/src/mediawiki.page.watch.ajax/watch-ajax.js#350}
      * @param {Object} response
      */
     showNotice = ( response ) => {
