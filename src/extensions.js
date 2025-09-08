@@ -17,10 +17,10 @@ mw.hook( 'mw.translate.editor.showTranslationHelpers' ).add(
     },
 );
 
-/******* CONVENIENT DISCUSSIONS *******/
+/******* GADGET: CONVENIENT DISCUSSIONS *******/
 
 /**
- * @see {@link [[commons:User:JWBTH/CD]]}
+ * @see {@link https://commons.wikimedia.org/wiki/User:Jack_who_built_the_house/Convenient_Discussions}
  */
 
 mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
@@ -107,10 +107,10 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
     );
 } );
 
-/******* WIKI ED DIFF *******/
+/******* GADGET: WIKI ED DIFF *******/
 
 /**
- * @see {@link [[:en:User:Cacycle/wikEdDiff]]}
+ * @see {@link https://en.wikipedia.org/wiki/User:Cacycle/wikEdDiff}
  */
 
 mw.hook( `${ id.config.prefix }.page.beforeDetach` ).add(
@@ -133,11 +133,11 @@ mw.hook( `${ id.config.prefix }.page.beforeDetach` ).add(
     },
 );
 
-/******* TWINKLE *******/
+/******* GADGET: TWINKLE *******/
 
 /**
- * @see {@link [[w:Wikipedia:Twinkle|Twinkle]]}
- * @see {@link [[meta:User:Xiplus/TwinkleGlobal|TwinkleGlobal]]}
+ * @see {@link https://en.wikipedia.org/wiki/Wikipedia:Twinkle}
+ * @see {@link https://meta.wikimedia.org/wiki/User:Xiplus/TwinkleGlobal}
  */
 
 mw.hook( `${ id.config.prefix }.page.complete` ).add(
@@ -161,14 +161,14 @@ mw.hook( `${ id.config.prefix }.page.complete` ).add(
  */
 
 mw.hook( 'wikipage.content' ).add( () => {
+    if ( !utils.isAllowed() || mw.config.get( 'skin' ) !== 'citizen' ) return;
+
     /**
      * Adds support for the "Last modified" link in the sidebar.
      * @param {HTMLAnchorElement} link
      * @param {HTMLElement} container
      */
     const renderLastMod = ( link, container ) => {
-        if ( !utils.isAllowed() ) return;
-
         try {
             const url = new URL( link.href );
             url.searchParams.set( 'diff', 'current' );

@@ -15,20 +15,16 @@
     --instantDiffs-view-radius: var(--border-radius-medium);
 }
 
-/******* EXTENSION *******/
+/******* EXTENSIONS *******/
 
 #citizen-lastmod-relative {
     &.instantDiffs-link {
-        &.is-insertBefore {
-            &::after {
-                margin-right: auto;
-            }
+        &.is-insertBefore::before {
+            margin-right: auto;
         }
 
-        &.is-insertAfter {
-            &::after {
-                margin-left: auto;
-            }
+        &.is-insertAfter::after {
+            margin-left: auto;
         }
     }
 }
