@@ -177,7 +177,12 @@ mw.hook( 'wikipage.content' ).add( () => {
             }
 
             link.dataset.instantdiffsLink = 'basic';
-            link.dataset.instantdiffsAltTitle = 'true';
+            link.dataset.instantdiffsOptions = JSON.stringify( {
+                showLink: false,
+                showPageLink: false,
+                showAltTitle: true,
+            } );
+
             mw.hook( `${ id.config.prefix }.process` ).fire( $( container ) );
         } catch {}
     };

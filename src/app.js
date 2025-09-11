@@ -191,7 +191,8 @@ function prepare( require ) {
         rootMargin: utils.defaults( 'debug' ) ? '0px 0px 0px 0px' : '33% 0px 33% 0px',
     } );
 
-    // Init unload events
+    // Init page change events
+    window.addEventListener( 'pageshow', refresh );
     window.addEventListener( 'beforeunload', unload );
 
     // Get other dependencies
@@ -206,6 +207,7 @@ async function getSiteInfo() {
     const { general } = await Api.getSiteInfo( [ 'general' ] ) || {};
     if ( !utils.isEmptyObject( general ) ) {
         // Add a mobile server name to the mw.config
+        // ToDo: mobile server name will be deprecated soon (T214998)
         if ( !utils.isEmpty( general.mobileserver ) ) {
             mw.config.set( 'wgMobileServer', general.mobileserver );
             mw.config.set( 'wgMobileServerName', general.mobileservername );
@@ -478,6 +480,8 @@ async function processReplace( settingOptions, defaultOptions ) {
 }
 
 function observeInteractions( entries ) {
+    if ( id.isUnloading ) return;
+
     entries.forEach( entry => {
         if ( !entry.isIntersecting ) return;
 
@@ -489,6 +493,8 @@ function observeInteractions( entries ) {
 }
 
 function observeMutations( entries ) {
+    if ( id.isUnloading ) return;
+
     entries.forEach( entry => {
         if ( entry.addedNodes.length > 0 ) {
             mw.hook( `${ id.config.prefix }.process` ).fire( $( entry.target ) );
@@ -496,10 +502,15 @@ function observeMutations( entries ) {
     } );
 }
 
+function refresh( event ) {
+    // Session was restored from the browser cache
+    if ( event.persisted ) {
+        id.isUnloading = false;
+    }
+}
+
 function unload() {
     id.isUnloading = true;
-    id.local.mutationObserver?.disconnect();
-    id.local.interactionObserver?.disconnect();
 }
 
 app();

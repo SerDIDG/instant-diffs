@@ -114,6 +114,7 @@
     "error-prepare-version": "Another instance is already running: $4",
     "error-prepare-replaced": "Standalone instance replaced successfully: $4",
     "error-prepare-mobile": "The script is disabled in the settings for the mobile skin (Minerva)",
+    "error-link-options": "Failed to parse the \"data-instantdiffs-options\" link attribute: $4",
     "error-revision-generic": "Failed to load revision data \"oldid=$1\": $4",
     "error-revision-curid": "Failed to load revision data \"curid=$1\": $4",
     "error-revision-badrevids": "Revision not found",

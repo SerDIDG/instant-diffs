@@ -105,6 +105,7 @@
 	"error-prepare-version": "Generic error message indicates that another instance of the script is already running.\n\n* $4: error info text.\n\nDisplayed in the browser console.",
 	"error-prepare-replaced": "Generic error message indicates that another instance of the script successfully replaced previous one.\n\n* $4: error info text.\n\nDisplayed in the browser console.",
 	"error-prepare-mobile": "Generic error message indicates that the script is disabled by a user on the mobile devices.\n\nDisplayed in the browser console.",
+    "error-link-options": "Generic error message indicates that parsing the link's data options has failed.\n\nDisplayed in the browser console.",
 	"error-revision-generic": "Generic error message.\n\n* $1: oldid.\n* $4: error info text.",
 	"error-revision-curid": "Generic error message.\n\n* $1: curid.\n* $4: error info text.",
 	"error-revision-badrevids": "Generic error message.",

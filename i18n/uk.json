@@ -105,6 +105,7 @@
 	"error-prepare-version": "Скрипт вже запущений: $4",
 	"error-prepare-replaced": "Автономний екземпляр скрипту успішно заміщений: $4",
 	"error-prepare-mobile": "Скрипт вимкнено в налаштуваннях для мобільної теми (Minerva)",
+    "error-link-options": "Не вдалося розпарсити атрибут посилання \"data-instantdiffs-options\": $4",
 	"error-revision-generic": "Не вдалося завантажити дані версії «oldid=$1»: $4",
 	"error-revision-curid": "Не вдалося завантажити дані версії «curid=$1»: $4",
 	"error-revision-badrevids": "Версію не знайдено",
