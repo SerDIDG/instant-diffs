@@ -24,6 +24,11 @@ class Article {
     /**
      * @type {Object}
      */
+    options = {};
+
+    /**
+     * @type {Object}
+     */
     mw = {
         serverName: mw.config.get( 'wgServerName' ),
         mobileServerName: mw.config.get( 'wgMobileServerName' ),
@@ -44,7 +49,18 @@ class Article {
      */
     isHidden = false;
 
-    constructor( values ) {
+    /**
+     * Create an Article instance.
+     * @param {Object} values a key-value pairs object
+     * @param {Object} [options] configuration options
+     * @param {boolean} [options.fixTenet]
+     */
+    constructor( values, options ) {
+        this.options = {
+            fixTenet: true,
+            ...options,
+        };
+
         if ( !utils.isEmptyObject( values ) ) {
             this.set( values );
         }
@@ -141,6 +157,7 @@ class Article {
 
             // Fix a tenet bug
             if (
+                this.options.fixTenet &&
                 utils.isValidID( this.values.oldid ) &&
                 utils.isValidID( this.values.diff ) &&
                 parseInt( this.values.oldid ) > parseInt( this.values.diff )
@@ -172,6 +189,7 @@ class Article {
             ( !utils.isEmpty( this.values.page1 ) || utils.isValidID( this.values.rev1 ) ) &&
             ( !utils.isEmpty( this.values.page2 ) || utils.isValidID( this.values.rev2 ) )
         ) {
+            this.options.fixTenet = false;
             this.values.type = 'diff';
             this.values.typeVariant = 'comparePages';
             return true;
@@ -195,6 +213,11 @@ class Article {
         // Set title
         if ( !utils.isEmpty( this.values.title ) ) {
             this.setTitle();
+        }
+
+        // Set compare pages titles
+        if ( !utils.isEmpty( this.values.page1 ) || !utils.isEmpty( this.values.page2 ) ) {
+            this.setComparePages();
         }
     }
 
@@ -249,6 +272,23 @@ class Article {
         if ( this.isForeign ) {
             this.values.href = utilsArticle.getHrefAbsolute( this, this.values.href );
         }
+    }
+
+    /**
+     * @private
+     */
+    setComparePages() {
+        try {
+            this.mw.page1 = new mw.Title( this.values.page1 );
+            this.values.page1 = this.mw.page1.getPrefixedDb();
+            this.values.page1Text = this.mw.page1.getPrefixedText();
+        } catch {}
+
+        try {
+            this.mw.page2 = new mw.Title( this.values.page2 );
+            this.values.page2 = this.mw.page2.getPrefixedDb();
+            this.values.page2Text = this.mw.page2.getPrefixedText();
+        } catch {}
     }
 }
 

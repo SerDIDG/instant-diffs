@@ -214,7 +214,9 @@ class Page {
      * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
      */
     getPreloadPromises() {
-        return [];
+        return [
+            this.requestCompare(),
+        ];
     }
 
     /**
@@ -292,6 +294,71 @@ class Page {
     onRequestDone( data ) {
         this.data = data;
     }
+
+    /**
+     * Request compare pages.
+     * @returns {Promise}
+     */
+    requestCompare() {
+        const values = this.article.getValues();
+
+        // Check if there are no errors,
+        // then check if it's a comparePages type variant of the diff,
+        // then check if an oldid and a diff is not the valid ids,
+        // otherwise terminate.
+        if (
+            this.error ||
+            values.typeVariant !== 'comparePages' ||
+            ( utils.isValidID( values.oldid ) && utils.isValidID( values.diff ) )
+        ) {
+            return $.Deferred().resolve().promise();
+        }
+
+        const params = {
+            action: 'compare',
+            prop: [ 'title', 'ids', 'timestamp', 'comment' ],
+            fromrev: utils.isValidID( values.rev1 ) ? values.rev1 : undefined,
+            fromtitle: !utils.isEmpty( values.page1 ) ? values.page1 : undefined,
+            torev: utils.isValidID( values.rev2 ) ? values.rev2 : undefined,
+            totitle: !utils.isEmpty( values.page2 ) ? values.page2 : undefined,
+            format: 'json',
+            formatversion: 2,
+            uselang: id.local.userLanguage,
+        };
+
+        return this.requestManager
+            .get( params, values.hostname )
+            .then( this.onRequestCompareDone )
+            .fail( this.onRequestCompareError );
+    }
+
+    /**
+     * Event that emits after the compare request failed.
+     */
+    onRequestCompareError = ( error, data ) => {
+        this.onRequestError( error, data );
+    };
+
+    /**
+     * Event that emits after the compare request successive.
+     */
+    onRequestCompareDone = ( data ) => {
+        // Render error if the compare request is completely failed
+        const compare = data?.compare;
+        if ( !compare ) {
+            return this.onRequestCompareError( null, data );
+        }
+
+        // Set article values
+        this.article.set( {
+            oldid: compare.fromrevid,
+            diff: compare.torevid,
+            page1: compare.fromtitle,
+            page2: compare.totitle,
+            title: utils.getCompareTitle( compare ),
+            section: utils.getCompareSection( compare ),
+        } );
+    };
 
     /**
      * Request page current revision id.
@@ -633,8 +700,8 @@ class Page {
         const values = this.article.getValues();
 
         let title;
-        if ( values.typeVariant === 'comparePages' && !utils.isEmpty( values.page1 ) && !utils.isEmpty( values.page2 ) ) {
-            title = `${ values.page1 } → ${ values.page2 }`;
+        if ( !utils.isEmpty( values.page1Text ) && !utils.isEmpty( values.page2Text ) ) {
+            title = `${ values.page1Text } → ${ values.page2Text }`;
         } else if ( !utils.isEmpty( values.titleText ) ) {
             title = values.titleText;
         } else {

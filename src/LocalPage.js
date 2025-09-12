@@ -22,16 +22,6 @@ class LocalPage extends Page {
     isDependenciesLoaded = false;
 
     /**
-     * Get promise array for the preload request.
-     * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
-     */
-    getPreloadPromises() {
-        return [
-            this.requestCompare(),
-        ];
-    }
-
-    /**
      * Get promise array for the main load request.
      * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
      */
@@ -140,71 +130,6 @@ class LocalPage extends Page {
     /******* REQUESTS *******/
 
     /**
-     * Request compare pages.
-     * @returns {Promise}
-     */
-    requestCompare() {
-        const values = this.article.getValues();
-
-        // Check if there are no errors,
-        // then check if it's a comparePages type variant of the diff,
-        // then check if an oldid and a diff is not the valid ids,
-        // otherwise terminate.
-        if (
-            this.error ||
-            values.typeVariant !== 'comparePages' ||
-            ( utils.isValidID( values.oldid ) && utils.isValidID( values.diff ) )
-        ) {
-            return $.Deferred().resolve().promise();
-        }
-
-        const params = {
-            action: 'compare',
-            prop: [ 'title', 'ids', 'timestamp', 'comment' ],
-            fromrev: utils.isValidID( values.rev1 ) ? values.rev1 : undefined,
-            fromtitle: !utils.isEmpty( values.page1 ) ? values.page1 : undefined,
-            torev: utils.isValidID( values.rev2 ) ? values.rev2 : undefined,
-            totitle: !utils.isEmpty( values.page2 ) ? values.page2 : undefined,
-            format: 'json',
-            formatversion: 2,
-            uselang: id.local.userLanguage,
-        };
-
-        return this.requestManager
-            .get( params )
-            .then( this.onRequestCompareDone )
-            .fail( this.onRequestCompareError );
-    }
-
-    /**
-     * Event that emits after the compare request failed.
-     */
-    onRequestCompareError = ( error, data ) => {
-        this.onRequestError( error, data );
-    };
-
-    /**
-     * Event that emits after the compare request successive.
-     */
-    onRequestCompareDone = ( data ) => {
-        // Render error if the compare request is completely failed
-        const compare = data?.compare;
-        if ( !compare ) {
-            return this.onRequestCompareError( null, data );
-        }
-
-        // Set article values
-        this.article.set( {
-            oldid: compare.fromrevid,
-            diff: compare.torevid,
-            page1: compare.fromtitle,
-            page2: compare.totitle,
-            title: utils.getCompareTitle( compare ),
-            section: utils.getCompareSection( compare ),
-        } );
-    };
-
-    /**
      * Request process to get diff html content.
      * @returns {JQuery.jqXHR}
      */
@@ -287,6 +212,7 @@ class LocalPage extends Page {
 
             const title = utils.getParamFromUrl( 'title', $fromLinks.prop( 'href' ) ) || $fromLinks.prop( 'title' );
             if ( !utils.isEmpty( title ) ) {
+                articleValues.page1 = title;
                 articleValues.title = title;
             }
         }
@@ -309,8 +235,15 @@ class LocalPage extends Page {
 
             const title = utils.getParamFromUrl( 'title', $toLinks.prop( 'href' ) ) || $toLinks.prop( 'title' );
             if ( !utils.isEmpty( title ) ) {
+                articleValues.page2 = title;
                 articleValues.title = title;
             }
+        }
+
+        // Validate titles
+        if ( articleValues.page1 === articleValues.page2 ) {
+            delete articleValues.page1;
+            delete articleValues.page2;
         }
 
         // Populate timestamps

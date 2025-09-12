@@ -97,13 +97,6 @@ class GlobalPage extends Page {
         if ( values.type === 'diff' && !utils.isValidID( values.diff ) ) {
             params.torelative = utils.isValidDir( values.diff ) ? values.diff : 'prev';
         }
-        if ( values.type === 'comparePages' ) {
-            params.fromre = utils.isValidID( values.rev1 ) ? values.rev1 : undefined;
-            params.fromtitle = !utils.isEmpty( values.page1 ) ? values.page1 : undefined;
-            params.torev = utils.isValidID( values.rev2 ) ? values.rev2 : undefined;
-            params.totitle = !utils.isEmpty( values.page2 ) ? values.page2 : undefined;
-        }
-
         if ( values.type === 'revision' && !utils.isValidID( values.diff ) ) {
             params.torelative = utils.isValidDir( values.direction ) ? values.direction : 'prev';
         }
@@ -219,15 +212,20 @@ class GlobalPage extends Page {
         }
 
         // Set article values
-        this.article.set( {
+        const articleValues = {
             previd: this.data.prev,
             nextid: this.data.next,
             curid: this.configManager.get( 'wgArticleId' ),
             revid: this.configManager.get( 'wgRevisionId' ),
-            title: this.data.totitle || this.data.fromtitle,
+            title: utils.getCompareTitle( this.data ),
             section: this.data.tosection,
             timestamp: this.data.totimestamp,
-        } );
+        };
+        if ( this.data.fromid !== this.data.toid ) {
+            articleValues.page1 = this.data.fromtitle;
+            articleValues.page2 = this.data.totitle;
+        }
+        this.article.set( articleValues );
 
         // Save the title values to the mw.config
         this.configManager.setTitle( this.article.getMW( 'title' ) );
