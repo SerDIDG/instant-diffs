@@ -3,7 +3,6 @@ import * as utils from './utils';
 import * as utilsPage from './utils-page';
 import { executeModuleScript } from './utils-oojs';
 
-import Api from './Api';
 import Page from './Page';
 
 /**

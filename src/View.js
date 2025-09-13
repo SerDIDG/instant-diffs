@@ -1,6 +1,6 @@
 import id from './id';
 import * as utils from './utils';
-import { applyOoUiPolyfill, getWindowManager } from './utils-oojs';
+import { applyOoUiPolyfill, getViewDialogSizeName, getWindowManager } from './utils-oojs';
 
 import Link from './Link';
 import Snapshot from './Snapshot';
@@ -13,6 +13,33 @@ import './styles/view.less';
  * Class representing a View container.
  */
 class View {
+    /**
+     * @type {Object}
+     */
+    static sizes = {
+        compact: {
+            width: 800,
+            height: 'auto',
+        },
+        standard: {
+            width: 1200,
+            height: 'auto',
+        },
+        wide: {
+            width: 1600,
+            height: 'auto',
+        },
+    };
+
+    /**
+     * Get size object by given name.
+     * @param {string} name
+     * @returns {Object}
+     */
+    static getSize( name ) {
+        return this.sizes[ name ];
+    };
+
     /**
      * @type {import('./Link').default|import('./ViewButton').default}
      */
@@ -254,6 +281,7 @@ class View {
             const article = this.link.getArticle();
             const options = {
                 title: article.get( 'titleText' ) || article.get( 'title' ),
+                size: getViewDialogSizeName(),
             };
 
             // Open a dialog window through the windows manager

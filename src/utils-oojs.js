@@ -1,10 +1,12 @@
 import * as utils from './utils';
 
+import view from './View';
+
 /**
  * Add some properties to the inheritor class that the (ES5)
- * {@link https://www.mediawiki.org/wiki/OOjs/Inheritance OOUI inheritance mechanism} uses.
+ * @see {@link https://www.mediawiki.org/wiki/OOjs/Inheritance OOUI inheritance mechanism} uses.
  * It partly replicates the operations made in
- * {@link https://doc.wikimedia.org/oojs/master/OO.html#.inheritClass OO.inheritClass}.
+ * @see {@link https://doc.wikimedia.org/oojs/master/OO.html#.inheritClass OO.inheritClass}.
  * @author {@link https://github.com/jwbth Jack who built the house}
  *
  * @param {Function} targetClass Inheritor class.
@@ -46,6 +48,14 @@ export function applyOoUiPolyfill() {
         };
     }
 
+    // "findFirstSelectedItem" method was added in the MediaWiki 1.39 / wmf.23
+    if ( !utils.isFunction( OO.ui.ButtonSelectWidget.prototype.findFirstSelectedItem ) ) {
+        OO.ui.ButtonSelectWidget.prototype.findFirstSelectedItem = function () {
+            const selected = this.findSelectedItems();
+            return Array.isArray( selected ) ? selected[ 0 ] || null : selected;
+        };
+    }
+
     // "getTeleportTarget" method was added in the MediaWiki 1.41 / wmf.25 (?)
     if ( !utils.isFunction( OO.ui.getTeleportTarget ) ) {
         OO.ui.getTeleportTarget = function () {
@@ -72,14 +82,29 @@ export function renderOoUiElement( $element ) {
 }
 
 export function getWindowManager() {
-    // Define custom dialog sizes
-    OO.ui.WindowManager.static.sizes.instantDiffs = {
-        width: 1200,
-    };
+    // Define custom dialog size
+    setViewDialogSize();
 
     const manager = new OO.ui.WindowManager();
     $( OO.ui.getTeleportTarget() ).append( manager.$element );
     return manager;
+}
+
+export function setViewDialogSize( size ) {
+    size = size || utils.defaults( 'viewWidth' ) || 'standard';
+
+    if ( size !== 'full' ) {
+        OO.ui.WindowManager.static.sizes.instantDiffs = view.constructor.sizes[ size ] || view.constructor.sizes.standard;
+    }
+
+    if ( view.isOpen ) {
+        view.dialog.setSize( getViewDialogSizeName( size ) );
+    }
+}
+
+export function getViewDialogSizeName( size ) {
+    size = size || utils.defaults( 'viewWidth' ) || 'standard';
+    return size === 'full' ? 'full' : 'instantDiffs';
 }
 
 /**

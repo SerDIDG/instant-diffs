@@ -4,6 +4,7 @@ import { tweakUserOoUiClass } from './utils-oojs';
 import { getHref } from './utils-article';
 
 import settings from './Settings';
+import view from './View';
 
 const { h } = utils;
 
@@ -199,6 +200,40 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     };
 
     renderDialogFieldset() {
+        // Dialog width
+        this.inputOptions.viewWidth = {};
+        this.inputOptions.viewWidth.compact = new OO.ui.ButtonOptionWidget( {
+            data: 'compact',
+            label: utils.msg( 'settings-view-width-compact' ),
+            title: utils.msg( 'settings-view-width-option-title', view.constructor.getSize( 'compact' ).width ),
+        } );
+        this.inputOptions.viewWidth.standard = new OO.ui.ButtonOptionWidget( {
+            data: 'standard',
+            label: utils.msg( 'settings-view-width-standard' ),
+            title: utils.msg( 'settings-view-width-option-title', view.constructor.getSize( 'standard' ).width ),
+        } );
+        this.inputOptions.viewWidth.wide = new OO.ui.ButtonOptionWidget( {
+            data: 'wide',
+            label: utils.msg( 'settings-view-width-wide' ),
+            title: utils.msg( 'settings-view-width-option-title', view.constructor.getSize( 'wide' ).width ),
+        } );
+        this.inputOptions.viewWidth.full = new OO.ui.ButtonOptionWidget( {
+            data: 'full',
+            label: utils.msg( 'settings-view-width-full' ),
+            title: utils.msg( 'settings-view-width-full-title' ),
+        } );
+        this.inputs.viewWidth = new OO.ui.ButtonSelectWidget( {
+            items: Object.values( this.inputOptions.viewWidth ),
+        } );
+
+        this.fields.viewWidth = new OO.ui.FieldLayout( this.inputs.viewWidth, {
+            label: utils.msg( 'settings-view-width' ),
+            align: 'inline',
+            help: utils.msg( 'settings-view-width-help' ),
+            helpInline: true,
+        } );
+        this.fields.viewWidth.toggle( utils.settings( 'viewWidth' ) );
+
         // Show inline format toggle button
         this.inputs.showDiffTools = new OO.ui.CheckboxInputWidget( {
             selected: utils.defaults( 'showDiffTools' ),
@@ -254,7 +289,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.inputs.linksFormat = new OO.ui.RadioSelectWidget( {
             items: Object.values( this.inputOptions.linksFormat ),
         } );
-        this.inputs.linksFormat.on( 'select', this.onLinksFormatChoose.bind( this ) );
+        this.inputs.linksFormat.on( 'select', this.onLinksFormatChoose );
 
         this.fields.linksFormat = new OO.ui.FieldLayout( this.inputs.linksFormat, {
             label: utils.msg( 'settings-links-format' ),
@@ -277,7 +312,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.inputs.wikilinksFormat = new OO.ui.RadioSelectWidget( {
             items: Object.values( this.inputOptions.wikilinksFormat ),
         } );
-        this.inputs.wikilinksFormat.on( 'select', this.onWikilinksFormatChoose.bind( this ) );
+        this.inputs.wikilinksFormat.on( 'select', this.onWikilinksFormatChoose );
 
         this.fields.wikilinksFormat = new OO.ui.FieldLayout( this.inputs.wikilinksFormat, {
             label: utils.msg( 'settings-wikilinks-format' ),
@@ -292,6 +327,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             label: utils.msg( 'settings-fieldset-dialog' ),
         } );
         this.layouts.dialog.addItems( [
+            this.fields.viewWidth,
             this.fields.showDiffTools,
             this.fields.showRevisionInfo,
             this.fields.unHideDiffs,
@@ -300,6 +336,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             this.fields.wikilinksFormat,
         ] );
         this.layouts.dialog.toggle(
+            utils.settings( 'viewWidth' ) ||
             utils.settings( 'showDiffTools' ) ||
             utils.settings( 'showRevisionInfo' ) ||
             utils.settings( 'unHideDiffs' ) ||
@@ -309,6 +346,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         );
 
         // Trigger selects actions
+        this.inputs.viewWidth.selectItemByData( utils.defaults( 'viewWidth' ) );
         this.inputs.linksFormat.selectItemByData( utils.defaults( 'linksFormat' ) );
         this.inputs.wikilinksFormat.selectItemByData( utils.defaults( 'wikilinksFormat' ) );
     };
@@ -374,7 +412,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         );
     };
 
-    onLinksFormatChoose() {
+    onLinksFormatChoose = () => {
         const linkFormat = this.inputs.linksFormat.findFirstSelectedItem()?.getData();
 
         const options = {
@@ -388,7 +426,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.onWikilinksFormatChoose();
     };
 
-    onWikilinksFormatChoose() {
+    onWikilinksFormatChoose = () => {
         const linkFormat = this.inputs.linksFormat.findFirstSelectedItem()?.getData();
         const wikilinkFormat = this.inputs.wikilinksFormat.findFirstSelectedItem()?.getData();
 
@@ -443,7 +481,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     }
 
     getBodyHeight() {
-        return 535;
+        return 555;
     }
 
     /******* REQUEST PROCESS ******/
@@ -539,6 +577,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             if ( input instanceof OO.ui.RadioSelectWidget ) {
                 input.selectItemByData( option );
             }
+            if ( input instanceof OO.ui.ButtonSelectWidget ) {
+                input.selectItemByData( option );
+            }
         }
     }
 
@@ -554,6 +595,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
                 options[ key ] = input.isSelected();
             }
             if ( input instanceof OO.ui.RadioSelectWidget ) {
+                options[ key ] = input.findFirstSelectedItem()?.getData();
+            }
+            if ( input instanceof OO.ui.ButtonSelectWidget ) {
                 options[ key ] = input.findFirstSelectedItem()?.getData();
             }
         }
