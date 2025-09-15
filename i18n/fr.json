@@ -3,6 +3,7 @@
 		"authors": [
 			"Bananax47",
 			"Derugon",
+			"Escargot bleu",
 			"Pyschobbens",
 			"Serhio Magpie"
 		]
@@ -83,6 +84,8 @@
 	"settings-highlight-line": "Surligner les lignes dans les listes de suivi et listes similaires lorsque la fenêtre Instant Diffs est ouverte depuis le lien associé.",
 	"settings-mark-watched-line": "Marquer les modifications comme visitées dans les listes de suivi lorsque la fenêtre Instant Diffs est ouverte depuis le lien associé.",
 	"settings-fieldset-dialog": "Dialogue",
+	"settings-view-width": "Définir les dimensions",
+	"settings-view-width-wide": "Large",
 	"settings-show-diff-tools": "Afficher des outils supplémentaires de comparaison, comme l’option de format en ligne.",
 	"settings-show-revision-info": "Afficher les informations sur les modifications lors de la consultation d’une version.",
 	"settings-unhide-diffs": "Afficher le contenu caché des versions et les informations de diff sans étapes supplémentaires.",
@@ -108,6 +111,7 @@
 	"error-prepare-version": "Une autre instance est déjà en cours d’exécution : $4",
 	"error-prepare-replaced": "L’instance séparée a bien été remplacée : $4",
 	"error-prepare-mobile": "Le script est désactivé dans les paramètres pour le thème mobile (Minerva)",
+	"error-link-options": "Échec de l'analyse de l'attribut de lien « data-instantdiffs-options » : $4",
 	"error-revision-generic": "Échec du chargement des données de la version « oldid=$1 » : $4",
 	"error-revision-curid": "Échec du chargement des données de la version « curid=$1 » : $4",
 	"error-revision-badrevids": "Version introuvable",
