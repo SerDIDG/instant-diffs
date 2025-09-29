@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Kly",
+			"LowensteinYang",
 			"Serhio Magpie"
 		]
 	},
@@ -81,7 +82,7 @@
 	"settings-highlight-line": "當 Instant Diffs 對話框從相關連結開啟時，會突出顯示在監視清單與類似清單裡的各行內容。",
 	"settings-mark-watched-line": "當 Instant Diffs 對話框從相關連結開啟時，在監視清單裡會將更改標記為已查看過。",
 	"settings-fieldset-dialog": "對話",
-	"settings-view-width": "設定尺寸",
+	"settings-view-width": "設定視窗尺寸：",
 	"settings-view-width-help": "尺寸設定僅適用於桌機版畫面。移動裝置畫面維持使用全螢幕尺寸。",
 	"settings-view-width-option-title": "$1 像素寬",
 	"settings-view-width-compact": "精簡",
@@ -94,10 +95,10 @@
 	"settings-unhide-diffs": "無需額外步驟即可顯示隱藏的修訂和差異資訊。",
 	"settings-unhide-diffs-help": "需要「$1」[[mw:Special:MyLanguage/Help:RevisionDelete|使用者權限]]才能查看修訂內容。",
 	"settings-open-in-new-tab": "在新分頁開啟 Instant Diffs 對話框中的連結。",
-	"settings-links-format": "複製操作的連結格式",
+	"settings-links-format": "複製操作的連結格式：",
 	"settings-links-format-full": "帶有頁面標題的完整 URL",
 	"settings-links-format-minify": "縮短的 URL",
-	"settings-wikilinks-format": "複製操作的 Wikilink 格式",
+	"settings-wikilinks-format": "複製操作的維基連結格式：",
 	"settings-wikilinks-format-link": "包在括號內的簡易連結",
 	"settings-wikilinks-format-special": "內部 wiki 連結",
 	"settings-fieldset-general": "一般",
