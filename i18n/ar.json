@@ -91,7 +91,7 @@
 	"settings-show-diff-tools": "إظهار أدوات الاختلاف الإضافية، مثل تبديل التنسيق المضمن.",
 	"settings-show-revision-info": "إظهار معلومات التغيير عند عرض المراجعة.",
 	"settings-unhide-diffs": "عرض محتوى المراجعة المخفية ومعلومات الاختلاف دون خطوات إضافية.",
-	"settings-unhide-diffs-help": "يجب الحصول على [[mw:Special:MyLanguage/Help:RevisionDelete|حق المستخدم]] \"$1\" لعرض محتوى المراجعة.",
+	"settings-unhide-diffs-help": "يجب الحصول على حق المستخدم \" $1 \" [[mw:Special:MyLanguage/Help:RevisionDelete|]] لعرض محتوى المراجعة.",
 	"settings-open-in-new-tab": "افتح الروابط داخل مربع الحوار Instant Diffs في علامة تبويب جديدة.",
 	"settings-links-format": "تنسيق الرابط لعملية النسخ:",
 	"settings-links-format-full": "عنوان URL الكامل مع عنوان الصفحة",

@@ -81,7 +81,7 @@
 	"settings-mark-watched-line": "Позначати зміни як переглянуті в списках спостереження при відкритті вікна Instant Diffs.",
 	"settings-fieldset-dialog": "Вікно",
 	"settings-view-width": "Встановити розміри вікна:",
-	"settings-view-width-help": "Розміри застосовуються лише для стаціонарного вигляду. Для мобільних вигляду завжди використовуються повноекранні розміри.",
+	"settings-view-width-help": "Розміри застосовуються лише для стаціонарного вигляду. Для мобільного вигляду завжди використовуються повноекранні розміри.",
 	"settings-view-width-option-title": "$1 пікселів завширшки",
 	"settings-view-width-compact": "Компактний",
 	"settings-view-width-standard": "Стандартний",

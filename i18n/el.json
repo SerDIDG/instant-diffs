@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Fotis A.",
+			"Geraki",
 			"Jimkats",
 			"Serhio Magpie"
 		]
@@ -113,6 +114,7 @@
 	"error-wasted": "Μη αναμενόμενο σφάλμα",
 	"error-prepare-generic": "Αποτυχία προετοιμασίας διαμόρφωσης: $4",
 	"error-prepare-version": "Μια άλλη παρουσία εκτελείται ήδη: $4",
+	"error-prepare-mobile": "Το script είναι απενεργοποιημένο στις ρυθμίσεις για το skin κινητού (Minerva)",
 	"error-revision-generic": "Αποτυχία φόρτωσης δεδομένων αναθεώρησης \"oldid=$1\": $4",
 	"error-revision-curid": "Αποτυχία φόρτωσης δεδομένων αναθεώρησης \"curid=$1\": $4",
 	"error-revision-badrevids": "Η αναθεώρηση δεν βρέθηκε",
