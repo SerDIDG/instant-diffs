@@ -46,7 +46,7 @@
             width: calc(var(--font-size-medium, 1rem) + 4px);
             display: inline-block;
         }
-        
+
         // /* [Fix] Hide user icon if checkuser extension is enabled. */
         #instantDiffs--pageSpecific.fix-userlink--ext-checkuser();
     }
@@ -315,6 +315,28 @@
         :is( .comment, .mw-userlink, .mw-usertoollinks ) {
             float: none;
             display: inline;
+        }
+    }
+}
+
+/*** DIFF ***/
+
+&.instantDiffs-enabled {
+    .mw-diff-revision-history-links {
+        a {
+            flex: none;
+        }
+    }
+
+    .mw-diff-revision-history-link-previous {
+        & + .instantDiffs-panel {
+            margin-inline-end: auto;
+        }
+    }
+
+    .instantDiffs-panel {
+        &:has(+ .mw-diff-revision-history-link-next) {
+            margin-inline-start: auto;
         }
     }
 }

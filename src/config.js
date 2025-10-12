@@ -279,8 +279,9 @@ export const config = {
         '.mw-contributions-list .comment a',                            // Edit summary in the contributions
         '.mw-fr-pending-changes-table a.cdx-docs-link',                 // [[Special:PendingChanges]]
         '#mw-revision-nav a',                                           // [[Special:PermanentLink]] / Revision
-        '.diff-type-table #differences-prevlink',                       // [[Special:Diff]]
-        '.diff-type-table #differences-nextlink',                       // [[Special:Diff]]
+        'table.diff #differences-prevlink',                             // [[Special:Diff]]: Previous edit
+        'table.diff #differences-nextlink',                             // [[Special:Diff]]: Next edit
+        '.mw-diff-revision-history-links a',                            // [[Special:Diff]]: MobileDiff navigation links
         'li[data-afl-log-id] a',                                        // [[Special:AbuseLog]]
         'li[class^="mw-tag"] a',                                        // [[Special:EditTags]]
         'li.mw-logline-tag a',                                          // [[Special:EditTags]]
@@ -326,6 +327,8 @@ export const config = {
             'differences-nextlink',                                     // [[Special:Diff]]
         ],
         hasClass: [
+            'mw-diff-revision-history-link-prev',                       // [[Special:Diff]]: MobileDiff previous edit
+            'mw-diff-revision-history-link-next',                       // [[Special:Diff]]: MobileDiff next edit
             'mw-changeslist-date',
             'mw-changeslist-diff',
             'mw-changeslist-diff-cur',
@@ -358,8 +361,8 @@ export const config = {
     },
     mwLinkDiffOnly: {
         id: [
-            'differences-prevlink',                                     // [[Special:Diff]]
-            'differences-nextlink',                                     // [[Special:Diff]]
+            'differences-prevlink',                                     // [[Special:Diff]]: Previous edit
+            'differences-nextlink',                                     // [[Special:Diff]]: Next edit
         ],
         closestTo: [
             '#mw-revision-nav',                                         // [[Special:PermanentLink]] / Revision
@@ -367,8 +370,11 @@ export const config = {
     },
     mwLinkPrepend: {
         id: [
-            'differences-nextlink',                                     // [[Special:Diff]]
+            'differences-nextlink',                                     // [[Special:Diff]]: Next edit
         ],
+        hasClass: [
+            'mw-diff-revision-history-link-next',                       // [[Special:Diff]]: MobileDiff next edit
+        ]
     },
     mwLinkAltTitle: {
         closestTo: [
