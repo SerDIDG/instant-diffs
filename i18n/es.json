@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Dgstranz",
 			"Serhio Magpie"
 		]
 	},
@@ -80,7 +81,7 @@
 	"settings-show-diff-tools": "Mostrar herramientas adicionales de diferencia, como el selector de formato en línea.",
 	"settings-show-revision-info": "Mostrar información de cambios al ver una revisión.",
 	"settings-unhide-diffs": "Mostrar el contenido de las revisiones ocultas y la información de diferencias sin pasos adicionales.",
-	"settings-unhide-diffs-help": "Para ver el contenido de la revisión, se requiere el [[mw:Special:MyLanguage/Help:RevisionDelete|derecho de usuario]] \"$1\".",
+	"settings-unhide-diffs-help": "Para ver el contenido de la revisión, se requiere el [[mw:Special:MyLanguage/Help:RevisionDelete|permiso de usuario]] \"$1\".",
 	"settings-open-in-new-tab": "Abrir los enlaces dentro del diálogo Instant Diffs en una nueva pestaña.",
 	"settings-links-format": "Formato del enlace para la acción de copia",
 	"settings-links-format-full": "URL completa con el título de la página",
