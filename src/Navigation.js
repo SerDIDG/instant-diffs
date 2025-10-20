@@ -890,7 +890,7 @@ class Navigation {
         const isShiftPressed = event.shiftKey;
         const isAltPressed = event.altKey;
 
-        // Get action
+        // Define actions map
         const actionMaps = {
             ctrl: {
                 ArrowLeft: 'snapshotPrev',
@@ -908,6 +908,15 @@ class Navigation {
             shift: {},
         };
 
+        // Define RTL-specific actions map
+        if ( document.dir === 'rtl' ) {
+            actionMaps.ctrl.ArrowRight = 'snapshotPrev';
+            actionMaps.ctrl.ArrowLeft = 'snapshotNext';
+            actionMaps.none.ArrowRight = 'prev';
+            actionMaps.none.ArrowLeft = 'next';
+        }
+
+        // Get action
         const modifier = isAltPressed ? 'alt' : isCtrlPressed ? 'ctrl' : isShiftPressed ? 'shift' : 'none';
         const action = actionMaps[ modifier ]?.[ event.code ];
 
