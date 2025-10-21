@@ -6,6 +6,7 @@ import { getWikilink, getHref, getHrefAbsolute } from './utils-article';
 import { updateWatchButtonStatus } from './utils-watch';
 
 import Button from './Button';
+import MenuButton from './MenuButton';
 import Link from './Link';
 import Article from './Article';
 import Snapshot from './Snapshot';
@@ -362,12 +363,12 @@ class Navigation {
 
     /**
      * Render a snapshot button that navigates to the previous link on the article.
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderSnapshotPrevLink() {
         const link = Snapshot.instance.getPreviousLink();
 
-        const button = new OO.ui.ButtonWidget( {
+        return new MenuButton( {
             label: utils.msg( 'goto-snapshot-prev' ),
             title: utils.msgHint( 'goto-snapshot-prev', 'snapshot-prev', utils.defaults( 'enableHotkeys' ) ),
             href: link ? link.href : null,
@@ -375,27 +376,22 @@ class Navigation {
             invisibleLabel: true,
             icon: 'doubleChevronStart',
             disabled: !link,
-        } );
-
-        if ( link ) {
-            new Link( button.$button.get( 0 ), {
-                behavior: 'event',
+            link: !!link,
+            linkOptions: {
                 initiatorLink: link,
                 onRequest: () => this.setActionRegister( 'snapshotPrev' ),
-            } );
-        }
-
-        return button;
+            },
+        } );
     }
 
     /**
      * Render a snapshot button that navigates to the next link on the article.
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderSnapshotNextLink() {
         const link = Snapshot.instance.getNextLink();
 
-        const button = new OO.ui.ButtonWidget( {
+        return new MenuButton( {
             label: utils.msg( 'goto-snapshot-next' ),
             title: utils.msgHint( 'goto-snapshot-next', 'snapshot-next', utils.defaults( 'enableHotkeys' ) ),
             href: link ? link.href : null,
@@ -403,22 +399,17 @@ class Navigation {
             invisibleLabel: true,
             icon: 'doubleChevronEnd',
             disabled: !link,
-        } );
-
-        if ( link ) {
-            new Link( button.$button.get( 0 ), {
-                behavior: 'event',
+            link: !!link,
+            linkOptions: {
                 initiatorLink: link,
                 onRequest: () => this.setActionRegister( 'snapshotNext' ),
-            } );
-        }
-
-        return button;
+            },
+        } );
     }
 
     /**
      * Render a button that navigates to the previous diff or revision.
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderPrevLink() {
         let href;
@@ -439,27 +430,22 @@ class Navigation {
             iconBefore: document.dir === 'ltr' ? '←' : '→',
         } );
 
-        const button = new OO.ui.ButtonWidget( {
+        return new MenuButton( {
             label: $( label ),
             title: utils.msgHint( `goto-prev-${ this.article.get( 'type' ) }`, 'prev', utils.defaults( 'enableHotkeys' ) ),
             href: href,
             target: utils.getTarget( true ),
             disabled: !href,
-        } );
-
-        if ( href ) {
-            new Link( button.$button.get( 0 ), {
-                behavior: 'event',
+            link: !!href,
+            linkOptions: {
                 onRequest: () => this.setActionRegister( 'prev' ),
-            } );
-        }
-
-        return button;
+            },
+        } );
     }
 
     /**
      * Render a button that navigates to the next diff or revision.
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderNextLink() {
         let href;
@@ -480,155 +466,129 @@ class Navigation {
             iconAfter: document.dir === 'ltr' ? '→' : '←',
         } );
 
-        const button = new OO.ui.ButtonWidget( {
+        return new MenuButton( {
             label: $( label ),
             title: utils.msgHint( `goto-next-${ this.article.get( 'type' ) }`, 'next', utils.defaults( 'enableHotkeys' ) ),
             href: href,
             target: utils.getTarget( true ),
             disabled: !href,
-        } );
-
-        if ( href ) {
-            new Link( button.$button.get( 0 ), {
-                behavior: 'event',
+            link: !!href,
+            linkOptions: {
                 onRequest: () => this.setActionRegister( 'next' ),
-            } );
-        }
-
-        return button;
+            },
+        } );
     }
 
     /**
      * Render a button that switches view between diff or revision.
      * @param {Object} [options] button configuration options
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderSwitchLink( options ) {
         const type = this.article.get( 'type' ) === 'diff' ? 'revision' : 'diff';
         const articleOptions = { type };
 
-        const button = new OO.ui.ButtonWidget( {
+        return new MenuButton( {
             label: utils.msg( `goto-view-${ type }` ),
             title: utils.msgHint( `goto-view-${ type }`, 'switch', utils.defaults( 'enableHotkeys' ) ),
             href: getHref( this.article, {}, articleOptions ),
             target: utils.getTarget( true ),
             icon: 'specialPages',
             classes: [ 'instantDiffs-button--switch' ],
+            link: true,
+            linkOptions: {
+                onRequest: () => this.setActionRegister( options.name ),
+            },
             ...options,
         } );
-
-        new Link( button.$button.get( 0 ), {
-            behavior: 'event',
-            onRequest: () => this.setActionRegister( options.name ),
-        } );
-
-        return button;
     }
 
     /**
      * Render a button that switches to the diff between the last patrolled revision and the current unpatrolled one.
      * The button appears only if the FlaggedRevs extension is installed and the page has unpatrolled edits.
      * @param {Object} [options] button configuration options
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderUnpatrolledLink( options ) {
-        const button = new OO.ui.ButtonWidget( {
+        return new MenuButton( {
             label: utils.msg( 'goto-view-unpatrolled' ),
             title: utils.msgHint( 'goto-view-unpatrolled', 'unpatrolled', utils.defaults( 'enableHotkeys' ) ),
             href: this.options.links.unpatrolled,
             target: utils.getTarget( true ),
             icon: 'info',
             classes: [ 'instantDiffs-button--pending' ],
+            link: true,
+            linkOptions: {
+                initiatorPage: this.page,
+                onRequest: () => this.setActionRegister( options.name ),
+            },
             ...options,
         } );
-
-        new Link( button.$button.get( 0 ), {
-            behavior: 'event',
-            initiatorPage: this.page,
-            onRequest: () => this.setActionRegister( options.name ),
-        } );
-
-        return button;
     }
 
     /**
      * Render a button that navigates to the previous view.
      * @param {Object} [options] button configuration options
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderBackLink( options ) {
         const initiator = this.page.getInitiatorPage();
         const article = initiator.getArticle();
 
-        const button = new OO.ui.ButtonWidget( {
+        const initiatorAction = initiator.getNavigation()?.getActionRegister();
+        const action = !utils.isEmpty( initiatorAction )
+            ? `${ initiatorAction }-${ options.name }` : options.name;
+
+        return new MenuButton( {
             label: utils.msg( `goto-back-${ article.get( 'type' ) }` ),
             title: utils.msgHint( `goto-back-${ article.get( 'type' ) }`, 'back', utils.defaults( 'enableHotkeys' ) ),
             href: getHref( article, initiator.getArticleParams() ),
             target: utils.getTarget( true ),
             icon: 'newline',
             classes: [ 'instantDiffs-button--back' ],
+            link: true,
+            linkOptions: {
+                onRequest: () => this.setActionRegister( action ),
+            },
             ...options,
         } );
-
-        const initiatorAction = initiator.getNavigation()?.getActionRegister();
-        const action = !utils.isEmpty( initiatorAction )
-            ? `${ initiatorAction }-${ options.name }` : options.name;
-
-        new Link( button.$button.get( 0 ), {
-            behavior: 'event',
-            onRequest: () => this.setActionRegister( action ),
-        } );
-
-        return button;
     }
 
     /**
      * Render a button that copies link to the clipboard.
      * @param {Object} [options] button configuration options
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderCopyLink( options ) {
-        const button = new OO.ui.ButtonWidget( {
+        return new MenuButton( {
             label: utils.msg( 'copy-link' ),
             icon: 'link',
+            handler: this.actionCopyLink.bind( this ),
             ...options,
         } );
-
-        button.helper = new Button( {
-            node: button.$button.get( 0 ),
-            handler: this.actionCopyLink.bind( this ),
-        } );
-
-        return button;
     }
 
     /**
      * Render a button that copies wikilink to the clipboard.
      * @param {Object} [options] button configuration options
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderCopyWikiLink( options ) {
-        const button = new OO.ui.ButtonWidget( {
+        return new MenuButton( {
             label: utils.msg( 'copy-wikilink' ),
             icon: 'wikiText',
+            handler: this.actionCopyWikilink.bind( this ),
             ...options,
         } );
-
-        button.helper = new Button( {
-            node: button.$button.get( 0 ),
-            handler: this.actionCopyWikilink.bind( this ),
-        } );
-
-        return button;
     }
 
     /**
      * Render a button that navigates to the diff or to the revision.
      * @param {Object} [options] button configuration options
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderTypeLink( options ) {
-        return new OO.ui.ButtonWidget( {
+        return new MenuButton( {
             label: utils.msg( `goto-${ this.article.get( 'type' ) }` ),
             href: getHref( this.article ),
             target: utils.getTarget( true ),
@@ -640,7 +600,7 @@ class Navigation {
     /**
      * Render a button that navigates to the article.
      * @param {Object} [options] button configuration options
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderPageLink( options ) {
         const href = this.article.getMW( 'title' ).isTalkPage()
@@ -653,7 +613,7 @@ class Navigation {
             default: 'article',
         };
 
-        return new OO.ui.ButtonWidget( {
+        return new MenuButton( {
             label: utils.msg( 'goto-page' ),
             href: getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
@@ -665,7 +625,7 @@ class Navigation {
     /**
      * Render a button that navigates to the talk article.
      * @param {Object} [options] button configuration options
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderTalkPageLink( options ) {
         const href = this.article.getMW( 'title' ).isTalkPage()
@@ -678,7 +638,7 @@ class Navigation {
             default: 'speechBubbles',
         };
 
-        return new OO.ui.ButtonWidget( {
+        return new MenuButton( {
             label: utils.msg( 'goto-talkpage' ),
             href: getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
@@ -690,13 +650,13 @@ class Navigation {
     /**
      * Render a button that navigates to the page edit.
      * @param {Object} [options] button configuration options
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderEditLink( options ) {
         const isEditable = mw.config.get( 'wgIsProbablyEditable' );
         const href = mw.util.getUrl( this.article.get( 'title' ), { action: 'edit' } );
 
-        return new OO.ui.ButtonWidget( {
+        return new MenuButton( {
             label: utils.msg( isEditable ? 'goto-edit' : 'goto-source' ),
             href: getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
@@ -708,12 +668,12 @@ class Navigation {
     /**
      * Render a button that navigates to the page history.
      * @param {Object} [options] button configuration options
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderHistoryLink( options ) {
         const href = mw.util.getUrl( this.article.get( 'title' ), { action: 'history' } );
 
-        return new OO.ui.ButtonWidget( {
+        return new MenuButton( {
             label: utils.msg( 'goto-history' ),
             href: getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
@@ -725,18 +685,15 @@ class Navigation {
     /**
      * Render a button that adds / removes page from the watchlist.
      * @param {Object} [options] button configuration options
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderWatchLink( options ) {
-        const button = new OO.ui.ButtonWidget( {
+        const button = new MenuButton( {
+            handler: this.actionWatchPage.bind( this ),
             ...options,
         } );
 
-        button.helper = new Button( {
-            node: button.$button.get( 0 ),
-            handler: this.actionWatchPage.bind( this ),
-        } );
-
+        // Set initial button state
         updateWatchButtonStatus( this.article, button );
 
         return button;
@@ -745,27 +702,21 @@ class Navigation {
     /**
      * Render a button that opens settings dialog.
      * @param {Object} [options] button configuration options
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderSettingsLink( options ) {
-        const button = new OO.ui.ButtonWidget( {
+        return new MenuButton( {
             label: utils.msg( 'goto-settings' ),
             icon: 'settings',
+            handler: this.actionOpenSettings.bind( this ),
             ...options,
         } );
-
-        button.helper = new Button( {
-            node: button.$button.get( 0 ),
-            handler: this.actionOpenSettings.bind( this ),
-        } );
-
-        return button;
     }
 
     /**
      * Render a button that shows a current version of the Instant Diffs and navigates to the homearticle.
      * @param {Object} [options] button configuration options
-     * @returns {OO.ui.ButtonWidget} a OO.ui.ButtonWidget instance
+     * @returns {import('./MenuButton')} a MenuButton instance
      */
     renderIDLink( options ) {
         const label = hf(
@@ -784,7 +735,7 @@ class Navigation {
 
         options.classes.push( 'instantDiffs-button--link-id' );
 
-        return new OO.ui.ButtonWidget( options );
+        return new MenuButton( options );
     }
 
     /******* LINK ACTIONS *******/
@@ -811,7 +762,7 @@ class Navigation {
      * Action that copies a formatted wikilink to the edit or revision to the clipboard.
      */
     actionCopyWikilink() {
-        this.buttons.copyWiki.helper.pending( true );
+        this.buttons.copyWiki.pending( true );
 
         $.when( getWikilink( this.article ) )
             .done( href => {
@@ -823,7 +774,7 @@ class Navigation {
                 utils.clipboardWrite( false );
             } )
             .always( () => {
-                this.buttons.copyWiki.helper.pending( false );
+                this.buttons.copyWiki.pending( false );
 
                 // Hide menu dropdown
                 this.toggleMenu( false );
@@ -839,11 +790,11 @@ class Navigation {
             this.watch = new Watch( this.article, this.buttons.watch );
         }
 
-        this.buttons.watch.helper.pending( true );
+        this.buttons.watch.pending( true );
 
         $.when( this.watch.request() )
             .always( () => {
-                this.buttons.watch.helper.pending( false );
+                this.buttons.watch.pending( false );
 
                 // Hide menu dropdown
                 this.toggleMenu( false );
@@ -858,10 +809,10 @@ class Navigation {
         settings.once( 'opening', () => this.toggleMenu( false ) );
         settings.once( 'closed', () => this.focusButton( 'menu' ) );
 
-        this.buttons.settings.helper.pending( true );
+        this.buttons.settings.pending( true );
 
         $.when( settings.load() )
-            .always( () => this.buttons.settings.helper.pending( false ) );
+            .always( () => this.buttons.settings.pending( false ) );
     }
 
     /**

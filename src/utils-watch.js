@@ -22,7 +22,7 @@ export function getDaysLeftExpiry( expiry ) {
  * Partially copied from:
  * @see {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/2a828f2e72a181665e1f627e2f737abb75b74eb9/resources/src/mediawiki.page.watch.ajax/watch-ajax.js#18}
  * @param {import('./Article').default} article an Article instance
- * @param {OO.ui.ButtonWidget} button a OO.ui.ButtonWidget instance
+ * @param {import('./MenuButton')} button a MenuButton instance
  */
 export function updateWatchButtonStatus( article, button ) {
     const watched = article.get( 'watched' );
