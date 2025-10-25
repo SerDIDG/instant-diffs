@@ -13,7 +13,13 @@ class MenuButton extends OO.ui.ButtonWidget {
      * @param {Object} [options] configuration options
      */
     constructor( options ) {
+        // Validate options
         options = {
+            type: 'nav',
+            classes: [],
+            framed: true,
+            invisibleLabel: false,
+            icon: false,
             handler: null,
             useAltKey: false,
             link: false,
@@ -25,6 +31,20 @@ class MenuButton extends OO.ui.ButtonWidget {
             },
         };
 
+        if ( options.type === 'shortcut' ) {
+            options.invisibleLabel = true;
+        }
+
+        if ( options.type === 'menu' ) {
+            options.classes = [ ...options.classes, 'instantDiffs-button--link' ];
+            options.framed = false;
+
+            if ( !utils.defaults( 'showMenuIcons' ) ) {
+                options.icon = null;
+            }
+        }
+
+        // Call parent class constructor
         super( options );
 
         if ( utils.isFunction( options.handler ) ) {

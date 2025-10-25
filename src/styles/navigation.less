@@ -23,6 +23,10 @@
         .instantDiffs-button--back {
             display: none;
         }
+
+        .instantDiffs-button--link {
+            display: block;
+        }
     }
 }
 
@@ -136,14 +140,14 @@
     &.oo-ui-widget-enabled {
         > .oo-ui-buttonElement-button {
             &:is(:hover, :focus) {
-                background-color: var(--background-color-progressive-subtle, #eaf3ff);
-                color: var(--instantDiffs-color-link--hover);
+                background-color: var(--background-color-interactive, #eaecf0);
+                color: var(--color-progressive--hover, var(--instantDiffs-color-link--hover));
             }
 
             &:active {
                 border-color: var(--border-color-progressive--active, #2a4b8d);
-                background-color: var(--background-color-progressive-subtle--active, #cbd6f6);
-                color: var(--instantDiffs-color-link--active);
+                background-color: var(--background-color-progressive-subtle, #eaf3ff);
+                color: var(--color-progressive--active, var(--instantDiffs-color-link--active));
             }
         }
     }

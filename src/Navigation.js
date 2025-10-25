@@ -5,9 +5,7 @@ import { isEditableContentModel } from './utils-api';
 import { getWikilink, getHref, getHrefAbsolute } from './utils-article';
 import { updateWatchButtonStatus } from './utils-watch';
 
-import Button from './Button';
 import MenuButton from './MenuButton';
-import Link from './Link';
 import Article from './Article';
 import Snapshot from './Snapshot';
 import Watch from './Watch';
@@ -178,7 +176,7 @@ class Navigation {
         const items = [];
 
         const buttonOptions = {
-            invisibleLabel: true,
+            type: 'shortcut',
         };
 
         // Back to the initiator page link
@@ -210,12 +208,8 @@ class Navigation {
      */
     renderMenu() {
         const buttonOptions = {
-            framed: false,
-            classes: [ 'instantDiffs-button--link' ],
+            type: 'menu',
         };
-        if ( !utils.defaults( 'showMenuIcons' ) ) {
-            buttonOptions.icon = null;
-        }
 
         // Render menu groups
         this.buttons.menuMobile = this.renderMenuMobileGroup( buttonOptions );
@@ -917,8 +911,9 @@ class Navigation {
             button = this.buttons[ name ];
         }
 
-        if ( !button ) return;
-        button.focus();
+        if ( button ) {
+            button.focus();
+        }
     }
 
     /**
