@@ -59,6 +59,11 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     layouts = {};
 
     /**
+     * @type {Object}
+     */
+    tabs = {};
+
+    /**
      * Create a SettingsDialog instance.
      */
     constructor() {
@@ -95,18 +100,29 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         // Render fieldsets
         this.renderLinksFieldset();
         this.renderDialogFieldset();
+        this.renderMenuFieldset();
         this.renderGeneralFieldset();
+
+        // Render tabs index layout
+        /** @type {OO.ui.IndexLayout} */
+        this.layouts.tabs = new OO.ui.IndexLayout( {
+            expanded: true,
+            framed: false,
+        } );
+
+        // Get only visible tabs and add them to the layout
+        /** @type {OO.ui.TabPanelLayout[]} */
+        const tabs = Object
+            .values( this.tabs )
+            .filter( tab => tab.isVisible() );
+        this.layouts.tabs.addTabPanels( tabs, 0 );
 
         // Combine fieldsets into the panel
         return new OO.ui.PanelLayout( {
             classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--edit' ],
-            padded: true,
-            expanded: false,
-            $content: [
-                this.layouts.links.$element,
-                this.layouts.dialog.$element,
-                this.layouts.general.$element,
-            ],
+            padded: false,
+            expanded: true,
+            content: [ this.layouts.tabs ],
         } );
     }
 
@@ -129,12 +145,12 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         return new OO.ui.PanelLayout( {
             classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--finish' ],
             padded: true,
-            expanded: false,
+            expanded: true,
             $content: content,
         } );
     }
 
-    /******* FIELDS ******/
+    /******* FIELDSETS ******/
 
     renderLinksFieldset() {
         // Show Link
@@ -182,16 +198,20 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.fields.markWatchedLine.toggle( utils.settings( 'markWatchedLine' ) );
 
         // Fieldset
-        this.layouts.links = new OO.ui.FieldsetLayout( {
-            label: utils.msg( 'settings-fieldset-links' ),
-        } );
+        this.layouts.links = new OO.ui.FieldsetLayout();
         this.layouts.links.addItems( [
             this.fields.showLink,
             this.fields.showPageLink,
             this.fields.highlightLine,
             this.fields.markWatchedLine,
         ] );
-        this.layouts.links.toggle(
+
+        // Tab
+        this.tabs.links = new OO.ui.TabPanelLayout( 'links', {
+            label: utils.msg( 'settings-fieldset-links' ),
+            content: [ this.layouts.links ],
+        } );
+        this.tabs.links.toggle(
             utils.settings( 'showLink' ) ||
             utils.settings( 'showPageLink' ) ||
             utils.settings( 'highlightLine' ) ||
@@ -234,6 +254,16 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         } );
         this.fields.viewWidth.toggle( utils.settings( 'viewWidth' ) );
 
+        // Enable keyboard hotkeys
+        this.inputs.enableHotkeys = new OO.ui.CheckboxInputWidget( {
+            selected: utils.defaults( 'enableHotkeys' ),
+        } );
+        this.fields.enableHotkeys = new OO.ui.FieldLayout( this.inputs.enableHotkeys, {
+            label: utils.msg( 'settings-enable-hotkeys' ),
+            align: 'inline',
+        } );
+        this.fields.enableHotkeys.toggle( utils.settings( 'enableHotkeys' ) );
+
         // Show inline format toggle button
         this.inputs.showDiffTools = new OO.ui.CheckboxInputWidget( {
             selected: utils.defaults( 'showDiffTools' ),
@@ -275,6 +305,46 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             align: 'inline',
         } );
         this.fields.openInNewTab.toggle( utils.settings( 'openInNewTab' ) );
+
+        // Fieldset
+        this.layouts.dialog = new OO.ui.FieldsetLayout();
+        this.layouts.dialog.addItems( [
+            this.fields.viewWidth,
+            this.fields.enableHotkeys,
+            this.fields.showDiffTools,
+            this.fields.showRevisionInfo,
+            this.fields.unHideDiffs,
+            this.fields.openInNewTab,
+        ] );
+
+        // Tab
+        this.tabs.dialog = new OO.ui.TabPanelLayout( 'dialog', {
+            label: utils.msg( 'settings-fieldset-dialog' ),
+            content: [ this.layouts.dialog ],
+        } );
+        this.tabs.dialog.toggle(
+            utils.settings( 'viewWidth' ) ||
+            utils.settings( 'enableHotkeys' ) ||
+            utils.settings( 'showDiffTools' ) ||
+            utils.settings( 'showRevisionInfo' ) ||
+            utils.settings( 'unHideDiffs' ) ||
+            utils.settings( 'openInNewTab' ),
+        );
+
+        // Trigger selects actions
+        this.inputs.viewWidth.selectItemByData( utils.defaults( 'viewWidth' ) );
+    };
+
+    renderMenuFieldset() {
+        // Show icons in the dropdown menu
+        this.inputs.showMenuIcons = new OO.ui.CheckboxInputWidget( {
+            selected: utils.defaults( 'showMenuIcons' ),
+        } );
+        this.fields.showMenuIcons = new OO.ui.FieldLayout( this.inputs.showMenuIcons, {
+            label: utils.msg( 'settings-show-menu-icons' ),
+            align: 'inline',
+        } );
+        this.fields.showMenuIcons.toggle( utils.settings( 'showMenuIcons' ) );
 
         // Copy links format
         this.inputOptions.linksFormat = {};
@@ -323,30 +393,25 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.fields.wikilinksFormat.toggle( utils.settings( 'wikilinksFormat' ) );
 
         // Fieldset
-        this.layouts.dialog = new OO.ui.FieldsetLayout( {
-            label: utils.msg( 'settings-fieldset-dialog' ),
-        } );
-        this.layouts.dialog.addItems( [
-            this.fields.viewWidth,
-            this.fields.showDiffTools,
-            this.fields.showRevisionInfo,
-            this.fields.unHideDiffs,
-            this.fields.openInNewTab,
+        this.layouts.menu = new OO.ui.FieldsetLayout();
+        this.layouts.menu.addItems( [
+            this.fields.showMenuIcons,
             this.fields.linksFormat,
             this.fields.wikilinksFormat,
         ] );
-        this.layouts.dialog.toggle(
-            utils.settings( 'viewWidth' ) ||
-            utils.settings( 'showDiffTools' ) ||
-            utils.settings( 'showRevisionInfo' ) ||
-            utils.settings( 'unHideDiffs' ) ||
-            utils.settings( 'openInNewTab' ) ||
+
+        // Tab
+        this.tabs.menu = new OO.ui.TabPanelLayout( 'menu', {
+            label: utils.msg( 'settings-fieldset-menu' ),
+            content: [ this.layouts.menu ],
+        } );
+        this.tabs.menu.toggle(
+            utils.settings( 'showMenuIcons' ) ||
             utils.settings( 'linksFormat' ) ||
             utils.settings( 'wikilinksFormat' ),
         );
 
         // Trigger selects actions
-        this.inputs.viewWidth.selectItemByData( utils.defaults( 'viewWidth' ) );
         this.inputs.linksFormat.selectItemByData( utils.defaults( 'linksFormat' ) );
         this.inputs.wikilinksFormat.selectItemByData( utils.defaults( 'wikilinksFormat' ) );
     };
@@ -364,26 +429,6 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         } );
         this.fields.enableMobile.toggle( utils.settings( 'enableMobile' ) );
 
-        // Enable keyboard hotkeys
-        this.inputs.enableHotkeys = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'enableHotkeys' ),
-        } );
-        this.fields.enableHotkeys = new OO.ui.FieldLayout( this.inputs.enableHotkeys, {
-            label: utils.msg( 'settings-enable-hotkeys' ),
-            align: 'inline',
-        } );
-        this.fields.enableHotkeys.toggle( utils.settings( 'enableHotkeys' ) );
-
-        // Show icons in the dropdown menu
-        this.inputs.showMenuIcons = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'showMenuIcons' ),
-        } );
-        this.fields.showMenuIcons = new OO.ui.FieldLayout( this.inputs.showMenuIcons, {
-            label: utils.msg( 'settings-show-menu-icons' ),
-            align: 'inline',
-        } );
-        this.fields.showMenuIcons.toggle( utils.settings( 'showMenuIcons' ) );
-
         // Show popup alerts for critical errors
         this.inputs.notifyErrors = new OO.ui.CheckboxInputWidget( {
             selected: utils.defaults( 'notifyErrors' ),
@@ -395,19 +440,19 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         this.fields.notifyErrors.toggle( utils.settings( 'notifyErrors' ) );
 
         // Fieldset
-        this.layouts.general = new OO.ui.FieldsetLayout( {
-            label: utils.msg( 'settings-fieldset-general' ),
-        } );
+        this.layouts.general = new OO.ui.FieldsetLayout();
         this.layouts.general.addItems( [
             this.fields.enableMobile,
-            this.fields.enableHotkeys,
-            this.fields.showMenuIcons,
             this.fields.notifyErrors,
         ] );
-        this.layouts.general.toggle(
+
+        // Tab
+        this.tabs.general = new OO.ui.TabPanelLayout( 'general', {
+            label: utils.msg( 'settings-fieldset-general' ),
+            content: [ this.layouts.general ],
+        } );
+        this.tabs.general.toggle(
             utils.settings( 'enableMobile' ) ||
-            utils.settings( 'enableHotkeys' ) ||
-            utils.settings( 'showMenuIcons' ) ||
             utils.settings( 'notifyErrors' ),
         );
     };
@@ -481,7 +526,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     }
 
     getBodyHeight() {
-        return 555;
+        return 500;
     }
 
     /******* REQUEST PROCESS ******/
