@@ -96,6 +96,10 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
     /******* PANELS ******/
 
+    /**
+     * Renders the main panel with the setting inputs.
+     * @returns {OO.ui.PanelLayout}
+     */
     renderEditPanel() {
         // Render fieldsets
         this.renderLinksFieldset();
@@ -126,6 +130,10 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         } );
     }
 
+    /**
+     * Render the final panel with the saving success message.
+     * @returns {OO.ui.PanelLayout}
+     */
     renderFinishPanel() {
         /**
          * Icon "Eo circle light-green checkmark.svg"

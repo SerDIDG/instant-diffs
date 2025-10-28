@@ -618,7 +618,8 @@ export function getMobileServer() {
 }
 
 export function getBodyContentNode() {
-    let $content = $( id.config.bodyContentSelector );
+    const selector = id.config.bodyContentSelector[ mw.config.get( 'skin' ) ] || id.config.bodyContentSelector.default;
+    let $content = $( selector );
     if ( !$content || $content.length === 0 ) {
         $content = $( document.body );
     }

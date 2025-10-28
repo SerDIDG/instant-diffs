@@ -190,6 +190,34 @@ export function getUserDate( date ) {
         : date.toLocaleString();
 }
 
+/**
+ * Renders mobile diff footer.
+ * @returns {DocumentFragment}
+ */
+export function renderMobileDiffFooter( data ) {
+    data = {
+        title: null,
+        revid: null,
+        hostname: null,
+        user: null,
+        userhidden: false,
+        ...data,
+    };
+
+    const article = new Article( {
+        type: 'revision',
+        title: data.title,
+        oldid: data.revid,
+        hostname: data.hostname,
+    } );
+
+    return h( 'div', { class: [ 'mw-diff-mobile-footer' ] } ,
+        !data.userhidden
+            ? renderUserLink( article, data.user )
+            : h( 'span', { class: [ 'mw-userlink', 'history-deleted' ] }, mw.msg( 'rev-deleted-user' ) ),
+    );
+}
+
 /******* INLINE FORMAT TOGGLE *******/
 
 /**

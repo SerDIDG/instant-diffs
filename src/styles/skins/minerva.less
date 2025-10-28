@@ -38,6 +38,12 @@
             border-bottom: 1px solid var(--border-color-subtle, #c8ccd1);
         }
 
+        // /* [Fix] Override custom styles that were added in the specific projects. */
+        // /* (see [[uk:MediaWiki:Mobile.css]]) */
+        .ext-checkuser-userinfocard-button {
+            display: inline-flex !important;
+        }
+
         .mw-diff-usermetadata,
         .mw-diff-userroles,
         .mw-diff-usereditcount {

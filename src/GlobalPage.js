@@ -170,14 +170,14 @@ class GlobalPage extends Page {
 
     /******* RENDER *******/
 
-    async render() {
-        await super.render();
-
+    async renderContent() {
         // Render warning about foreign diff limitations
         this.renderForeignWarning();
+
+        await super.renderContent();
     }
 
-    async renderContent() {
+    async renderSuccessContent() {
         // Collect missing data from the response
         this.collectData();
 
@@ -299,6 +299,19 @@ class GlobalPage extends Page {
         if ( this.article.get( 'type' ) === 'revision' ) {
             utilsPage.processRevisionDiffTable( this.nodes.$table );
         }
+
+        // Render mobile diff footer to the top
+        if ( this.data.toid ) {
+            const footer = utilsPage.renderMobileDiffFooter( {
+                title: this.data.totitle,
+                revid: this.data.torevid,
+                hostname: this.article.get( 'hostname' ),
+                user: this.data.touser,
+                userhidden: this.data.touserhidden,
+            } );
+            utils.embed( footer, this.nodes.$body, 'prependTo' );
+        }
+
     }
 
     async renderErrorContent() {

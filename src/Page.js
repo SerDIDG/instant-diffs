@@ -557,21 +557,16 @@ class Page {
             .addClass( bodyClasses )
             .appendTo( this.nodes.$container );
 
-        if ( this.error ) {
-            await this.renderErrorContent();
-        } else {
-            await this.renderContent();
-        }
-
-        this.renderNavigation();
+        await this.renderContent();
+        await this.renderNavigation();
     }
 
     async renderContent() {
-        // Restore functionally that not requires that elements are in the DOM
-        await this.restoreFunctionality();
-
-        // Request lazy-loaded dependencies
-        this.requestDependencies();
+        if ( this.error ) {
+            await this.renderErrorContent();
+        } else {
+            await this.renderSuccessContent();
+        }
     }
 
     async renderErrorContent() {
@@ -586,7 +581,15 @@ class Page {
         return $box;
     }
 
-    renderNavigation() {
+    async renderSuccessContent() {
+        // Restore functionally that not requires that elements are in the DOM
+        await this.restoreFunctionality();
+
+        // Request lazy-loaded dependencies
+        this.requestDependencies();
+    }
+
+    async renderNavigation() {
         this.navigation = new Navigation( this, this.article, this.articleParams, {
             initiatorAction: this.options.initiatorAction,
             links: this.links,

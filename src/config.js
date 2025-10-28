@@ -247,7 +247,10 @@ export const config = {
     },
 
     // Content selectors
-    bodyContentSelector: '#bodyContent',
+    bodyContentSelector: {
+        minerva: '#content',
+        default: '#bodyContent',
+    },
     contentSelector: '#mw-content-text',
 
     // Link selectors
@@ -288,6 +291,8 @@ export const config = {
         'a.ext-globalwatchlist-diff',                                   // [[Special:GlobalWatchlist]]
         '.wikibase-statementview-references a',                         // Wikibase statements references
         'a.edit-summary-time',                                          // [[Extension:Translate]]
+        '#mw-fr-revision-messages a',                                   // [[Extension:FlaggedRevs]] mobile warning
+        '#mw-fr-revision-details a',                                    // [[Extension:FlaggedRevs]] desktop popup
         //'.mw-undelete-revlist a',                                     // [[Special:Undelete]]
     ],
 
@@ -345,7 +350,6 @@ export const config = {
             '#mw-fr-revisiontag',
             '#mw-fr-revisiontag-edit',
             '#mw-fr-revision-tag-edit',
-            '#mw-fr-revision-messages',                                 // Warning about pending changes at the top of the page
             '.mw-specialpage-summary',                                  // Page header on certain Special pages
             '#mw-revision-nav',                                         // [[Special:PermanentLink]] / Revision
             '.mw-fr-pending-changes-table',                             // [[Special:PendingChanges]]
@@ -355,7 +359,7 @@ export const config = {
             '.wikibase-statementview-references',                       // Wikibase statement references
             '.ext-globalwatchlist-site',                                // [[Special:GlobalWatchlist]]
             '.tux-message-editor',                                      // [[Extension:Translate]]
-            '.mw-pt-translate-header',                                  // Page header added by [[Extension:Translate]]
+            '.mw-pt-translate-header',                                  // [[Extension:Translate]] Page header
             //'.mw-undelete-revlist',                                   // [[Special:Undelete]]
         ],
     },

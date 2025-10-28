@@ -156,7 +156,7 @@ class LocalPage extends Page {
 
     /******* RENDER *******/
 
-    async renderContent() {
+    async renderSuccessContent() {
         // Parse and append all data coming from endpoint
         this.nodes.data = $.parseHTML( this.data );
         this.nodes.$data = $( this.nodes.data ).appendTo( this.nodes.$body );
@@ -172,7 +172,7 @@ class LocalPage extends Page {
             .filter( '.cdx-message' )
             .prependTo( this.nodes.$body );
         this.nodes.$data
-            .find( '.cdx-message ' )
+            .find( '.cdx-message' )
             .prependTo( this.nodes.$body );
 
         // Render a warning when revision was not found
@@ -182,6 +182,11 @@ class LocalPage extends Page {
                 $content: $emptyMessage,
             } );
         }
+
+        // Prepend mobile diff footer to the top
+        this.nodes.$data
+            .filter( '.mw-diff-mobile-footer' )
+            .prependTo( this.nodes.$body );
 
         // Process diff table
         this.processDiffTable();
@@ -193,7 +198,7 @@ class LocalPage extends Page {
         }
 
         // Call a parent method that wraps a process
-        await super.renderContent();
+        await super.renderSuccessContent();
     }
 
     collectData() {
