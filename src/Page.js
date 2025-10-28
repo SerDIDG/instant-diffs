@@ -594,6 +594,8 @@ class Page {
             initiatorAction: this.options.initiatorAction,
             links: this.links,
         } );
+
+        await this.navigation.render();
         this.navigation.embed( this.nodes.$container, 'prependTo' );
     }
 

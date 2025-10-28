@@ -5,7 +5,6 @@ import { isEditableContentModel } from './utils-api';
 import { getWikilink, getHref, getHrefAbsolute } from './utils-article';
 import { updateWatchButtonStatus } from './utils-watch';
 
-import MenuButton from './MenuButton';
 import Article from './Article';
 import Snapshot from './Snapshot';
 import Watch from './Watch';
@@ -66,6 +65,11 @@ class Navigation {
     isDetached = false;
 
     /**
+     * @type {typeof import('./MenuButton').default}
+     */
+    MenuButton;
+
+    /**
      * Create a Page navigation bar instance.
      * @param {import('./Page').default} page a Page instance
      * @param {import('./Article').default} article an Article instance
@@ -86,17 +90,12 @@ class Navigation {
             links: {},
             ...options,
         };
-
-        // Setup hotkey events
-        view.connect( this, { hotkey: 'onHotkey' } );
-
-        this.render();
     }
 
     /**
      * Render a navigation bar structure.
      */
-    render() {
+    async render() {
         // Render structure
         this.nodes.$container = $( '<div>' )
             .addClass( 'instantDiffs-navigation' );
@@ -113,10 +112,16 @@ class Navigation {
             .addClass( [ 'instantDiffs-navigation-group', 'instantDiffs-navigation-group--right' ] )
             .appendTo( this.nodes.$container );
 
+        // Lazy-import modules
+        this.MenuButton = ( await import('./MenuButton') ).default;
+
         // Render panels
         this.renderSnapshotLinks();
         this.renderNavigationLinks();
         this.renderMenuLinks();
+
+        // Setup hotkey events
+        view.connect( this, { hotkey: 'onHotkey' } );
     }
 
     /******* NAVIGATION *******/
@@ -357,12 +362,12 @@ class Navigation {
 
     /**
      * Render a snapshot button that navigates to the previous link on the article.
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderSnapshotPrevLink() {
         const link = Snapshot.instance.getPreviousLink();
 
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: utils.msg( 'goto-snapshot-prev' ),
             title: utils.msgHint( 'goto-snapshot-prev', 'snapshot-prev', utils.defaults( 'enableHotkeys' ) ),
             href: link ? link.href : null,
@@ -380,12 +385,12 @@ class Navigation {
 
     /**
      * Render a snapshot button that navigates to the next link on the article.
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderSnapshotNextLink() {
         const link = Snapshot.instance.getNextLink();
 
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: utils.msg( 'goto-snapshot-next' ),
             title: utils.msgHint( 'goto-snapshot-next', 'snapshot-next', utils.defaults( 'enableHotkeys' ) ),
             href: link ? link.href : null,
@@ -403,7 +408,7 @@ class Navigation {
 
     /**
      * Render a button that navigates to the previous diff or revision.
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderPrevLink() {
         let href;
@@ -424,7 +429,7 @@ class Navigation {
             iconBefore: document.dir === 'ltr' ? '←' : '→',
         } );
 
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: $( label ),
             title: utils.msgHint( `goto-prev-${ this.article.get( 'type' ) }`, 'prev', utils.defaults( 'enableHotkeys' ) ),
             href: href,
@@ -439,7 +444,7 @@ class Navigation {
 
     /**
      * Render a button that navigates to the next diff or revision.
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderNextLink() {
         let href;
@@ -460,7 +465,7 @@ class Navigation {
             iconAfter: document.dir === 'ltr' ? '→' : '←',
         } );
 
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: $( label ),
             title: utils.msgHint( `goto-next-${ this.article.get( 'type' ) }`, 'next', utils.defaults( 'enableHotkeys' ) ),
             href: href,
@@ -476,13 +481,13 @@ class Navigation {
     /**
      * Render a button that switches view between diff or revision.
      * @param {Object} [options] button configuration options
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderSwitchLink( options ) {
         const type = this.article.get( 'type' ) === 'diff' ? 'revision' : 'diff';
         const articleOptions = { type };
 
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: utils.msg( `goto-view-${ type }` ),
             title: utils.msgHint( `goto-view-${ type }`, 'switch', utils.defaults( 'enableHotkeys' ) ),
             href: getHref( this.article, {}, articleOptions ),
@@ -501,10 +506,10 @@ class Navigation {
      * Render a button that switches to the diff between the last patrolled revision and the current unpatrolled one.
      * The button appears only if the FlaggedRevs extension is installed and the page has unpatrolled edits.
      * @param {Object} [options] button configuration options
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderUnpatrolledLink( options ) {
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: utils.msg( 'goto-view-unpatrolled' ),
             title: utils.msgHint( 'goto-view-unpatrolled', 'unpatrolled', utils.defaults( 'enableHotkeys' ) ),
             href: this.options.links.unpatrolled,
@@ -523,7 +528,7 @@ class Navigation {
     /**
      * Render a button that navigates to the previous view.
      * @param {Object} [options] button configuration options
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderBackLink( options ) {
         const initiator = this.page.getInitiatorPage();
@@ -533,7 +538,7 @@ class Navigation {
         const action = !utils.isEmpty( initiatorAction )
             ? `${ initiatorAction }-${ options.name }` : options.name;
 
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: utils.msg( `goto-back-${ article.get( 'type' ) }` ),
             title: utils.msgHint( `goto-back-${ article.get( 'type' ) }`, 'back', utils.defaults( 'enableHotkeys' ) ),
             href: getHref( article, initiator.getArticleParams() ),
@@ -551,10 +556,10 @@ class Navigation {
     /**
      * Render a button that copies link to the clipboard.
      * @param {Object} [options] button configuration options
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderCopyLink( options ) {
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: utils.msg( 'copy-link' ),
             icon: 'link',
             handler: this.actionCopyLink.bind( this ),
@@ -565,10 +570,10 @@ class Navigation {
     /**
      * Render a button that copies wikilink to the clipboard.
      * @param {Object} [options] button configuration options
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderCopyWikiLink( options ) {
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: utils.msg( 'copy-wikilink' ),
             icon: 'wikiText',
             handler: this.actionCopyWikilink.bind( this ),
@@ -579,10 +584,10 @@ class Navigation {
     /**
      * Render a button that navigates to the diff or to the revision.
      * @param {Object} [options] button configuration options
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderTypeLink( options ) {
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: utils.msg( `goto-${ this.article.get( 'type' ) }` ),
             href: getHref( this.article ),
             target: utils.getTarget( true ),
@@ -594,7 +599,7 @@ class Navigation {
     /**
      * Render a button that navigates to the article.
      * @param {Object} [options] button configuration options
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderPageLink( options ) {
         const href = this.article.getMW( 'title' ).isTalkPage()
@@ -607,7 +612,7 @@ class Navigation {
             default: 'article',
         };
 
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: utils.msg( 'goto-page' ),
             href: getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
@@ -619,7 +624,7 @@ class Navigation {
     /**
      * Render a button that navigates to the talk article.
      * @param {Object} [options] button configuration options
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderTalkPageLink( options ) {
         const href = this.article.getMW( 'title' ).isTalkPage()
@@ -632,7 +637,7 @@ class Navigation {
             default: 'speechBubbles',
         };
 
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: utils.msg( 'goto-talkpage' ),
             href: getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
@@ -644,13 +649,13 @@ class Navigation {
     /**
      * Render a button that navigates to the page edit.
      * @param {Object} [options] button configuration options
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderEditLink( options ) {
         const isEditable = mw.config.get( 'wgIsProbablyEditable' );
         const href = mw.util.getUrl( this.article.get( 'title' ), { action: 'edit' } );
 
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: utils.msg( isEditable ? 'goto-edit' : 'goto-source' ),
             href: getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
@@ -662,12 +667,12 @@ class Navigation {
     /**
      * Render a button that navigates to the page history.
      * @param {Object} [options] button configuration options
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderHistoryLink( options ) {
         const href = mw.util.getUrl( this.article.get( 'title' ), { action: 'history' } );
 
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: utils.msg( 'goto-history' ),
             href: getHrefAbsolute( this.article, href ),
             target: utils.getTarget( true ),
@@ -679,10 +684,10 @@ class Navigation {
     /**
      * Render a button that adds / removes page from the watchlist.
      * @param {Object} [options] button configuration options
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderWatchLink( options ) {
-        const button = new MenuButton( {
+        const button = new this.MenuButton( {
             handler: this.actionWatchPage.bind( this ),
             ...options,
         } );
@@ -696,10 +701,10 @@ class Navigation {
     /**
      * Render a button that opens settings dialog.
      * @param {Object} [options] button configuration options
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderSettingsLink( options ) {
-        return new MenuButton( {
+        return new this.MenuButton( {
             label: utils.msg( 'goto-settings' ),
             icon: 'settings',
             handler: this.actionOpenSettings.bind( this ),
@@ -710,7 +715,7 @@ class Navigation {
     /**
      * Render a button that shows a current version of the Instant Diffs and navigates to the homearticle.
      * @param {Object} [options] button configuration options
-     * @returns {import('./MenuButton')} a MenuButton instance
+     * @returns {import('./MenuButton').default} a MenuButton instance
      */
     renderIDLink( options ) {
         const label = hf(
@@ -729,7 +734,7 @@ class Navigation {
 
         options.classes.push( 'instantDiffs-button--link-id' );
 
-        return new MenuButton( options );
+        return new this.MenuButton( options );
     }
 
     /******* LINK ACTIONS *******/
