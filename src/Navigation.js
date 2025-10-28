@@ -90,12 +90,21 @@ class Navigation {
             links: {},
             ...options,
         };
+
+        // Setup hotkey events
+        view.connect( this, { hotkey: 'onHotkey' } );
+
+        // Lazy-import modules
+        this.MenuButton = require( './MenuButton' ).default;
+
+        // Render content
+        this.render();
     }
 
     /**
      * Render a navigation bar structure.
      */
-    async render() {
+    render() {
         // Render structure
         this.nodes.$container = $( '<div>' )
             .addClass( 'instantDiffs-navigation' );
@@ -112,16 +121,10 @@ class Navigation {
             .addClass( [ 'instantDiffs-navigation-group', 'instantDiffs-navigation-group--right' ] )
             .appendTo( this.nodes.$container );
 
-        // Lazy-import modules
-        this.MenuButton = ( await import('./MenuButton') ).default;
-
         // Render panels
         this.renderSnapshotLinks();
         this.renderNavigationLinks();
         this.renderMenuLinks();
-
-        // Setup hotkey events
-        view.connect( this, { hotkey: 'onHotkey' } );
     }
 
     /******* NAVIGATION *******/
