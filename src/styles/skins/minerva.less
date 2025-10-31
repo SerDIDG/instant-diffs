@@ -26,6 +26,23 @@
         display: none;
     }
 
+    // /* [Fix] Override styles for the user links */
+    // /* Also try to override custom styles that were added in the specific projects */
+    // /* (see [[uk:MediaWiki:Mobile.css]]) */
+    .diff-title {
+        .mw-userlink {
+            float: none;
+
+            &::before {
+                display: none;
+            }
+        }
+
+        .mw-usertoollinks {
+            float: none;
+        }
+    }
+
     @media (max-width: @max-width-breakpoint-mobile) {
         // /* [Fix] Override fixed positioning for the edit contributor block on mobile. */
         .mw-diff-mobile-footer {
@@ -91,9 +108,13 @@
             }
         }
 
-        .mw-userlink::before {
-            width: calc(var(--font-size-medium, 1rem) + 4px);
-            display: inline-block;
+        .mw-userlink {
+            float: none;
+
+            &::before {
+                width: calc(var(--font-size-medium, 1rem) + 4px);
+                display: inline-block;
+            }
         }
 
         // /* [Fix] Hide user icon if checkuser extension is enabled. */
