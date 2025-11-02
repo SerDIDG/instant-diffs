@@ -8,8 +8,8 @@ import { updateWatchButtonStatus } from './utils-watch';
 import Article from './Article';
 import Snapshot from './Snapshot';
 import Watch from './Watch';
-import settings from './Settings';
-import view from './View';
+import view from './view';
+import settings from './settings';
 
 import './styles/navigation.less';
 
@@ -232,13 +232,13 @@ class Navigation {
         return new OO.ui.PopupButtonWidget( {
             icon: 'menu',
             label: utils.msg( 'goto-menu' ),
-            title: utils.msgHint( 'goto-menu', 'menu', utils.defaults( 'enableHotkeys' ) ),
+            title: utils.msgHint( 'goto-menu', 'menu', settings.get( 'enableHotkeys' ) ),
             invisibleLabel: true,
             popup: {
                 $content: $( groupsElements ),
                 classes: [
                     'instantDiffs-buttons-popup',
-                    utils.defaults( 'showMenuIcons' ) ? 'has-icons' : null,
+                    settings.get( 'showMenuIcons' ) ? 'has-icons' : null,
                 ],
                 width: 'auto',
                 padded: false,
@@ -314,7 +314,7 @@ class Navigation {
             items,
             classes: [
                 'instantDiffs-buttons-group--vertical',
-                utils.defaults( 'showMenuIcons' ) ? 'has-icons' : null,
+                settings.get( 'showMenuIcons' ) ? 'has-icons' : null,
             ],
         } );
     };
@@ -356,7 +356,7 @@ class Navigation {
             classes: [
                 'instantDiffs-buttons-group--vertical',
                 'instantDiffs-buttons-group--mobile',
-                utils.defaults( 'showMenuIcons' ) ? 'has-icons' : null,
+                settings.get( 'showMenuIcons' ) ? 'has-icons' : null,
             ],
         } );
     };
@@ -372,7 +372,7 @@ class Navigation {
 
         return new this.MenuButton( {
             label: utils.msg( 'goto-snapshot-prev' ),
-            title: utils.msgHint( 'goto-snapshot-prev', 'snapshot-prev', utils.defaults( 'enableHotkeys' ) ),
+            title: utils.msgHint( 'goto-snapshot-prev', 'snapshot-prev', settings.get( 'enableHotkeys' ) ),
             href: link ? link.href : null,
             target: utils.getTarget( true ),
             invisibleLabel: true,
@@ -395,7 +395,7 @@ class Navigation {
 
         return new this.MenuButton( {
             label: utils.msg( 'goto-snapshot-next' ),
-            title: utils.msgHint( 'goto-snapshot-next', 'snapshot-next', utils.defaults( 'enableHotkeys' ) ),
+            title: utils.msgHint( 'goto-snapshot-next', 'snapshot-next', settings.get( 'enableHotkeys' ) ),
             href: link ? link.href : null,
             target: utils.getTarget( true ),
             invisibleLabel: true,
@@ -434,7 +434,7 @@ class Navigation {
 
         return new this.MenuButton( {
             label: $( label ),
-            title: utils.msgHint( `goto-prev-${ this.article.get( 'type' ) }`, 'prev', utils.defaults( 'enableHotkeys' ) ),
+            title: utils.msgHint( `goto-prev-${ this.article.get( 'type' ) }`, 'prev', settings.get( 'enableHotkeys' ) ),
             href: href,
             target: utils.getTarget( true ),
             disabled: !href,
@@ -470,7 +470,7 @@ class Navigation {
 
         return new this.MenuButton( {
             label: $( label ),
-            title: utils.msgHint( `goto-next-${ this.article.get( 'type' ) }`, 'next', utils.defaults( 'enableHotkeys' ) ),
+            title: utils.msgHint( `goto-next-${ this.article.get( 'type' ) }`, 'next', settings.get( 'enableHotkeys' ) ),
             href: href,
             target: utils.getTarget( true ),
             disabled: !href,
@@ -492,7 +492,7 @@ class Navigation {
 
         return new this.MenuButton( {
             label: utils.msg( `goto-view-${ type }` ),
-            title: utils.msgHint( `goto-view-${ type }`, 'switch', utils.defaults( 'enableHotkeys' ) ),
+            title: utils.msgHint( `goto-view-${ type }`, 'switch', settings.get( 'enableHotkeys' ) ),
             href: getHref( this.article, {}, articleOptions ),
             target: utils.getTarget( true ),
             icon: 'specialPages',
@@ -514,7 +514,7 @@ class Navigation {
     renderUnpatrolledLink( options ) {
         return new this.MenuButton( {
             label: utils.msg( 'goto-view-unpatrolled' ),
-            title: utils.msgHint( 'goto-view-unpatrolled', 'unpatrolled', utils.defaults( 'enableHotkeys' ) ),
+            title: utils.msgHint( 'goto-view-unpatrolled', 'unpatrolled', settings.get( 'enableHotkeys' ) ),
             href: this.options.links.unpatrolled,
             target: utils.getTarget( true ),
             icon: 'info',
@@ -543,7 +543,7 @@ class Navigation {
 
         return new this.MenuButton( {
             label: utils.msg( `goto-back-${ article.get( 'type' ) }` ),
-            title: utils.msgHint( `goto-back-${ article.get( 'type' ) }`, 'back', utils.defaults( 'enableHotkeys' ) ),
+            title: utils.msgHint( `goto-back-${ article.get( 'type' ) }`, 'back', settings.get( 'enableHotkeys' ) ),
             href: getHref( article, initiator.getArticleParams() ),
             target: utils.getTarget( true ),
             icon: 'newline',
@@ -748,7 +748,7 @@ class Navigation {
     actionCopyLink() {
         const options = {
             relative: false,
-            minify: utils.defaults( 'linksFormat' ) === 'minify',
+            minify: settings.get( 'linksFormat' ) === 'minify',
         };
         const href = getHref( this.article, {}, options );
 
@@ -837,7 +837,7 @@ class Navigation {
      * Event that emits when the View dialog fires hotkey event.
      */
     onHotkey( event ) {
-        if ( !utils.defaults( 'enableHotkeys' ) ) return;
+        if ( !settings.get( 'enableHotkeys' ) ) return;
 
         const isCtrlPressed = event.ctrlKey;
         const isShiftPressed = event.shiftKey;

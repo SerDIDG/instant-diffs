@@ -3,8 +3,8 @@ import * as utils from './utils';
 import { tweakUserOoUiClass } from './utils-oojs';
 import { getHref } from './utils-article';
 
-import settings from './Settings';
-import view from './View';
+import view from './view';
+import settings from './settings';
 
 const { h } = utils;
 
@@ -163,7 +163,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     renderLinksFieldset() {
         // Show Link
         this.inputs.showLink = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'showLink' ),
+            selected: settings.get( 'showLink' ),
         } );
         this.fields.showLink = new OO.ui.FieldLayout( this.inputs.showLink, {
             label: utils.msg( 'settings-show-link' ),
@@ -171,11 +171,11 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             help: utils.msg( 'settings-show-link-help' ),
             helpInline: true,
         } );
-        this.fields.showLink.toggle( utils.settings( 'showLink' ) );
+        this.fields.showLink.toggle( settings.check( 'showLink' ) );
 
         // Show Page Link
         this.inputs.showPageLink = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'showPageLink' ),
+            selected: settings.get( 'showPageLink' ),
         } );
         this.fields.showPageLink = new OO.ui.FieldLayout( this.inputs.showPageLink, {
             label: utils.msg( 'settings-show-page-link' ),
@@ -183,27 +183,27 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             help: utils.msgDom( 'settings-show-page-link-help' ),
             helpInline: true,
         } );
-        this.fields.showPageLink.toggle( utils.settings( 'showPageLink' ) );
+        this.fields.showPageLink.toggle( settings.check( 'showPageLink' ) );
 
-        // Highlight list lines when View dialog opens
+        // Highlight list lines when the View dialog opens
         this.inputs.highlightLine = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'highlightLine' ),
+            selected: settings.get( 'highlightLine' ),
         } );
         this.fields.highlightLine = new OO.ui.FieldLayout( this.inputs.highlightLine, {
             label: utils.msg( 'settings-highlight-line' ),
             align: 'inline',
         } );
-        this.fields.highlightLine.toggle( utils.settings( 'highlightLine' ) );
+        this.fields.highlightLine.toggle( settings.check( 'highlightLine' ) );
 
-        // Mark watched lines when View dialog opens
+        // Mark watched lines when the View dialog opens
         this.inputs.markWatchedLine = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'markWatchedLine' ),
+            selected: settings.get( 'markWatchedLine' ),
         } );
         this.fields.markWatchedLine = new OO.ui.FieldLayout( this.inputs.markWatchedLine, {
             label: utils.msg( 'settings-mark-watched-line' ),
             align: 'inline',
         } );
-        this.fields.markWatchedLine.toggle( utils.settings( 'markWatchedLine' ) );
+        this.fields.markWatchedLine.toggle( settings.check( 'markWatchedLine' ) );
 
         // Fieldset
         this.layouts.links = new OO.ui.FieldsetLayout();
@@ -220,10 +220,10 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             content: [ this.layouts.links ],
         } );
         this.tabs.links.toggle(
-            utils.settings( 'showLink' ) ||
-            utils.settings( 'showPageLink' ) ||
-            utils.settings( 'highlightLine' ) ||
-            utils.settings( 'markWatchedLine' ),
+            settings.check( 'showLink' ) ||
+            settings.check( 'showPageLink' ) ||
+            settings.check( 'highlightLine' ) ||
+            settings.check( 'markWatchedLine' ),
         );
     };
 
@@ -260,41 +260,41 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             help: utils.msg( 'settings-view-width-help' ),
             helpInline: true,
         } );
-        this.fields.viewWidth.toggle( utils.settings( 'viewWidth' ) );
+        this.fields.viewWidth.toggle( settings.check( 'viewWidth' ) );
 
         // Enable keyboard hotkeys
         this.inputs.enableHotkeys = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'enableHotkeys' ),
+            selected: settings.get( 'enableHotkeys' ),
         } );
         this.fields.enableHotkeys = new OO.ui.FieldLayout( this.inputs.enableHotkeys, {
             label: utils.msg( 'settings-enable-hotkeys' ),
             align: 'inline',
         } );
-        this.fields.enableHotkeys.toggle( utils.settings( 'enableHotkeys' ) );
+        this.fields.enableHotkeys.toggle( settings.check( 'enableHotkeys' ) );
 
-        // Show inline format toggle button
+        // Show the inline format toggle button
         this.inputs.showDiffTools = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'showDiffTools' ),
+            selected: settings.get( 'showDiffTools' ),
         } );
         this.fields.showDiffTools = new OO.ui.FieldLayout( this.inputs.showDiffTools, {
             label: utils.msg( 'settings-show-diff-tools' ),
             align: 'inline',
         } );
-        this.fields.showDiffTools.toggle( utils.settings( 'showDiffTools' ) );
+        this.fields.showDiffTools.toggle( settings.check( 'showDiffTools' ) );
 
         // Show diff info in the revisions
         this.inputs.showRevisionInfo = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'showRevisionInfo' ),
+            selected: settings.get( 'showRevisionInfo' ),
         } );
         this.fields.showRevisionInfo = new OO.ui.FieldLayout( this.inputs.showRevisionInfo, {
             label: utils.msg( 'settings-show-revision-info' ),
             align: 'inline',
         } );
-        this.fields.showRevisionInfo.toggle( utils.settings( 'showRevisionInfo' ) );
+        this.fields.showRevisionInfo.toggle( settings.check( 'showRevisionInfo' ) );
 
         // Unhide revisions and diff content for administrators
         this.inputs.unHideDiffs = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'unHideDiffs' ),
+            selected: settings.get( 'unHideDiffs' ),
         } );
         this.fields.unHideDiffs = new OO.ui.FieldLayout( this.inputs.unHideDiffs, {
             label: utils.msg( 'settings-unhide-diffs' ),
@@ -302,17 +302,17 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             help: utils.msgDom( 'settings-unhide-diffs-help', 'suppressrevision' ),
             helpInline: true,
         } );
-        this.fields.unHideDiffs.toggle( utils.settings( 'unHideDiffs' ) );
+        this.fields.unHideDiffs.toggle( settings.check( 'unHideDiffs' ) );
 
         // Open links in the new tab
         this.inputs.openInNewTab = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'openInNewTab' ),
+            selected: settings.get( 'openInNewTab' ),
         } );
         this.fields.openInNewTab = new OO.ui.FieldLayout( this.inputs.openInNewTab, {
             label: utils.msg( 'settings-open-in-new-tab' ),
             align: 'inline',
         } );
-        this.fields.openInNewTab.toggle( utils.settings( 'openInNewTab' ) );
+        this.fields.openInNewTab.toggle( settings.check( 'openInNewTab' ) );
 
         // Fieldset
         this.layouts.dialog = new OO.ui.FieldsetLayout();
@@ -331,28 +331,28 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             content: [ this.layouts.dialog ],
         } );
         this.tabs.dialog.toggle(
-            utils.settings( 'viewWidth' ) ||
-            utils.settings( 'enableHotkeys' ) ||
-            utils.settings( 'showDiffTools' ) ||
-            utils.settings( 'showRevisionInfo' ) ||
-            utils.settings( 'unHideDiffs' ) ||
-            utils.settings( 'openInNewTab' ),
+            settings.check( 'viewWidth' ) ||
+            settings.check( 'enableHotkeys' ) ||
+            settings.check( 'showDiffTools' ) ||
+            settings.check( 'showRevisionInfo' ) ||
+            settings.check( 'unHideDiffs' ) ||
+            settings.check( 'openInNewTab' ),
         );
 
         // Trigger selects actions
-        this.inputs.viewWidth.selectItemByData( utils.defaults( 'viewWidth' ) );
+        this.inputs.viewWidth.selectItemByData( settings.get( 'viewWidth' ) );
     };
 
     renderMenuFieldset() {
         // Show icons in the dropdown menu
         this.inputs.showMenuIcons = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'showMenuIcons' ),
+            selected: settings.get( 'showMenuIcons' ),
         } );
         this.fields.showMenuIcons = new OO.ui.FieldLayout( this.inputs.showMenuIcons, {
             label: utils.msg( 'settings-show-menu-icons' ),
             align: 'inline',
         } );
-        this.fields.showMenuIcons.toggle( utils.settings( 'showMenuIcons' ) );
+        this.fields.showMenuIcons.toggle( settings.check( 'showMenuIcons' ) );
 
         // Copy links format
         this.inputOptions.linksFormat = {};
@@ -375,7 +375,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             help: 'placeholder',
             helpInline: true,
         } );
-        this.fields.linksFormat.toggle( utils.settings( 'linksFormat' ) );
+        this.fields.linksFormat.toggle( settings.check( 'linksFormat' ) );
 
         // Copy wikilinks format
         this.inputOptions.wikilinksFormat = {};
@@ -398,7 +398,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             help: 'placeholder',
             helpInline: true,
         } );
-        this.fields.wikilinksFormat.toggle( utils.settings( 'wikilinksFormat' ) );
+        this.fields.wikilinksFormat.toggle( settings.check( 'wikilinksFormat' ) );
 
         // Fieldset
         this.layouts.menu = new OO.ui.FieldsetLayout();
@@ -414,20 +414,20 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             content: [ this.layouts.menu ],
         } );
         this.tabs.menu.toggle(
-            utils.settings( 'showMenuIcons' ) ||
-            utils.settings( 'linksFormat' ) ||
-            utils.settings( 'wikilinksFormat' ),
+            settings.check( 'showMenuIcons' ) ||
+            settings.check( 'linksFormat' ) ||
+            settings.check( 'wikilinksFormat' ),
         );
 
         // Trigger selects actions
-        this.inputs.linksFormat.selectItemByData( utils.defaults( 'linksFormat' ) );
-        this.inputs.wikilinksFormat.selectItemByData( utils.defaults( 'wikilinksFormat' ) );
+        this.inputs.linksFormat.selectItemByData( settings.get( 'linksFormat' ) );
+        this.inputs.wikilinksFormat.selectItemByData( settings.get( 'wikilinksFormat' ) );
     };
 
     renderGeneralFieldset() {
         // Enable on the mobile skin
         this.inputs.enableMobile = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'enableMobile' ),
+            selected: settings.get( 'enableMobile' ),
         } );
         this.fields.enableMobile = new OO.ui.FieldLayout( this.inputs.enableMobile, {
             label: utils.msg( 'settings-enable-mobile' ),
@@ -435,17 +435,17 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             help: utils.msg( 'settings-enable-mobile-help' ),
             helpInline: true,
         } );
-        this.fields.enableMobile.toggle( utils.settings( 'enableMobile' ) );
+        this.fields.enableMobile.toggle( settings.check( 'enableMobile' ) );
 
         // Show popup alerts for critical errors
         this.inputs.notifyErrors = new OO.ui.CheckboxInputWidget( {
-            selected: utils.defaults( 'notifyErrors' ),
+            selected: settings.get( 'notifyErrors' ),
         } );
         this.fields.notifyErrors = new OO.ui.FieldLayout( this.inputs.notifyErrors, {
             label: utils.msg( 'settings-notify-errors' ),
             align: 'inline',
         } );
-        this.fields.notifyErrors.toggle( utils.settings( 'notifyErrors' ) );
+        this.fields.notifyErrors.toggle( settings.check( 'notifyErrors' ) );
 
         // Fieldset
         this.layouts.general = new OO.ui.FieldsetLayout();
@@ -460,8 +460,8 @@ class SettingsDialog extends OO.ui.ProcessDialog {
             content: [ this.layouts.general ],
         } );
         this.tabs.general.toggle(
-            utils.settings( 'enableMobile' ) ||
-            utils.settings( 'notifyErrors' ),
+            settings.check( 'enableMobile' ) ||
+            settings.check( 'notifyErrors' ),
         );
     };
 
@@ -593,7 +593,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
         try {
             const options = JSON.parse( userOptions[ `${ id.config.settingsPrefix }-settings` ] );
-            utils.setDefaults( options, true );
+            settings.set( options, true );
         } catch {}
 
         this.update();
@@ -609,12 +609,12 @@ class SettingsDialog extends OO.ui.ProcessDialog {
         return new OO.ui.Process( () => {
             this.actions.setMode( 'edit' );
             this.stackLayout.setItem( this.panelEdit );
-            this.processActionUpdate( utils.defaults() );
+            this.processActionUpdate( settings.get() );
         } );
     }
 
     processActionUpdate( options ) {
-        // Hide pending loader in the header
+        // Hide the pending loader in the header
         this.popPending();
 
         // Update input values

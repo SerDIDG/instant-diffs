@@ -2,6 +2,7 @@ import * as utils from './utils';
 import { tweakUserOoUiClass } from './utils-oojs';
 
 import Link from './Link';
+import settings from './settings';
 
 /**
  * Class representing a custom ButtonWidget for the navigation menu.
@@ -39,7 +40,7 @@ class MenuButton extends OO.ui.ButtonWidget {
             options.classes = [ ...options.classes, 'instantDiffs-button--link' ];
             options.framed = false;
 
-            if ( !utils.defaults( 'showMenuIcons' ) ) {
+            if ( !settings.get( 'showMenuIcons' ) ) {
                 options.icon = null;
             }
         }

@@ -5,7 +5,8 @@ import { getHref, getHrefAbsolute } from './utils-article';
 
 import Api from './Api';
 import Article from './Article';
-import view from './View';
+import view from './view';
+import settings from './settings';
 
 const { h, hf, ht, hj } = utils;
 
@@ -116,7 +117,7 @@ export function renderDiffTableSide( data ) {
  * @param {JQuery} $table
  */
 export function processRevisionDiffTable( $table ) {
-    if ( utils.defaults( 'showRevisionInfo' ) ) {
+    if ( settings.get( 'showRevisionInfo' ) ) {
         // Hide the left side of the table and left only related to the revision info
         $table.find( 'td:is(.diff-otitle, .diff-side-deleted)' ).addClass( 'instantDiffs-hidden' );
         $table.find( 'td:is(.diff-ntitle, .diff-side-added)' ).attr( 'colspan', '4' );

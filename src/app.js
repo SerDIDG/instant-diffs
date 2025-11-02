@@ -15,8 +15,8 @@ import GlobalPage from './GlobalPage';
 import ViewButton from './ViewButton';
 import HistoryCompareButton from './HistoryCompareButton';
 import Watch from './Watch';
-import view from './View';
-import settings from './Settings';
+import view from './view';
+import settings from './settings';
 
 import './styles/skins.less';
 
@@ -188,7 +188,7 @@ function prepare( require ) {
     // Init links Intersection Observer
     id.local.interactionObserver = new IntersectionObserver( observeInteractions, {
         threshold: 0,
-        rootMargin: utils.defaults( 'debug' ) ? '0px 0px 0px 0px' : '33% 0px 33% 0px',
+        rootMargin: settings.get( 'debug' ) ? '0px 0px 0px 0px' : '33% 0px 33% 0px',
     } );
 
     // Init page change events
@@ -373,11 +373,11 @@ function load() {
 }
 
 async function ready() {
-    await utils.processDefaults();
+    await settings.processDefaults();
     utils.processMessages();
 
     // Check if script is enabled on mobile skin (Minerva)
-    if ( mw.config.get( 'skin' ) === 'minerva' && !utils.defaults( 'enableMobile' ) ) {
+    if ( mw.config.get( 'skin' ) === 'minerva' && !settings.get( 'enableMobile' ) ) {
         utils.notifyError( 'error-prepare-mobile', { type: 'mobile' }, null, true );
         return;
     }
@@ -415,7 +415,7 @@ function processContent( $context ) {
     process( $context );
 
     // Log timers for the first run
-    if ( utils.defaults( 'logTimers' ) && id.isFirstRun ) {
+    if ( settings.get( 'logTimers' ) && id.isFirstRun ) {
         utils.logTimer( 'ready time', id.timers.run, id.timers.ready );
         utils.logTimer( 'total time', id.timers.run, id.timers.processEnd );
     }
@@ -439,7 +439,7 @@ function process( $context ) {
     id.timers.processEnd = mw.now();
 
     // Log timers for the process
-    if ( utils.defaults( 'logTimers' ) && links.length > 0 ) {
+    if ( settings.get( 'logTimers' ) && links.length > 0 ) {
         utils.log( 'info', `links found: ${ links.length }` );
         utils.log( 'info', `links processed: ${ processedLinks.length }` );
         utils.logTimer( 'process time', id.timers.processStart, id.timers.processEnd );
@@ -450,9 +450,9 @@ function process( $context ) {
 }
 
 function handleReplace( settingOptions, defaultOptions ) {
-    if ( id.utils.defaults( 'standalone' ) && !defaultOptions.standalone ) {
+    if ( id.modules.settings.get( 'standalone' ) && !defaultOptions.standalone ) {
         // Call an internal hook to modify settings of the original instance.
-        // We want to use original instance because each new one will construct
+        // We want to use the original instance because each new one will construct
         // a new set of the modules with a new context.
         mw.hook( `${ id.config.prefix }.replace` ).fire( settingOptions, defaultOptions );
         return true;
@@ -467,7 +467,7 @@ async function processReplace( settingOptions, defaultOptions ) {
     id.local.defaults = defaultOptions;
 
     if ( id.isReady ) {
-        await utils.processDefaults();
+        await settings.processDefaults();
 
         // Reset time loggers
         id.timers.run = mw.now();

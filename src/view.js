@@ -6,6 +6,7 @@ import Link from './Link';
 import Snapshot from './Snapshot';
 import LocalPage from './LocalPage';
 import GlobalPage from './GlobalPage';
+import settings from './settings';
 
 import './styles/view.less';
 
@@ -475,7 +476,7 @@ class View {
                 id.timers.dialogProcesEnd = mw.now();
 
                 // Log timers for the dialog process
-                if ( utils.defaults( 'logTimers' ) ) {
+                if ( settings.get( 'logTimers' ) ) {
                     utils.logTimer( 'dialog process time', id.timers.dialogProcesStart, id.timers.dialogProcesEnd );
                 }
 

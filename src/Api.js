@@ -2,6 +2,8 @@ import id from './id';
 import * as utils from './utils';
 import * as utilsApi from './utils-api';
 
+import settings from './settings';
+
 class Api {
     /**
      * @type {typeof utilsApi}
@@ -272,7 +274,7 @@ class Api {
             }
 
             // Cache data with expiry
-            mw.storage.setObject( `${ id.config.prefix }-siteInfo`, this.siteInfo, utils.defaults( 'storageExpiry' ) );
+            mw.storage.setObject( `${ id.config.prefix }-siteInfo`, this.siteInfo, settings.get( 'storageExpiry' ) );
 
             this.processSiteInfoAliases( this.siteInfo[ hostname ] );
             return this.siteInfo[ hostname ];
@@ -365,7 +367,7 @@ class Api {
             }
 
             // Cache data with expiry
-            mw.storage.setObject( `${ id.config.prefix }-specialPagesLocal`, this.specialPagesLocal, utils.defaults( 'storageExpiry' ) );
+            mw.storage.setObject( `${ id.config.prefix }-specialPagesLocal`, this.specialPagesLocal, settings.get( 'storageExpiry' ) );
 
             return this.specialPagesLocal;
         } catch ( error ) {
@@ -406,7 +408,7 @@ class Api {
 
             // Cache data with expiry
             this.interwikiMap = query.interwikimap;
-            mw.storage.setObject( `${ id.config.prefix }-interwikiMap`, this.interwikiMap, utils.defaults( 'storageExpiry' ) );
+            mw.storage.setObject( `${ id.config.prefix }-interwikiMap`, this.interwikiMap, settings.get( 'storageExpiry' ) );
 
             return this.interwikiMap;
         } catch ( error ) {

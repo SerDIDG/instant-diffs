@@ -2,6 +2,8 @@ import hyperscript from 'hyperscript';
 
 import id from './id';
 
+import settings from './settings';
+
 /******* BASIC TYPES *******/
 
 /**
@@ -150,7 +152,7 @@ export function isNew() {
  * @returns {boolean}
  */
 export function isAllowed() {
-    return !defaults( 'standalone' ) &&
+    return !settings.get( 'standalone' ) &&
         id.config.include.pageActions.includes( mw.config.get( 'wgAction' ) ) &&
         !id.config.exclude.pages.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) );
 }
@@ -252,78 +254,6 @@ export function semverCompare( a, b ) {
 /******* DEFAULTS *******/
 
 /**
- * Gets a setting default stored in the config.
- * @param {string} [key] for specific option, or undefined for the option's object
- * @returns {*|object} a specific option, or the option's object
- */
-export function defaults( key ) {
-    return key ? id.local.defaults[ key ] : id.local.defaults;
-}
-
-/**
- * Applies the setting defaults to the singleton and saves to the Local Storage.
- * If second parameter is true, also saves to the Greasemonkey storage (if available)
- * and to the local MW User Options.
- * @param {Object} settings the setting options data
- * @param {boolean} [saveUserOptions] save the setting options to the local User Options
- */
-export function setDefaults( settings, saveUserOptions ) {
-    id.local.defaults = { ...id.local.defaults, ...settings };
-
-    // Save options only declarative in the settings
-    const userSettings = Object.fromEntries(
-        Object.entries( id.local.defaults ).filter( ( [ key ] ) => key in id.config.settings ),
-    );
-
-    // Save defaults to the Local Storage
-    mw.storage.setObject( `${ id.config.prefix }-settings`, userSettings );
-
-    if ( saveUserOptions ) {
-        // Save defaults to the Greasemonkey storage
-        if ( isFunction( id.GM?.setValue ) ) {
-            id.GM.setValue( 'settings', JSON.stringify( userSettings ) );
-        }
-
-        // Save defaults to the local MW User Options
-        if ( !id.local.mwIsAnon ) {
-            try {
-                mw.user.options.set( id.config.settingsPrefix, JSON.stringify( userSettings ) );
-            } catch {}
-        }
-    }
-}
-
-/**
- * Merges the settings defaults stored in the different storages:
- * Local Storage, Greasemonkey storage (if available), local MW User Options;
- * then sets them to the singleton without saving.
- */
-export async function processDefaults() {
-    let settings = {};
-
-    // Get settings stored in the Local Storage
-    try {
-        settings = { ...settings, ...mw.storage.getObject( `${ id.config.prefix }-settings` ) };
-    } catch {}
-
-    // Get settings stored in the Greasemonkey storage
-    if ( isFunction( id.GM?.getValue ) ) {
-        try {
-            settings = { ...settings, ...JSON.parse( await id.GM.getValue( 'settings' ) ) };
-        } catch {}
-    }
-
-    // Get settings stored in the local MW User Options
-    if ( !id.local.mwIsAnon ) {
-        try {
-            settings = { ...settings, ...JSON.parse( mw.user.options.get( `${ id.config.settingsPrefix }-settings` ) ) };
-        } catch {}
-    }
-
-    setDefaults( settings, false );
-}
-
-/**
  * Parses currentScript src href for the setting defaults.
  * @return {Object}
  */
@@ -333,15 +263,6 @@ export function getQueryDefaults() {
         settings[ key ] = value === 'true' ? true : value === 'false' ? false : value;
     }
     return settings;
-}
-
-/**
- * Gets a setting option stored in the config.
- * @param {string} [key] for specific option, or undefined for the option's object
- * @returns {*|object} a specific option, or the option's object
- */
-export function settings( key ) {
-    return key ? id.local.settings[ key ] : id.local.settings;
 }
 
 /******* MESSAGES *******/
@@ -451,7 +372,7 @@ export function getErrorMessage( str, error, article ) {
 }
 
 export function notifyError( str, error, article, silent ) {
-    silent = isBoolean( silent ) ? silent : !defaults( 'notifyErrors' );
+    silent = isBoolean( silent ) ? silent : !settings.get( 'notifyErrors' );
 
     // Silent all errors if a document is hidden or in the process of unloading
     if ( id.isUnloading ) return;
@@ -487,7 +408,7 @@ export function getLabel( type ) {
 }
 
 export function getTarget( isInWindow ) {
-    return defaults( 'openInNewTab' ) && isInWindow ? '_blank' : '_self';
+    return settings.get( 'openInNewTab' ) && isInWindow ? '_blank' : '_self';
 }
 
 export function getHref( href ) {
@@ -867,7 +788,7 @@ export function addBaseToLinks( $content, url, hashOnly = false ) {
 }
 
 export function addTargetToLinks( $content ) {
-    if ( !defaults( 'openInNewTab' ) ) return;
+    if ( !settings.get( 'openInNewTab' ) ) return;
 
     const handler = ( i, el ) => {
         // Add target attribute only to links with non-empty href.
@@ -890,7 +811,7 @@ export function addTargetToLinks( $content ) {
 export function getPlaceholderClasses( modifiers = [] ) {
     const classes = [ 'instantDiffs-panel-placeholder' ];
     modifiers.forEach( modifier => classes.push( `instantDiffs-panel-placeholder--${ modifier }` ) );
-    if ( defaults( 'showLink' ) ) {
+    if ( settings.get( 'showLink' ) ) {
         classes.push( 'has-link' );
     }
     return classes;

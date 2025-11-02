@@ -1,7 +1,7 @@
 import id from './id';
-import * as utils from './utils';
 
 import ViewButton from './ViewButton';
+import settings from './settings';
 
 /**
  * Class representing a button that opens a View dialog on the history article.
@@ -37,7 +37,7 @@ class HistoryCompareButton extends ViewButton {
      * Event that emits after the View dialog opens.
      */
     onDialogOpen() {
-        if ( utils.defaults( 'highlightLine' ) ) {
+        if ( settings.get( 'highlightLine' ) ) {
             this.nodes.$oldidLine.addClass( 'instantDiffs-line--highlight' );
             this.nodes.$diffLine.addClass( 'instantDiffs-line--highlight' );
         }
@@ -48,7 +48,7 @@ class HistoryCompareButton extends ViewButton {
      * Event that emits after the View dialog closes.
      */
     onDialogClose() {
-        if ( utils.defaults( 'highlightLine' ) ) {
+        if ( settings.get( 'highlightLine' ) ) {
             this.nodes.$oldidLine.removeClass( 'instantDiffs-line--highlight' );
             this.nodes.$diffLine.removeClass( 'instantDiffs-line--highlight' );
         }

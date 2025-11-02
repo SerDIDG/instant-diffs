@@ -5,7 +5,8 @@ import * as utilsLink from './utils-link';
 import Api from './Api';
 import Article from './Article';
 import Button from './Button';
-import view from './View';
+import view from './view';
+import settings from './settings';
 
 import './styles/links.less';
 
@@ -170,8 +171,8 @@ class Link {
         this.options = {
             behavior: 'basic',                                          // request | basic | event | none
             insertMethod: 'insertAfter',
-            showLink: utils.defaults( 'showLink' ),
-            showPageLink: utils.defaults( 'showPageLink' ),
+            showLink: settings.get( 'showLink' ),
+            showPageLink: settings.get( 'showPageLink' ),
             showAltTitle: false,
             initiatorLink: null,
             initiatorPage: null,
@@ -827,7 +828,7 @@ class Link {
      * Event that emits after the View dialog opens.
      */
     onDialogOpen() {
-        if ( this.mw.hasLine && utils.defaults( 'highlightLine' ) ) {
+        if ( this.mw.hasLine && settings.get( 'highlightLine' ) ) {
             this.mw.line.classList.add( 'instantDiffs-line--highlight' );
         }
 
@@ -845,11 +846,11 @@ class Link {
      */
     onDialogClose() {
         if ( this.mw.hasLine ) {
-            if ( utils.defaults( 'highlightLine' ) ) {
+            if ( settings.get( 'highlightLine' ) ) {
                 this.mw.line.classList.remove( 'instantDiffs-line--highlight' );
             }
             if (
-                utils.defaults( 'markWatchedLine' ) &&
+                settings.get( 'markWatchedLine' ) &&
                 id.config.changeLists.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) )
             ) {
                 this.mw.line.classList.remove( ...id.config.mwLine.unseen );

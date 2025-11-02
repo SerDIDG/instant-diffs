@@ -1,6 +1,6 @@
 import Article from './Article';
 import Button from './Button';
-import view from './View';
+import view from './view';
 
 /**
  * Class representing a button that opens a View dialog.

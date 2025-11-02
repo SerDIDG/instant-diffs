@@ -81,6 +81,7 @@ class Settings {
     /**
      * Event that emits after dependency loading failed.
      * @param {Object} [error]
+     * @private
      */
     onLoadError( error ) {
         this.isLoading = false;
@@ -95,7 +96,8 @@ class Settings {
     }
 
     /**
-     * Event that emits after dependency loading successive.
+     * Event that emits after dependency loading successively.
+     * @private
      */
     onLoadSuccess() {
         this.isLoading = false;
@@ -143,6 +145,7 @@ class Settings {
 
     /**
      * Event that emits after the Settings dialog starts opening.
+     * @private
      */
     onOpening() {
         this.emit( 'opening' );
@@ -150,6 +153,7 @@ class Settings {
 
     /**
      * Event that emits after the Settings dialog opens.
+     * @private
      */
     onOpen() {
         this.isOpen = true;
@@ -158,6 +162,7 @@ class Settings {
 
     /**
      * Event that emits after the View Settings starts closing.
+     * @private
      */
     onClosing() {
         this.emit( 'closing' );
@@ -165,6 +170,7 @@ class Settings {
 
     /**
      * Event that emits after the Settings dialog closes.
+     * @private
      */
     onClose() {
         this.isOpen = false;
@@ -197,6 +203,7 @@ class Settings {
 
     /**
      * Event that emits after user options request returned response.
+     * @private
      */
     onRequestResponse() {
         this.isRequesting = false;
@@ -209,7 +216,7 @@ class Settings {
      */
     save( options ) {
         // Update settings stored in the Local Storage and in the local User Options
-        utils.setDefaults( options, true );
+        this.set( options, true );
 
         // Guest settings can be stored only in the Local Storage
         if ( id.local.mwIsAnon ) return $.Deferred().resolve().promise();
@@ -259,9 +266,100 @@ class Settings {
 
     /**
      * Event that emits after save request returned response.
+     * @private
      */
     onSaveResponse() {
         this.isSaving = false;
+    }
+
+    /******* DEFAULTS *******/
+
+    /**
+     * Get a setting default stored in the config.
+     * @param {string} [key] for specific option, or undefined for the option's object
+     * @param {boolean} [userOption] get an option only declarative in the settings
+     * @returns {*|object} a specific option, or the option's object
+     */
+    get( key, userOption ) {
+        if ( userOption ) {
+            const userOptions = Object.fromEntries(
+                Object
+                    .entries( id.local.defaults )
+                    .filter( ( [ key ] ) => key in id.config.settings ),
+            );
+            return key ? userOptions[ key ] : userOptions;
+        }
+        return key ? id.local.defaults[ key ] : id.local.defaults;
+    }
+
+    /**
+     * Check is a setting option stored in the config is enabled.
+     * @param {string} [key] for specific option, or undefined for the option's object
+     * @returns {*|object} a specific option, or the option's object
+     */
+    check( key ) {
+        return key ? id.local.settings[ key ] : id.local.settings;
+    }
+
+    /**
+     * Apply the setting defaults to the singleton and saves to the Local Storage.
+     * If the second parameter is true, also saves to the Greasemonkey storage (if available)
+     * and to the local MW User Options.
+     * @param {Object} options the setting options data
+     * @param {boolean} [saveUserOptions] save the setting options to the local User Options
+     */
+    set( options, saveUserOptions ) {
+        id.local.defaults = { ...id.local.defaults, ...options };
+
+        // Get options only declarative in the settings
+        const userOptions = this.get( undefined, true );
+
+        // Save defaults to the Local Storage
+        mw.storage.setObject( `${ id.config.prefix }-settings`, userOptions );
+
+        if ( saveUserOptions ) {
+            // Save defaults to the Greasemonkey storage
+            if ( utils.isFunction( id.GM?.setValue ) ) {
+                id.GM.setValue( 'settings', JSON.stringify( userOptions ) );
+            }
+
+            // Save defaults to the local MW User Options
+            if ( !id.local.mwIsAnon ) {
+                try {
+                    mw.user.options.set( id.config.settingsPrefix, JSON.stringify( userOptions ) );
+                } catch {}
+            }
+        }
+    }
+
+    /**
+     * Merge the settings defaults stored in the different storages:
+     * Local Storage, Greasemonkey storage (if available), local MW User Options;
+     * then sets them to the singleton without saving.
+     */
+    async processDefaults() {
+        let options = {};
+
+        // Get settings stored in the Local Storage
+        try {
+            options = { ...options, ...mw.storage.getObject( `${ id.config.prefix }-settings` ) };
+        } catch {}
+
+        // Get settings stored in the Greasemonkey storage
+        if ( utils.isFunction( id.GM?.getValue ) ) {
+            try {
+                options = { ...options, ...JSON.parse( await id.GM.getValue( 'settings' ) ) };
+            } catch {}
+        }
+
+        // Get settings stored in the local MW User Options
+        if ( !id.local.mwIsAnon ) {
+            try {
+                options = { ...options, ...JSON.parse( mw.user.options.get( `${ id.config.settingsPrefix }-settings` ) ) };
+            } catch {}
+        }
+
+        this.set( options, false );
     }
 }
 

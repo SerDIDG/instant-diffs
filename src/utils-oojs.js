@@ -1,6 +1,7 @@
 import * as utils from './utils';
 
-import view from './View';
+import view from './view';
+import settings from './settings';
 
 /**
  * Add some properties to the inheritor class that the (ES5)
@@ -91,7 +92,7 @@ export function getWindowManager() {
 }
 
 export function setViewDialogSize( size ) {
-    size = size || utils.defaults( 'viewWidth' ) || 'standard';
+    size = size || settings.get( 'viewWidth' ) || 'standard';
 
     if ( size !== 'full' ) {
         OO.ui.WindowManager.static.sizes.instantDiffs = view.constructor.sizes[ size ] || view.constructor.sizes.standard;
@@ -103,7 +104,7 @@ export function setViewDialogSize( size ) {
 }
 
 export function getViewDialogSizeName( size ) {
-    size = size || utils.defaults( 'viewWidth' ) || 'standard';
+    size = size || settings.get( 'viewWidth' ) || 'standard';
     return size === 'full' ? 'full' : 'instantDiffs';
 }
 

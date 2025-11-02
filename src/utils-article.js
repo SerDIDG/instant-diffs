@@ -4,6 +4,7 @@ import { isWbContentModel } from './utils-api';
 
 import Api from './Api';
 import Article from './Article';
+import settings from './settings';
 
 /******* VALUES *******/
 
@@ -208,9 +209,9 @@ export function removeLinkTags( tags ) {
 export async function getWikilink( article ) {
     const options = {
         relative: false,
-        minify: utils.defaults( 'linksFormat' ) === 'minify',
+        minify: settings.get( 'linksFormat' ) === 'minify',
         wikilink: true,
-        wikilinkPreset: utils.defaults( 'wikilinksFormat' ),
+        wikilinkPreset: settings.get( 'wikilinksFormat' ),
     };
 
     // Get project prefix for the foreign link

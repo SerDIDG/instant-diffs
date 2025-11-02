@@ -1,6 +1,8 @@
 import * as utils from './utils';
 import { getHrefAbsolute } from './utils-article';
 
+import settings from './settings';
+
 /**
  * Gets how many expiry days left in the watchlist.
  * @param {string} expiry
@@ -53,7 +55,7 @@ export function updateWatchButtonStatus( article, button ) {
     button.setLabel( utils.msg( label ) );
     button.setTitle( mw.msg( `tooltip-ca-${ tooltipAction }`, daysLeftExpiry ) );
     button.setHref( getHrefAbsolute( article, href ) );
-    if ( utils.defaults( 'showMenuIcons' ) ) {
+    if ( settings.get( 'showMenuIcons' ) ) {
         button.setIcon( icon );
     }
 }

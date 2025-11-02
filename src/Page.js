@@ -8,6 +8,7 @@ import Api from './Api';
 import ConfigManager from './ConfigManager';
 import RequestManager from './RequestManager';
 import Navigation from './Navigation';
+import settings from './settings';
 
 import './styles/page.less';
 
@@ -129,7 +130,7 @@ class Page {
         this.articleParams = {
             action: 'render',
             diffonly: this.article.get( 'type' ) === 'diff' ? 1 : 0,
-            unhide: utils.defaults( 'unHideDiffs' ) ? 1 : 0,
+            unhide: settings.get( 'unHideDiffs' ) ? 1 : 0,
             uselang: id.local.userLanguage,
         };
 
@@ -459,7 +460,7 @@ class Page {
         // otherwise terminate.
         if (
             this.error ||
-            !utils.defaults( 'markWatchedLine' ) ||
+            !settings.get( 'markWatchedLine' ) ||
             !this.article.isForeign ||
             utils.isEmpty( this.article.get( 'timestamp' ) ) ||
             utils.isEmpty( this.article.get( 'notificationtimestamp' ) )

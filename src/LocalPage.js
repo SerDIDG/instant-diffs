@@ -4,6 +4,7 @@ import * as utilsPage from './utils-page';
 import { executeModuleScript } from './utils-oojs';
 
 import Page from './Page';
+import settings from './settings';
 
 /**
  * Class representing a Local Page.
@@ -290,7 +291,7 @@ class LocalPage extends Page {
     processDiffTable() {
         // Find diff table tools container and pre-toggle visibility
         this.nodes.$diffTablePrefix = this.nodes.$data.filter( '.mw-diff-table-prefix' );
-        if ( this.article.get( 'type' ) !== 'diff' || !utils.defaults( 'showDiffTools' ) ) {
+        if ( this.article.get( 'type' ) !== 'diff' || !settings.get( 'showDiffTools' ) ) {
             this.nodes.$diffTablePrefix.addClass( 'instantDiffs-hidden' );
         }
 
@@ -369,7 +370,7 @@ class LocalPage extends Page {
 
         // Show or hide diff info table in the revision view
         if ( this.article.get( 'type' ) === 'revision' ) {
-            if ( utils.defaults( 'showRevisionInfo' ) ) {
+            if ( settings.get( 'showRevisionInfo' ) ) {
                 // Hide the left side of the table and left only related to the revision info
                 this.nodes.$frDiffHeader.find( '.fr-diff-ratings td:nth-child(2n-1)' ).addClass( 'instantDiffs-hidden' );
             } else {
@@ -397,7 +398,7 @@ class LocalPage extends Page {
         // Restore diff format toggle buttons
         const diffTablePrefixTools = [];
 
-        if ( this.article.get( 'type' ) === 'diff' && utils.defaults( 'showDiffTools' ) ) {
+        if ( this.article.get( 'type' ) === 'diff' && settings.get( 'showDiffTools' ) ) {
             const hasInlineToggle = utilsPage.restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
             if ( hasInlineToggle ) diffTablePrefixTools.push( hasInlineToggle );
 

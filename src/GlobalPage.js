@@ -6,7 +6,7 @@ import { getNamespaceConfig } from './utils-api';
 
 import Api from './Api';
 import Page from './Page';
-import view from './View';
+import view from './view';
 
 const { h } = utils;
 
@@ -60,7 +60,7 @@ class GlobalPage extends Page {
     }
 
     /**
-     * Get promise array for the secondary load request.
+     * Get a promise array for the secondary load request.
      * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
      */
     getLoadSecondaryPromises() {
@@ -322,7 +322,7 @@ class GlobalPage extends Page {
             await super.renderErrorContent();
         }
 
-        // Try to parse error message for a missing id
+        // Try to parse an error message for a missing id
         const values = this.article.getValues();
         const revid = this.errorData?.code === 'missingcontent' ? this.errorData.info.replace( /\D/g, '' ) : null;
         const ids = [ values.oldid, values.diff, revid ].filter( num => !isNaN( num ) && num > 0 );
@@ -342,7 +342,7 @@ class GlobalPage extends Page {
             this.links.next = utils.isValidID( this.configManager.get( 'wgDiffNewId' ) );
         }
 
-        // Set previous page as the initiator to render the back link
+        // Set the previous page as the initiator to render the backlink
         this.options.initiatorPage = view.getPreviousPage();
     }
 
