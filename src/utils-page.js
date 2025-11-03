@@ -14,6 +14,7 @@ const { h, hf, ht, hj } = utils;
 
 /**
  * Renders the <table> structure for displaying diff table.
+ * @param {string} body diff table body HTML string
  * @returns {Element}
  */
 export function renderDiffTable( body ) {
@@ -113,7 +114,7 @@ export function renderDiffTableSide( data ) {
 
 /**
  * Process the diff table for the revision view.
- * Dependent on 'showRevisionInfo' settings, shows right side of the table, or hides table completely.
+ * Dependent on 'showRevisionInfo' settings, shows the right side of the table or hides the table completely.
  * @param {JQuery} $table
  */
 export function processRevisionDiffTable( $table ) {
@@ -301,7 +302,7 @@ export function isVisualDiffsAvailable( contentModel ) {
 export function restoreRollbackLink( $container ) {
     if ( !$container || $container.length === 0 ) return false;
 
-    // Make rollback link confirmable
+    // Make the rollback link confirmable
     $container.confirmable( {
         i18n: {
             confirm: mw.msg( 'rollback-confirmation-confirm' ),
@@ -339,7 +340,7 @@ function postRollback( link ) {
 
             mw.notify( $message, { tag: 'rollback' } );
 
-            // Remove link wrapper (including the spinner).
+            // Remove the link wrapper (including the spinner).
             $( link ).closest( '.mw-rollback-link' ).remove();
 
             // Refresh view contents

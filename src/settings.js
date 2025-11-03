@@ -1,5 +1,6 @@
 import id from './id';
 import * as utils from './utils';
+import * as utilsSettings from './utils-settings';
 import { applyOoUiPolyfill, getWindowManager } from './utils-oojs';
 
 import Api from './Api';
@@ -11,6 +12,11 @@ import './styles/settings.less';
  * @mixes OO.EventEmitter
  */
 class Settings {
+    /**
+     * @type {typeof utilsSettings}
+     */
+    static utils = utilsSettings;
+
     /**
      * @type {Promise}
      */
@@ -277,7 +283,7 @@ class Settings {
     /**
      * Get a setting default stored in the config.
      * @param {string} [key] for specific option, or undefined for the option's object
-     * @param {boolean} [userOption] get an option only declarative in the settings
+     * @param {boolean} [userOption] get an option only declarative in the settings schema
      * @returns {*|object} a specific option, or the option's object
      */
     get( key, userOption ) {
@@ -311,7 +317,7 @@ class Settings {
     set( options, saveUserOptions ) {
         id.local.defaults = { ...id.local.defaults, ...options };
 
-        // Get options only declarative in the settings
+        // Get options only declarative in the settings schema
         const userOptions = this.get( undefined, true );
 
         // Save defaults to the Local Storage

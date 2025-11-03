@@ -2,6 +2,7 @@ import id from './id';
 import * as utils from './utils';
 import { tweakUserOoUiClass } from './utils-oojs';
 import { getHref } from './utils-article';
+import { renderSuccessBox } from './utils-settings';
 
 import view from './view';
 import settings from './settings';
@@ -144,7 +145,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
          */
         const image = '/6/6f/Eo_circle_light-green_checkmark.svg';
 
-        const content = utils.renderSuccessBox( {
+        const content = renderSuccessBox( {
             image,
             content: utils.msg( 'settings-saved' ),
             alt: utils.msg( 'settings-saved-icon' ),
@@ -555,9 +556,10 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     }
 
     /**
-     * Event that emits after user options request failed.
+     * Event that emits after a user options request failed.
      * @param {Object} [error]
      * @param {Object} [data]
+     * @private
      */
     onActionRequestError( error, data ) {
         const params = {
@@ -577,8 +579,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     }
 
     /**
-     * Event that emits after user options request successive.
+     * Event that emits after user options request successively.
      * @param {Object} [data]
+     * @private
      */
     onActionRequestSuccess( data ) {
         if ( id.local.mwIsAnon ) {
@@ -665,6 +668,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
      * Event that emits after save request failed.
      * @param {Object} [error]
      * @param {Object} [data]
+     * @private
      */
     onActionSaveError( error, data ) {
         const params = {
@@ -685,6 +689,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
     /**
      * Event that emits after save request successive.
+     * @private
      */
     onActionSaveSuccess() {
         this.actions.setMode( 'finish' );

@@ -251,20 +251,6 @@ export function semverCompare( a, b ) {
     return a.localeCompare( b, undefined, { numeric: true, sensitivity: 'case', caseFirst: 'upper' } );
 }
 
-/******* DEFAULTS *******/
-
-/**
- * Parses currentScript src href for the setting defaults.
- * @return {Object}
- */
-export function getQueryDefaults() {
-    const settings = parseQuery( document.currentScript?.src )?.instantdiffs || {};
-    for ( const [ key, value ] of Object.entries( settings ) ) {
-        settings[ key ] = value === 'true' ? true : value === 'false' ? false : value;
-    }
-    return settings;
-}
-
 /******* MESSAGES *******/
 
 export function msg() {
@@ -791,7 +777,7 @@ export function addTargetToLinks( $content ) {
     if ( !settings.get( 'openInNewTab' ) ) return;
 
     const handler = ( i, el ) => {
-        // Add target attribute only to links with non-empty href.
+        // Add a target attribute only to links with non-empty href.
         // Some scripts add links with href="#" - bypass those as well.
         const href = el.getAttribute( 'href' );
         if ( isEmpty( href ) || href === '#' ) return;
@@ -885,22 +871,5 @@ export function renderMessageBox( params ) {
         },
         h( 'span.cdx-message__icon' ),
         h( 'div.cdx-message__content', ...nodes ),
-    );
-}
-
-export function renderSuccessBox( params ) {
-    params = {
-        content: null,
-        image: null,
-        alt: null,
-        ...params,
-    };
-
-    return h( 'div.instantDiffs-success-box',
-        h( 'img', {
-            src: `${ id.config.commonsAssetsPath }${ params.image }`,
-            alt: params.alt,
-        } ),
-        h( 'h5', params.content ),
     );
 }
