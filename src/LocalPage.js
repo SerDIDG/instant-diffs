@@ -22,7 +22,7 @@ class LocalPage extends Page {
     isDependenciesLoaded = false;
 
     /**
-     * Get promise array for the main load request.
+     * Get a promise array for the main load request.
      * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
      */
     getLoadPromises() {
@@ -54,7 +54,7 @@ class LocalPage extends Page {
 
         const params = {
             action: 'parse',
-            prop: [ 'revid', 'modules', 'jsconfigvars' ],
+            prop: [ 'revid', 'modules', 'jsconfigvars', 'categorieshtml' ],
             disablelimitreport: 1,
             redirects: 1,
             format: 'json',
@@ -79,8 +79,9 @@ class LocalPage extends Page {
 
     /**
      * Event that emits after the page request failed.
+     * @private
      */
-    onRequestPageError( message, data, params ) {
+    onRequestPageError = ( message, data, params ) => {
         this.isDependenciesLoaded = true;
 
         const error = {
@@ -93,25 +94,26 @@ class LocalPage extends Page {
         }
         const type = params.oldid ? 'revid' : 'curid';
         utils.notifyError( `error-dependencies-${ type }`, error, this.article, true );
-    }
+    };
 
     /**
      * Event that emits after the page request successive.
+     * @private
      */
-    onRequestPageDone( data, params ) {
+    onRequestPageDone = ( data, params ) => {
         this.isDependenciesLoaded = true;
 
         // Render error if the parse request is completely failed
-        const parse = data?.parse;
-        if ( !parse ) {
+        this.parse = data?.parse;
+        if ( !this.parse ) {
             return this.onRequestPageError( null, data, params );
         }
 
         // Get values for mw.config
         this.configManager.setValues( {
-            wgArticleId: parse.pageid,
-            wgRevisionId: Math.max( this.article.get( 'revid' ), parse.revid ),
-            ...parse.jsconfigvars,
+            wgArticleId: this.parse.pageid,
+            wgRevisionId: Math.max( this.article.get( 'revid' ), this.parse.revid ),
+            ...this.parse.jsconfigvars,
         } );
 
         // Set article values
@@ -123,9 +125,12 @@ class LocalPage extends Page {
         // Set additional config variables
         this.setConfigs();
 
+        // Append categories
+        this.processCategories();
+
         // Get page dependencies
-        this.requestDependencies( parse );
-    }
+        this.requestDependencies( this.parse );
+    };
 
     /******* REQUESTS *******/
 
@@ -158,7 +163,7 @@ class LocalPage extends Page {
     /******* RENDER *******/
 
     async renderSuccessContent() {
-        // Parse and append all data coming from endpoint
+        // Parse and append all data coming from the endpoint
         this.nodes.data = $.parseHTML( this.data );
         this.nodes.$data = $( this.nodes.data ).appendTo( this.nodes.$body );
 
@@ -346,6 +351,9 @@ class LocalPage extends Page {
         // Show or hide diff info table in the revision view
         utilsPage.processRevisionDiffTable( this.nodes.$table );
 
+        // Append categories
+        this.processCategories();
+
         // Hide unsupported or unnecessary element
         this.nodes.$data
             .find( '.mw-diff-slot-header, .mw-slot-header' )
@@ -382,6 +390,15 @@ class LocalPage extends Page {
         this.nodes.$data
             .find( '.fr-diff-to-stable, #mw-fr-diff-dataform' )
             .addClass( 'instantDiffs-hidden' );
+    }
+
+    processCategories() {
+        if ( utils.isEmpty( this.data ) || utils.isEmpty( this.parse ) ) return;
+
+        if ( !utils.isEmpty( this.parse.categorieshtml ) ) {
+            this.nodes.$categories = $( this.parse.categorieshtml ).appendTo( this.nodes.$body );
+        }
+
     }
 
     /******* RESTORE FUNCTIONALITY *******/

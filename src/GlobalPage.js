@@ -48,7 +48,7 @@ class GlobalPage extends Page {
     }
 
     /**
-     * Get promise array for the main load request.
+     * Get a promise array for the main load request.
      * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
      */
     getLoadPromises() {
@@ -111,10 +111,11 @@ class GlobalPage extends Page {
     /**
      * Event that emits after the request successive.
      * Sets compare data to the class property.
+     * @private
      */
-    onRequestDone( data ) {
+    onRequestDone = ( data ) => {
         this.data = data?.compare;
-    }
+    };
 
     /**
      * Request project-specific site info.
@@ -233,7 +234,7 @@ class GlobalPage extends Page {
         // Collect links that will be available in the navigation:
         // * For a revision, add the ability to navigate to the very first revision of the article;
         // * For a diff, we show only a comparison between two revisions,
-        // * so there will be no link to navigate to a comparison between nothing and revision.
+        //   so there will be no link to navigate to a comparison between nothing and revision.
         this.links.prev = this.article.get( 'type' ) === 'revision'
             ? utils.isValidID( this.data.fromrevid )
             : this.data.prev && this.data.prev !== this.data.fromrevid;
@@ -378,7 +379,7 @@ class GlobalPage extends Page {
     /******* REVISION *******/
 
     /**
-     * Request revision.
+     * Request the revision.
      * @returns {Promise}
      */
     requestRevision() {
@@ -386,7 +387,7 @@ class GlobalPage extends Page {
 
         const params = {
             action: 'parse',
-            prop: [ 'text', 'revid', 'modules', 'jsconfigvars' ],
+            prop: [ 'text', 'revid', 'modules', 'jsconfigvars', 'categorieshtml' ],
             disablelimitreport: 1,
             redirects: 1,
             format: 'json',
@@ -408,7 +409,11 @@ class GlobalPage extends Page {
             .fail( ( message, data ) => this.onRequestRevisionError( message, data, params ) );
     }
 
-    onRequestRevisionError( message, data, params ) {
+    /**
+     * Event that emits after the request failed.
+     * @private
+     */
+    onRequestRevisionError = ( message, data, params ) => {
         const error = {
             message,
             type: 'dependencies',
@@ -420,9 +425,13 @@ class GlobalPage extends Page {
 
         const type = params.oldid ? 'revid' : 'curid';
         utils.notifyError( `error-dependencies-${ type }`, error, this.article );
-    }
+    };
 
-    async onRequestRevisionDone( data, params ) {
+    /**
+     * Event that emits after the request successive.
+     * @private
+     */
+    onRequestRevisionDone = async ( data, params ) => {
         // Render error if the parse request is completely failed
         this.parse = data?.parse;
         if ( !this.parse ) {
@@ -430,7 +439,7 @@ class GlobalPage extends Page {
         }
 
         await this.renderRevision();
-    }
+    };
 
     async renderRevision() {
         // Get values for mw.config
@@ -457,12 +466,17 @@ class GlobalPage extends Page {
         );
         this.nodes.$diffTitle = $( this.nodes.diffTitle ).appendTo( this.nodes.$body );
 
-        // Append and process content
+        // Append content and categories
         this.nodes.$revision = $( this.parse.text ).appendTo( this.nodes.$body );
+        if ( !utils.isEmpty( this.parse.categorieshtml ) ) {
+            this.nodes.$categories = $( this.parse.categorieshtml ).appendTo( this.nodes.$body );
+        }
+
+        // Process content, warnings, etc.
         await this.processRevision();
 
         // Convert relative links to the absolute including hashes
-        utils.addBaseToLinks( this.nodes.$revision, this.article.get( 'href' ) );
+        utils.addBaseToLinks( this.nodes.$body, this.article.get( 'href' ) );
 
         // Get page dependencies
         this.requestDependencies( this.parse );

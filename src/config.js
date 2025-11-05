@@ -60,7 +60,6 @@ export const config = {
             'ext.flaggedRevs.basic',
             'ext.visualEditor.diffPage.init',
         ],
-
         page: {
             '*': [
                 'ext.thanks.corethank',
@@ -68,7 +67,6 @@ export const config = {
                 'ext.checkUser.styles',
             ],
         },
-
         revision: {
             6: [                                                        // File:
                 'filepage',
@@ -82,6 +80,13 @@ export const config = {
             146: [                                                      // Lexeme:
                 'wikibase.lexeme.styles',
             ],
+        },
+        skins: {
+            minerva: {
+                '*': [
+                    'skins.minerva.categories.styles',
+                ],
+            },
         },
     },
 
@@ -378,7 +383,7 @@ export const config = {
         ],
         hasClass: [
             'mw-diff-revision-history-link-next',                       // [[Special:Diff]]: MobileDiff next edit
-        ]
+        ],
     },
     mwLinkAltTitle: {
         closestTo: [

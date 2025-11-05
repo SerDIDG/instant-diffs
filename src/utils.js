@@ -736,6 +736,8 @@ export function setHTML( container, value ) {
  * @param {boolean} [hashOnly]
  */
 export function addBaseToLinks( $content, url, hashOnly = false ) {
+    if ( !$content ) return;
+
     let baseUrl;
     try {
         baseUrl = new URL( url, `https://${ location.hostname }` );

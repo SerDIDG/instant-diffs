@@ -177,7 +177,7 @@ class Page {
     }
 
     /**
-     * Preload process that combines multiple requests into the one promise.
+     * Preloading process that combines multiple requests into the one promise.
      * @returns {JQuery.Promise|Promise}
      */
     preloadProcess() {
@@ -188,7 +188,7 @@ class Page {
     }
 
     /**
-     * Load process that combines multiple requests into the one promise.
+     * Loading process that combines multiple requests into the one promise.
      * @returns {JQuery.Promise|Promise}
      */
     loadProcess() {
@@ -200,7 +200,7 @@ class Page {
     }
 
     /**
-     * Secondary load process that chains multiple requests into one promise.
+     * Secondary loading process that chains multiple requests into one promise.
      * Process fires in a chain only after the main request because it needs additional data.
      * @returns {Promise}
      */
@@ -211,7 +211,7 @@ class Page {
     };
 
     /**
-     * Get promise array for the preload request.
+     * Get a promise array for the preload request.
      * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
      */
     getPreloadPromises() {
@@ -221,7 +221,7 @@ class Page {
     }
 
     /**
-     * Get promise array for the main load request.
+     * Get a promise array for the main load request.
      * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
      */
     getLoadPromises() {
@@ -232,7 +232,7 @@ class Page {
     }
 
     /**
-     * Get promise array for the secondary load request.
+     * Get a promise array for the secondary load request.
      * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
      */
     getLoadSecondaryPromises() {
@@ -243,6 +243,7 @@ class Page {
 
     /**
      * Event that emits after the load complete.
+     * @private
      */
     onLoadResponse = async () => {
         this.isLoading = false;
@@ -251,7 +252,7 @@ class Page {
         // The Page can be already detached from the DOM
         if ( this.isDetached ) return;
 
-        // Do mot render content when request was programmatically aborted
+        // Do not render content when the request was programmatically aborted
         if ( this.error?.statusText === 'abort' ) return;
 
         // Render content and fire hooks
@@ -269,8 +270,8 @@ class Page {
      */
     request() {
         return this.requestProcess()
-            .done( this.onRequestDone.bind( this ) )
-            .fail( this.onRequestError.bind( this ) );
+            .done( this.onRequestDone )
+            .fail( this.onRequestError );
     }
 
     /**
@@ -283,18 +284,20 @@ class Page {
 
     /**
      * Event that emits after the request failed.
+     * @private
      */
-    onRequestError( error, data ) {
+    onRequestError = ( error, data ) => {
         this.error = error;
         this.errorData = data?.error;
-    }
+    };
 
     /**
      * Event that emits after the request successive.
+     * @private
      */
-    onRequestDone( data ) {
+    onRequestDone = ( data ) => {
         this.data = data;
-    }
+    };
 
     /**
      * Request compare pages.
@@ -335,6 +338,7 @@ class Page {
 
     /**
      * Event that emits after the compare request failed.
+     * @private
      */
     onRequestCompareError = ( error, data ) => {
         this.onRequestError( error, data );
@@ -342,6 +346,7 @@ class Page {
 
     /**
      * Event that emits after the compare request successive.
+     * @private
      */
     onRequestCompareDone = ( data ) => {
         // Render error if the compare request is completely failed
@@ -428,7 +433,7 @@ class Page {
     async requestWBLabel() {
         // Check if there are no errors,
         // then check if a label is empty,
-        // then check is it's a wikibase entity content model,
+        // then check if it's a wikibase entity content model,
         // otherwise terminate.
         if (
             this.error ||
@@ -454,9 +459,9 @@ class Page {
      */
     markAsSeen() {
         // Check if there are no errors,
-        // then check if the "mark as viewed" option is allowed by user,
-        // then check if it's a foreign article, because local article will be marked automatically,
-        // then check if an article has revision timestamp and last viewed timestamp,
+        // then check if the user allows the "mark as viewed" option,
+        // then check if it's a foreign article, because the local article will be marked automatically,
+        // then check if an article has a revision timestamp and last viewed timestamp,
         // otherwise terminate.
         if (
             this.error ||
@@ -468,7 +473,7 @@ class Page {
             return;
         }
 
-        // Check if revision timestamp is newer then last viewed timestamp
+        // Check if revision timestamp is newer then last-viewed timestamp
         const lastTime = new Date( this.article.get( 'notificationtimestamp' ) ).getTime();
         const revTime = new Date( this.article.get( 'timestamp' ) ).getTime();
         if ( revTime < lastTime ) return;
@@ -482,7 +487,7 @@ class Page {
     }
 
     /**
-     * Abort all requests that were added via request manager.
+     * Abort all requests that were added via the request manager.
      */
     abort() {
         if ( !this.isLoading ) return;
@@ -494,7 +499,7 @@ class Page {
     async renderSuccess() {
         await this.render();
 
-        // Mark page as seen in watchlist
+        // Mark the page as seen in the watchlist
         this.markAsSeen();
 
         mw.hook( `${ id.config.prefix }.page.renderSuccess` ).fire( this );
@@ -518,7 +523,7 @@ class Page {
             message: this.errorData?.info || utils.getErrorStatusText( this.error?.status ),
         };
 
-        // Show critical notification popup
+        // Show a critical notification popup
         utils.notifyError( `error-${ this.error.type }-${ this.error.code }`, this.error, this.article );
 
         await this.render();

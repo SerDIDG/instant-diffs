@@ -43,7 +43,7 @@ export function getRevID( article ) {
 /******* DEPENDENCIES *******/
 
 /**
- * Gets an article dependencies.
+ * Gets the article dependencies.
  * @param {import('./Article').default} article
  * @return {Array<string>}
  */
@@ -63,6 +63,14 @@ export function getDependencies( article ) {
     if ( typeDependencies ) {
         dependencies = dependencies.concat(
             getNamespaceDependencies( article, typeDependencies ),
+        );
+    }
+
+    // Skin-specific dependencies
+    const skinDependencies = id.config.dependencies.skins[ mw.config.get( 'skin' ) ];
+    if ( skinDependencies ) {
+        dependencies = dependencies.concat(
+            getNamespaceDependencies( article, skinDependencies ),
         );
     }
 
@@ -155,7 +163,7 @@ function getForeignStylesDependencies( article, data ) {
     return styles;
 }
 
-export function loadForeignDependencies( article, data  ) {
+export function loadForeignDependencies( article, data ) {
     const dependencies = utils.getMissingDependencies( data );
     const hostname = article.get( 'hostname' );
     const action = mw.util.wikiScript( 'load' );
@@ -167,7 +175,7 @@ export function loadForeignDependencies( article, data  ) {
     mw.loader.load( `https://${ hostname }${ action }?${ params }` );
 }
 
-export function loadForeignStylesDependencies( article, data  ) {
+export function loadForeignStylesDependencies( article, data ) {
     const dependencies = utils.getMissingDependencies( data );
     const hostname = article.get( 'hostname' );
     const action = mw.util.wikiScript( 'load' );

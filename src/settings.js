@@ -78,8 +78,8 @@ class Settings {
         this.error = null;
 
         this.loadPromise = $.when( mw.loader.using( utils.getDependencies( id.config.dependencies.settings ) ) )
-            .then( this.onLoadSuccess.bind( this ) )
-            .fail( this.onLoadError.bind( this ) );
+            .then( this.onLoadSuccess )
+            .fail( this.onLoadError );
 
         return this.loadPromise;
     }
@@ -89,7 +89,7 @@ class Settings {
      * @param {Object} [error]
      * @private
      */
-    onLoadError( error ) {
+    onLoadError = ( error ) => {
         this.isLoading = false;
         this.isDependenciesLoaded = false;
 
@@ -99,13 +99,13 @@ class Settings {
         };
 
         utils.notifyError( 'error-dependencies-generic', this.error );
-    }
+    };
 
     /**
      * Event that emits after dependency loading successively.
      * @private
      */
-    onLoadSuccess() {
+    onLoadSuccess = () => {
         this.isLoading = false;
         this.isDependenciesLoaded = true;
 
@@ -113,7 +113,7 @@ class Settings {
         applyOoUiPolyfill();
 
         this.open();
-    }
+    };
 
     /******* DIALOG *******/
 
@@ -143,45 +143,45 @@ class Settings {
         }
 
         this.windowInstance = this.manager.openWindow( this.dialog );
-        this.windowInstance.opening.then( this.onOpening.bind( this ) );
-        this.windowInstance.opened.then( this.onOpen.bind( this ) );
-        this.windowInstance.closing.then( this.onClosing.bind( this ) );
-        this.windowInstance.closed.then( this.onClose.bind( this ) );
+        this.windowInstance.opening.then( this.onOpening );
+        this.windowInstance.opened.then( this.onOpen );
+        this.windowInstance.closing.then( this.onClosing );
+        this.windowInstance.closed.then( this.onClose );
     }
 
     /**
      * Event that emits after the Settings dialog starts opening.
      * @private
      */
-    onOpening() {
+    onOpening = () => {
         this.emit( 'opening' );
-    }
+    };
 
     /**
      * Event that emits after the Settings dialog opens.
      * @private
      */
-    onOpen() {
+    onOpen = () => {
         this.isOpen = true;
         this.emit( 'opened' );
-    }
+    };
 
     /**
      * Event that emits after the View Settings starts closing.
      * @private
      */
-    onClosing() {
+    onClosing = () => {
         this.emit( 'closing' );
-    }
+    };
 
     /**
      * Event that emits after the Settings dialog closes.
      * @private
      */
-    onClose() {
+    onClose = () => {
         this.isOpen = false;
         this.emit( 'closed' );
-    }
+    };
 
     /******* USER OPTIONS *******/
 
@@ -204,16 +204,16 @@ class Settings {
             uselang: id.local.userLanguage,
         };
         return Api.post( params )
-            .always( this.onRequestResponse.bind( this ) );
+            .always( this.onRequestResponse );
     };
 
     /**
      * Event that emits after user options request returned response.
      * @private
      */
-    onRequestResponse() {
+    onRequestResponse = () => {
         this.isRequesting = false;
-    }
+    };
 
     /**
      * Save user options.
@@ -251,7 +251,7 @@ class Settings {
 
         const api = Api.getApi();
         return api.saveOption.apply( api, params )
-            .always( this.onSaveResponse.bind( this ) );
+            .always( this.onSaveResponse );
     }
 
     /**
@@ -267,16 +267,16 @@ class Settings {
         };
 
         return Api.getApi().postWithEditToken( params )
-            .always( this.onSaveResponse.bind( this ) );
+            .always( this.onSaveResponse );
     }
 
     /**
      * Event that emits after save request returned response.
      * @private
      */
-    onSaveResponse() {
+    onSaveResponse = () => {
         this.isSaving = false;
-    }
+    };
 
     /******* DEFAULTS *******/
 
