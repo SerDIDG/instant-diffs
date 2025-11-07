@@ -312,7 +312,6 @@ class GlobalPage extends Page {
             } );
             utils.embed( footer, this.nodes.$body, 'prependTo' );
         }
-
     }
 
     async renderErrorContent() {

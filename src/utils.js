@@ -606,6 +606,19 @@ export function hj( $node ) {
     return hf( ...$node.toArray() );
 }
 
+/**
+ * Removes all text nodes from the provided node.
+ * @param {JQuery<HTMLElement>} $node
+ */
+export function clearWhitespaces( $node ) {
+    if ( !$node || $node.length === 0 ) return;
+
+    $node.contents().each( ( i, node ) => {
+        if ( node.nodeType !== 3 ) return;
+        node.remove();
+    } );
+}
+
 export function clipboardWrite( text, callback ) {
     const success = () => {
         mw.notify( msg( 'copy-link-copied' ), { tag: `${ id.config.prefix }-copyLink` } );

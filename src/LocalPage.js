@@ -190,7 +190,7 @@ class LocalPage extends Page {
         }
 
         // Prepend mobile diff footer to the top
-        this.nodes.$data
+        this.nodes.$diffMobileFooter = this.nodes.$data
             .filter( '.mw-diff-mobile-footer' )
             .prependTo( this.nodes.$body );
 
@@ -268,7 +268,7 @@ class LocalPage extends Page {
             articleValues.section = utils.getComponentFromUrl( 'hash', $toSectionLinks.prop( 'href' ) );
         }
 
-        // Get undo links to check if user can edit the page
+        // Get undo links to check if the user can edit the page
         const $editLinks = this.nodes.$data.find( '.mw-diff-undo a, .mw-rollback-link a' );
         if ( $editLinks.length > 0 ) {
             this.configManager.set( 'wgIsProbablyEditable', true );
@@ -282,8 +282,9 @@ class LocalPage extends Page {
 
         /**
          * Save additional user options dependent of a page type.
-         * FixMe: See T346252 for the details about Visual Diffs.
          * @type {Object}
+         *
+         * FixMe: See T346252 for the details about Visual Diffs.
          */
         if (
             this.article.get( 'type' ) !== 'diff' &&
@@ -314,21 +315,12 @@ class LocalPage extends Page {
             .attr( 'data-instantdiffs-link', 'none' )
             .addClass( 'instantDiffs-hidden' );
 
-        // Clear whitespaces after detaching links
+        // Clear whitespaces after detaching navigation links
         const leftTitle4 = this.nodes.$table.find( '#mw-diff-otitle4' );
-        if ( leftTitle4.length > 0 ) {
-            leftTitle4.contents().each( ( i, node ) => {
-                if ( node.nodeType !== 3 ) return;
-                node.remove();
-            } );
-        }
+        utils.clearWhitespaces( leftTitle4 );
+
         const rightTitle4 = this.nodes.$table.find( '#mw-diff-ntitle4' );
-        if ( rightTitle4.length > 0 ) {
-            rightTitle4.contents().each( ( i, node ) => {
-                if ( node.nodeType !== 3 ) return;
-                node.remove();
-            } );
-        }
+        utils.clearWhitespaces( rightTitle4 );
 
         // Hide unsupported or unnecessary element
         this.nodes.$data
@@ -338,7 +330,7 @@ class LocalPage extends Page {
         // Collect links that will be available in the navigation:
         // * For a revision, add the ability to navigate to the very first revision of the article;
         // * For a diff, we show only a comparison between two revisions,
-        // * so there will be no link to navigate to a comparison between nothing and revision.
+        //   so there will be no link to navigate to a comparison between nothing and revision.
         this.links.prev = this.article.get( 'type' ) === 'revision'
             ? utils.isValidID( this.configManager.get( 'wgDiffOldId' ) )
             : this.nodes.$prev.attr( 'href' );
@@ -347,6 +339,11 @@ class LocalPage extends Page {
 
     processRevision() {
         this.nodes.$diffTitle = this.nodes.$data.filter( '.diff-currentversion-title' );
+
+        // Show or hide mobile diff footer
+        if ( !settings.get( 'showRevisionInfo' ) ) {
+            this.nodes.$diffMobileFooter.addClass( 'instantDiffs-hidden' );
+        }
 
         // Show or hide diff info table in the revision view
         utilsPage.processRevisionDiffTable( this.nodes.$table );
@@ -361,7 +358,7 @@ class LocalPage extends Page {
     }
 
     processFlaggedRevs() {
-        // Find FlaggedRevs table info and insert before the diff table to fix the elements flow
+        // Find FlaggedRevs table info and insert before the diff table to fix the element flow
         this.nodes.$frDiffHeader = this.nodes.$data
             .filter( '#mw-fr-diff-headeritems' )
             .insertBefore( this.nodes.$table );
