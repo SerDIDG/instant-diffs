@@ -312,7 +312,7 @@ class Settings {
      * If the second parameter is true, also saves to the Greasemonkey storage (if available)
      * and to the local MW User Options.
      * @param {Object} options the setting options data
-     * @param {boolean} [saveUserOptions] save the setting options to the local User Options
+     * @param {boolean} [saveUserOptions] save the setting options to the local objects
      */
     set( options, saveUserOptions ) {
         id.local.defaults = { ...id.local.defaults, ...options };
@@ -324,16 +324,16 @@ class Settings {
         mw.storage.setObject( `${ id.config.prefix }-settings`, userOptions );
 
         if ( saveUserOptions ) {
+            const json = JSON.stringify( userOptions );
+
             // Save defaults to the Greasemonkey storage
             if ( utils.isFunction( id.GM?.setValue ) ) {
-                id.GM.setValue( 'settings', JSON.stringify( userOptions ) );
+                id.GM.setValue( 'settings', json );
             }
 
             // Save defaults to the local MW User Options
             if ( !id.local.mwIsAnon ) {
-                try {
-                    mw.user.options.set( id.config.settingsPrefix, JSON.stringify( userOptions ) );
-                } catch {}
+                mw.user?.options?.set( id.config.settingsPrefix, json );
             }
         }
     }

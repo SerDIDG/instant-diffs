@@ -230,10 +230,12 @@ export const config = {
     ],
     specialPages: [
         'Special:Diff',
+        'Special:Permalink',
         'Special:PermanentLink',
         'Special:MobileDiff',
         'Special:Redirect',
         'Special:ComparePages',
+        'Special:Undelete',
     ],
 
     nonEditableContentModels: [
@@ -261,6 +263,7 @@ export const config = {
     // Link selectors
     specialPagesLinks: [
         'Special:Diff',
+        'Special:Permalink',
         'Special:PermanentLink',
         'Special:MobileDiff',
         'Special:Redirect',
@@ -278,7 +281,7 @@ export const config = {
         'a.mw-changeslist-date',                                        // Changelists (revision)
         'a.mw-changeslist-diff',                                        // Changelists (diff)
         'a.mw-changeslist-diff-cur',                                    // Changelists (diff to current)
-        'a.mw-changeslist-groupdiff',                                   // Changelists (diffs in group)
+        'a.mw-changeslist-groupdiff',                                   // Changelists (diffs in a group)
         '.mw-changeslist-line a.extiw',                                 // Changelists (foreign wiki link)
         '.mw-fr-reviewlink a',                                          // Changelists (FlaggedRevs link)
         '.mw-enhanced-rc-time a',                                       // Changelists (revision)

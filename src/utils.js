@@ -144,7 +144,7 @@ export function moduleRequire( name ) {
  * @returns {boolean}
  */
 export function isNew() {
-    return id.local.lastVesrion !== id.config.version;
+    return id.local.lastVersion !== id.config.version;
 }
 
 /**

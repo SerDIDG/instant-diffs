@@ -98,7 +98,7 @@ class Article {
      * @private
      */
     validateValues( values ) {
-        // Fix common user mistake with unnecessary pipeline following after the ids.
+        // Fix common user mistake with an unnecessary pipeline following after the ids.
         if ( !utils.isEmpty( values.diff ) && utils.isString( values.diff ) && values.diff.indexOf( '|' ) > -1 ) {
             values.diff = values.diff.split( '|' ).shift();
         }
@@ -132,13 +132,33 @@ class Article {
      * @private
      */
     validate() {
-        // Check if a page type is a revision
+        // Check if a link type is a compare between two pages
+        if (
+            utils.getCanonicalSpecialPage( this.values.title ) === 'Special:ComparePages' &&
+            ( !utils.isEmpty( this.values.page1 ) || utils.isValidID( this.values.rev1 ) ) &&
+            ( !utils.isEmpty( this.values.page2 ) || utils.isValidID( this.values.rev2 ) )
+        ) {
+            this.options.fixTenet = false;
+            this.values.type = 'diff';
+            this.values.typeVariant = 'comparePages';
+            return true;
+        }
+
+        // Check if a link type is a deleted page or revision
+        // ToDo: implement preview of the deleted content
+        if ( utils.getCanonicalSpecialPage( this.values.title ) === 'Special:Undelete' ) {
+            this.values.type = 'diff';
+            this.values.typeVariant = 'undelete';
+            return false;
+        }
+
+        // Check if a link type is a revision
         if ( utils.isValidID( this.values.oldid ) && utils.isEmpty( this.values.diff ) ) {
             this.values.type = 'revision';
             return true;
         }
 
-        // Check if a page type is a diff
+        // Check if a link type is a diff
         if ( utils.isValidID( this.values.diff ) || utils.isValidID( this.values.oldid ) ) {
             this.values.type = 'diff';
 
@@ -170,28 +190,16 @@ class Article {
             return true;
         }
 
-        // Check if a page type is a diff
+        // Check if a link type is a diff
         if ( !utils.isEmpty( this.values.title ) && utils.isValidDir( this.values.diff ) ) {
             this.values.type = 'diff';
             return true;
         }
 
-        // Check if a page type is a lastest revision
+        // Check if a link type is a lastest revision
         if ( utils.isValidID( this.values.curid ) ) {
             this.values.type = 'revision';
             this.values.typeVariant = 'page';
-            return true;
-        }
-
-        // Check if a page type is a lastest revision
-        if (
-            utils.getCanonicalSpecialPage( this.values.title ) === 'Special:ComparePages' &&
-            ( !utils.isEmpty( this.values.page1 ) || utils.isValidID( this.values.rev1 ) ) &&
-            ( !utils.isEmpty( this.values.page2 ) || utils.isValidID( this.values.rev2 ) )
-        ) {
-            this.options.fixTenet = false;
-            this.values.type = 'diff';
-            this.values.typeVariant = 'comparePages';
             return true;
         }
 
@@ -240,7 +248,7 @@ class Article {
         this.mw.endPoint = `https://${ this.values.hostname }${ mw.util.wikiScript( 'index' ) }`;
         this.mw.endPointUrl = new URL( this.mw.endPoint );
 
-        // Check if article is from foreign interwiki
+        // Check if the article is from foreign interwiki
         this.isForeign = utils.isForeign( this.values.hostname );
     }
 

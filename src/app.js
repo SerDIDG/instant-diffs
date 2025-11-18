@@ -180,7 +180,7 @@ function prepare( require ) {
         .filter( value => !utils.isEmpty( value ) );
 
     // Save the current version number to the local storage
-    id.local.lastVesrion = mw.storage.get( `${ id.config.prefix }-version` );
+    id.local.lastVersion = mw.storage.get( `${ id.config.prefix }-version` );
     mw.storage.set( `${ id.config.prefix }-version`, id.config.version );
 
     // Init dom mutation observer
@@ -377,7 +377,7 @@ async function ready() {
     await settings.processDefaults();
     utils.processMessages();
 
-    // Check if script is enabled on mobile skin (Minerva)
+    // Check if the script is enabled on mobile skin (Minerva)
     if ( mw.config.get( 'skin' ) === 'minerva' && !settings.get( 'enableMobile' ) ) {
         utils.notifyError( 'error-prepare-mobile', { type: 'mobile' }, null, true );
         return;
