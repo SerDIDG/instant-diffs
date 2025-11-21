@@ -62,7 +62,7 @@ class Deploy {
         this.credentials = { ...project.credentials };
 
         if ( isEmpty( this.credentials.apiUrl ) && !isEmpty( project.server ) ) {
-            this.credentials.apiUrl = `${ project.server }/w/api.php`;
+            this.credentials.apiUrl = `${ project.server }${ project.scriptPath }/api.php`;
         }
     }
 
@@ -108,7 +108,8 @@ class Deploy {
                 log( 'yellow', 'Tip: you can avoid this prompt by setting the server as well in env.json' );
             }
             const site = await input( '> Enter server (eg. en.wikipedia.org)' );
-            this.credentials.apiUrl = `https://${ site }/w/api.php`;
+            const scriptPath = await input( '> Enter script path (eg. /w)' );
+            this.credentials.apiUrl = `https://${ site }${ scriptPath }/api.php`;
         }
 
         this.api.setOptions( this.credentials );
