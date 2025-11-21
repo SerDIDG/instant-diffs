@@ -107,6 +107,15 @@ export function origin( path ) {
 }
 
 /**
+ * Adds a server prefix to the href.
+ * @param {string} path
+ * @returns {string}
+ */
+export function server( path ) {
+    return `${ id.config.server }${ path }`;
+}
+
+/**
  * Filters list from the unavailable dependencies.
  * @param {Array} data
  * @returns {Array}

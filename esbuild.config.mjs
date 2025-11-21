@@ -33,14 +33,13 @@ const strings = {
     __outname__: project.name,
     __outdir__: project.dir,
     __version__: version,
-    __origin__: 'https://www.mediawiki.org',
+    __origin__: project.server,
     __styles__: `${ project.scriptPath }/index.php?title=${ project.target }.css&action=raw&ctype=text/css`,
     __messages__: `${ project.scriptPath }/index.php?title=${ project.i18n }$lang.js&action=raw&ctype=text/javascript`,
     __debug__: process.argv.includes( '--start' ),
 };
 
 if ( args.start ) {
-    strings.__origin__ = project.server;
     strings.__styles__ = `${ project.target }.css`;
     strings.__messages__ = `${ project.i18n }$lang.js`;
 }

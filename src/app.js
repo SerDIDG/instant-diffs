@@ -233,7 +233,7 @@ function getMessages() {
         } )
         .map( lang => {
             const path = id.config.dependencies.messages.replace( '$lang', lang );
-            return mw.loader.getScript( utils.origin( path ) );
+            return mw.loader.getScript( utils.server( path ) );
         } );
 }
 
@@ -361,7 +361,7 @@ function app() {
 }
 
 function load() {
-    mw.loader.load( utils.origin( id.config.dependencies.styles ), 'text/css' );
+    mw.loader.load( utils.server( id.config.dependencies.styles ), 'text/css' );
     mw.loader.using( id.config.dependencies.main )
         .then( prepare )
         .then( () => $( ready ) )
