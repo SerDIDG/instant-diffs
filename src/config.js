@@ -9,6 +9,7 @@ export const config = {
     outname: '__outname__',
     outdir: '__outdir__',
     origin: '__origin__',
+    server: '__server__',
     prefix: 'instantDiffs',
     messagePrefix: 'instant-diffs',
     settingsPrefix: 'userjs-instantDiffs',
