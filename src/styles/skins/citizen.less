@@ -1,5 +1,7 @@
 /**
- * Miraheze / Wikitide specific styles
+ * Skin:Citizen specific styles
+ * Used on Star Citizen, Miraheze / Wikitide, etc
+ * @see {@link https://www.mediawiki.org/wiki/Skin:Citizen}
  */
 
 /******* VARIABLES *******/
@@ -13,6 +15,16 @@
     --instantDiffs-font-size-navigation: var(--font-size-small, 0.875rem);
     --instantDiffs-line-height: var(--line-height, 1.6);
     --instantDiffs-view-radius: var(--border-radius-medium);
+}
+
+/******* VIEW *******/
+
+.instantDiffs-view {
+    .oo-ui-messageDialog-title {
+        font-size: var(--font-size-large);
+        line-height: var(--line-height-large);
+        font-weight: var(--font-weight-semi-bold);
+    }
 }
 
 /******* EXTENSIONS *******/
