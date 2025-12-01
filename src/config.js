@@ -398,6 +398,10 @@ export const config = {
     mwLinkContent: {
         closestTo: [
             '.mw-parser-output',
+        ],
+    },
+    mwLinkContentInside: {
+        closestTo: [
             '.comment',                                                 // Edit summary in the changelists
         ],
     },

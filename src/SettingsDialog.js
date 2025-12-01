@@ -541,7 +541,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
     /******* REQUEST PROCESS ******/
 
     processActionRequest() {
-        // Show pending loader in the header
+        // Show the pending loader in the header
         this.pushPending();
 
         // Update input values
