@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Mdktb",
 			"Meno25",
 			"Serhio Magpie"
 		]
@@ -21,18 +22,18 @@
 	"action-cancel": "إلغاء",
 	"action-close": "يغلق",
 	"action-reload": "إعادة التحميل",
-	"action-watch": "يشاهد",
-	"action-unwatch": "إلغاء المشاهدة",
+	"action-watch": "راقب",
+	"action-unwatch": "إلغاء المراقبة",
 	"goto-snapshot-prev": "الرابط السابق على الصفحة",
 	"goto-snapshot-next": "الرابط التالي على الصفحة",
 	"goto-view-diff": "إظهار التغييرات",
 	"goto-view-revision": "عرض المراجعة",
 	"goto-view-unpatrolled": "التغييرات المعلقة",
-	"goto-prev": "أكبر سنا",
+	"goto-prev": "أقدم",
 	"goto-next": "أحدث",
 	"goto-prev-diff": "تعديل أقدم",
 	"goto-next-diff": "تعديل أحدث",
-	"goto-back-diff": "خلف",
+	"goto-back-diff": "رجوع",
 	"goto-prev-revision": "النسخة الأقدم",
 	"goto-next-revision": "المراجعة الأحدث",
 	"goto-back-revision": "العودة",

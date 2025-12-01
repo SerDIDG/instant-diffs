@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Amire80",
 			"IKhitron",
 			"Serhio Magpie",
 			"YaronSh"
@@ -70,7 +71,7 @@
 	"dialog-notice-wikilambda": "אפליקציית WikiLambda מציגה כעת רק את הגרסה האחרונה. ראו [[phab:T397902|כרטיס]] ב-Phabricator.",
 	"dialog-notice-foreign-diff": "אתה צופה בהבדל חיצוני מ־[$1 $2]. ייתכן שחלק מהתכונות מוגבלות.",
 	"dialog-notice-foreign-revision": "אתה צופה בגרסה חיצונית מ־[$1 $2]. ייתכן שחלק מהתכונות מוגבלות.",
-	"dialog-notice-foreign-wikilambda": "היישום WikiLambda אינו נתמך כרגע בגרסאות המרוחקות.",
+	"dialog-notice-foreign-wikilambda": "יישום WikiLambda אינו נתמך כרגע בגרסאות זרות.",
 	"settings-title": "הגדרות Instant Diffs",
 	"settings-saved": "ההגדרות נשמרו בהצלחה.\nרעננו את הדף כדי להחיל את השינויים.",
 	"settings-saved-icon": "סמל סימון",
@@ -85,7 +86,7 @@
 	"settings-view-width": "הגדרת ממדי חלון:",
 	"settings-view-width-help": "הממדים חלים רק על תצוגת שולחן עבודה. תצוגה לניידים תמיד משתמשת במלוא ממדי המסך.",
 	"settings-view-width-option-title": "רוחב של $1 פיקסלים",
-	"settings-view-width-compact": "מצומצם",
+	"settings-view-width-compact": "קומפקטי",
 	"settings-view-width-standard": "רגיל",
 	"settings-view-width-wide": "רחב",
 	"settings-view-width-full": "מלא",
