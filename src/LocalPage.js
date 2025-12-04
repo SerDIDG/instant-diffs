@@ -189,10 +189,8 @@ class LocalPage extends Page {
             } );
         }
 
-        // Prepend mobile diff footer to the top
-        this.nodes.$diffMobileFooter = this.nodes.$data
-            .filter( '.mw-diff-mobile-footer' )
-            .prependTo( this.nodes.$body );
+        // Process mobile diff user card footer
+        this.processMobileFooter();
 
         // Process diff table
         this.processDiffTable();
@@ -291,6 +289,32 @@ class LocalPage extends Page {
             !utilsPage.isVisualDiffsAvailable( this.configManager.get( 'wgPageContentModel' ) )
         ) {
             this.userOptionsManager.set( 'visualeditor-diffmode-historical', 'source' );
+        }
+    }
+
+    processMobileFooter() {
+        this.nodes.$diffMobileFooter = this.nodes.$data.filter( '.mw-diff-mobile-footer' );
+        if ( this.nodes.$diffMobileFooter.length === 0 ) return;
+
+        // Prepend mobile diff footer to the top
+        this.nodes.$diffMobileFooter.prependTo( this.nodes.$body );
+
+        // @see {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/50449784d02a0a46297fdd040bdc02a3ca76688e/resources/src/mediawiki.diff/undoButtonToggle.js#8}
+        const buttonClasses = 'cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--action-default';
+
+        // Process button classes and visibility
+        const buttonSelectors = [
+            '.mw-diff-undo',
+            '.mw-rollback-link',
+        ];
+
+        const $buttons = this.nodes.$diffMobileFooter.find( buttonSelectors.join( ',' ) );
+        if ( $buttons.length === 0 ) return;
+
+        if ( mw.user.isAnon() ) {
+            $buttons.hide();
+        } else {
+            $buttons.children( 'a' ).addClass( buttonClasses );
         }
     }
 

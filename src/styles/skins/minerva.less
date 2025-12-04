@@ -58,72 +58,29 @@
             inset: auto;
             border: none;
             border-bottom: 1px solid var(--border-color-subtle, #c8ccd1);
-        }
 
-        // /* [Fix] Override custom styles that were added in the specific projects. */
-        // /* (see [[uk:MediaWiki:Mobile.css]]) */
-        .ext-checkuser-userinfocard-button {
-            display: inline-flex !important;
-        }
-
-        .mw-diff-usermetadata,
-        .mw-diff-userroles,
-        .mw-diff-usereditcount {
-            width: auto;
-            height: auto;
-            display: block;
-            position: relative;
-            inset: auto;
-        }
-
-        // /* [Fix] Override roles no wrapping on mobile. */
-        .mw-diff-userroles {
-            overflow: visible;
-            white-space: normal;
-
-            &:is(:empty) {
-                display: none;
+            .mw-rollback-link,
+            .mw-diff-undo {
+                &:last-child {
+                    padding-bottom: 0;
+                }
             }
-        }
 
-        .mw-diff-usereditcount {
-            margin-top: 0.7em;
-
-            span {
-                text-align: left;
-            }
-        }
-
-        .mw-rollback-link {
-            position: absolute;
-        }
-
-        // /* [Fix] Override styles of the thanks button on mobile. */
-        .mw-diff-tool {
-            position: absolute;
-            z-index: 1;
-            inset: auto 1em 1em auto;
-
-            .jquery-confirmable-text {
-                display: inline;
+            .mw-rollback-link {
+                > .cdx-button {
+                    margin: 0;
+                }
             }
 
             .mw-thanks-thank-link {
-                margin-right: 0;
+                max-width: 100%;
+                margin: 0;
+
+                & + .jquery-confirmable-interface {
+                    width: 100% !important;
+                }
             }
         }
-
-        .mw-userlink {
-            float: none;
-
-            &::before {
-                width: calc(var(--font-size-medium, 1rem) + 4px);
-                display: inline-block;
-            }
-        }
-
-        // /* [Fix] Hide user icon if checkuser extension is enabled. */
-        #instantDiffs--pageSpecific.fix-userlink--ext-checkuser();
     }
 }
 
