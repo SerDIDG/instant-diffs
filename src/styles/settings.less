@@ -1,47 +1,47 @@
 .instantDiffs-settings {
-    // /* [Fix] Set top indent for the dialogs because of the fixed header on the some skins  */
-    &.oo-ui-window-active {
-        .oo-ui-windowManager-modal > & {
-            top: var(--instantDiffs-view-top);
-        }
-    }
+	// /* [Fix] Set top indent for the dialogs because of the fixed header on the some skins  */
+	&.oo-ui-window-active {
+		.oo-ui-windowManager-modal > & {
+			top: var(--instantDiffs-view-top);
+		}
+	}
 }
 
 .instantDiffs-settings-panel {
-    &--finish {
-        min-height: 100%;
-        box-sizing: border-box;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+	&--finish {
+		min-height: 100%;
+		box-sizing: border-box;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 
-        &[hidden] {
-            display: none;
-        }
+		&[hidden] {
+			display: none;
+		}
 
-        .instantDiffs-success-box {
-            transform: translateY(-50%);
-        }
-    }
+		.instantDiffs-success-box {
+			transform: translateY(-50%);
+		}
+	}
 }
 
 /* Reset list styles for a list hint element */
 /* Use more specific selector because mobile Minerva loads unscoped ".ns-special ul" */
 /* 1.42857143em is a size of the OOUI checkbox/radio */
 ul.instantDiffs-list--settings {
-    padding: 0;
-    margin-block: 0;
-    margin-inline: 1.42857143em 0;
-    list-style: disc;
-    font-size: var(--instantDiffs-font-size-hint);
+	padding: 0;
+	margin-block: 0;
+	margin-inline: 1.42857143em 0;
+	list-style: disc;
+	font-size: var(--instantDiffs-font-size-hint);
 
-    li {
-        margin: 0;
-    }
+	li {
+		margin: 0;
+	}
 
-    // /* Set a predefine direction because links can contain rtl content */
-    i {
-        direction: ltr;
-        unicode-bidi: embed;
-    }
+	// /* Set a predefine direction because links can contain rtl content */
+	i {
+		direction: ltr;
+		unicode-bidi: embed;
+	}
 }

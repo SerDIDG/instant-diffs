@@ -1,152 +1,152 @@
 /******* LINKS *******/
 
 .instantDiffs-link {
-    padding-inline: var(--instantDiffs-gap);
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-    border-radius: 1em;
-    background: var(--background-color-progressive-subtle, #f1f4fd);
-    color: var(--instantDiffs-color-link);
-    text-decoration: none;
+	padding-inline: var(--instantDiffs-gap);
+	-webkit-box-decoration-break: clone;
+	box-decoration-break: clone;
+	border-radius: 1em;
+	background: var(--background-color-progressive-subtle, #f1f4fd);
+	color: var(--instantDiffs-color-link);
+	text-decoration: none;
 
-    &::before {
-        margin-inline-end: var(--instantDiffs-gap);
-    }
+	&::before {
+		margin-inline-end: var(--instantDiffs-gap);
+	}
 
-    &::after {
-        margin-inline-start: var(--instantDiffs-gap);
-    }
+	&::after {
+		margin-inline-start: var(--instantDiffs-gap);
+	}
 
-    &:is(:hover, :focus-visible) {
-        background: var(--background-color-interactive-subtle--hover, #eaecf0);
-        color: var(--instantDiffs-color-link--hover);
-        text-decoration: none;
-    }
+	&:is(:hover, :focus-visible) {
+		background: var(--background-color-interactive-subtle--hover, #eaecf0);
+		color: var(--instantDiffs-color-link--hover);
+		text-decoration: none;
+	}
 
-    &:is(:active, :focus) {
-        background: var(--background-color-interactive-subtle--active, #dadde3);
-        color: var(--instantDiffs-color-link--active);
-        text-decoration: none;
-    }
+	&:is(:active, :focus) {
+		background: var(--background-color-interactive-subtle--active, #dadde3);
+		color: var(--instantDiffs-color-link--active);
+		text-decoration: none;
+	}
 
-    &--diff {
-        &.is-insertBefore::before {
-            content: var(--instantDiffs-label-diff);
-        }
+	&--diff {
+		&.is-insertBefore::before {
+			content: var(--instantDiffs-label-diff);
+		}
 
-        &.is-insertAfter::after {
-            content: var(--instantDiffs-label-diff);
-        }
-    }
+		&.is-insertAfter::after {
+			content: var(--instantDiffs-label-diff);
+		}
+	}
 
-    &--revision {
-        &.is-insertBefore::before {
-            content: var(--instantDiffs-label-revision);
-        }
+	&--revision {
+		&.is-insertBefore::before {
+			content: var(--instantDiffs-label-revision);
+		}
 
-        &.is-insertAfter::after {
-            content: var(--instantDiffs-label-revision);
-        }
-    }
+		&.is-insertAfter::after {
+			content: var(--instantDiffs-label-revision);
+		}
+	}
 
-    &--error {
-        background: var(--background-color-error-subtle, #ffe9e5);
-        color: var(--color-error, #bf3c2c);
+	&--error {
+		background: var(--background-color-error-subtle, #ffe9e5);
+		color: var(--color-error, #bf3c2c);
 
-        &:is(:hover, :focus-visible) {
-            background: var(--background-color-error-subtle--hover, #ffdad3);
-            color: var(--color-error--hover, #9f3526);
-        }
+		&:is(:hover, :focus-visible) {
+			background: var(--background-color-error-subtle--hover, #ffdad3);
+			color: var(--color-error--hover, #9f3526);
+		}
 
-        &:is(:active, :focus) {
-            background: var(--background-color-error-subtle--active, #ffc8bd);
-            color: var(--color-error--active, #612419);
-        }
-    }
+		&:is(:active, :focus) {
+			background: var(--background-color-error-subtle--active, #ffc8bd);
+			color: var(--color-error--active, #612419);
+		}
+	}
 
-    &--pending {
-        cursor: wait !important;
-    }
+	&--pending {
+		cursor: wait !important;
+	}
 }
 
 
 /******* PANEL *******/
 
 .instantDiffs-panel {
-    margin-inline: var(--instantDiffs-gap);
-    font-weight: normal;
-    font-style: normal;
-    color: #72777d;
-    user-select: none;
+	margin-inline: var(--instantDiffs-gap);
+	font-weight: normal;
+	font-style: normal;
+	color: #72777d;
+	user-select: none;
 
-    &:is(:empty) {
-        display: none !important;;
-    }
+	&:is(:empty) {
+		display: none !important;;
+	}
 
-    span& {
-        display: inline;
-    }
+	span& {
+		display: inline;
+	}
 
-    a {
-        cursor: pointer;
-        color: inherit;
-    }
+	a {
+		cursor: pointer;
+		color: inherit;
+	}
 
-    .item {
-        &:not(:last-child) {
-            margin-inline-end: var(--instantDiffs-gap);
-        }
-    }
+	.item {
+		&:not(:last-child) {
+			margin-inline-end: var(--instantDiffs-gap);
+		}
+	}
 
-    .error {
-        font-size: inherit;
+	.error {
+		font-size: inherit;
 
-        &-info {
-            cursor: help;
-        }
-    }
+		&-info {
+			cursor: help;
+		}
+	}
 }
 
 /*** PLACEHOLDER ***/
 
 .instantDiffs-panel-placeholder {
-    padding-inline: var(--instantDiffs-gap);
+	padding-inline: var(--instantDiffs-gap);
 
-    &:after {
-        margin-inline-start: var(--instantDiffs-gap);
-        color: var(--color-placeholder, #72777d);
-        content: var(--instantDiffs-label-placeholder);
-    }
+	&:after {
+		margin-inline-start: var(--instantDiffs-gap);
+		color: var(--color-placeholder, #72777d);
+		content: var(--instantDiffs-label-placeholder);
+	}
 
-    &.has-link {
-        padding: 0;
-    }
+	&.has-link {
+		padding: 0;
+	}
 
-    &--diff {
-        &::after {
-            content: var(--instantDiffs-label-diff);
-        }
-    }
+	&--diff {
+		&::after {
+			content: var(--instantDiffs-label-diff);
+		}
+	}
 
-    &--revision {
-        &::after {
-            content: var(--instantDiffs-label-revision);
-        }
-    }
+	&--revision {
+		&::after {
+			content: var(--instantDiffs-label-revision);
+		}
+	}
 
-    &--loader {
-        &::after {
-            color: var(--color-disabled, #a2a9b1);
-            animation: instantDiffs-blink 1s infinite alternate;
-        }
-    }
+	&--loader {
+		&::after {
+			color: var(--color-disabled, #a2a9b1);
+			animation: instantDiffs-blink 1s infinite alternate;
+		}
+	}
 }
 
 @keyframes instantDiffs-blink {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
 }

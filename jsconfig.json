@@ -1,14 +1,14 @@
 {
-    "compilerOptions": {
-        "types": [
-            "oojs",
-            "oojs-ui",
-            "jquery",
-            "jqueryui"
-        ]
-    },
-    "include": [
-        "src/**/*",
-        "node_modules/types-mediawiki"
-    ]
+	"compilerOptions": {
+		"types": [
+			"oojs",
+			"oojs-ui",
+			"jquery",
+			"jqueryui"
+		]
+	},
+	"include": [
+		"src/**/*",
+		"node_modules/types-mediawiki"
+	]
 }

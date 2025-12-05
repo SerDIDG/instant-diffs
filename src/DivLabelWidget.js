@@ -5,17 +5,17 @@ import { tweakUserOoUiClass } from './utils-oojs';
  * @augments OO.ui.LabelWidget
  */
 class DivLabelWidget extends OO.ui.LabelWidget {
-    static tagName = 'div';
+	static tagName = 'div';
 
-    constructor() {
-        super( {
-            classes: [ 'oo-ui-messageDialog-message', 'is-transparent' ],
-        } );
-    }
+	constructor() {
+		super( {
+			classes: [ 'oo-ui-messageDialog-message', 'is-transparent' ],
+		} );
+	}
 
-    toggleVisibility( value ) {
-        this.$element.toggleClass( 'is-transparent', !value );
-    }
+	toggleVisibility( value ) {
+		this.$element.toggleClass( 'is-transparent', !value );
+	}
 }
 
 tweakUserOoUiClass( DivLabelWidget );

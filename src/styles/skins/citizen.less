@@ -7,36 +7,36 @@
 /******* VARIABLES *******/
 
 @media screen {
-    --instantDiffs-color-link: var(--color-link);
-    --instantDiffs-color-link--hover: var(--color-link--hover);
-    --instantDiffs-color-link--active: var(--color-link--active);
-    --instantDiffs-background-navigation: color-mix(in srgb, var(--color-surface-1, #ffffff) 70%, transparent);
-    --instantDiffs-font-size: var(--font-size-medium, 1rem);
-    --instantDiffs-font-size-navigation: var(--font-size-small, 0.875rem);
-    --instantDiffs-line-height: var(--line-height, 1.6);
-    --instantDiffs-view-radius: var(--border-radius-medium);
+	--instantDiffs-color-link: var(--color-link);
+	--instantDiffs-color-link--hover: var(--color-link--hover);
+	--instantDiffs-color-link--active: var(--color-link--active);
+	--instantDiffs-background-navigation: color-mix(in srgb, var(--color-surface-1, #ffffff) 70%, transparent);
+	--instantDiffs-font-size: var(--font-size-medium, 1rem);
+	--instantDiffs-font-size-navigation: var(--font-size-small, 0.875rem);
+	--instantDiffs-line-height: var(--line-height, 1.6);
+	--instantDiffs-view-radius: var(--border-radius-medium);
 }
 
 /******* VIEW *******/
 
 .instantDiffs-view {
-    .oo-ui-messageDialog-title {
-        font-size: var(--font-size-large);
-        line-height: var(--line-height-large);
-        font-weight: var(--font-weight-semi-bold);
-    }
+	.oo-ui-messageDialog-title {
+		font-size: var(--font-size-large);
+		line-height: var(--line-height-large);
+		font-weight: var(--font-weight-semi-bold);
+	}
 }
 
 /******* EXTENSIONS *******/
 
 #citizen-lastmod-relative {
-    &.instantDiffs-link {
-        &.is-insertBefore::before {
-            margin-right: auto;
-        }
+	&.instantDiffs-link {
+		&.is-insertBefore::before {
+			margin-right: auto;
+		}
 
-        &.is-insertAfter::after {
-            margin-left: auto;
-        }
-    }
+		&.is-insertAfter::after {
+			margin-left: auto;
+		}
+	}
 }

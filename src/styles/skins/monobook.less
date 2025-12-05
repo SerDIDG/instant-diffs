@@ -6,40 +6,40 @@
 /******* VARIABLES *******/
 
 @media screen {
-    --instantDiffs-border-color: #ccc;
-    --instantDiffs-font-size: 0.794rem; /* 127% (12.7px) */
-    --instantDiffs-font-size-navigation: var(--instantDiffs-font-size);
-    --instantDiffs-line-height: 1.5;
+	--instantDiffs-border-color: #ccc;
+	--instantDiffs-font-size: 0.794rem; /* 127% (12.7px) */
+	--instantDiffs-font-size-navigation: var(--instantDiffs-font-size);
+	--instantDiffs-line-height: 1.5;
 }
 
 /******* VIEW *******/
 
 .instantDiffs-view {
-    // /* Use rem instead of em to avoid horizontal scrolling */
-    .oo-ui-messageDialog-text {
-        padding: 1rem 1rem 1.25rem;
-    }
+	// /* Use rem instead of em to avoid horizontal scrolling */
+	.oo-ui-messageDialog-text {
+		padding: 1rem 1rem 1.25rem;
+	}
 }
 
 /******* NAVIGATION *******/
 
 /* Use rem instead of em to avoid horizontal scrolling */
 .instantDiffs-navigation {
-    margin-inline: -1rem;
-    margin-bottom: 1rem;
-    padding: 1rem;
+	margin-inline: -1rem;
+	margin-bottom: 1rem;
+	padding: 1rem;
 
-    @media (max-width: @max-width-breakpoint-mobile) {
-        padding: 0.5rem 1rem;
-    }
+	@media (max-width: @max-width-breakpoint-mobile) {
+		padding: 0.5rem 1rem;
+	}
 }
 
 /*** BUTTON GROUPS ***/
 
 .instantDiffs-buttons-group {
-    &--vertical {
-        hr {
-            background-color: var(--instantDiffs-border-color);
-        }
-    }
+	&--vertical {
+		hr {
+			background-color: var(--instantDiffs-border-color);
+		}
+	}
 }

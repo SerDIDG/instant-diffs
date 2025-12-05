@@ -9,37 +9,37 @@ import Api from './Api';
  * @returns {Object|undefined}
  */
 export function getNamespaceConfig( hostname ) {
-    const data = Api.siteInfoAliases[ hostname ];
-    if ( isEmptyObject( data ) ) return;
+	const data = Api.siteInfoAliases[ hostname ];
+	if ( isEmptyObject( data ) ) return;
 
-    return {
-        wgFormattedNamespaces: Object.values( data.namespaces ).reduce( ( obj, value ) => {
-            obj[ value.id ] = value.canonical || '';
-            return obj;
-        }, {} ),
+	return {
+		wgFormattedNamespaces: Object.values( data.namespaces ).reduce( ( obj, value ) => {
+			obj[ value.id ] = value.canonical || '';
+			return obj;
+		}, {} ),
 
-        wgNamespaceIds: {
-            ...Object.values( data.namespaces ).reduce( ( obj, value ) => {
-                obj[ spacesToUnderlines( value.name.toLowerCase() ) ] = value.id;
-                if ( value.canonical ) {
-                    obj[ spacesToUnderlines( value.canonical.toLowerCase() ) ] = value.id;
-                }
-                return obj;
-            }, {} ),
-            ...data.namespacealiases.reduce( ( obj, alias ) => {
-                obj[ alias.alias.toLowerCase() ] = alias.id;
-                return obj;
-            }, {} ),
-        },
+		wgNamespaceIds: {
+			...Object.values( data.namespaces ).reduce( ( obj, value ) => {
+				obj[ spacesToUnderlines( value.name.toLowerCase() ) ] = value.id;
+				if ( value.canonical ) {
+					obj[ spacesToUnderlines( value.canonical.toLowerCase() ) ] = value.id;
+				}
+				return obj;
+			}, {} ),
+			...data.namespacealiases.reduce( ( obj, alias ) => {
+				obj[ alias.alias.toLowerCase() ] = alias.id;
+				return obj;
+			}, {} ),
+		},
 
-        wgCaseSensitiveNamespaces: Object.values( data.namespaces )
-            .filter( ( value ) => value.case === 'case-sensitive' )
-            .map( ( value ) => value.id ),
+		wgCaseSensitiveNamespaces: Object.values( data.namespaces )
+			.filter( ( value ) => value.case === 'case-sensitive' )
+			.map( ( value ) => value.id ),
 
-        wgContentNamespaces: Object.values( data.namespaces )
-            .filter( ( value ) => value.content )
-            .map( ( value ) => value.id ),
-    };
+		wgContentNamespaces: Object.values( data.namespaces )
+			.filter( ( value ) => value.content )
+			.map( ( value ) => value.id ),
+	};
 }
 
 /**
@@ -48,7 +48,7 @@ export function getNamespaceConfig( hostname ) {
  * @return {boolean}
  */
 export function isProbablyWbTitle( title ) {
-    return !isEmpty( title ) && /^[QPL][0-9]+$/.test( title );
+	return !isEmpty( title ) && /^[QPL][0-9]+$/.test( title );
 }
 
 /**
@@ -57,7 +57,7 @@ export function isProbablyWbTitle( title ) {
  * @return {boolean}
  */
 export function isWbContentModel( contentModel ) {
-    return !isEmpty( contentModel ) && contentModel.includes( 'wikibase' );
+	return !isEmpty( contentModel ) && contentModel.includes( 'wikibase' );
 }
 
 /**
@@ -66,7 +66,7 @@ export function isWbContentModel( contentModel ) {
  * @return {boolean}
  */
 export function isEditableContentModel( contentModel ) {
-    return !id.config.nonEditableContentModels.includes( contentModel );
+	return !id.config.nonEditableContentModels.includes( contentModel );
 }
 
 /**
@@ -75,8 +75,8 @@ export function isEditableContentModel( contentModel ) {
  * @return {string|*}
  */
 export function getEntitySchemaLabel( displayTitle ) {
-    const $html = $( displayTitle );
-    return $html.find( '.entityschema-title-label' ).text();
+	const $html = $( displayTitle );
+	return $html.find( '.entityschema-title-label' ).text();
 }
 
 /**
@@ -85,8 +85,8 @@ export function getEntitySchemaLabel( displayTitle ) {
  * @return {string|*}
  */
 export function getWikilambdaLabel( props ) {
-    return !isEmptyObject( props ) && (
-        props[ `wikilambda-label-${ id.local.userLanguage }` ] ||
-        props[ 'wikilambda-label-en' ]
-    );
+	return !isEmptyObject( props ) && (
+		props[ `wikilambda-label-${ id.local.userLanguage }` ] ||
+		props[ 'wikilambda-label-en' ]
+	);
 }

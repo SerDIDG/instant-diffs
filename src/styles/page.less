@@ -1,117 +1,117 @@
 .instantDiffs-page {
-    width: auto;
-    max-width: none;
-    display: flow-root;
-    margin: 0;
-    padding: 0;
-    font-size: var(--instantDiffs-font-size);
-    line-height: var(--instantDiffs-line-height);
+	width: auto;
+	max-width: none;
+	display: flow-root;
+	margin: 0;
+	padding: 0;
+	font-size: var(--instantDiffs-font-size);
+	line-height: var(--instantDiffs-line-height);
 }
 
 /******* TOOLS *******/
 
 .instantDiffs-page-tools {
-    display: flex;
-    justify-content: center;
+	display: flex;
+	justify-content: center;
 
-    &:is(:empty) {
-        display: none;
-    }
+	&:is(:empty) {
+		display: none;
+	}
 }
 
 /******* CONTENT *******/
 
 .instantDiffs-page-body {
-    display: flow-root;
-    position: relative;
-    z-index: 1;
+	display: flow-root;
+	position: relative;
+	z-index: 1;
 
-    .cdx-message--block {
-        margin-bottom: 1em;
-    }
+	.cdx-message--block {
+		margin-bottom: 1em;
+	}
 
-    #mw-fr-diff-headeritems {
-        margin-top: 0;
-    }
+	#mw-fr-diff-headeritems {
+		margin-top: 0;
+	}
 
-    #mw-fr-revisiontag-old {
-        margin-bottom: 1em;
-    }
+	#mw-fr-revisiontag-old {
+		margin-bottom: 1em;
+	}
 
-    // /* Set a min height for the diff tools so they don't jump while loading */
-    .mw-diff-table-prefix {
-        min-height: 2rem;
-        margin-top: 0;
-    }
+	// /* Set a min height for the diff tools so they don't jump while loading */
+	.mw-diff-table-prefix {
+		min-height: 2rem;
+		margin-top: 0;
+	}
 
-    // /* Fix overflow */
-    .mw-diffPage-inlineToggle-container {
-        .oo-ui-fieldLayout {
-            > .oo-ui-fieldLayout-body {
-                > .oo-ui-fieldLayout-field {
-                    width: auto;
-                }
-            }
-        }
-    }
+	// /* Fix overflow */
+	.mw-diffPage-inlineToggle-container {
+		.oo-ui-fieldLayout {
+			> .oo-ui-fieldLayout-body {
+				> .oo-ui-fieldLayout-field {
+					width: auto;
+				}
+			}
+		}
+	}
 
-    // /* Reset styles for the rollback link */
-    table.diff {
-        .mw-rollback-link {
-            display: initial;
-        }
+	// /* Reset styles for the rollback link */
+	table.diff {
+		.mw-rollback-link {
+			display: initial;
+		}
 
-        .jquery-confirmable-wrapper {
-            vertical-align: top;
-        }
-    }
+		.jquery-confirmable-wrapper {
+			vertical-align: top;
+		}
+	}
 
-    // /* Reset a text align that was added by RTL ".oo-ui-messageDialog-message" */
-    .mw-parser-output {
-        text-align: initial;
-    }
+	// /* Reset a text align that was added by RTL ".oo-ui-messageDialog-message" */
+	.mw-parser-output {
+		text-align: initial;
+	}
 
-    // /* Hide table of contents */
-    #toc {
-        display: none;
-    }
+	// /* Hide table of contents */
+	#toc {
+		display: none;
+	}
 
-    // /* Hide mobile diff footer for the older wikis */
-    .mw-diff-mobile-footer {
-        display: none;
-    }
+	// /* Hide mobile diff footer for the older wikis */
+	.mw-diff-mobile-footer {
+		display: none;
+	}
 
-    // /*** FOREIGN RELATED STYLES ***/
+	// /*** FOREIGN RELATED STYLES ***/
 
-    &--foreign {
-        .wikibase-statementgroupview {
-            // /* Reset right margin in the wikibase statements */
-            .wikibase-snakview-body {
-                margin-right: 0 !important;
-            }
+	&--foreign {
+		.wikibase-statementgroupview {
+			// /* Reset right margin in the wikibase statements */
+			.wikibase-snakview-body {
+				margin-right: 0 !important;
+			}
 
-            // /* Uncollapse all statement sources */
-            .wikibase-initially-collapsed {
-                display: block !important;
-            }
-        }
+			// /* Uncollapse all statement sources */
+			.wikibase-initially-collapsed {
+				display: block !important;
+			}
+		}
 
-        .wikibase-entitytermsview {
-            // /* Reset position of the edit link in the languages box */
-            .wikibase-toolbar-container {
-                position: relative;
-            }
-        }
-    }
+		.wikibase-entitytermsview {
+			// /* Reset position of the edit link in the languages box */
+			.wikibase-toolbar-container {
+				position: relative;
+			}
+		}
+	}
 }
 
 /******* BLOCKS *******/
 
 .instantDiffs-page-mediaInfo {
-    .oo-ui-indexLayout-stackLayout {
-        > .oo-ui-tabPanelLayout-active {
-            margin: 1rem 0 0;
-            padding: 0;
-        }
-    }
+	.oo-ui-indexLayout-stackLayout {
+		> .oo-ui-tabPanelLayout-active {
+			margin: 1rem 0 0;
+			padding: 0;
+		}
+	}
 }

@@ -1,202 +1,214 @@
 @import ( reference ) '@wikimedia/codex-design-tokens/theme-wikimedia-ui.less';
 
 .instantDiffs-navigation {
-    margin: 0 -16px 1em;
-    padding: 1em 16px;
-    display: flex;
-    gap: 0.5em;
-    position: sticky;
-    z-index: 2;
-    top: 0;
-    border-bottom: 1px solid var(--instantDiffs-border-color);
-    background: var(--instantDiffs-background-navigation);
-    background-clip: padding-box;
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
-    font-size: var(--instantDiffs-font-size-navigation);
+	margin: 0 -16px 1em;
+	padding: 1em 16px;
+	display: flex;
+	gap: 0.5em;
+	position: sticky;
+	z-index: 2;
+	top: 0;
+	border-bottom: 1px solid var(--instantDiffs-border-color);
+	background: var(--instantDiffs-background-navigation);
+	background-clip: padding-box;
+	-webkit-backdrop-filter: blur(16px);
+	backdrop-filter: blur(16px);
+	font-size: var(--instantDiffs-font-size-navigation);
 
-    @media (max-width: @max-width-breakpoint-mobile) {
-        padding: 0.5em;
+	@media (max-width: @max-width-breakpoint-mobile) {
+		padding: 0.5em;
 
-        .instantDiffs-button--switch,
-        .instantDiffs-button--pending,
-        .instantDiffs-button--back {
-            display: none;
-        }
+		.instantDiffs-button--switch,
+		.instantDiffs-button--pending,
+		.instantDiffs-button--back {
+			display: none;
+		}
 
-        .instantDiffs-button--link {
-            display: block;
-        }
-    }
+		.instantDiffs-button--link {
+			display: block;
+		}
+	}
 }
 
 /******* GROUPS *******/
 
 .instantDiffs-navigation-group {
-    .oo-ui-buttonGroupWidget {
-        min-width: 0;
-        display: flex;
-    }
+	.oo-ui-buttonGroupWidget {
+		min-width: 0;
+		display: flex;
+	}
 
-    &--left {
-        display: flex;
-        justify-content: flex-start;
-        flex: 1;
-    }
+	&--left {
+		display: flex;
+		justify-content: flex-start;
+		flex: 1;
+	}
 
-    &--center {
-        min-width: 0;
-        display: flex;
-        justify-content: center;
-        flex: auto;
+	&--center {
+		min-width: 0;
+		display: flex;
+		justify-content: center;
+		flex: none;
 
-        .oo-ui-buttonElement {
-            min-width: 0;
-            flex: auto;
-        }
+		.oo-ui-buttonElement {
+			min-width: 0;
+			flex: auto;
+		}
 
-        .oo-ui-buttonElement-button {
-            display: block;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-    }
+		.oo-ui-buttonElement-button {
+			display: block;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
 
-    &--right {
-        display: flex;
-        justify-content: flex-end;
-        flex: 1;
-    }
+	&--right {
+		display: flex;
+		justify-content: flex-end;
+		flex: 1;
+	}
 }
 
 /******* BUTTON GROUPS *******/
 
 .instantDiffs-buttons-group {
-    &--vertical {
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
+	&--vertical {
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
 
-        hr {
-            margin: 0;
-        }
+		&:is(:empty) {
+			display: none;
 
-        &.has-icons {
-            gap: var(--instantDiffs-gap);
-        }
-    }
+			& + hr {
+				display: none;
+			}
+		}
 
-    @media (min-width: @min-width-breakpoint-tablet) {
-        &--mobile {
-            && {
-                display: none;
-            }
-        }
-    }
+		&.has-icons {
+			gap: var(--instantDiffs-gap);
+		}
+	}
+
+	@media (min-width: @min-width-breakpoint-tablet) {
+		&--mobile {
+			&& {
+				display: none;
+			}
+
+			& + hr {
+				display: none;
+			}
+		}
+	}
+}
+
+.instantDiffs-buttons-separator {
+	margin: 0;
 }
 
 .instantDiffs-buttons-popup {
-    .oo-ui-popupWidget-popup {
-        padding: 0;
-    }
+	.oo-ui-popupWidget-popup {
+		padding: 0;
+	}
 
-    .oo-ui-popupWidget-body {
-        display: flex;
-        flex-direction: column;
-    }
+	.oo-ui-popupWidget-body {
+		display: flex;
+		flex-direction: column;
+	}
 
-    &.has-icons {
-        .oo-ui-popupWidget-body {
-            padding: var(--instantDiffs-gap);
-            gap: var(--instantDiffs-gap);
-        }
-    }
+	&.has-icons {
+		.oo-ui-popupWidget-body {
+			padding: var(--instantDiffs-gap);
+			gap: var(--instantDiffs-gap);
+		}
+	}
 }
 
 /******* BUTTON MENU *******/
 
 .instantDiffs-button--link {
-    display: block;
+	display: block;
 
-    > .oo-ui-buttonElement-button {
-        display: block;
-    }
+	> .oo-ui-buttonElement-button {
+		display: block;
+	}
 
-    &.oo-ui-buttonElement-frameless {
-        && {
-            &:first-child {
-                margin: 0;
-            }
-        }
+	&.oo-ui-buttonElement-frameless {
+		&& {
+			&:first-child {
+				margin: 0;
+			}
+		}
 
-        > .oo-ui-buttonElement-button {
-            margin: 0;
-            padding-right: 12px;
-            padding-left: 12px;
-        }
-    }
+		> .oo-ui-buttonElement-button {
+			margin: 0;
+			padding-right: 12px;
+			padding-left: 12px;
+		}
+	}
 
-    &.oo-ui-widget-enabled {
-        > .oo-ui-buttonElement-button {
-            &:is(:hover, :focus) {
-                background-color: var(--background-color-interactive, #eaecf0);
-                color: var(--color-progressive--hover, var(--instantDiffs-color-link--hover));
-            }
+	&.oo-ui-widget-enabled {
+		> .oo-ui-buttonElement-button {
+			&:is(:hover, :focus) {
+				background-color: var(--background-color-interactive, #eaecf0);
+				color: var(--color-progressive--hover, var(--instantDiffs-color-link--hover));
+			}
 
-            &:active {
-                border-color: var(--border-color-progressive--active, #2a4b8d);
-                background-color: var(--background-color-progressive-subtle, #eaf3ff);
-                color: var(--color-progressive--active, var(--instantDiffs-color-link--active));
-            }
-        }
-    }
+			&:active {
+				border-color: var(--border-color-progressive--active, #2a4b8d);
+				background-color: var(--background-color-progressive-subtle, #eaf3ff);
+				color: var(--color-progressive--active, var(--instantDiffs-color-link--active));
+			}
+		}
+	}
 }
 
 .instantDiffs-button--link-id {
-    .oo-ui-labelElement-label {
-        white-space: wrap;
+	.oo-ui-labelElement-label {
+		white-space: wrap;
 
-        .name {
-            white-space: nowrap;
-        }
+		.name {
+			white-space: nowrap;
+		}
 
-        .version {
-            white-space: nowrap;
-            font-size: 0.8em;
-            color: var(--color-placeholder, #72777d);
-        }
-    }
+		.version {
+			white-space: nowrap;
+			font-size: 0.8em;
+			color: var(--color-placeholder, #72777d);
+		}
+	}
 }
 
 /******* BUTTON LABELS *******/
 
 .instantDiffs-label {
-    max-width: 100%;
-    display: inline-flex;
-    gap: var(--instantDiffs-gap);
+	max-width: 100%;
+	display: inline-flex;
+	gap: var(--instantDiffs-gap);
 
-    i {
-        flex: none;
-    }
+	i {
+		flex: none;
+	}
 
-    span {
-        min-width: 0;
-        flex: auto;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
+	span {
+		min-width: 0;
+		flex: auto;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
 
-    @media (min-width: 960px) {
-        &--short {
-            display: none;
-        }
-    }
+	@media (min-width: 960px) {
+		&--short {
+			display: none;
+		}
+	}
 
-    @media (max-width: 959px) {
-        &--long {
-            display: none;
-        }
-    }
+	@media (max-width: 959px) {
+		&--long {
+			display: none;
+		}
+	}
 }

@@ -10,39 +10,39 @@ const warning = ( text ) => console.log( chalk.yellowBright( text ) );
 
 // Package config
 const pkg = JSON.parse(
-    await fs.readFile( new URL( './package.json', import.meta.url ) ),
+	await fs.readFile( new URL( './package.json', import.meta.url ) ),
 );
 const version = args.dev ? pkg.version : pkg.version.split( '+' ).shift();
 const postfix = args.dev ? '.test' : '';
 
 // Project config
 const env = JSON.parse(
-    await fs.readFile( new URL( './env.json', import.meta.url ) ),
+	await fs.readFile( new URL( './env.json', import.meta.url ) ),
 );
 const project = env[ process.env.PROJECT ];
 if ( !project ) {
-    warning( 'Please provide a valid PROJECT environment variable.' );
-    process.exit( 1 );
+	warning( 'Please provide a valid PROJECT environment variable.' );
+	process.exit( 1 );
 }
 project.target = project.target.replace( '$name', project.name ) + postfix;
 project.i18n = project.i18n.replace( '$name', project.name );
 
 // String to replace in the files
 const strings = {
-    include: /\.js$/,
-    __outname__: project.name,
-    __outdir__: project.dir,
-    __version__: version,
-    __origin__: 'https://www.mediawiki.org',
-    __server__: project.server,
-    __styles__: `${ project.scriptPath }/index.php?title=${ project.target }.css&action=raw&ctype=text/css`,
-    __messages__: `${ project.scriptPath }/index.php?title=${ project.i18n }$lang.js&action=raw&ctype=text/javascript`,
-    __debug__: process.argv.includes( '--start' ),
+	include: /\.js$/,
+	__outname__: project.name,
+	__outdir__: project.dir,
+	__version__: version,
+	__origin__: 'https://www.mediawiki.org',
+	__server__: project.server,
+	__styles__: `${ project.scriptPath }/index.php?title=${ project.target }.css&action=raw&ctype=text/css`,
+	__messages__: `${ project.scriptPath }/index.php?title=${ project.i18n }$lang.js&action=raw&ctype=text/javascript`,
+	__debug__: process.argv.includes( '--start' ),
 };
 
 if ( args.start ) {
-    strings.__styles__ = `${ project.target }.css`;
-    strings.__messages__ = `${ project.i18n }$lang.js`;
+	strings.__styles__ = `${ project.target }.css`;
+	strings.__messages__ = `${ project.i18n }$lang.js`;
 }
 
 // Prepend a banner and a footer
@@ -62,56 +62,56 @@ const footer = `/* </nowiki> */`;
 
 // Build a config
 const config = {
-    logLevel: 'info',
-    entryPoints: [ 'src/app.js' ],
-    bundle: true,
-    treeShaking: true,
-    outfile: `${ project.dir }/${ project.name }${ postfix }.js`,
-    format: 'iife',
-    banner: {
-        js: banner,
-        css: banner,
-    },
-    footer: {
-        js: footer,
-        css: footer,
-    },
-    plugins: [
-        replace( strings ),
-        lessLoader(),
-    ],
+	logLevel: 'info',
+	entryPoints: [ 'src/app.js' ],
+	bundle: true,
+	treeShaking: true,
+	outfile: `${ project.dir }/${ project.name }${ postfix }.js`,
+	format: 'iife',
+	banner: {
+		js: banner,
+		css: banner,
+	},
+	footer: {
+		js: footer,
+		css: footer,
+	},
+	plugins: [
+		replace( strings ),
+		lessLoader(),
+	],
 };
 
 // Build process
 if ( args.build ) {
-    await esbuild
-        .build( {
-            ...config,
-            minify: true,
-            sourcemap: false,
-            legalComments: 'external',
-        } );
+	await esbuild
+		.build( {
+			...config,
+			minify: true,
+			sourcemap: false,
+			legalComments: 'external',
+		} );
 }
 
 // Serve process
 if ( args.start ) {
-    await esbuild
-        .context( {
-            ...config,
-            minify: false,
-            sourcemap: true,
-        } )
-        .then( async ( ctx ) => {
-            await ctx.watch();
-            await ctx.serve( {
-                servedir: project.dir,
-                onRequest: ( { remoteAddress, method, path, status, timeInMS } ) => {
-                    console.info( remoteAddress, status, `"${ method } ${ path }" [${ timeInMS }ms]` );
-                },
-            } );
-        } )
-        .catch( ( e ) => {
-            warning( e );
-            process.exit( 1 );
-        } );
+	await esbuild
+		.context( {
+			...config,
+			minify: false,
+			sourcemap: true,
+		} )
+		.then( async ( ctx ) => {
+			await ctx.watch();
+			await ctx.serve( {
+				servedir: project.dir,
+				onRequest: ( { remoteAddress, method, path, status, timeInMS } ) => {
+					console.info( remoteAddress, status, `"${ method } ${ path }" [${ timeInMS }ms]` );
+				},
+			} );
+		} )
+		.catch( ( e ) => {
+			warning( e );
+			process.exit( 1 );
+		} );
 }

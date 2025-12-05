@@ -3,35 +3,35 @@
 /******* UTILS *******/
 
 .instantDiffs-hidden {
-    display: none !important;
+	display: none !important;
 }
 
 .instantDiffs-success-box {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    white-space: pre-wrap;
-    text-align: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+	white-space: pre-wrap;
+	text-align: center;
 
-    img {
-        width: 64px;
-        aspect-ratio: 1/1;
-        border: none;
-        font-size: 0;
-    }
+	img {
+		width: 64px;
+		aspect-ratio: 1/1;
+		border: none;
+		font-size: 0;
+	}
 
-    h5 {
-        padding: 0;
-        margin: 0;
-    }
+	h5 {
+		padding: 0;
+		margin: 0;
+	}
 }
 
 /******* NOTIFICATION *******/
 
 .instantDiffs-notification-label {
-    font-weight: bold;
+	font-weight: bold;
 }
 
 /******* PAGE SPECIFIC ADJUSTMENTS *******/
@@ -46,70 +46,70 @@
  */
 
 .instantDiffs-line {
-    li&,
-    tr& td,
-    table& td {
-        transition: all 1000ms ease-in-out;
-    }
+	li&,
+	tr& td,
+	table& td {
+		transition: all 1000ms ease-in-out;
+	}
 
-    &--highlight {
-        li&,
-        tr& td,
-        table& td {
-            transition-duration: 250ms;
-            background-color: var(--instantDiffs-background-line) !important;
-        }
-    }
+	&--highlight {
+		li&,
+		tr& td,
+		table& td {
+			transition-duration: 250ms;
+			background-color: var(--instantDiffs-background-line) !important;
+		}
+	}
 }
 
 /* Reset ending margin when panel embedded into certain core links */
 .instantDiffs-panel {
-    .mw-fr-reviewlink &,
-    .mw-changeslist-links &,
-    .mw-changeslist-diff-cur + &,
-    .mw-changeslist-diff + & {
-        margin-inline-end: 0;
-    }
+	.mw-fr-reviewlink &,
+	.mw-changeslist-links &,
+	.mw-changeslist-diff-cur + &,
+	.mw-changeslist-diff + & {
+		margin-inline-end: 0;
+	}
 }
 
 /* Override link background for the "pending edits" link in the Watchlist */
 .instantDiffs-link {
-    .mw-fr-reviewlink & {
-        background: transparent;
-    }
+	.mw-fr-reviewlink & {
+		background: transparent;
+	}
 }
 
 /*** HISTORY PAGE ***/
 
 .instantDiffs-button--compare {
-    font-weight: normal;
+	font-weight: normal;
 
-    // /* [Fix] Button min-width for legacy wikis */
-    &.mw-ui-button {
-        min-width: 0;
-    }
+	// /* [Fix] Button min-width for legacy wikis */
+	&.mw-ui-button {
+		min-width: 0;
+	}
 }
 
 /* [Fix] Buttons vertical alignment */
 .instantDiffs-enabled {
-    .mw-history-compareselectedversions {
-        :is( .mw-ui-button, .cdx-button ) {
-            vertical-align: top;
-        }
-    }
+	.mw-history-compareselectedversions {
+		:is( .mw-ui-button, .cdx-button ) {
+			vertical-align: top;
+		}
+	}
 }
 
 body:not(.skin-minerva) {
-    .instantDiffs-line--history {
-        // /* [Fix] Add indent before the left checkbox selector for the all skins except Minerva */
-        .mw-history-histlinks {
-            margin-inline-end: 0.5em;
-        }
+	.instantDiffs-line--history {
+		// /* [Fix] Add indent before the left checkbox selector for the all skins except Minerva */
+		.mw-history-histlinks {
+			margin-inline-end: 0.5em;
+		}
 
-        // /* [Fix] Add indent after the right checkbox selector for the all skins except Minerva */
-        .mw-changeslist-date {
-            margin-inline-start: 0.5em;
-        }
-    }
+		// /* [Fix] Add indent after the right checkbox selector for the all skins except Minerva */
+		.mw-changeslist-date {
+			margin-inline-start: 0.5em;
+		}
+	}
 }
 

@@ -9,35 +9,35 @@ import settings from './settings';
 /******* VALUES *******/
 
 export function getRevID( article ) {
-    const values = article.getValues();
+	const values = article.getValues();
 
-    if ( utils.isValidID( values.revid ) ) {
-        return values.revid;
-    }
+	if ( utils.isValidID( values.revid ) ) {
+		return values.revid;
+	}
 
-    if ( values.type === 'revision' ) {
-        if ( utils.isValidID( values.oldid ) ) {
-            if ( !utils.isValidDir( values.direction ) || values.direction === 'prev' ) {
-                return values.oldid;
-            }
-        }
-    }
+	if ( values.type === 'revision' ) {
+		if ( utils.isValidID( values.oldid ) ) {
+			if ( !utils.isValidDir( values.direction ) || values.direction === 'prev' ) {
+				return values.oldid;
+			}
+		}
+	}
 
-    if ( values.type === 'diff' ) {
-        if ( utils.isValidID( values.oldid ) && utils.isValidID( values.diff ) ) {
-            return Math.max( values.oldid, values.diff );
-        } else if ( utils.isValidID( values.oldid ) ) {
-            if ( !utils.isValidDir( values.diff ) || values.diff === 'prev' ) {
-                return values.oldid;
-            }
-        } else if ( utils.isValidID( values.diff ) ) {
-            if ( !utils.isValidDir( values.oldid ) || values.oldid === 'prev' ) {
-                return values.diff;
-            }
-        }
-    }
+	if ( values.type === 'diff' ) {
+		if ( utils.isValidID( values.oldid ) && utils.isValidID( values.diff ) ) {
+			return Math.max( values.oldid, values.diff );
+		} else if ( utils.isValidID( values.oldid ) ) {
+			if ( !utils.isValidDir( values.diff ) || values.diff === 'prev' ) {
+				return values.oldid;
+			}
+		} else if ( utils.isValidID( values.diff ) ) {
+			if ( !utils.isValidDir( values.oldid ) || values.oldid === 'prev' ) {
+				return values.diff;
+			}
+		}
+	}
 
-    return false;
+	return false;
 }
 
 /******* DEPENDENCIES *******/
@@ -48,51 +48,51 @@ export function getRevID( article ) {
  * @return {Array<string>}
  */
 export function getDependencies( article ) {
-    let dependencies = [];
+	let dependencies = [];
 
-    // Page common dependencies
-    const pageDependencies = id.config.dependencies.page;
-    if ( pageDependencies ) {
-        dependencies = dependencies.concat(
-            getNamespaceDependencies( article, pageDependencies ),
-        );
-    }
+	// Page common dependencies
+	const pageDependencies = id.config.dependencies.page;
+	if ( pageDependencies ) {
+		dependencies = dependencies.concat(
+			getNamespaceDependencies( article, pageDependencies ),
+		);
+	}
 
-    // Type-specific dependencies
-    const typeDependencies = id.config.dependencies[ article.get( 'type' ) ];
-    if ( typeDependencies ) {
-        dependencies = dependencies.concat(
-            getNamespaceDependencies( article, typeDependencies ),
-        );
-    }
+	// Type-specific dependencies
+	const typeDependencies = id.config.dependencies[ article.get( 'type' ) ];
+	if ( typeDependencies ) {
+		dependencies = dependencies.concat(
+			getNamespaceDependencies( article, typeDependencies ),
+		);
+	}
 
-    // Skin-specific dependencies
-    const skinDependencies = id.config.dependencies.skins[ mw.config.get( 'skin' ) ];
-    if ( skinDependencies ) {
-        dependencies = dependencies.concat(
-            getNamespaceDependencies( article, skinDependencies ),
-        );
-    }
+	// Skin-specific dependencies
+	const skinDependencies = id.config.dependencies.skins[ mw.config.get( 'skin' ) ];
+	if ( skinDependencies ) {
+		dependencies = dependencies.concat(
+			getNamespaceDependencies( article, skinDependencies ),
+		);
+	}
 
-    return dependencies;
+	return dependencies;
 }
 
 function getNamespaceDependencies( article, data ) {
-    let dependencies = [];
-    if ( utils.isEmpty( data ) ) return dependencies;
+	let dependencies = [];
+	if ( utils.isEmpty( data ) ) return dependencies;
 
-    // Set common dependencies
-    if ( utils.isArray( data[ '*' ] ) ) {
-        dependencies = dependencies.concat( data[ '*' ] );
-    }
+	// Set common dependencies
+	if ( utils.isArray( data[ '*' ] ) ) {
+		dependencies = dependencies.concat( data[ '*' ] );
+	}
 
-    // Set namespace-specific dependencies
-    const namespace = article.getMW( 'title' )?.getNamespaceId();
-    if ( utils.isArray( data[ namespace ] ) ) {
-        dependencies = dependencies.concat( data[ namespace ] );
-    }
+	// Set namespace-specific dependencies
+	const namespace = article.getMW( 'title' )?.getNamespaceId();
+	if ( utils.isArray( data[ namespace ] ) ) {
+		dependencies = dependencies.concat( data[ namespace ] );
+	}
 
-    return dependencies;
+	return dependencies;
 }
 
 /**
@@ -101,91 +101,91 @@ function getNamespaceDependencies( article, data ) {
  * @returns {Object<string, Array<string>>}
  */
 export function getForeignDependencies( article ) {
-    let modules = [];
-    let styles = [];
-    let links = [];
+	let modules = [];
+	let styles = [];
+	let links = [];
 
-    const typeDependencies = id.config.foreignDependencies[ article.get( 'type' ) ];
-    if ( typeDependencies ) {
-        // Modules
-        modules = modules.concat(
-            getNamespaceDependencies( article, typeDependencies ),
-        );
+	const typeDependencies = id.config.foreignDependencies[ article.get( 'type' ) ];
+	if ( typeDependencies ) {
+		// Modules
+		modules = modules.concat(
+			getNamespaceDependencies( article, typeDependencies ),
+		);
 
-        // Styles only
-        styles = styles.concat(
-            getNamespaceDependencies( article, typeDependencies.styles ),
-        );
+		// Styles only
+		styles = styles.concat(
+			getNamespaceDependencies( article, typeDependencies.styles ),
+		);
 
-        // Content model-specific dependencies
-        if ( isWbContentModel( mw.config.get( 'wgPageContentModel' ) ) ) {
-            const wikibaseDependencies = typeDependencies.wikibase;
-            if ( wikibaseDependencies ) {
-                // Modules
-                modules = modules.concat(
-                    getNamespaceDependencies( article, wikibaseDependencies ),
-                );
+		// Content model-specific dependencies
+		if ( isWbContentModel( mw.config.get( 'wgPageContentModel' ) ) ) {
+			const wikibaseDependencies = typeDependencies.wikibase;
+			if ( wikibaseDependencies ) {
+				// Modules
+				modules = modules.concat(
+					getNamespaceDependencies( article, wikibaseDependencies ),
+				);
 
-                // Styles only
-                styles = styles.concat(
-                    wikibaseDependencies.styles.all,
-                    utils.isMF() ? wikibaseDependencies.styles.mobile : wikibaseDependencies.styles.desktop,
-                );
-            }
-        }
+				// Styles only
+				styles = styles.concat(
+					wikibaseDependencies.styles.all,
+					utils.isMF() ? wikibaseDependencies.styles.mobile : wikibaseDependencies.styles.desktop,
+				);
+			}
+		}
 
-        // Styles dependencies
-        links = links.concat( getForeignStylesDependencies( article, typeDependencies.links ) );
-    }
+		// Styles dependencies
+		links = links.concat( getForeignStylesDependencies( article, typeDependencies.links ) );
+	}
 
-    return { modules, styles, links };
+	return { modules, styles, links };
 }
 
 function getForeignStylesDependencies( article, data ) {
-    let styles = [];
-    if ( utils.isEmpty( data ) ) return styles;
+	let styles = [];
+	if ( utils.isEmpty( data ) ) return styles;
 
-    // Set common dependencies
-    if ( utils.isArray( data[ '*' ] ) ) {
-        styles = styles.concat(
-            data[ '*' ].map( title => getStyleHref( article, title ) ),
-        );
-    }
+	// Set common dependencies
+	if ( utils.isArray( data[ '*' ] ) ) {
+		styles = styles.concat(
+			data[ '*' ].map( title => getStyleHref( article, title ) ),
+		);
+	}
 
-    // Set namespace-specific dependencies
-    const namespace = article.getMW( 'title' )?.getNamespaceId();
-    if ( utils.isArray( data[ namespace ] ) ) {
-        styles = styles.concat(
-            data[ namespace ].map( title => getStyleHref( article, title ) ),
-        );
-    }
+	// Set namespace-specific dependencies
+	const namespace = article.getMW( 'title' )?.getNamespaceId();
+	if ( utils.isArray( data[ namespace ] ) ) {
+		styles = styles.concat(
+			data[ namespace ].map( title => getStyleHref( article, title ) ),
+		);
+	}
 
-    return styles;
+	return styles;
 }
 
 export function loadForeignDependencies( article, data ) {
-    const dependencies = utils.getMissingDependencies( data );
-    const hostname = article.get( 'hostname' );
-    const action = mw.util.wikiScript( 'load' );
-    const params = $.param( {
-        modules: dependencies.join( '|' ),
-        skin: mw.config.get( 'skin' ),
-    } );
+	const dependencies = utils.getMissingDependencies( data );
+	const hostname = article.get( 'hostname' );
+	const action = mw.util.wikiScript( 'load' );
+	const params = $.param( {
+		modules: dependencies.join( '|' ),
+		skin: mw.config.get( 'skin' ),
+	} );
 
-    mw.loader.load( `https://${ hostname }${ action }?${ params }` );
+	mw.loader.load( `https://${ hostname }${ action }?${ params }` );
 }
 
 export function loadForeignStylesDependencies( article, data ) {
-    const dependencies = utils.getMissingDependencies( data );
-    const hostname = article.get( 'hostname' );
-    const action = mw.util.wikiScript( 'load' );
-    const params = $.param( {
-        modules: dependencies.join( '|' ),
-        only: 'styles',
-        skin: mw.config.get( 'skin' ),
-    } );
+	const dependencies = utils.getMissingDependencies( data );
+	const hostname = article.get( 'hostname' );
+	const action = mw.util.wikiScript( 'load' );
+	const params = $.param( {
+		modules: dependencies.join( '|' ),
+		only: 'styles',
+		skin: mw.config.get( 'skin' ),
+	} );
 
-    mw.loader.load( `https://${ hostname }${ action }?${ params }`, 'text/css' );
+	mw.loader.load( `https://${ hostname }${ action }?${ params }`, 'text/css' );
 }
 
 /**
@@ -194,8 +194,8 @@ export function loadForeignStylesDependencies( article, data ) {
  * @returns {Array<HTMLLinkElement>|undefined}
  */
 export function addLinkTags( urls ) {
-    if ( utils.isEmpty( urls ) ) return;
-    return urls.map( url => mw.loader.addLinkTag?.( url ) );
+	if ( utils.isEmpty( urls ) ) return;
+	return urls.map( url => mw.loader.addLinkTag?.( url ) );
 }
 
 /**
@@ -203,8 +203,8 @@ export function addLinkTags( urls ) {
  * @param {Array<HTMLLinkElement>} tags
  */
 export function removeLinkTags( tags ) {
-    if ( utils.isEmpty( tags ) ) return;
-    tags.forEach( tag => tag?.remove() );
+	if ( utils.isEmpty( tags ) ) return;
+	tags.forEach( tag => tag?.remove() );
 }
 
 /******* FORMAT HREFS *******/
@@ -215,25 +215,25 @@ export function removeLinkTags( tags ) {
  * @returns {string} formated wikilink
  */
 export async function getWikilink( article ) {
-    const options = {
-        relative: false,
-        minify: settings.get( 'linksFormat' ) === 'minify',
-        wikilink: true,
-        wikilinkPreset: settings.get( 'wikilinksFormat' ),
-    };
+	const options = {
+		relative: false,
+		minify: settings.get( 'linksFormat' ) === 'minify',
+		wikilink: true,
+		wikilinkPreset: settings.get( 'wikilinksFormat' ),
+	};
 
-    // Get project prefix for the foreign link
-    if ( article.isForeign ) {
-        const interwikiMap = await Api.getInterwikiMap();
-        if ( interwikiMap ) {
-            options.interwiki = interwikiMap
-                .filter( entry => entry.url.includes( article.getMW( 'serverName' ) ) )
-                .reduce( ( accumulator, entry ) => !accumulator || accumulator.prefix.length > entry.prefix.length ? entry : accumulator );
-        }
-    }
+	// Get project prefix for the foreign link
+	if ( article.isForeign ) {
+		const interwikiMap = await Api.getInterwikiMap();
+		if ( interwikiMap ) {
+			options.interwiki = interwikiMap
+				.filter( entry => entry.url.includes( article.getMW( 'serverName' ) ) )
+				.reduce( ( accumulator, entry ) => !accumulator || accumulator.prefix.length > entry.prefix.length ? entry : accumulator );
+		}
+	}
 
-    // Get wikilink
-    return getHref( article, {}, options );
+	// Get wikilink
+	return getHref( article, {}, options );
 }
 
 /**
@@ -244,79 +244,79 @@ export async function getWikilink( article ) {
  * @returns {string}
  */
 export function getHref( article, articleParams, options ) {
-    if ( !( article instanceof Article ) ) {
-        article = new Article( article );
-    }
+	if ( !( article instanceof Article ) ) {
+		article = new Article( article );
+	}
 
-    articleParams = { ...articleParams };
+	articleParams = { ...articleParams };
 
-    options = {
-        type: null,
-        ...options,
-    };
+	options = {
+		type: null,
+		...options,
+	};
 
-    // Get copy of the values
-    const values = { ...article.getValues() };
+	// Get copy of the values
+	const values = { ...article.getValues() };
 
-    // Validate options
-    if ( !options.type ) {
-        if ( values.type === 'revision' && values.typeVariant === 'page' ) {
-            options.type = 'page';
-        } else {
-            options.type = values.type;
-        }
-    }
+	// Validate options
+	if ( !options.type ) {
+		if ( values.type === 'revision' && values.typeVariant === 'page' ) {
+			options.type = 'page';
+		} else {
+			options.type = values.type;
+		}
+	}
 
-    // Validate page params for diffs
-    if ( options.type === 'diff' ) {
-        if ( utils.isEmpty( values.diff ) && utils.isValidDir( values.direction ) ) {
-            values.diff = values.direction;
-        }
+	// Validate page params for diffs
+	if ( options.type === 'diff' ) {
+		if ( utils.isEmpty( values.diff ) && utils.isValidDir( values.direction ) ) {
+			values.diff = values.direction;
+		}
 
-        if ( utils.isValidID( values.oldid ) && utils.isValidID( values.diff ) ) {
-            articleParams.oldid = values.oldid;
-            articleParams.diff = values.diff;
-        } else if ( utils.isValidID( values.revid ) ) {
-            articleParams.diff = values.revid;
-        } else if ( utils.isValidID( values.oldid ) ) {
-            if ( utils.isValidDir( values.diff ) && values.diff !== 'prev' ) {
-                articleParams.oldid = values.oldid;
-                articleParams.diff = values.diff;
-            } else {
-                articleParams.diff = values.oldid;
-            }
-        } else if ( utils.isValidID( values.diff ) ) {
-            if ( utils.isValidDir( values.oldid ) && values.oldid !== 'prev' ) {
-                articleParams.oldid = values.diff;
-                articleParams.diff = values.oldid;
-            } else {
-                articleParams.diff = values.diff;
-            }
-        }
-    }
+		if ( utils.isValidID( values.oldid ) && utils.isValidID( values.diff ) ) {
+			articleParams.oldid = values.oldid;
+			articleParams.diff = values.diff;
+		} else if ( utils.isValidID( values.revid ) ) {
+			articleParams.diff = values.revid;
+		} else if ( utils.isValidID( values.oldid ) ) {
+			if ( utils.isValidDir( values.diff ) && values.diff !== 'prev' ) {
+				articleParams.oldid = values.oldid;
+				articleParams.diff = values.diff;
+			} else {
+				articleParams.diff = values.oldid;
+			}
+		} else if ( utils.isValidID( values.diff ) ) {
+			if ( utils.isValidDir( values.oldid ) && values.oldid !== 'prev' ) {
+				articleParams.oldid = values.diff;
+				articleParams.diff = values.oldid;
+			} else {
+				articleParams.diff = values.diff;
+			}
+		}
+	}
 
-    // Validate page params for revisions
-    if ( options.type === 'revision' ) {
-        if ( utils.isEmpty( values.direction ) && utils.isValidDir( values.diff ) ) {
-            values.direction = values.diff;
-        }
+	// Validate page params for revisions
+	if ( options.type === 'revision' ) {
+		if ( utils.isEmpty( values.direction ) && utils.isValidDir( values.diff ) ) {
+			values.direction = values.diff;
+		}
 
-        if ( utils.isValidID( values.revid ) ) {
-            articleParams.oldid = values.revid;
-        } else if ( utils.isValidID( values.oldid ) ) {
-            articleParams.oldid = values.oldid;
-            if ( utils.isValidDir( values.direction ) && values.direction === 'next' ) {
-                articleParams.direction = values.direction;
-            }
-        }
-    }
+		if ( utils.isValidID( values.revid ) ) {
+			articleParams.oldid = values.revid;
+		} else if ( utils.isValidID( values.oldid ) ) {
+			articleParams.oldid = values.oldid;
+			if ( utils.isValidDir( values.direction ) && values.direction === 'next' ) {
+				articleParams.direction = values.direction;
+			}
+		}
+	}
 
-    // Validate page params for pages
-    if ( options.type === 'page' ) {
-        articleParams.curid = values.curid;
-    }
+	// Validate page params for pages
+	if ( options.type === 'page' ) {
+		articleParams.curid = values.curid;
+	}
 
-    return processHref( article, articleParams, options );
+	return processHref( article, articleParams, options );
 }
 
 /**
@@ -326,108 +326,108 @@ export function getHref( article, articleParams, options ) {
  * @returns {string|undefined}
  */
 export function getHrefAbsolute( article, href ) {
-    const mwEndPointUrl = article?.mw.endPointUrl || id.local.mwEndPointUrl;
-    try {
-        return new URL( href, mwEndPointUrl.origin ).toString();
-    } catch {
-        return href;
-    }
+	const mwEndPointUrl = article?.mw.endPointUrl || id.local.mwEndPointUrl;
+	try {
+		return new URL( href, mwEndPointUrl.origin ).toString();
+	} catch {
+		return href;
+	}
 }
 
 function processHref( article, articleParams, options ) {
-    articleParams = { ...articleParams };
-    options = {
-        type: 'diff',
-        relative: true,
-        hash: false,
-        minify: false,
-        interwiki: null,
-        wikilink: false,
-        wikilinkPreset: null,
-        ...options,
-    };
+	articleParams = { ...articleParams };
+	options = {
+		type: 'diff',
+		relative: true,
+		hash: false,
+		minify: false,
+		interwiki: null,
+		wikilink: false,
+		wikilinkPreset: null,
+		...options,
+	};
 
-    // Validate
-    if ( utils.isForeign( article.get( 'hostname' ) ) ) {
-        options.relative = false;
-    }
+	// Validate
+	if ( utils.isForeign( article.get( 'hostname' ) ) ) {
+		options.relative = false;
+	}
 
-    // Get link's endpoint url
-    const mwEndPointUrl = article.getMW( 'endPointUrl' ) || id.local.mwEndPointUrl;
+	// Get link's endpoint url
+	const mwEndPointUrl = article.getMW( 'endPointUrl' ) || id.local.mwEndPointUrl;
 
-    // Get url with the current hostname
-    let url;
-    if ( !utils.isEmpty( article.get( 'title' ) ) ) {
-        url = new URL( mw.util.getUrl( article.get( 'title' ), articleParams ), mwEndPointUrl.origin );
-    } else {
-        url = new URL( mwEndPointUrl );
-        url.search = new URLSearchParams( articleParams ).toString();
-    }
+	// Get url with the current hostname
+	let url;
+	if ( !utils.isEmpty( article.get( 'title' ) ) ) {
+		url = new URL( mw.util.getUrl( article.get( 'title' ), articleParams ), mwEndPointUrl.origin );
+	} else {
+		url = new URL( mwEndPointUrl );
+		url.search = new URLSearchParams( articleParams ).toString();
+	}
 
-    // Add hash
-    if ( options.hash && !utils.isEmpty( article.get( 'section' ) ) ) {
-        url.hash = `#${ article.get( 'section' ) }`;
-    }
+	// Add hash
+	if ( options.hash && !utils.isEmpty( article.get( 'section' ) ) ) {
+		url.hash = `#${ article.get( 'section' ) }`;
+	}
 
-    // Minify href
-    if ( options.minify ) {
-        url.pathname = '';
-        url.hash = '';
-        url.searchParams.delete( 'title' );
-    }
+	// Minify href
+	if ( options.minify ) {
+		url.pathname = '';
+		url.hash = '';
+		url.searchParams.delete( 'title' );
+	}
 
-    // Get relative or absolute href
-    options.href = decodeURIComponent( options.relative ? ( url.pathname + url.search + url.hash ) : url.toString() );
+	// Get relative or absolute href
+	options.href = decodeURIComponent( options.relative ? ( url.pathname + url.search + url.hash ) : url.toString() );
 
-    // Get wikilink
-    if ( options.wikilink ) {
-        return processWikilink( article, articleParams, options );
-    }
+	// Get wikilink
+	if ( options.wikilink ) {
+		return processWikilink( article, articleParams, options );
+	}
 
-    return options.href;
+	return options.href;
 }
 
 function processWikilink( article, articleParams, options ) {
-    articleParams = { ...articleParams };
-    options = {
-        href: null,
-        type: 'diff',
-        minify: false,
-        relative: true,
-        interwiki: null,
-        wikilink: true,
-        wikilinkPreset: 'special',
-        ...options,
-    };
+	articleParams = { ...articleParams };
+	options = {
+		href: null,
+		type: 'diff',
+		minify: false,
+		relative: true,
+		interwiki: null,
+		wikilink: true,
+		wikilinkPreset: 'special',
+		...options,
+	};
 
-    // Get diff \ oldid params
-    let attr = null;
-    if ( !utils.isEmpty( articleParams.oldid ) && !utils.isEmpty( articleParams.diff ) ) {
-        attr = `${ articleParams.oldid }/${ articleParams.diff }`;
-    } else if ( !utils.isEmpty( articleParams.oldid ) ) {
-        attr = articleParams.oldid;
-    } else if ( !utils.isEmpty( articleParams.diff ) ) {
-        attr = articleParams.diff;
-    } else if ( !utils.isEmpty( articleParams.curid ) ) {
-        attr = articleParams.curid;
-    }
+	// Get diff \ oldid params
+	let attr = null;
+	if ( !utils.isEmpty( articleParams.oldid ) && !utils.isEmpty( articleParams.diff ) ) {
+		attr = `${ articleParams.oldid }/${ articleParams.diff }`;
+	} else if ( !utils.isEmpty( articleParams.oldid ) ) {
+		attr = articleParams.oldid;
+	} else if ( !utils.isEmpty( articleParams.diff ) ) {
+		attr = articleParams.diff;
+	} else if ( !utils.isEmpty( articleParams.curid ) ) {
+		attr = articleParams.curid;
+	}
 
-    // Get preset
-    const preset = id.config.wikilinkPresets[ options.wikilinkPreset ] || id.config.wikilinkPresets.special;
+	// Get preset
+	const preset = id.config.wikilinkPresets[ options.wikilinkPreset ] || id.config.wikilinkPresets.special;
 
-    // Format wikilink
-    const wikilink = preset[ options.type ];
-    const prefix = options.interwiki?.prefix;
-    return wikilink
-        .replace( '$1', attr )
-        .replace( '$pref', prefix ? `${ prefix }:` : '' )
-        .replace( '$href', options.href )
-        .replace( '$msg', utils.msg( `copy-wikilink-${ options.type }` ) );
+	// Format wikilink
+	const wikilink = preset[ options.type ];
+	const prefix = options.interwiki?.prefix;
+	return wikilink
+		.replace( '$1', attr )
+		.replace( '$pref', prefix ? `${ prefix }:` : '' )
+		.replace( '$href', options.href )
+		.replace( '$msg', utils.msg( `copy-wikilink-${ options.type }` ) );
 }
 
 function getStyleHref( article, title ) {
-    const href = mw.util.getUrl( title, { action: 'raw', ctype: 'text/css' } );
-    return article.isForeign
-        ? getHrefAbsolute( article, href )
-        : href;
+	const href = mw.util.getUrl( title, { action: 'raw', ctype: 'text/css' } );
+	return article.isForeign
+		? getHrefAbsolute( article, href )
+		: href;
 }

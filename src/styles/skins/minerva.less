@@ -8,8 +8,8 @@
 /******* VARIABLES *******/
 
 @media (min-width: @min-width-breakpoint-tablet) {
-    --instantDiffs-font-size: 1rem;
-    --instantDiffs-line-height: 1.65;
+	--instantDiffs-font-size: 1rem;
+	--instantDiffs-line-height: 1.65;
 }
 
 /******* PAGE *******/
@@ -17,358 +17,362 @@
 /*** CONTENT ***/
 
 .instantDiffs-page-body {
-    table.diff {
-        margin: 0;
-    }
+	table.diff {
+		margin: 0;
+	}
 
-    // /* [Fix] Override heading styles with default because Minerva loads unscoped ".ns-special .content h1" */
-    &:is( .mw-heading1, h1, .mw-heading2, h2 ) {
-        font-family: 'Linux Libertine', 'Georgia', 'Times', 'Source Serif Pro', serif;
-    }
+	// /* [Fix] Override heading styles with default because Minerva loads unscoped ".ns-special .content h1" */
+	&:is( .mw-heading1, h1, .mw-heading2, h2 ) {
+		font-family: 'Linux Libertine', 'Georgia', 'Times', 'Source Serif Pro', serif;
+	}
 
-    // /* [Fix] Hide empty time stamps on mobile Minerva ([[phab:T394776]]) */
-    .mw-diff-timestamp:is(:empty) {
-        display: none;
-    }
+	// /* [Fix] Hide empty time stamps on mobile Minerva ([[phab:T394776]]) */
+	.mw-diff-timestamp:is(:empty) {
+		display: none;
+	}
 
-    // /* [Fix] Override styles for the user links */
-    // /* Also try to override custom styles that were added in the specific projects */
-    // /* (see [[uk:MediaWiki:Mobile.css]]) */
-    .diff-title {
-        .mw-userlink {
-            float: none;
+	// /* [Fix] Override styles for the user links */
+	// /* Also try to override custom styles that were added in the specific projects */
+	// /* (see [[uk:MediaWiki:Mobile.css]]) */
+	.diff-title {
+		.mw-userlink {
+			float: none;
 
-            &::before {
-                display: none;
-            }
-        }
+			&::before {
+				display: none;
+			}
+		}
 
-        .mw-usertoollinks {
-            float: none;
-        }
-    }
+		.mw-usertoollinks {
+			float: none;
+		}
+	}
 
-    @media (max-width: @max-width-breakpoint-mobile) {
-        // /* [Fix] Override fixed positioning for the edit contributor block on mobile. */
-        .mw-diff-mobile-footer {
-            height: auto;
-            display: block;
-            margin: -1em -16px 1em;
-            position: relative;
-            inset: auto;
-            border: none;
-            border-bottom: 1px solid var(--border-color-subtle, #c8ccd1);
+	@media (max-width: @max-width-breakpoint-mobile) {
+		// /* [Fix] Override fixed positioning for the edit contributor block on mobile. */
+		.mw-diff-mobile-footer {
+			height: auto;
+			display: block;
+			margin: -1em -16px 1em;
+			position: relative;
+			inset: auto;
+			border: none;
+			border-bottom: 1px solid var(--border-color-subtle, #c8ccd1);
 
-            .mw-rollback-link,
-            .mw-diff-undo {
-                &:last-child {
-                    padding-bottom: 0;
-                }
-            }
+			.mw-userlink {
+				padding-top: 0;
+			}
 
-            .mw-rollback-link {
-                > .cdx-button {
-                    margin: 0;
-                }
-            }
+			.mw-rollback-link,
+			.mw-diff-undo {
+				&:last-child {
+					padding-bottom: 0;
+				}
+			}
 
-            .mw-thanks-thank-link {
-                max-width: 100%;
-                margin: 0;
+			.mw-rollback-link {
+				> .cdx-button {
+					margin: 0;
+				}
+			}
 
-                & + .jquery-confirmable-interface {
-                    width: 100% !important;
-                }
-            }
-        }
-    }
+			.mw-thanks-thank-link {
+				max-width: 100%;
+				margin: 0;
+
+				& + .jquery-confirmable-interface {
+					width: 100% !important;
+				}
+			}
+		}
+	}
 }
 
 /*** FLAGGED REVISIONS ***/
 
 .instantDiffs-page-body {
-    #mw-fr-diff-headeritems {
-        .fr-diff-ratings {
-            margin: 0;
+	#mw-fr-diff-headeritems {
+		.fr-diff-ratings {
+			margin: 0;
 
-            @media (max-width: @max-width-breakpoint-mobile) {
-                // /* Fix alignment of the right side  */
-                td {
-                    width: 100% !important;
-                    text-align: left !important;
+			@media (max-width: @max-width-breakpoint-mobile) {
+				// /* Fix alignment of the right side  */
+				td {
+					width: 100% !important;
+					text-align: left !important;
 
-                    // /* Hide the left side of the patrolled/unpatrolled labels in the diff table. */
-                    &:nth-child(2n-1) {
-                        display: none;
-                    }
-                }
-            }
-        }
-    }
+					// /* Hide the left side of the patrolled/unpatrolled labels in the diff table. */
+					&:nth-child(2n-1) {
+						display: none;
+					}
+				}
+			}
+		}
+	}
 }
 
 /******* PAGE SPECIFIC ADJUSTMENTS *******/
 
 #instantDiffs--pageSpecific () {
-    // /* [Fix] Hide the user icon in lists that were loaded from dependencies after the View dialog opens. */
-    .fix-userlink {
-        .mw-userlink {
-            &::before {
-                width: 100%;
-                height: 0;
-                min-height: 0;
-                margin: 0;
-                display: table;
-                content: '';
-            }
-        }
-    }
+	// /* [Fix] Hide the user icon in lists that were loaded from dependencies after the View dialog opens. */
+	.fix-userlink {
+		.mw-userlink {
+			&::before {
+				width: 100%;
+				height: 0;
+				min-height: 0;
+				margin: 0;
+				display: table;
+				content: '';
+			}
+		}
+	}
 
-    .fix-userlink--width {
-        .mw-userlink {
-            &::before {
-                width: 0;
-                min-width: 0;
-            }
-        }
-    }
+	.fix-userlink--width {
+		.mw-userlink {
+			&::before {
+				width: 0;
+				min-width: 0;
+			}
+		}
+	}
 
-    .fix-userlink--ext-checkuser {
-        .ext-checkuser-userinfocard-button + .mw-userlink {
-            &::before {
-                display: none !important;
-            }
-        }
-    }
+	.fix-userlink--ext-checkuser {
+		.ext-checkuser-userinfocard-button + .mw-userlink {
+			&::before {
+				display: none !important;
+			}
+		}
+	}
 
-    // /* [Fix] Display user tools in lists that were loaded from dependencies after the View dialog opens. */
-    .fix-usertoollinks {
-        .mw-usertoollinks {
-            display: inline !important;
-        }
-    }
+	// /* [Fix] Display user tools in lists that were loaded from dependencies after the View dialog opens. */
+	.fix-usertoollinks {
+		.mw-usertoollinks {
+			display: inline !important;
+		}
+	}
 
-    .fix-ext-checkuser--float {
-        .ext-checkuser-userinfocard-button {
-            float: left;
-            clear: left;
-            padding-top: 0;
+	.fix-ext-checkuser--float {
+		.ext-checkuser-userinfocard-button {
+			float: left;
+			clear: left;
+			padding-top: 0;
 
-            & + .mw-userlink {
-                float: left;
-                clear: none;
-                padding-top: 0;
+			& + .mw-userlink {
+				float: left;
+				clear: none;
+				padding-top: 0;
 
-                & + .mw-usertoollinks {
-                    float: left;
-                    clear: right;
-                    padding-top: 0;
-                }
-            }
-        }
+				& + .mw-usertoollinks {
+					float: left;
+					clear: right;
+					padding-top: 0;
+				}
+			}
+		}
 
-        .mw-changeslist-log-entry {
-            .ext-checkuser-userinfocard-button {
-                float: none;
-                clear: both;
+		.mw-changeslist-log-entry {
+			.ext-checkuser-userinfocard-button {
+				float: none;
+				clear: both;
 
-                & + .mw-userlink {
-                    float: none;
-                    clear: both;
+				& + .mw-userlink {
+					float: none;
+					clear: both;
 
-                    & + .mw-usertoollinks {
-                        float: none;
-                        clear: both;
-                    }
-                }
-            }
-        }
-    }
+					& + .mw-usertoollinks {
+						float: none;
+						clear: both;
+					}
+				}
+			}
+		}
+	}
 }
 
 .instantDiffs-line {
-    // /* [Fix] Hide user icon if checkuser extension is enabled. */
-    #instantDiffs--pageSpecific.fix-userlink--ext-checkuser();
+	// /* [Fix] Hide user icon if checkuser extension is enabled. */
+	#instantDiffs--pageSpecific.fix-userlink--ext-checkuser();
 
-    // /* [Fix] Reset the minoredit styles that were loaded from dependencies after the View dialog opens. */
-    .minoredit {
-        font-size: inherit;
-    }
+	// /* [Fix] Reset the minoredit styles that were loaded from dependencies after the View dialog opens. */
+	.minoredit {
+		font-size: inherit;
+	}
 
-    &:not(.instantDiffs-line--history) {
-        .minoredit {
-            margin-right: 0.5em;
-            padding: 0;
-            background: transparent;
-        }
-    }
+	&:not(.instantDiffs-line--history) {
+		.minoredit {
+			margin-right: 0.5em;
+			padding: 0;
+			background: transparent;
+		}
+	}
 }
 
 &.mw-special-Watchlist {
-    .instantDiffs-line {
-        #instantDiffs--pageSpecific.fix-ext-checkuser--float();
-    }
+	.instantDiffs-line {
+		#instantDiffs--pageSpecific.fix-ext-checkuser--float();
+	}
 }
 
 &.mw-special-Recentchanges {
-    .instantDiffs-line {
-        #instantDiffs--pageSpecific.fix-userlink();
-        #instantDiffs--pageSpecific.fix-usertoollinks();
-        #instantDiffs--pageSpecific.fix-ext-checkuser--float();
-    }
+	.instantDiffs-line {
+		#instantDiffs--pageSpecific.fix-userlink();
+		#instantDiffs--pageSpecific.fix-usertoollinks();
+		#instantDiffs--pageSpecific.fix-ext-checkuser--float();
+	}
 }
 
 &.mw-special-Recentchangeslinked {
-    .instantDiffs-line {
-        #instantDiffs--pageSpecific.fix-userlink();
-        #instantDiffs--pageSpecific.fix-userlink--width();
-        #instantDiffs--pageSpecific.fix-usertoollinks();
-        #instantDiffs--pageSpecific.fix-ext-checkuser--float();
-    }
+	.instantDiffs-line {
+		#instantDiffs--pageSpecific.fix-userlink();
+		#instantDiffs--pageSpecific.fix-userlink--width();
+		#instantDiffs--pageSpecific.fix-usertoollinks();
+		#instantDiffs--pageSpecific.fix-ext-checkuser--float();
+	}
 }
 
 &:not(.mw-mf-amc-disabled) {
-    .instantDiffs-line {
-        #instantDiffs--pageSpecific.fix-userlink();
-        #instantDiffs--pageSpecific.fix-usertoollinks();
+	.instantDiffs-line {
+		#instantDiffs--pageSpecific.fix-userlink();
+		#instantDiffs--pageSpecific.fix-usertoollinks();
 
-        // /* [UI] Show actual revision link instead of timestamp on Minerva */
-        .mw-changeslist-date {
-            display: inline;
-        }
-    }
+		// /* [UI] Show actual revision link instead of timestamp on Minerva */
+		.mw-changeslist-date {
+			display: inline;
+		}
+	}
 
-    .instantDiffs-line--history {
-        #instantDiffs--pageSpecific.fix-userlink--width();
-    }
+	.instantDiffs-line--history {
+		#instantDiffs--pageSpecific.fix-userlink--width();
+	}
 }
 
 &.mw-mf-amc-disabled {
-    .instantDiffs-line {
-        // /* [Fix] Override link size and color when Advanced mode disabled in the mobile  */
-        a:is( .mw-history-histlinks-previous, .mw-changeslist-diff ) {
-            position: relative;
-            font-size: 0.85rem;
-            color: var(--color-progressive, #36c) !important;
-        }
+	.instantDiffs-line {
+		// /* [Fix] Override link size and color when Advanced mode disabled in the mobile  */
+		a:is( .mw-history-histlinks-previous, .mw-changeslist-diff ) {
+			position: relative;
+			font-size: 0.85rem;
+			color: var(--color-progressive, #36c) !important;
+		}
 
-        // /* [Fix] Apply a z-index higher than the click overlay for mobile lists. */
-        .instantDiffs-panel {
-            display: inline-block;
-            position: relative;
-            z-index: 10;
-        }
-    }
+		// /* [Fix] Apply a z-index higher than the click overlay for mobile lists. */
+		.instantDiffs-panel {
+			display: inline-block;
+			position: relative;
+			z-index: 10;
+		}
+	}
 }
 
 /*** HISTORY PAGE ***/
 
 #instantDiffs-buttons--historyPage () {
-    .__container {
-        margin: 0;
-        display: flex !important;
-        flex-wrap: wrap;
-        align-items: flex-start;
-        gap: 10px;
-        flex: auto;
-    }
+	.__container {
+		margin: 0;
+		display: flex !important;
+		flex-wrap: wrap;
+		align-items: flex-start;
+		gap: 10px;
+		flex: auto;
+	}
 
-    .__button {
-        max-width: none;
-        flex: auto;
-        margin: 0;
-    }
+	.__button {
+		max-width: none;
+		flex: auto;
+		margin: 0;
+	}
 }
 
 &.instantDiffs-enabled {
-    // /* [Fix] Buttons position for mobile and Minerva */
-    .mw-history-compareselectedversions {
-        #instantDiffs-buttons--historyPage.__container();
-        padding: 10px 0;
+	// /* [Fix] Buttons position for mobile and Minerva */
+	.mw-history-compareselectedversions {
+		#instantDiffs-buttons--historyPage.__container();
+		padding: 10px 0;
 
-        .mw-history-revisionactions {
-            #instantDiffs-buttons--historyPage.__container();
-        }
+		.mw-history-revisionactions {
+			#instantDiffs-buttons--historyPage.__container();
+		}
 
-        :is( .mw-ui-button, .cdx-button ) {
-            #instantDiffs-buttons--historyPage.__button();
-        }
+		:is( .mw-ui-button, .cdx-button ) {
+			#instantDiffs-buttons--historyPage.__button();
+		}
 
-        .mw-history-compareselectedversions-button {
-            width: auto;
-            flex: auto;
-        }
+		.mw-history-compareselectedversions-button {
+			width: auto;
+			flex: auto;
+		}
 
-        .instantDiffs-button--compare {
-            flex: none;
-        }
+		.instantDiffs-button--compare {
+			flex: none;
+		}
 
-        .instantDiffs-spacer {
-            display: none;
-        }
-    }
+		.instantDiffs-spacer {
+			display: none;
+		}
+	}
 }
 
 &.mw-mf-amc-disabled {
-    .mw-history-compareselectedversions {
-        // /* [Fix] Hide ID's "Compare selected revisions" button when Advanced mode disabled in the mobile  */
-        .instantDiffs-button--compare {
-            display: none;
-        }
-    }
+	.mw-history-compareselectedversions {
+		// /* [Fix] Hide ID's "Compare selected revisions" button when Advanced mode disabled in the mobile  */
+		.instantDiffs-button--compare {
+			display: none;
+		}
+	}
 }
 
 /*** NEW PAGES ***/
 
 &.mw-special-Newpages.instantDiffs-enabled {
-    .instantDiffs-line {
-        // /* [UI] Show actual revision link instead of timestamp on Minerva */
-        .mw-changeslist-date {
-            display: inline;
-        }
+	.instantDiffs-line {
+		// /* [UI] Show actual revision link instead of timestamp on Minerva */
+		.mw-changeslist-date {
+			display: inline;
+		}
 
-        .mw-changeslist-time {
-            display: none;
-        }
+		.mw-changeslist-time {
+			display: none;
+		}
 
-        // /* [Fix] Checkuser extension icon position. */
-        .ext-checkuser-userinfocard-button {
-            float: left;
-        }
+		// /* [Fix] Checkuser extension icon position. */
+		.ext-checkuser-userinfocard-button {
+			float: left;
+		}
 
-        // /* [Fix] Hide the user icon in lists that were loaded from dependencies after the View dialog opens. */
-        .mw-userlink::before {
-            display: none;
-        }
-    }
+		// /* [Fix] Hide the user icon in lists that were loaded from dependencies after the View dialog opens. */
+		.mw-userlink::before {
+			display: none;
+		}
+	}
 
-    .instantDiffs-page-body {
-        // /* [Fix] Reset styles of the diff table inside the View dialog */
-        :is( .comment, .mw-userlink, .mw-usertoollinks ) {
-            float: none;
-            display: inline;
-        }
-    }
+	.instantDiffs-page-body {
+		// /* [Fix] Reset styles of the diff table inside the View dialog */
+		:is( .comment, .mw-userlink, .mw-usertoollinks ) {
+			float: none;
+			display: inline;
+		}
+	}
 }
 
 /*** DIFF ***/
 
 &.instantDiffs-enabled {
-    .mw-diff-revision-history-links {
-        a {
-            flex: none;
-        }
-    }
+	.mw-diff-revision-history-links {
+		a {
+			flex: none;
+		}
+	}
 
-    .mw-diff-revision-history-link-previous {
-        & + .instantDiffs-panel {
-            margin-inline-end: auto;
-        }
-    }
+	.mw-diff-revision-history-link-previous {
+		& + .instantDiffs-panel {
+			margin-inline-end: auto;
+		}
+	}
 
-    .instantDiffs-panel {
-        &:has(+ .mw-diff-revision-history-link-next) {
-            margin-inline-start: auto;
-        }
-    }
+	.instantDiffs-panel {
+		&:has(+ .mw-diff-revision-history-link-next) {
+			margin-inline-start: auto;
+		}
+	}
 }
