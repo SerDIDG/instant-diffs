@@ -65,11 +65,6 @@ class Navigation {
 	menu;
 
 	/**
-	 * @type {typeof import('./MenuButton').default}
-	 */
-	MenuButton;
-
-	/**
 	 * @type {boolean}
 	 */
 	isDetached = false;
@@ -98,9 +93,6 @@ class Navigation {
 
 		// Setup hotkey events
 		view.connect( this, { hotkey: 'onHotkey' } );
-
-		// Lazy-import modules
-		this.MenuButton = require( './MenuButton' ).default;
 
 		// Render content
 		this.render();
@@ -140,6 +132,7 @@ class Navigation {
 		this.menu = new Menu();
 
 		// Render groups
+		this.groups = [ 'snapshot', 'navigation', 'shortcuts' ];
 		this.menu.renderGroup( {
 			name: 'snapshot',
 			group: 'left',
@@ -158,23 +151,22 @@ class Navigation {
 			type: 'horizontal',
 			$container: this.nodes.$right,
 		} );
-		this.groups = [ 'snapshot', 'navigation', 'shortcuts' ];
 
 		this.menu.renderGroup( {
 			name: 'mobile',
-			group: 'dropdown',
+			group: 'actions',
 		} );
 		this.menu.renderGroup( {
 			name: 'custom',
-			group: 'dropdown',
+			group: 'actions',
 		} );
 		this.menu.renderGroup( {
 			name: 'menu',
-			group: 'dropdown',
+			group: 'actions',
 		} );
 		this.menu.renderGroup( {
 			name: 'footer',
-			group: 'dropdown',
+			group: 'actions',
 		} );
 	}
 
@@ -248,7 +240,7 @@ class Navigation {
 		this.renderMenuFooterLinks();
 
 		// Render actions menu
-		this.renderMenuDropdown();
+		this.renderMenuActions();
 	}
 
 	/**
@@ -303,6 +295,9 @@ class Navigation {
 			// Link to the history
 			this.renderHistoryLink( options );
 
+			// Link to the page information
+			this.renderInfoLink( options );
+
 			// Watch / unwatch star action
 			if ( !id.local.mwIsAnon ) {
 				this.renderWatchLink( options );
@@ -329,19 +324,19 @@ class Navigation {
 	}
 
 	/**
-	 * Render a menu dropdown.
+	 * Render an action menu dropdown.
 	 * @private
 	 */
-	renderMenuDropdown() {
+	renderMenuActions() {
 		const groups = utils.arrayIntersperse(
-			this.menu.getGroupsElements( 'dropdown' ),
+			this.menu.getGroupsElements( 'actions' ),
 			h( 'hr.instantDiffs-buttons-separator' ),
 		);
 
-		const button = new OO.ui.PopupButtonWidget( {
+		const widget = new OO.ui.PopupButtonWidget( {
 			icon: 'menu',
-			label: utils.msg( 'goto-menu' ),
-			title: utils.msgHint( 'goto-menu', 'menu', settings.get( 'enableHotkeys' ) ),
+			label: utils.msg( 'goto-actions' ),
+			title: utils.msgHint( 'goto-actions', 'actions', settings.get( 'enableHotkeys' ) ),
 			invisibleLabel: true,
 			popup: {
 				$content: $( groups ),
@@ -361,7 +356,7 @@ class Navigation {
 			name: 'actions',
 			group: 'shortcuts',
 			type: 'shortcut',
-			widget: button,
+			widget,
 		} );
 	}
 
@@ -727,6 +722,24 @@ class Navigation {
 	}
 
 	/**
+	 * Render a button that navigates to the page information.
+	 * @private
+	 * @param {Object} [options] button configuration options
+	 */
+	renderInfoLink( options ) {
+		const href = mw.util.getUrl( this.article.get( 'title' ), { action: 'info' } );
+
+		this.menu.renderButton( {
+			name: 'info',
+			label: utils.msg( 'goto-info' ),
+			href: getHrefAbsolute( this.article, href ),
+			target: utils.getTarget( true ),
+			icon: 'info',
+			...options,
+		} );
+	}
+
+	/**
 	 * Render a button that adds / removes a page from the watchlist.
 	 * @private
 	 * @param {Object} [options] button configuration options
@@ -734,6 +747,7 @@ class Navigation {
 	renderWatchLink( options ) {
 		this.menu.renderButton( {
 			name: 'watch',
+			label: utils.msg( 'action-watch' ),
 			handler: this.actionWatchPage.bind( this ),
 			...options,
 		} );
@@ -797,7 +811,7 @@ class Navigation {
 		utils.clipboardWrite( href );
 
 		// Hide menu dropdown
-		this.toggleMenu( false );
+		this.toggleActions( false );
 		this.focusButton( 'actions' );
 	}
 
@@ -820,7 +834,7 @@ class Navigation {
 				this.menu.eachButtonWidget( 'copy-wikilink', null, widget => widget.pending( false ) );
 
 				// Hide menu dropdown
-				this.toggleMenu( false );
+				this.toggleActions( false );
 				this.focusButton( 'actions' );
 			} );
 	}
@@ -847,7 +861,7 @@ class Navigation {
 				this.menu.eachButtonWidget( 'watch', null, widget => widget.pending( false ) );
 
 				// Hide menu dropdown
-				this.toggleMenu( false );
+				this.toggleActions( false );
 				this.focusButton( 'actions' );
 			} );
 	}
@@ -856,7 +870,7 @@ class Navigation {
 	 * Action that opens the Settings dialog.
 	 */
 	actionOpenSettings() {
-		settings.once( 'opening', () => this.toggleMenu( false ) );
+		settings.once( 'opening', () => this.toggleActions( false ) );
 		settings.once( 'closed', () => this.focusButton( 'actions' ) );
 
 		this.menu.eachButtonWidget( 'settings', null, widget => widget.pending( true ) );
@@ -970,8 +984,8 @@ class Navigation {
 	 */
 	clickButton( name ) {
 		// FixMe: find a way to make the popup hide automatically when the button loses focus
-		if ( name !== 'menu' ) {
-			this.toggleMenu( false );
+		if ( name !== 'actions' ) {
+			this.toggleActions( false );
 		}
 
 		this.menu.eachButtonWidget( name, this.groups, widget => {
@@ -985,10 +999,10 @@ class Navigation {
 	/******* ACTIONS *******/
 
 	/**
-	 * Toggle a menu dropdown visibility.
+	 * Toggle an action menu dropdown visibility.
 	 * @param {boolean} value
 	 */
-	toggleMenu( value ) {
+	toggleActions( value ) {
 		this.menu.eachButtonWidget( 'actions', this.groups, widget => {
 			widget.getPopup().toggle( value );
 		} );
@@ -1015,7 +1029,7 @@ class Navigation {
 	 */
 	detach() {
 		// Hide menu dropdown
-		this.toggleMenu( false );
+		this.toggleActions( false );
 
 		// Disconnect hotkey events
 		view.disconnect( this, { hotkey: 'onHotkey' } );

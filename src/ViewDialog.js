@@ -3,6 +3,7 @@ import { fixFloatedElementsIsolation, tweakUserOoUiClass } from './utils-oojs';
 
 import DivLabelWidget from './DivLabelWidget';
 import ViewProgressBar from './ViewProgrssBar';
+import settings from './settings';
 
 /**
  * Class representing a ViewDialog.
@@ -41,11 +42,13 @@ class ViewDialog extends OO.ui.MessageDialog {
 		this.$content.removeAttr( 'tabindex' );
 		this.container.$element.attr( 'tabindex', '-1' );
 
-		// Close the dialog when clicking outside of it
-		this.$clickOverlay = $( '<div>' )
-			.on( 'click', () => this.close() )
-			.addClass( 'instantDiffs-view-overlay' )
-			.appendTo( this.$element );
+		// Close the dialog when clicking outside it
+		if ( settings.get( 'closeOutside' ) ) {
+			this.$clickOverlay = $( '<div>' )
+				.on( 'click', () => this.close() )
+				.addClass( 'instantDiffs-view-overlay' )
+				.appendTo( this.$element );
+		}
 
 		// Render progress bar loader
 		this.progressBar = new ViewProgressBar();

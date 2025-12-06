@@ -46,9 +46,10 @@
     "goto-edit": "Edit",
     "goto-source": "View source",
     "goto-history": "View history",
+	"goto-info": "View info",
     "goto-talkpage": "Discussion",
     "goto-settings": "Settings",
-    "goto-menu": "Actions",
+    "goto-actions": "Actions",
 
     "hint-close": "Esc",
     "hint-alt-click": "Alt+Click: open the link",
@@ -59,7 +60,7 @@
     "hint-switch": "Ctrl+Arrow Up",
     "hint-unpatrolled": "Ctrl+P",
     "hint-back": "Ctrl+Z",
-    "hint-menu": "Ctrl+Arrow Down",
+    "hint-actions": "Ctrl+Arrow Down",
 
     "copy-link": "Copy link",
     "copy-link-copied": "The link has been copied to the clipboard.",
@@ -96,6 +97,7 @@
     "settings-view-width-wide": "Wide",
     "settings-view-width-full": "Full",
     "settings-view-width-full-title": "All available screen space",
+	"settings-close-outside": "Close dialog when clicking outside of it.",
     "settings-enable-hotkeys": "Enable keyboard shortcuts in the Instant Diffs dialog.",
     "settings-show-diff-tools": "Show additional diff tools, such as the Inline format toggle.",
     "settings-show-revision-info": "Show change information when viewing a revision.",

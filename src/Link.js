@@ -168,6 +168,7 @@ class Link {
 	 */
 	constructor( node, options ) {
 		this.node = node;
+
 		this.options = {
 			behavior: 'basic',                                          // request | basic | event | none
 			insertMethod: 'insertAfter',

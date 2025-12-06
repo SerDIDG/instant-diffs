@@ -14,17 +14,17 @@ export function getDaysLeftExpiry( expiry ) {
 	const expiryDate = new Date( expiry );
 	const currentDate = new Date();
 
-	// Using the Math.ceil function instead of floor so when, for example, a user selects one week
+	// Using the Math.ceil function instead of a floor, so when, for example, a user selects one week,
 	// the tooltip shows 7 days instead of 6 days (see Phab ticket T253936)
 	return Math.ceil( ( expiryDate - currentDate ) / ( 1000 * 60 * 60 * 24 ) );
 }
 
 /**
- * Updates status of the watch \ unwatch button.
+ * Updates the status of the watch \ unwatch button.
  * Partially copied from:
  * @see {@link https://gerrit.wikimedia.org/g/mediawiki/core/+/2a828f2e72a181665e1f627e2f737abb75b74eb9/resources/src/mediawiki.page.watch.ajax/watch-ajax.js#18}
  * @param {import('./Article').default} article an Article instance
- * @param {import('./MenuButton')} button a MenuButton instance
+ * @param {import('./MenuButton').default} button a MenuButton instance
  */
 export function updateWatchButtonStatus( article, button ) {
 	const watched = article.get( 'watched' );

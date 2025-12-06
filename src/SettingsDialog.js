@@ -263,6 +263,16 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		} );
 		this.fields.viewWidth.toggle( settings.check( 'viewWidth' ) );
 
+		// Close the dialog when clicking outside it
+		this.inputs.closeOutside = new OO.ui.CheckboxInputWidget( {
+			selected: settings.get( 'closeOutside' ),
+		} );
+		this.fields.closeOutside = new OO.ui.FieldLayout( this.inputs.closeOutside, {
+			label: utils.msg( 'settings-close-outside' ),
+			align: 'inline',
+		} );
+		this.fields.closeOutside.toggle( settings.check( 'closeOutside' ) );
+
 		// Enable keyboard hotkeys
 		this.inputs.enableHotkeys = new OO.ui.CheckboxInputWidget( {
 			selected: settings.get( 'enableHotkeys' ),
@@ -319,6 +329,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		this.layouts.dialog = new OO.ui.FieldsetLayout();
 		this.layouts.dialog.addItems( [
 			this.fields.viewWidth,
+			this.fields.closeOutside,
 			this.fields.enableHotkeys,
 			this.fields.showDiffTools,
 			this.fields.showRevisionInfo,
@@ -333,6 +344,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		} );
 		this.tabs.dialog.toggle(
 			settings.check( 'viewWidth' ) ||
+			settings.check( 'closeOutside' ) ||
 			settings.check( 'enableHotkeys' ) ||
 			settings.check( 'showDiffTools' ) ||
 			settings.check( 'showRevisionInfo' ) ||
