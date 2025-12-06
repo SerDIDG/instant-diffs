@@ -55,9 +55,7 @@ export function updateWatchButtonStatus( article, button ) {
 	button.setLabel( utils.msg( label ) );
 	button.setTitle( mw.msg( `tooltip-ca-${ tooltipAction }`, daysLeftExpiry ) );
 	button.setHref( getHrefAbsolute( article, href ) );
-	if ( settings.get( 'showMenuIcons' ) ) {
-		button.setIcon( icon );
-	}
+	button.setIcon( icon );
 }
 
 /******* WATCHLIST *******/

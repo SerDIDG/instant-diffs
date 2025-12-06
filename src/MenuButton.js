@@ -10,6 +10,16 @@ import settings from './settings';
  */
 class MenuButton extends OO.ui.ButtonWidget {
 	/**
+	 * @type {boolean}
+	 */
+	invisibleIcon = false;
+
+	/**
+	 * @type {import('./Link').default}
+	 */
+	link;
+
+	/**
 	 * Create a MenuButton instance.
 	 * @param {Object} [options] configuration options
 	 */
@@ -20,6 +30,7 @@ class MenuButton extends OO.ui.ButtonWidget {
 			classes: [],
 			framed: true,
 			invisibleLabel: false,
+			invisibleIcon: false,
 			icon: false,
 			handler: null,
 			useAltKey: false,
@@ -33,7 +44,8 @@ class MenuButton extends OO.ui.ButtonWidget {
 		};
 
 		if ( options.type === 'navigation' ) {
-			options.icon = null;
+			options.invisibleIcon = true;
+			options.classes = [ ...options.classes, 'instantDiffs-button--navigation' ];
 		}
 
 		if ( options.type === 'shortcut' ) {
@@ -46,20 +58,38 @@ class MenuButton extends OO.ui.ButtonWidget {
 			options.framed = false;
 
 			if ( !settings.get( 'showMenuIcons' ) ) {
-				options.icon = null;
+				options.invisibleIcon = true;
 			}
 		}
 
 		// Call parent class constructor
 		super( options );
 
+		// Initialization
+		this.setInvisibleIcon( options.invisibleIcon );
+
 		if ( utils.isFunction( options.handler ) ) {
 			utils.addClick( this.$button.get( 0 ), options.handler.bind( this ), options.useAltKey );
 		}
 
 		if ( options.link ) {
-			this.link = new Link( this.$button.get( 0 ), options.linkOptions );
+			this.setLink( options.linkOptions );
 		}
+	}
+
+	setInvisibleIcon( invisibleIcon ) {
+		invisibleIcon = !!invisibleIcon;
+
+		if ( this.invisibleIcon !== invisibleIcon ) {
+			this.invisibleIcon = invisibleIcon;
+			this.$element.toggleClass( 'instantDiffs-invisibleIconElement', !this.icon || this.invisibleIcon );
+		}
+
+		return this;
+	}
+
+	setLink( linkOptions ) {
+		this.link = new Link( this.$button.get( 0 ), linkOptions );
 	}
 
 	/**

@@ -6,6 +6,26 @@
 	display: none !important;
 }
 
+.instantDiffs-invisibleIconElement {
+	&& {
+		&.oo-ui-buttonElement-framed {
+			> .oo-ui-buttonElement-button {
+				padding-inline: 12px;
+			}
+		}
+
+		&.oo-ui-buttonElement-frameless {
+			> .oo-ui-buttonElement-button {
+				padding-inline: 6px;
+			}
+		}
+	}
+
+	.oo-ui-iconElement-icon {
+		display: none;
+	}
+}
+
 .instantDiffs-success-box {
 	display: flex;
 	flex-direction: column;

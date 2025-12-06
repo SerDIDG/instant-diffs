@@ -97,7 +97,7 @@
     "settings-view-width-wide": "Wide",
     "settings-view-width-full": "Full",
     "settings-view-width-full-title": "All available screen space",
-	"settings-close-outside": "Close dialog when clicking outside of it.",
+	"settings-close-outside": "Close Instant Diffs dialog when clicking outside of it.",
     "settings-enable-hotkeys": "Enable keyboard shortcuts in the Instant Diffs dialog.",
     "settings-show-diff-tools": "Show additional diff tools, such as the Inline format toggle.",
     "settings-show-revision-info": "Show change information when viewing a revision.",
