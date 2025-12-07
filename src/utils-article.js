@@ -320,7 +320,7 @@ export function getHref( article, articleParams, options ) {
 }
 
 /**
- * Adds absolute path from the article to provided href.
+ * Adds an absolute path from the article to the provided href.
  * @param {import('./Article').default} article an Article instance
  * @param {string} [href]
  * @returns {string|undefined}

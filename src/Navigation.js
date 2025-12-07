@@ -123,16 +123,19 @@ class Navigation {
 		this.renderSnapshotLinks();
 		this.renderNavigationLinks();
 		this.renderShortcutsLinks();
+
+		// Fire hook on complete
+		mw.hook( `${ id.config.prefix }.navigation.complete` ).fire( this );
 	}
 
 	/******* NAVIGATION *******/
 
 	renderMenu() {
 		// Render menu
-		this.menu = new Menu();
+		this.menu = new Menu( this.article );
 
 		// Render groups
-		this.groups = [ 'snapshot', 'navigation', 'shortcuts' ];
+		this.groups = [ 'snapshot', 'navigation', 'shortcuts', 'shortcuts-custom' ];
 		this.menu.renderGroup( {
 			name: 'snapshot',
 			group: 'left',
@@ -146,6 +149,12 @@ class Navigation {
 			$container: this.nodes.$center,
 		} );
 		this.menu.renderGroup( {
+			name: 'shortcuts-custom',
+			group: 'right',
+			type: 'horizontal',
+			$container: this.nodes.$right,
+		} );
+		this.menu.renderGroup( {
 			name: 'shortcuts',
 			group: 'right',
 			type: 'horizontal',
@@ -157,7 +166,7 @@ class Navigation {
 			group: 'actions',
 		} );
 		this.menu.renderGroup( {
-			name: 'custom',
+			name: 'menu-custom',
 			group: 'actions',
 		} );
 		this.menu.renderGroup( {
@@ -374,10 +383,8 @@ class Navigation {
 			name: 'snapshot-prev',
 			label: utils.msg( 'goto-snapshot-prev' ),
 			title: utils.msgHint( 'goto-snapshot-prev', 'snapshot-prev', settings.get( 'enableHotkeys' ) ),
-			href: link ? link.href : null,
-			target: utils.getTarget( true ),
-			invisibleLabel: true,
 			icon: 'doubleChevronStart',
+			href: link ? link.href : null,
 			disabled: !link,
 			link: !!link,
 			linkOptions: {
@@ -402,10 +409,8 @@ class Navigation {
 			name: 'snapshot-next',
 			label: utils.msg( 'goto-snapshot-next' ),
 			title: utils.msgHint( 'goto-snapshot-next', 'snapshot-next', settings.get( 'enableHotkeys' ) ),
-			href: link ? link.href : null,
-			target: utils.getTarget( true ),
-			invisibleLabel: true,
 			icon: 'doubleChevronEnd',
+			href: link ? link.href : null,
 			disabled: !link,
 			link: !!link,
 			linkOptions: {
@@ -447,7 +452,6 @@ class Navigation {
 			label: $( label ),
 			title: utils.msgHint( `goto-prev-${ this.article.get( 'type' ) }`, 'prev', settings.get( 'enableHotkeys' ) ),
 			href: href,
-			target: utils.getTarget( true ),
 			disabled: !href,
 			link: !!href,
 			linkOptions: {
@@ -488,7 +492,6 @@ class Navigation {
 			label: $( label ),
 			title: utils.msgHint( `goto-next-${ this.article.get( 'type' ) }`, 'next', settings.get( 'enableHotkeys' ) ),
 			href: href,
-			target: utils.getTarget( true ),
 			disabled: !href,
 			link: !!href,
 			linkOptions: {
@@ -513,9 +516,8 @@ class Navigation {
 			name: 'switch',
 			label: utils.msg( `goto-view-${ type }` ),
 			title: utils.msgHint( `goto-view-${ type }`, 'switch', settings.get( 'enableHotkeys' ) ),
-			href: getHref( this.article, {}, articleOptions ),
-			target: utils.getTarget( true ),
 			icon: 'specialPages',
+			href: getHref( this.article, {}, articleOptions ),
 			classes: [ 'instantDiffs-button--switch' ],
 			link: true,
 			linkOptions: {
@@ -539,9 +541,8 @@ class Navigation {
 			name: 'unpatrolled',
 			label: utils.msg( 'goto-view-unpatrolled' ),
 			title: utils.msgHint( 'goto-view-unpatrolled', 'unpatrolled', settings.get( 'enableHotkeys' ) ),
-			href: this.options.links.unpatrolled,
-			target: utils.getTarget( true ),
 			icon: 'info',
+			href: this.options.links.unpatrolled,
 			classes: [ 'instantDiffs-button--pending' ],
 			link: true,
 			linkOptions: {
@@ -567,9 +568,8 @@ class Navigation {
 			name: 'back',
 			label: utils.msg( `goto-back-${ article.get( 'type' ) }` ),
 			title: utils.msgHint( `goto-back-${ article.get( 'type' ) }`, 'back', settings.get( 'enableHotkeys' ) ),
-			href: getHref( article, initiator.getArticleParams() ),
-			target: utils.getTarget( true ),
 			icon: 'newline',
+			href: getHref( article, initiator.getArticleParams() ),
 			classes: [ 'instantDiffs-button--back' ],
 			link: true,
 			linkOptions: {
@@ -625,9 +625,8 @@ class Navigation {
 		this.menu.renderButton( {
 			name: 'link',
 			label: utils.msg( `goto-${ this.article.get( 'type' ) }` ),
-			href: getHref( this.article ),
-			target: utils.getTarget( true ),
 			icon: 'articleRedirect',
+			href: getHref( this.article ),
 			...options,
 		} );
 	}
@@ -651,9 +650,8 @@ class Navigation {
 		this.menu.renderButton( {
 			name: 'page',
 			label: utils.msg( 'goto-page' ),
-			href: getHrefAbsolute( this.article, href ),
-			target: utils.getTarget( true ),
 			icon: iconSet[ this.article.getMW( 'title' ).getNamespaceId() ] || iconSet.default,
+			href: getHrefAbsolute( this.article, href ),
 			...options,
 		} );
 	}
@@ -677,9 +675,8 @@ class Navigation {
 		this.menu.renderButton( {
 			name: 'talkpage',
 			label: utils.msg( 'goto-talkpage' ),
-			href: getHrefAbsolute( this.article, href ),
-			target: utils.getTarget( true ),
 			icon: iconSet[ this.article.getMW( 'title' ).getNamespaceId() ] || iconSet.default,
+			href: getHrefAbsolute( this.article, href ),
 			...options,
 		} );
 	}
@@ -696,9 +693,8 @@ class Navigation {
 		this.menu.renderButton( {
 			name: 'edit',
 			label: utils.msg( isEditable ? 'goto-edit' : 'goto-source' ),
-			href: getHrefAbsolute( this.article, href ),
-			target: utils.getTarget( true ),
 			icon: isEditable ? 'edit' : 'editLock',
+			href: getHrefAbsolute( this.article, href ),
 			...options,
 		} );
 	}
@@ -714,9 +710,8 @@ class Navigation {
 		this.menu.renderButton( {
 			name: 'history',
 			label: utils.msg( 'goto-history' ),
-			href: getHrefAbsolute( this.article, href ),
-			target: utils.getTarget( true ),
 			icon: 'history',
+			href: getHrefAbsolute( this.article, href ),
 			...options,
 		} );
 	}
@@ -732,9 +727,8 @@ class Navigation {
 		this.menu.renderButton( {
 			name: 'info',
 			label: utils.msg( 'goto-info' ),
-			href: getHrefAbsolute( this.article, href ),
-			target: utils.getTarget( true ),
 			icon: 'info',
+			href: getHrefAbsolute( this.article, href ),
 			...options,
 		} );
 	}
@@ -788,8 +782,8 @@ class Navigation {
 		this.menu.renderButton( {
 			name: 'id',
 			label: $( label ),
+			icon: null,
 			href: utils.origin( `/wiki/${ id.config.link }` ),
-			target: utils.getTarget( true ),
 			classes: [ 'instantDiffs-button--link-id' ],
 			...options,
 		} );
@@ -812,7 +806,7 @@ class Navigation {
 
 		// Hide menu dropdown
 		this.toggleActions( false );
-		this.focusButton( 'actions' );
+		this.focusAction( 'actions' );
 	}
 
 	/**
@@ -835,7 +829,7 @@ class Navigation {
 
 				// Hide menu dropdown
 				this.toggleActions( false );
-				this.focusButton( 'actions' );
+				this.focusAction( 'actions' );
 			} );
 	}
 
@@ -862,7 +856,7 @@ class Navigation {
 
 				// Hide menu dropdown
 				this.toggleActions( false );
-				this.focusButton( 'actions' );
+				this.focusAction( 'actions' );
 			} );
 	}
 
@@ -871,7 +865,7 @@ class Navigation {
 	 */
 	actionOpenSettings() {
 		settings.once( 'opening', () => this.toggleActions( false ) );
-		settings.once( 'closed', () => this.focusButton( 'actions' ) );
+		settings.once( 'closed', () => this.focusAction( 'actions' ) );
 
 		this.menu.eachButtonWidget( 'settings', null, widget => widget.pending( true ) );
 
@@ -944,18 +938,51 @@ class Navigation {
 			event.stopPropagation();
 
 			// Execute action
-			this.clickButton( action );
+			this.clickAction( action );
 		}
 	}
 
-	/******* BUTTON ACTIONS *******/
+	/******* CUSTOM ACTIONS *******/
+
+	addCustomAction( options ) {
+		// Validate options.
+		// Note that the specific to custom action options must override some user-options.
+		options = {
+			...options,
+			canShortcut: true,
+			shortcutGroup: 'shortcuts-custom',
+			canMenu: true,
+			menuGroup: 'menu-custom',
+		};
+
+		// Validate name
+		if ( utils.isEmpty( options.name ) ) return;
+		options.name = `__custom__${ options.name }`;
+
+		// Render menu button
+		return this.menu.renderButton( options );
+	}
+
+	eachCustomAction( name, callback ) {
+		if ( utils.isEmpty( name ) ) return;
+		name = `__custom__${ name }`;
+		this.menu.eachButton( name, [ 'shortcuts-custom', 'menu-custom' ], callback );
+	}
+
+	eachCustomActionWidget( name, callback ) {
+		if ( utils.isEmpty( name ) ) return;
+		name = `__custom__${ name }`;
+		this.menu.eachButtonWidget( name, [ 'shortcuts-custom', 'menu-custom' ], callback );
+	}
+
+	/******* ACTIONS *******/
 
 	/**
 	 * Set focus on the specified button.
 	 * Performs transform to the opposite button for the disabled buttons and for the view switching buttons.
 	 * @param {string} name an action button name
 	 */
-	focusButton( name ) {
+	focusAction( name ) {
 		const unpatrolledActions = {
 			'unpatrolled': 'back',
 			'unpatrolled-back': 'unpatrolled',
@@ -982,7 +1009,7 @@ class Navigation {
 	 * Set focus and click the specified button if not disabled.
 	 * @param {string} name an action button name
 	 */
-	clickButton( name ) {
+	clickAction( name ) {
 		// FixMe: find a way to make the popup hide automatically when the button loses focus
 		if ( name !== 'actions' ) {
 			this.toggleActions( false );
@@ -996,8 +1023,6 @@ class Navigation {
 		} );
 	}
 
-	/******* ACTIONS *******/
-
 	/**
 	 * Toggle an action menu dropdown visibility.
 	 * @param {boolean} value
@@ -1009,10 +1034,26 @@ class Navigation {
 	}
 
 	/**
+	 * Get the Article instance.
+	 * @returns {import('./Article').default}
+	 */
+	getArticle() {
+		return this.article;
+	}
+
+	/**
+	 * Get the Menu instance.
+	 * @returns {import('./Menu').default}
+	 */
+	getMenu() {
+		return this.menu;
+	}
+
+	/**
 	 * Fire hooks and events.
 	 */
 	fire() {
-		this.focusButton( this.options.initiatorAction );
+		this.focusAction( this.options.initiatorAction );
 	}
 
 	/**

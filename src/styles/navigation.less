@@ -35,20 +35,16 @@
 /******* GROUPS *******/
 
 .instantDiffs-navigation-group {
-	.oo-ui-buttonGroupWidget {
-		min-width: 0;
-		display: flex;
-	}
+	display: flex;
+	gap: var(--instantDiffs-gap);
 
 	&--left {
-		display: flex;
 		justify-content: flex-start;
 		flex: 1;
 	}
 
 	&--center {
 		min-width: 0;
-		display: flex;
 		justify-content: center;
 		flex: 0 1 auto;
 
@@ -65,7 +61,6 @@
 	}
 
 	&--right {
-		display: flex;
 		justify-content: flex-end;
 		flex: 1;
 	}
@@ -74,15 +69,18 @@
 /******* BUTTON GROUPS *******/
 
 .instantDiffs-buttons-group {
+	margin: 0;
+	padding: 0;
+	display: flex;
+
+	&:is(:empty) {
+		display: none;
+	}
+
 	&--vertical {
-		margin: 0;
-		padding: 0;
-		display: flex;
 		flex-direction: column;
 
 		&:is(:empty) {
-			display: none;
-
 			& + hr {
 				display: none;
 			}

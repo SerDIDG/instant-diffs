@@ -1,5 +1,6 @@
 import * as utils from './utils';
 import { tweakUserOoUiClass } from './utils-oojs';
+import { getHrefAbsolute } from './utils-article';
 
 import Link from './Link';
 import settings from './settings';
@@ -26,17 +27,22 @@ class MenuButton extends OO.ui.ButtonWidget {
 	constructor( options ) {
 		// Validate options
 		options = {
-			type: 'nav',
+			type: 'default',
 			classes: [],
 			framed: true,
 			invisibleLabel: false,
 			invisibleIcon: false,
-			icon: false,
+			icon: 'puzzle',
+			url: null,
+			href: null,
 			handler: null,
 			useAltKey: false,
 			link: false,
+			article: null,
+
 			...options,
 
+			target: utils.getTarget( true ),
 			linkOptions: {
 				behavior: 'event',
 				...options.linkOptions,
@@ -44,7 +50,7 @@ class MenuButton extends OO.ui.ButtonWidget {
 		};
 
 		if ( options.type === 'navigation' ) {
-			options.invisibleIcon = true;
+			options.icon = null;
 			options.classes = [ ...options.classes, 'instantDiffs-button--navigation' ];
 		}
 
@@ -60,6 +66,10 @@ class MenuButton extends OO.ui.ButtonWidget {
 			if ( !settings.get( 'showMenuIcons' ) ) {
 				options.invisibleIcon = true;
 			}
+		}
+
+		if ( !utils.isEmpty( options.url ) && utils.isEmpty( options.href ) ) {
+			options.href = getHrefAbsolute( options.article, options.url );
 		}
 
 		// Call parent class constructor

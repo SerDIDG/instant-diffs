@@ -4,6 +4,11 @@ import settings from './settings';
 
 class Menu {
 	/**
+	 * @type {import('./Article').default}
+	 */
+	article;
+
+	/**
 	 * @type {Object}
 	 */
 	options = {};
@@ -25,9 +30,12 @@ class Menu {
 
 	/**
 	 * Create a Menu instance.
+	 * @param {import('./Article').default} article an Article instance
 	 * @param {Object} [options] configuration options
 	 */
-	constructor( options ) {
+	constructor( article, options ) {
+		this.article = article;
+
 		this.options = {
 			...options,
 		};
@@ -51,6 +59,7 @@ class Menu {
 
 		if ( options.type === 'vertical' ) {
 			options.classes.push(
+				'instantDiffs-buttons-group',
 				'instantDiffs-buttons-group--vertical',
 				`instantDiffs-buttons-group--${ options.name }`,
 				settings.get( 'showMenuIcons' ) ? 'has-icons' : null,
@@ -59,6 +68,7 @@ class Menu {
 
 		if ( options.type === 'horizontal' ) {
 			options.classes.push(
+				'instantDiffs-buttons-group',
 				'instantDiffs-buttons-group--horizontal',
 				`instantDiffs-buttons-group--${ options.name }`,
 			);
@@ -128,6 +138,7 @@ class Menu {
 			canMenu: true,
 			menuGroup: 'menu',
 			menuType: 'menu',
+			article: this.article,
 			...options,
 		};
 
