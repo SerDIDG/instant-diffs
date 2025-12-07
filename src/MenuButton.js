@@ -35,6 +35,7 @@ class MenuButton extends OO.ui.ButtonWidget {
 			icon: 'puzzle',
 			url: null,
 			href: null,
+			target: utils.getTarget( true ),
 			handler: null,
 			useAltKey: false,
 			link: false,
@@ -42,7 +43,6 @@ class MenuButton extends OO.ui.ButtonWidget {
 
 			...options,
 
-			target: utils.getTarget( true ),
 			linkOptions: {
 				behavior: 'event',
 				...options.linkOptions,
@@ -100,6 +100,8 @@ class MenuButton extends OO.ui.ButtonWidget {
 
 	setLink( linkOptions ) {
 		this.link = new Link( this.$button.get( 0 ), linkOptions );
+
+		return this;
 	}
 
 	/**
@@ -108,6 +110,8 @@ class MenuButton extends OO.ui.ButtonWidget {
 	 */
 	pending( value ) {
 		this.$button.toggleClass( 'instantDiffs-link--pending', value );
+
+		return this;
 	}
 }
 

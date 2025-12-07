@@ -944,6 +944,10 @@ class Navigation {
 
 	/******* CUSTOM ACTIONS *******/
 
+	/**
+	 * Render a custom action button.
+	 * @param {Object} options button configuration options
+	 */
 	addCustomAction( options ) {
 		// Validate options.
 		// Note that the specific to custom action options must override some user-options.
@@ -960,19 +964,55 @@ class Navigation {
 		options.name = `__custom__${ options.name }`;
 
 		// Render menu button
-		return this.menu.renderButton( options );
+		this.menu.renderButton( options );
 	}
 
-	eachCustomAction( name, callback ) {
+	/**
+	 * Get a custom action button.
+	 * @param {string} name action name
+	 * @returns {*}
+	 */
+	getCustomAction( name ) {
 		if ( utils.isEmpty( name ) ) return;
 		name = `__custom__${ name }`;
-		this.menu.eachButton( name, [ 'shortcuts-custom', 'menu-custom' ], callback );
+
+		return this.menu.getButton( name, [ 'shortcuts-custom', 'menu-custom' ] );
 	}
 
-	eachCustomActionWidget( name, callback ) {
-		if ( utils.isEmpty( name ) ) return;
-		name = `__custom__${ name }`;
-		this.menu.eachButtonWidget( name, [ 'shortcuts-custom', 'menu-custom' ], callback );
+	/**
+	 * Get a custom action button widget.
+	 * @param {string} name action name
+	 * @returns {*}
+	 */
+	getCustomActionWidget( name ) {
+		const action = this.getCustomAction( name );
+		if ( !action ) return;
+
+		return action.map( entry => entry.widget );
+	}
+
+	/**
+	 * Execute a handler on each custom action button.
+	 * @param {string} name action name
+	 * @param {Function} handler action handler
+	 */
+	eachCustomAction( name, handler ) {
+		const action = this.getCustomAction( name );
+		if ( !action ) return;
+
+		action.forEach( entry => handler( entry ) );
+	}
+
+	/**
+	 * Execute a handler on each custom action button widget.
+	 * @param {string} name action name
+	 * @param {Function} handler action handler
+	 */
+	eachCustomActionWidget( name, handler ) {
+		const action = this.getCustomActionWidget( name );
+		if ( !action ) return;
+
+		action.forEach( entry => handler( entry ) );
 	}
 
 	/******* ACTIONS *******/

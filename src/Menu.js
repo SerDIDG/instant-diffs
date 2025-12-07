@@ -209,7 +209,7 @@ class Menu {
 		const button = this.getButton( name, group );
 		if ( !button ) return;
 
-		return this.buttons[ name ].map( entry => entry.widget );
+		return button.map( entry => entry.widget );
 	}
 
 	getButtons() {
