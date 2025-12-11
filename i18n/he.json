@@ -116,6 +116,7 @@
 	"error-prepare-version": "מופע אחר כבר רץ: $4",
 	"error-prepare-replaced": "המופע העצמאי הוחלף בהצלחה: $4",
 	"error-prepare-mobile": "הסקריפט מושבת בהגדרות עבור ערכת העיצוב לנייד (Minerva)",
+	"error-link-options": "פענוח תכונת הקישור „data-instantdiffs-options” נכשל: $4",
 	"error-revision-generic": "נכשלה הטענת נתוני הגרסה \"oldid=$1\": $4",
 	"error-revision-curid": "נכשלה הטענת נתוני הגרסה \"curid=$1\": $4",
 	"error-revision-badrevids": "הגרסה לא אותרה",
