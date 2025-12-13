@@ -955,35 +955,18 @@ class Navigation {
 	 * @returns {boolean} True if a button was successfully focused
 	 */
 	focusActionByName( name ) {
-		let focused = false;
-
 		// Apply action counterpart transformation
 		name = this.actionCounterparts[ name ] || name;
 
 		// Try to focus on the primary action
-		this.menu.eachButtonWidget( name, this.groups, widget => {
-			if ( !widget.isDisabled() ) {
-				widget.focus();
-				focused = true;
-				return true;
-			}
-		} );
-
+		const focused = this.menu.focusButton( name, this.groups );
 		if ( focused ) return true;
 
 		// If the primary action was disabled, try the counterpart
 		name = this.disabledActionCounterparts[ name ];
 		if ( !name ) return false;
 
-		this.menu.eachButtonWidget( name, this.groups, widget => {
-			if ( !widget.isDisabled() ) {
-				widget.focus();
-				focused = true;
-				return true;
-			}
-		} );
-
-		return focused;
+		return this.menu.focusButton( name, this.groups );
 	}
 
 	/**
@@ -997,10 +980,11 @@ class Navigation {
 		}
 
 		this.menu.eachButtonWidget( name, this.groups, widget => {
-			if ( widget.isDisabled() ) return;
-
-			widget.focus();
-			widget.execHandler();
+			if ( !widget.isDisabled() ) {
+				widget.focus();
+				widget.execHandler();
+				return true;
+			}
 		} );
 	}
 

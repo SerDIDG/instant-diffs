@@ -333,6 +333,26 @@ class Menu {
 
 		button.forEach( entry => handler( entry ) );
 	}
+
+	/**
+	 * Focus button by a given name.
+	 * @param {string} name - Button name
+	 * @param {string|string[]} group - Group name(s) to filter by
+	 * @returns {boolean} True if a button was successfully focused
+	 */
+	focusButton( name, group ) {
+		let focused = false;
+
+		this.eachButtonWidget( name, group, widget => {
+			if ( !widget.isDisabled() ) {
+				widget.focus();
+				focused = true;
+				return true;
+			}
+		} );
+
+		return focused;
+	}
 }
 
 export default Menu;
