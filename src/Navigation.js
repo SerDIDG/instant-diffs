@@ -1,7 +1,7 @@
 import id from './id';
 import * as utils from './utils';
 import { isEditableContentModel } from './utils-api';
-import { getWikilink, getHref, getHrefAbsolute } from './utils-article';
+import { getWikilink, getHref } from './utils-article';
 import { updateWatchButtonStatus } from './utils-watch';
 
 import Article from './Article';
@@ -40,14 +40,9 @@ class Navigation {
 	options = {};
 
 	/**
-	 * @type {Object}
+	 * @type {Record<string, HTMLElement>}
 	 */
 	nodes = {};
-
-	/**
-	 * @type {Array}
-	 */
-	groups = [];
 
 	/**
 	 * @type {string}
@@ -65,18 +60,23 @@ class Navigation {
 	menu;
 
 	/**
+	 * @type {typeof import('./MenuButton').default}
+	 */
+	MenuButton;
+
+	/**
 	 * @type {boolean}
 	 */
 	isDetached = false;
 
 	/**
 	 * Create a Page navigation bar instance.
-	 * @param {import('./Page').default} page a Page instance
-	 * @param {import('./Article').default} article an Article instance
-	 * @param {Object} [articleParams]
-	 * @param {Object} [options] configuration options
-	 * @param {string[]} [options.initiatorAction] an action name
-	 * @param {Object} [options.links] a link nodes object
+	 * @param {import('./Page').default} page - A Page instance
+	 * @param {import('./Article').default} article - An Article instance
+	 * @param {Object} [articleParams] - Article parameters
+	 * @param {Object} [options] - Configuration options
+	 * @param {string[]} [options.initiatorAction] - An action name
+	 * @param {Object} [options.links] - A link nodes object
 	 */
 	constructor( page, article, articleParams, options ) {
 		this.page = page;
@@ -91,6 +91,9 @@ class Navigation {
 			...options,
 		};
 
+		// Lazy-import modules
+		this.MenuButton = require( './MenuButton' ).default;
+
 		// Setup hotkey events
 		view.connect( this, { hotkey: 'onHotkey' } );
 
@@ -102,21 +105,12 @@ class Navigation {
 	 * Render a navigation bar structure.
 	 */
 	render() {
-		// Render structure
-		this.nodes.$container = $( '<div>' )
-			.addClass( 'instantDiffs-navigation' );
-
-		this.nodes.$left = $( '<div>' )
-			.addClass( [ 'instantDiffs-navigation-group', 'instantDiffs-navigation-group--left' ] )
-			.appendTo( this.nodes.$container );
-
-		this.nodes.$center = $( '<div>' )
-			.addClass( [ 'instantDiffs-navigation-group', 'instantDiffs-navigation-group--center' ] )
-			.appendTo( this.nodes.$container );
-
-		this.nodes.$right = $( '<div>' )
-			.addClass( [ 'instantDiffs-navigation-group', 'instantDiffs-navigation-group--right' ] )
-			.appendTo( this.nodes.$container );
+		// Render view
+		this.nodes.container = h( 'div', { class: [ 'instantDiffs-navigation' ] },
+			this.nodes.left = h( 'div', { class: [ 'instantDiffs-navigation-group', 'instantDiffs-navigation-group--left' ] } ),
+			this.nodes.center = h( 'div', { class: [ 'instantDiffs-navigation-group', 'instantDiffs-navigation-group--center' ] } ),
+			this.nodes.right = h( 'div', { class: [ 'instantDiffs-navigation-group', 'instantDiffs-navigation-group--right' ] } ),
+		);
 
 		// Render menus
 		this.renderMenu();
@@ -130,57 +124,67 @@ class Navigation {
 
 	/******* NAVIGATION *******/
 
+	/**
+	 * Map of the main menu groups.
+	 * @type {{left: [string], center: [string], right: string[]}}
+	 */
+	groupsMap = {
+		left: [ 'snapshot' ],
+		center: [ 'navigation' ],
+		right: [ 'shortcuts-custom', 'shortcuts' ],
+	};
+
+	/**
+	 * @type {string[]}
+	 */
+	groups = [];
+
+	/**
+	 * Map of the actions menu groups.
+	 * @type {string[]}
+	 */
+	actionGroupsMap = [ 'mobile', 'menu-custom', 'menu', 'footer' ];
+
+	/**
+	 * @type {string[]}
+	 */
+	actionGroups = [];
+
+	/**
+	 * Render the menu and its button groups.
+	 * @private
+	 */
 	renderMenu() {
 		// Render menu
 		this.menu = new Menu( this.article );
 
-		// Render groups
-		this.groups = [ 'snapshot', 'navigation', 'shortcuts', 'shortcuts-custom' ];
-		this.menu.renderGroup( {
-			name: 'snapshot',
-			group: 'left',
-			type: 'horizontal',
-			$container: this.nodes.$left,
-		} );
-		this.menu.renderGroup( {
-			name: 'navigation',
-			group: 'center',
-			type: 'horizontal',
-			$container: this.nodes.$center,
-		} );
-		this.menu.renderGroup( {
-			name: 'shortcuts-custom',
-			group: 'right',
-			type: 'horizontal',
-			$container: this.nodes.$right,
-		} );
-		this.menu.renderGroup( {
-			name: 'shortcuts',
-			group: 'right',
-			type: 'horizontal',
-			$container: this.nodes.$right,
-		} );
+		// Render main menu groups
+		for ( const [ group, names ] of Object.entries( this.groupsMap ) ) {
+			names.forEach( name => {
+				this.groups.push( name );
+				this.menu.renderGroup( {
+					name,
+					group,
+					type: 'horizontal',
+					container: this.nodes[ group ],
+				} );
+			} );
+		}
 
-		this.menu.renderGroup( {
-			name: 'mobile',
-			group: 'actions',
-		} );
-		this.menu.renderGroup( {
-			name: 'menu-custom',
-			group: 'actions',
-		} );
-		this.menu.renderGroup( {
-			name: 'menu',
-			group: 'actions',
-		} );
-		this.menu.renderGroup( {
-			name: 'footer',
-			group: 'actions',
+		// Render actions menu groups
+		this.actionGroupsMap.forEach( name => {
+			this.actionGroups.push( name );
+			this.menu.renderGroup( {
+				name,
+				group: 'actions',
+				type: 'vertical',
+			} );
 		} );
 	}
 
 	/**
-	 * Render a snapshot buttons group that navigate between links on the article.
+	 * Render a snapshot buttons group that navigate between links on the page.
+	 * @private
 	 */
 	renderSnapshotLinks() {
 		const options = {
@@ -213,6 +217,7 @@ class Navigation {
 
 	/**
 	 * Render a main navigation group that navigate between diffs or revisions.
+	 * @private
 	 */
 	renderNavigationLinks() {
 		const options = {
@@ -230,7 +235,7 @@ class Navigation {
 		// Link to the previous diff
 		this.renderPrevLink( options );
 
-		// Link that switch between revision and diff
+		// Link that switches between revision and diff
 		if ( ![ 'page' ].includes( this.article.get( 'typeVariant' ) ) ) {
 			this.renderSwitchLink( { ...options, ...mobileOptions } );
 		}
@@ -241,29 +246,16 @@ class Navigation {
 
 	/**
 	 * Render a context buttons group.
+	 * @private
 	 */
 	renderShortcutsLinks() {
 		// Render button link groups
-		this.renderMenuCustomLinks();
 		this.renderMenuLinks();
 		this.renderMenuFooterLinks();
 
 		// Render actions menu
 		this.renderMenuActions();
 	}
-
-	/**
-	 * Render the custom context links.
-	 * @private
-	 */
-	renderMenuCustomLinks() {
-		const options = {
-			canShortcut: true,
-			shortcutGroup: 'shortcuts',
-			canMenu: true,
-			menuGroup: 'custom',
-		};
-	};
 
 	/**
 	 * Render the main context links.
@@ -374,19 +366,19 @@ class Navigation {
 	/**
 	 * Render a snapshot button that navigates to the previous link on the article.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderSnapshotPrevLink( options ) {
 		const link = Snapshot.instance.getPreviousLink();
 
 		options = {
-			name: 'snapshot-prev',
+			name: 'snapshotPrev',
 			label: utils.msg( 'goto-snapshot-prev' ),
 			title: utils.msgHint( 'goto-snapshot-prev', 'snapshot-prev', settings.get( 'enableHotkeys' ) ),
 			icon: 'doubleChevronStart',
 			href: link ? link.href : null,
 			disabled: !link,
-			link: !!link,
+			setLink: !!link,
 			linkOptions: {
 				initiatorLink: link,
 				onRequest: () => this.setActionRegister( options.name ),
@@ -400,19 +392,19 @@ class Navigation {
 	/**
 	 * Render a snapshot button that navigates to the next link on the article.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderSnapshotNextLink( options ) {
 		const link = Snapshot.instance.getNextLink();
 
 		options = {
-			name: 'snapshot-next',
+			name: 'snapshotNext',
 			label: utils.msg( 'goto-snapshot-next' ),
 			title: utils.msgHint( 'goto-snapshot-next', 'snapshot-next', settings.get( 'enableHotkeys' ) ),
 			icon: 'doubleChevronEnd',
 			href: link ? link.href : null,
 			disabled: !link,
-			link: !!link,
+			setLink: !!link,
 			linkOptions: {
 				initiatorLink: link,
 				onRequest: () => this.setActionRegister( options.name ),
@@ -426,7 +418,7 @@ class Navigation {
 	/**
 	 * Render a button that navigates to the previous diff or revision.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderPrevLink( options ) {
 		let href;
@@ -453,7 +445,7 @@ class Navigation {
 			title: utils.msgHint( `goto-prev-${ this.article.get( 'type' ) }`, 'prev', settings.get( 'enableHotkeys' ) ),
 			href: href,
 			disabled: !href,
-			link: !!href,
+			setLink: !!href,
 			linkOptions: {
 				onRequest: () => this.setActionRegister( options.name ),
 			},
@@ -466,7 +458,7 @@ class Navigation {
 	/**
 	 * Render a button that navigates to the next diff or revision.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderNextLink( options ) {
 		let href;
@@ -493,7 +485,7 @@ class Navigation {
 			title: utils.msgHint( `goto-next-${ this.article.get( 'type' ) }`, 'next', settings.get( 'enableHotkeys' ) ),
 			href: href,
 			disabled: !href,
-			link: !!href,
+			setLink: !!href,
 			linkOptions: {
 				onRequest: () => this.setActionRegister( options.name ),
 			},
@@ -506,7 +498,7 @@ class Navigation {
 	/**
 	 * Render a button that switches the view between diff or revision.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderSwitchLink( options ) {
 		const type = this.article.get( 'type' ) === 'diff' ? 'revision' : 'diff';
@@ -519,7 +511,7 @@ class Navigation {
 			icon: 'specialPages',
 			href: getHref( this.article, {}, articleOptions ),
 			classes: [ 'instantDiffs-button--switch' ],
-			link: true,
+			setLink: true,
 			linkOptions: {
 				onRequest: () => this.setActionRegister( options.name ),
 			},
@@ -533,8 +525,7 @@ class Navigation {
 	 * Render a button that switches to the diff between the last patrolled revision and the current unpatrolled one.
 	 * The button appears only if the FlaggedRevs extension is installed and the page has unpatrolled edits.
 	 * @private
-	 * @param {Object} [options] button configuration options
-	 * @returns {import('./MenuButton').default} a MenuButton instance
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderUnpatrolledLink( options ) {
 		options = {
@@ -544,7 +535,7 @@ class Navigation {
 			icon: 'info',
 			href: this.options.links.unpatrolled,
 			classes: [ 'instantDiffs-button--pending' ],
-			link: true,
+			setLink: true,
 			linkOptions: {
 				initiatorPage: this.page,
 				onRequest: () => this.setActionRegister( options.name ),
@@ -558,7 +549,7 @@ class Navigation {
 	/**
 	 * Render a button that navigates to the previous view.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderBackLink( options ) {
 		const initiator = this.page.getInitiatorPage();
@@ -571,12 +562,12 @@ class Navigation {
 			icon: 'newline',
 			href: getHref( article, initiator.getArticleParams() ),
 			classes: [ 'instantDiffs-button--back' ],
-			link: true,
+			setLink: true,
 			linkOptions: {
 				onRequest: () => {
 					const initiatorAction = initiator.getNavigation()?.getActionRegister();
 					const action = !utils.isEmpty( initiatorAction )
-						? `${ initiatorAction }-${ options.name }` : options.name;
+						? `${ options.name }-${ initiatorAction }` : options.name;
 					this.setActionRegister( action );
 				},
 			},
@@ -589,11 +580,11 @@ class Navigation {
 	/**
 	 * Render a button that copies a link to the clipboard.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderCopyLink( options ) {
 		this.menu.renderButton( {
-			name: 'copy-link',
+			name: 'copyLink',
 			label: utils.msg( 'copy-link' ),
 			icon: 'link',
 			handler: this.actionCopyLink.bind( this ),
@@ -604,11 +595,11 @@ class Navigation {
 	/**
 	 * Render a button that copies wikilink to the clipboard.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderCopyWikiLink( options ) {
 		this.menu.renderButton( {
-			name: 'copy-wikilink',
+			name: 'copyWikiLink',
 			label: utils.msg( 'copy-wikilink' ),
 			icon: 'wikiText',
 			handler: this.actionCopyWikilink.bind( this ),
@@ -619,7 +610,7 @@ class Navigation {
 	/**
 	 * Render a button that navigates to the diff or to the revision.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderTypeLink( options ) {
 		this.menu.renderButton( {
@@ -634,7 +625,7 @@ class Navigation {
 	/**
 	 * Render a button that navigates to the article.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderPageLink( options ) {
 		const href = this.article.getMW( 'title' ).isTalkPage()
@@ -651,7 +642,7 @@ class Navigation {
 			name: 'page',
 			label: utils.msg( 'goto-page' ),
 			icon: iconSet[ this.article.getMW( 'title' ).getNamespaceId() ] || iconSet.default,
-			href: getHrefAbsolute( this.article, href ),
+			href: href,
 			...options,
 		} );
 	}
@@ -659,7 +650,7 @@ class Navigation {
 	/**
 	 * Render a button that navigates to the talk article.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderTalkPageLink( options ) {
 		const href = this.article.getMW( 'title' ).isTalkPage()
@@ -673,10 +664,10 @@ class Navigation {
 		};
 
 		this.menu.renderButton( {
-			name: 'talkpage',
+			name: 'talkPage',
 			label: utils.msg( 'goto-talkpage' ),
 			icon: iconSet[ this.article.getMW( 'title' ).getNamespaceId() ] || iconSet.default,
-			href: getHrefAbsolute( this.article, href ),
+			href: href,
 			...options,
 		} );
 	}
@@ -684,7 +675,7 @@ class Navigation {
 	/**
 	 * Render a button that navigates to the page edit.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderEditLink( options ) {
 		const isEditable = mw.config.get( 'wgIsProbablyEditable' );
@@ -694,7 +685,7 @@ class Navigation {
 			name: 'edit',
 			label: utils.msg( isEditable ? 'goto-edit' : 'goto-source' ),
 			icon: isEditable ? 'edit' : 'editLock',
-			href: getHrefAbsolute( this.article, href ),
+			href: href,
 			...options,
 		} );
 	}
@@ -702,7 +693,7 @@ class Navigation {
 	/**
 	 * Render a button that navigates to the page history.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderHistoryLink( options ) {
 		const href = mw.util.getUrl( this.article.get( 'title' ), { action: 'history' } );
@@ -711,7 +702,7 @@ class Navigation {
 			name: 'history',
 			label: utils.msg( 'goto-history' ),
 			icon: 'history',
-			href: getHrefAbsolute( this.article, href ),
+			href: href,
 			...options,
 		} );
 	}
@@ -719,7 +710,7 @@ class Navigation {
 	/**
 	 * Render a button that navigates to the page information.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderInfoLink( options ) {
 		const href = mw.util.getUrl( this.article.get( 'title' ), { action: 'info' } );
@@ -728,7 +719,7 @@ class Navigation {
 			name: 'info',
 			label: utils.msg( 'goto-info' ),
 			icon: 'info',
-			href: getHrefAbsolute( this.article, href ),
+			href: href,
 			...options,
 		} );
 	}
@@ -736,7 +727,7 @@ class Navigation {
 	/**
 	 * Render a button that adds / removes a page from the watchlist.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderWatchLink( options ) {
 		this.menu.renderButton( {
@@ -755,7 +746,7 @@ class Navigation {
 	/**
 	 * Render a button that opens the settings dialog.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderSettingsLink( options ) {
 		this.menu.renderButton( {
@@ -770,7 +761,7 @@ class Navigation {
 	/**
 	 * Render a button that shows a current version of the Instant Diffs and navigates to the homepage.
 	 * @private
-	 * @param {Object} [options] button configuration options
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderIDLink( options ) {
 		const label = hf(
@@ -793,8 +784,10 @@ class Navigation {
 
 	/**
 	 * Action that copies a link to the edit or revision to the clipboard.
+	 * @private
+	 * @param {import('./MenuButton').default} widget
 	 */
-	actionCopyLink() {
+	actionCopyLink( widget ) {
 		const options = {
 			relative: false,
 			minify: settings.get( 'linksFormat' ) === 'minify',
@@ -804,16 +797,19 @@ class Navigation {
 		// Copy href to the clipboard
 		utils.clipboardWrite( href );
 
-		// Hide menu dropdown
-		this.toggleActions( false );
-		this.focusAction( 'actions' );
+		// Focus the action button
+		this.focusAction( widget );
 	}
 
 	/**
 	 * Action that copies a formatted wikilink to the edit or revision to the clipboard.
+	 * @private
+	 * @param {import('./MenuButton').default} widget
 	 */
-	actionCopyWikilink() {
-		this.menu.eachButtonWidget( 'copy-wikilink', null, widget => widget.pending( true ) );
+	actionCopyWikilink( widget ) {
+		this.menu.eachButtonWidget( 'copyWikiLink', null, widget => {
+			widget.pending( true );
+		} );
 
 		$.when( getWikilink( this.article ) )
 			.done( href => {
@@ -825,18 +821,21 @@ class Navigation {
 				utils.clipboardWrite( false );
 			} )
 			.always( () => {
-				this.menu.eachButtonWidget( 'copy-wikilink', null, widget => widget.pending( false ) );
+				this.menu.eachButtonWidget( 'copyWikiLink', null, widget => {
+					widget.pending( false );
+				} );
 
-				// Hide menu dropdown
-				this.toggleActions( false );
-				this.focusAction( 'actions' );
+				// Focus the action button
+				this.focusAction( widget );
 			} );
 	}
 
 	/**
 	 * Action that adds / removes a page from the watchlist.
+	 * @private
+	 * @param {import('./MenuButton').default} widget
 	 */
-	actionWatchPage() {
+	actionWatchPage( widget ) {
 		if ( !this.watch ) {
 			this.watch = new Watch( this.article, {
 				onUpdate: state => {
@@ -848,31 +847,171 @@ class Navigation {
 			} );
 		}
 
-		this.menu.eachButtonWidget( 'watch', null, widget => widget.pending( true ) );
+		this.menu.eachButtonWidget( 'watch', null, widget => {
+			widget.pending( true );
+		} );
 
 		$.when( this.watch.request() )
 			.always( () => {
-				this.menu.eachButtonWidget( 'watch', null, widget => widget.pending( false ) );
+				this.menu.eachButtonWidget( 'watch', null, widget => {
+					widget.pending( false );
+				} );
 
-				// Hide menu dropdown
-				this.toggleActions( false );
-				this.focusAction( 'actions' );
+				// Focus the action button
+				this.focusAction( widget );
 			} );
 	}
 
 	/**
 	 * Action that opens the Settings dialog.
+	 * @private
+	 * @param {import('./MenuButton').default} widget
 	 */
-	actionOpenSettings() {
+	actionOpenSettings( widget ) {
 		settings.once( 'opening', () => this.toggleActions( false ) );
-		settings.once( 'closed', () => this.focusAction( 'actions' ) );
+		settings.once( 'closed', () => this.focusAction( widget ) );
 
-		this.menu.eachButtonWidget( 'settings', null, widget => widget.pending( true ) );
+		this.menu.eachButtonWidget( 'settings', null, widget => {
+			widget.pending( true );
+		} );
 
 		$.when( settings.load() )
 			.always( () => {
-				this.menu.eachButtonWidget( 'settings', null, widget => widget.pending( false ) );
+				this.menu.eachButtonWidget( 'settings', null, widget => {
+					widget.pending( false );
+				} );
 			} );
+	}
+
+	/******* BUTTONS ACTIONS *******/
+
+	/**
+	 * Map of action names to their counterpart actions.
+	 * @type {Record<string, string>}
+	 */
+	actionCounterparts = {
+		'unpatrolled': 'back',
+		'back-unpatrolled': 'unpatrolled',
+	};
+
+	/**
+	 * Map of disabled action names to their alternative actions.
+	 * @type {Record<string, string>}
+	 */
+	disabledActionCounterparts = {
+		'next': 'prev',
+		'prev': 'next',
+		'snapshotNext': 'snapshotPrev',
+		'snapshotPrev': 'snapshotNext',
+	};
+
+	/**
+	 * Set focus on the specified button.
+	 * If the button is disabled, attempts to focus its counterpart instead.
+	 * @param {import('./MenuButton').default|string} widgetOrName - Button widget or action name
+	 * @returns {boolean} True if a button was successfully focused
+	 */
+	focusAction( widgetOrName ) {
+		// Hide actions menu
+		this.toggleActions( false );
+
+		// Handle MenuButton instance
+		if ( widgetOrName instanceof this.MenuButton ) {
+			return this.focusActionByWidget( widgetOrName );
+		}
+
+		// Handle string action name
+		if ( utils.isString( widgetOrName ) ) {
+			return this.focusActionByName( widgetOrName );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Focus a button by action widget
+	 * @private
+	 * @param {import('./MenuButton').default} widget - Button widget
+	 * @returns {boolean} True if a button was successfully focused
+	 */
+	focusActionByWidget( widget ) {
+		if ( widget.isDisabled() ) return false;
+
+		// If the widget is in main groups, focus it directly
+		const group = widget.getOption( 'group' );
+		if ( this.groups.includes( group ) ) {
+			widget.focus();
+			return true;
+		}
+
+		// Otherwise, try to focus 'actions' as fallback
+		return this.focusActionByName( 'actions' );
+	}
+
+	/**
+	 * Focus a button by action name, with fallback to disabled counterpart
+	 * @private
+	 * @param {string} name - Action name to focus
+	 * @returns {boolean} True if a button was successfully focused
+	 */
+	focusActionByName( name ) {
+		let focused = false;
+
+		// Apply action counterpart transformation
+		name = this.actionCounterparts[ name ] || name;
+
+		// Try to focus on the primary action
+		this.menu.eachButtonWidget( name, this.groups, widget => {
+			if ( !widget.isDisabled() ) {
+				widget.focus();
+				focused = true;
+				return true;
+			}
+		} );
+
+		if ( focused ) return true;
+
+		// If the primary action was disabled, try the counterpart
+		name = this.disabledActionCounterparts[ name ];
+		if ( !name ) return false;
+
+		this.menu.eachButtonWidget( name, this.groups, widget => {
+			if ( !widget.isDisabled() ) {
+				widget.focus();
+				focused = true;
+				return true;
+			}
+		} );
+
+		return focused;
+	}
+
+	/**
+	 * Set focus and click the specified button if not disabled.
+	 * @param {string} name - An action button name
+	 */
+	clickAction( name ) {
+		// FixMe: find a way to make the popup hide automatically when the button loses focus
+		if ( name !== 'actions' ) {
+			this.toggleActions( false );
+		}
+
+		this.menu.eachButtonWidget( name, this.groups, widget => {
+			if ( widget.isDisabled() ) return;
+
+			widget.focus();
+			widget.execHandler();
+		} );
+	}
+
+	/**
+	 * Toggle the actions menu dropdown visibility.
+	 * @param {boolean} value
+	 */
+	toggleActions( value ) {
+		this.menu.eachButtonWidget( 'actions', this.groups, widget => {
+			widget.getPopup().toggle( value );
+		} );
 	}
 
 	/**
@@ -887,6 +1026,79 @@ class Navigation {
 	 */
 	getActionRegister() {
 		return this.actionRegister;
+	}
+
+	/******* CUSTOM ACTIONS *******/
+
+	/**
+	 * Render a custom action button.
+	 * @param {Menu.ButtonOptions} options - Button configuration options
+	 */
+	addCustomAction( options ) {
+		// Validate options.
+		// Note that the custom action-specific options must override some user options.
+		options = {
+			...options,
+			canShortcut: true,
+			shortcutGroup: 'shortcuts-custom',
+			canMenu: true,
+			menuGroup: 'menu-custom',
+		};
+
+		// Validate name
+		if ( utils.isEmpty( options.name ) ) return;
+		options.name = `custom-${ options.name }`;
+
+		// Render menu button
+		this.menu.renderButton( options );
+	}
+
+	/**
+	 * Get a custom action button.
+	 * @param {string} name - An action button name
+	 * @returns {*}
+	 */
+	getCustomAction( name ) {
+		if ( utils.isEmpty( name ) ) return;
+		name = `custom-${ name }`;
+
+		return this.menu.getButton( name, [ 'shortcuts-custom', 'menu-custom' ] );
+	}
+
+	/**
+	 * Get a custom action button widget.
+	 * @param {string} name - An action button name
+	 * @returns {*}
+	 */
+	getCustomActionWidget( name ) {
+		const action = this.getCustomAction( name );
+		if ( !action ) return;
+
+		return action.map( entry => entry.widget );
+	}
+
+	/**
+	 * Execute a handler on each custom action button.
+	 * @param {string} name - An action button name
+	 * @param {Function} handler - An action handler
+	 */
+	eachCustomAction( name, handler ) {
+		const action = this.getCustomAction( name );
+		if ( !action ) return;
+
+		action.forEach( entry => handler( entry ) );
+	}
+
+	/**
+	 * Execute a handler on each custom action button widget.
+	 * @param {string} name - An action name
+	 * @param {Function} handler - An action handler
+	 */
+	eachCustomActionWidget( name, handler ) {
+		const action = this.getCustomActionWidget( name );
+		if ( !action ) return;
+
+		action.forEach( entry => handler( entry ) );
 	}
 
 	/******* HOTKEYS *******/
@@ -905,8 +1117,8 @@ class Navigation {
 		// Define actions map
 		const actionMaps = {
 			ctrl: {
-				ArrowLeft: 'snapshot-prev',
-				ArrowRight: 'snapshot-next',
+				ArrowLeft: 'snapshotPrev',
+				ArrowRight: 'snapshotNext',
 				ArrowUp: 'switch',
 				ArrowDown: 'actions',
 				KeyZ: 'back',
@@ -920,10 +1132,10 @@ class Navigation {
 			shift: {},
 		};
 
-		// Define RTL-specific actions map
+		// Define an RTL-specific actions map
 		if ( document.dir === 'rtl' ) {
-			actionMaps.ctrl.ArrowRight = 'snapshot-prev';
-			actionMaps.ctrl.ArrowLeft = 'snapshot-next';
+			actionMaps.ctrl.ArrowRight = 'snapshotPrev';
+			actionMaps.ctrl.ArrowLeft = 'snapshotNext';
 			actionMaps.none.ArrowRight = 'prev';
 			actionMaps.none.ArrowLeft = 'next';
 		}
@@ -942,136 +1154,7 @@ class Navigation {
 		}
 	}
 
-	/******* CUSTOM ACTIONS *******/
-
-	/**
-	 * Render a custom action button.
-	 * @param {Object} options button configuration options
-	 */
-	addCustomAction( options ) {
-		// Validate options.
-		// Note that the specific to custom action options must override some user-options.
-		options = {
-			...options,
-			canShortcut: true,
-			shortcutGroup: 'shortcuts-custom',
-			canMenu: true,
-			menuGroup: 'menu-custom',
-		};
-
-		// Validate name
-		if ( utils.isEmpty( options.name ) ) return;
-		options.name = `__custom__${ options.name }`;
-
-		// Render menu button
-		this.menu.renderButton( options );
-	}
-
-	/**
-	 * Get a custom action button.
-	 * @param {string} name action name
-	 * @returns {*}
-	 */
-	getCustomAction( name ) {
-		if ( utils.isEmpty( name ) ) return;
-		name = `__custom__${ name }`;
-
-		return this.menu.getButton( name, [ 'shortcuts-custom', 'menu-custom' ] );
-	}
-
-	/**
-	 * Get a custom action button widget.
-	 * @param {string} name action name
-	 * @returns {*}
-	 */
-	getCustomActionWidget( name ) {
-		const action = this.getCustomAction( name );
-		if ( !action ) return;
-
-		return action.map( entry => entry.widget );
-	}
-
-	/**
-	 * Execute a handler on each custom action button.
-	 * @param {string} name action name
-	 * @param {Function} handler action handler
-	 */
-	eachCustomAction( name, handler ) {
-		const action = this.getCustomAction( name );
-		if ( !action ) return;
-
-		action.forEach( entry => handler( entry ) );
-	}
-
-	/**
-	 * Execute a handler on each custom action button widget.
-	 * @param {string} name action name
-	 * @param {Function} handler action handler
-	 */
-	eachCustomActionWidget( name, handler ) {
-		const action = this.getCustomActionWidget( name );
-		if ( !action ) return;
-
-		action.forEach( entry => handler( entry ) );
-	}
-
 	/******* ACTIONS *******/
-
-	/**
-	 * Set focus on the specified button.
-	 * Performs transform to the opposite button for the disabled buttons and for the view switching buttons.
-	 * @param {string} name an action button name
-	 */
-	focusAction( name ) {
-		const unpatrolledActions = {
-			'unpatrolled': 'back',
-			'unpatrolled-back': 'unpatrolled',
-		};
-		const disabledActions = {
-			'next': 'prev',
-			'prev': 'next',
-			'snapshot-next': 'snapshot-prev',
-			'snapshot-prev': 'snapshot-next',
-		};
-		name = unpatrolledActions[ name ] || name;
-
-		this.menu.eachButtonWidget( name, this.groups, widget => {
-			if ( widget.isDisabled() ) {
-				name = disabledActions[ name ];
-				this.menu.eachButtonWidget( name, this.groups, widget => widget.focus() );
-			} else {
-				widget.focus();
-			}
-		} );
-	}
-
-	/**
-	 * Set focus and click the specified button if not disabled.
-	 * @param {string} name an action button name
-	 */
-	clickAction( name ) {
-		// FixMe: find a way to make the popup hide automatically when the button loses focus
-		if ( name !== 'actions' ) {
-			this.toggleActions( false );
-		}
-
-		this.menu.eachButtonWidget( name, this.groups, widget => {
-			if ( widget.isDisabled() ) return;
-
-			widget.focus();
-			widget.$button.get( 0 ).click();
-		} );
-	}
-
-	/**
-	 * Toggle an action menu dropdown visibility.
-	 * @param {boolean} value
-	 */
-	toggleActions( value ) {
-		this.menu.eachButtonWidget( 'actions', this.groups, widget => {
-			widget.getPopup().toggle( value );
-		} );
-	}
 
 	/**
 	 * Get the Article instance.
@@ -1102,7 +1185,7 @@ class Navigation {
 	 * @param {string} [insertMethod]
 	 */
 	embed( container, insertMethod ) {
-		utils.embed( this.nodes.$container, container, insertMethod );
+		utils.embed( this.nodes.container, container, insertMethod );
 	}
 
 	/**
@@ -1115,7 +1198,7 @@ class Navigation {
 		// Disconnect hotkey events
 		view.disconnect( this, { hotkey: 'onHotkey' } );
 
-		this.nodes.$container.detach();
+		this.nodes.container.remove();
 		this.isDetached = true;
 	}
 }

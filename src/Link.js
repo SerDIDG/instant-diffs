@@ -13,6 +13,23 @@ import './styles/links.less';
 const { h, ht } = utils;
 
 /**
+ * Link's configuration options
+ * @typedef {Object} Link.Options
+ * @property {'basic'|'request'|'event'|'none'} [behavior='basic'] - A Link behavior type
+ * @property {'insertAfter'|'insertBefore'} [insertMethod='insertAfter'] - Define where to embed actions panel
+ * @property {boolean} [showLink=true] - Whether to show the link action
+ * @property {boolean} [showPageLink=true] - Whether to show the page link action
+ * @property {boolean} [showAltTitle=false] - Show an original title instead of processed
+ * @property {import('./Link').default} [initiatorLink] - A Link instance that initiated this link
+ * @property {import('./Page').default} [initiatorPage] - A Page instance that initiated this link
+ * @property {View} [initiatorView] - A View instance that initiated this link
+ * @property {(link: import('./Link').default) => void} [onRequest] - Callback fired before the View dialog loads
+ * @property {(link: import('./Link').default) => void} [onLoad] - Callback fired after the View dialog loads
+ * @property {(link: import('./Link').default) => void} [onOpen] - Callback fired after the View dialog opens
+ * @property {(link: import('./Link').default) => void} [onClose] - Callback fired after the View dialog closes
+ */
+
+/**
  * Class representing a link.
  */
 class Link {
@@ -79,7 +96,7 @@ class Link {
 	node;
 
 	/**
-	 * @type {Object}
+	 * @type {Link.Options}
 	 */
 	options = {};
 
@@ -151,26 +168,14 @@ class Link {
 
 	/**
 	 * Create a link instance.
-	 * @param {HTMLAnchorElement} node a link node
-	 * @param {Object} [options] configuration options
-	 * @param {string} [options.behavior]
-	 * @param {string} [options.insertAfter]
-	 * @param {boolean} [options.showLink]
-	 * @param {boolean} [options.showPageLink]
-	 * @param {boolean} [options.showAltTitle] show an original title instead of processed
-	 * @param {import('./Link').default} [options.initiatorLink] a Link instance
-	 * @param {import('./Page').default} [options.initiatorPage] a Page instance
-	 * @param {View} [options.initiatorView] a View instance
-	 * @param {Function} [options.onRequest] a callback
-	 * @param {Function} [options.onLoad] a callback
-	 * @param {Function} [options.onOpen] a callback
-	 * @param {Function} [options.onClose] a callback
+	 * @param {HTMLAnchorElement} node - A link node
+	 * @param {Link.Options} [options] - A Link configuration options
 	 */
 	constructor( node, options ) {
 		this.node = node;
 
 		this.options = {
-			behavior: 'basic',                                          // request | basic | event | none
+			behavior: 'basic',
 			insertMethod: 'insertAfter',
 			showLink: settings.get( 'showLink' ),
 			showPageLink: settings.get( 'showPageLink' ),
@@ -197,7 +202,7 @@ class Link {
 		// Add a link instance to the stack
 		Link.addLink( this.node, this );
 
-		// Start render process if link is a valid diff or a revision link
+		// Start the render process if the link is a valid diff or a revision link
 		if ( this.isValid ) {
 			this.render();
 		}
