@@ -181,6 +181,14 @@ class MenuButton extends OO.ui.ButtonWidget {
 	}
 
 	/**
+	 * Get the Article instance.
+	 * @returns {import('./Article').default}
+	 */
+	getArticle() {
+		return this.getOption( 'article' );
+	}
+
+	/**
 	 * Toggle a buttons pending state that shows a loading cursor.
 	 * @param {boolean} value
 	 * @returns {MenuButton}

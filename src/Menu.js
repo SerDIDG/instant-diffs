@@ -353,6 +353,18 @@ class Menu {
 
 		return focused;
 	}
+
+	/**
+	 * Pending button by a given name.
+	 * @param {string} name - Button name
+	 * @param {string|string[]} group - Group name(s) to filter by
+	 * @param {boolean} value - State
+	 */
+	pendingButton( name, group, value ) {
+		this.eachButtonWidget( name, group, widget => {
+			widget.pending( value );
+		} );
+	}
 }
 
 export default Menu;

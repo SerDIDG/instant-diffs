@@ -66,7 +66,7 @@ export function isArray( value ) {
  * @returns {boolean}
  */
 export function isObject( value ) {
-	return typeof value === 'object';
+	return value && typeof value === 'object' && !Array.isArray( value );
 }
 
 /**
@@ -105,6 +105,15 @@ export function isActiveElement() {
 }
 
 /******* COMMON *******/
+
+/**
+ * Get module-specific utils.
+ * @param {string} module
+ * @returns {*}
+ */
+export function getUtils( module ) {
+	return id.modules[ module ]?.utils;
+}
 
 /**
  * Adds an origin prefix to the href.
@@ -287,6 +296,36 @@ export function arrayIntersperse( arr, separator ) {
 		}
 		return [ item ];
 	} );
+}
+
+/**
+ * Deep merge configuration objects.
+ * Arrays and primitive values are replaced, not merged.
+ * @template {Record<string, any>} T
+ * @param {...Partial<T>} objects - Configuration objects to merge
+ * @returns {T} Merged configuration object
+ * @example
+ * const defaults = { api: { timeout: 5000, retries: 3 } };
+ * const config = { api: { timeout: 10000 } };
+ * optionsMerge(defaults, config);
+ * // { api: { timeout: 10000, retries: 3 } }
+ */
+export function optionsMerge( ...objects ) {
+	return objects.reduce( ( prev, obj ) => {
+		Object.keys( obj ).forEach( key => {
+			const pVal = prev[ key ];
+			const oVal = obj[ key ];
+
+			// Only deep merge plain objects, replace everything else
+			if ( isObject( pVal ) && isObject( oVal ) ) {
+				prev[ key ] = optionsMerge( pVal, oVal );
+			} else {
+				prev[ key ] = oVal;
+			}
+		} );
+
+		return prev;
+	}, {} );
 }
 
 /******* MESSAGES *******/
@@ -657,7 +696,7 @@ export function clearWhitespaces( $node ) {
 	} );
 }
 
-export function clipboardWrite( text, callback ) {
+export function clipboardWriteLink( text, callback ) {
 	const success = () => {
 		mw.notify( msg( 'copy-link-copied' ), { tag: `${ id.config.prefix }-copyLink` } );
 		isFunction( callback ) && callback( true );

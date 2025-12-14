@@ -20,6 +20,16 @@ const { h, hf, ht } = utils;
  */
 class Navigation {
 	/**
+	 * @type {typeof import('./MenuActionsButton').default}
+	 */
+	MenuActionsButton;
+
+	/**
+	 * @type {typeof import('./MenuButton').default}
+	 */
+	MenuButton;
+
+	/**
 	 * @type {import('./Page').default}
 	 */
 	page;
@@ -60,11 +70,6 @@ class Navigation {
 	menu;
 
 	/**
-	 * @type {typeof import('./MenuButton').default}
-	 */
-	MenuButton;
-
-	/**
 	 * @type {boolean}
 	 */
 	isDetached = false;
@@ -92,6 +97,7 @@ class Navigation {
 		};
 
 		// Lazy-import modules
+		this.MenuActionsButton = require( './MenuActionsButton' ).default;
 		this.MenuButton = require( './MenuButton' ).default;
 
 		// Setup hotkey events
@@ -334,22 +340,9 @@ class Navigation {
 			h( 'hr.instantDiffs-buttons-separator' ),
 		);
 
-		const widget = new OO.ui.PopupButtonWidget( {
-			icon: 'menu',
-			label: utils.msg( 'goto-actions' ),
-			title: utils.msgHint( 'goto-actions', 'actions', settings.get( 'enableHotkeys' ) ),
-			invisibleLabel: true,
+		const widget = new this.MenuActionsButton( {
 			popup: {
 				$content: $( groups ),
-				classes: [
-					'instantDiffs-buttons-popup',
-					settings.get( 'showMenuIcons' ) ? 'has-icons' : null,
-				],
-				width: 'auto',
-				padded: false,
-				anchor: false,
-				align: 'backwards',
-				autoClose: true,
 			},
 		} );
 
@@ -795,7 +788,7 @@ class Navigation {
 		const href = getHref( this.article, {}, options );
 
 		// Copy href to the clipboard
-		utils.clipboardWrite( href );
+		utils.clipboardWriteLink( href );
 
 		// Focus the action button
 		this.focusAction( widget );
@@ -807,25 +800,19 @@ class Navigation {
 	 * @param {import('./MenuButton').default} widget
 	 */
 	actionCopyWikilink( widget ) {
-		this.menu.eachButtonWidget( 'copyWikiLink', null, widget => {
-			widget.pending( true );
-		} );
+		this.pendingAction( widget, true );
 
 		$.when( getWikilink( this.article ) )
 			.done( href => {
 				// Copy href to the clipboard
-				utils.clipboardWrite( href );
+				utils.clipboardWriteLink( href );
 			} )
 			.fail( () => {
 				// Show error message
-				utils.clipboardWrite( false );
+				utils.clipboardWriteLink( false );
 			} )
 			.always( () => {
-				this.menu.eachButtonWidget( 'copyWikiLink', null, widget => {
-					widget.pending( false );
-				} );
-
-				// Focus the action button
+				this.pendingAction( widget, false );
 				this.focusAction( widget );
 			} );
 	}
@@ -836,6 +823,8 @@ class Navigation {
 	 * @param {import('./MenuButton').default} widget
 	 */
 	actionWatchPage( widget ) {
+		this.pendingAction( widget, true );
+
 		if ( !this.watch ) {
 			this.watch = new Watch( this.article, {
 				onUpdate: state => {
@@ -847,17 +836,9 @@ class Navigation {
 			} );
 		}
 
-		this.menu.eachButtonWidget( 'watch', null, widget => {
-			widget.pending( true );
-		} );
-
 		$.when( this.watch.request() )
 			.always( () => {
-				this.menu.eachButtonWidget( 'watch', null, widget => {
-					widget.pending( false );
-				} );
-
-				// Focus the action button
+				this.pendingAction( widget, false );
 				this.focusAction( widget );
 			} );
 	}
@@ -868,18 +849,14 @@ class Navigation {
 	 * @param {import('./MenuButton').default} widget
 	 */
 	actionOpenSettings( widget ) {
+		this.pendingAction( widget, true );
+
 		settings.once( 'opening', () => this.toggleActions( false ) );
 		settings.once( 'closed', () => this.focusAction( widget ) );
 
-		this.menu.eachButtonWidget( 'settings', null, widget => {
-			widget.pending( true );
-		} );
-
 		$.when( settings.load() )
 			.always( () => {
-				this.menu.eachButtonWidget( 'settings', null, widget => {
-					widget.pending( false );
-				} );
+				this.pendingAction( widget, false );
 			} );
 	}
 
@@ -887,6 +864,7 @@ class Navigation {
 
 	/**
 	 * Map of action names to their counterpart actions.
+	 * @private
 	 * @type {Record<string, string>}
 	 */
 	actionCounterparts = {
@@ -896,6 +874,7 @@ class Navigation {
 
 	/**
 	 * Map of disabled action names to their alternative actions.
+	 * @private
 	 * @type {Record<string, string>}
 	 */
 	disabledActionCounterparts = {
@@ -970,16 +949,49 @@ class Navigation {
 	}
 
 	/**
-	 * Set focus and click the specified button if not disabled.
-	 * @param {string} name - An action button name
+	 * Set the pending state of the specified button.
+	 * @param {import('./MenuButton').default|string} widgetOrName - Button widget or action name
+	 * @param {boolean} value - State
 	 */
-	clickAction( name ) {
+	pendingAction( widgetOrName, value ) {
+		let name;
+
+		// Handle MenuButton instance
+		if ( widgetOrName instanceof this.MenuButton ) {
+			name = widgetOrName.getOption( 'name' );
+		}
+
+		// Handle string action name
+		if ( utils.isString( widgetOrName ) ) {
+			name = widgetOrName;
+		}
+
+		this.menu.pendingButton( name, null, value );
+	}
+
+	/**
+	 * Set focus and click the specified button if not disabled.
+	 * @param {import('./MenuButton').default|string} widgetOrName - Button widget or action name
+	 */
+	execAction( widgetOrName ) {
+		let name;
+
+		// Handle MenuButton instance
+		if ( widgetOrName instanceof this.MenuButton ) {
+			name = widgetOrName.getOption( 'name' );
+		}
+
+		// Handle string action name
+		if ( utils.isString( widgetOrName ) ) {
+			name = widgetOrName;
+		}
+
 		// FixMe: find a way to make the popup hide automatically when the button loses focus
 		if ( name !== 'actions' ) {
 			this.toggleActions( false );
 		}
 
-		this.menu.eachButtonWidget( name, this.groups, widget => {
+		this.menu.eachButtonWidget( name, null, widget => {
 			if ( !widget.isDisabled() ) {
 				widget.focus();
 				widget.execHandler();
@@ -990,11 +1002,11 @@ class Navigation {
 
 	/**
 	 * Toggle the actions menu dropdown visibility.
-	 * @param {boolean} value
+	 * @param {boolean} [value] - State
 	 */
 	toggleActions( value ) {
 		this.menu.eachButtonWidget( 'actions', this.groups, widget => {
-			widget.getPopup().toggle( value );
+			widget.togglePopup( value );
 		} );
 	}
 
@@ -1088,53 +1100,78 @@ class Navigation {
 	/******* HOTKEYS *******/
 
 	/**
+	 * Map of action hotkeys in LTR direction.
+	 * Keys are modifier states, values map key codes to action names.
+	 * @private
+	 * @type {Record<string, Record<string, string>>}
+	 */
+	actionHotkeyMap = {
+		none: {
+			ArrowLeft: 'prev',
+			ArrowRight: 'next',
+		},
+		ctrl: {
+			ArrowLeft: 'snapshotPrev',
+			ArrowRight: 'snapshotNext',
+			ArrowUp: 'switch',
+			ArrowDown: 'actions',
+			KeyZ: 'back',
+			KeyP: 'unpatrolled',
+		},
+		alt: {},
+		shift: {},
+	};
+
+	/**
+	 * Map of action hotkeys in RTL direction (overrides for LTR).
+	 * Keys are modifier states, values map key codes to action names.
+	 * @private
+	 * @type {Record<string, Record<string, string>>}
+	 */
+	actionHotkeyMapRTL = {
+		none: {
+			ArrowRight: 'prev',
+			ArrowLeft: 'next',
+		},
+		ctrl: {
+			ArrowRight: 'snapshotPrev',
+			ArrowLeft: 'snapshotNext',
+		},
+	};
+
+	/**
+	 * Get the appropriate action hotkey map based on a text direction.
+	 * @private
+	 * @returns {Record<string, Record<string, string>>}
+	 */
+	getActionHotkeyMap() {
+		return document.dir === 'rtl'
+			? utils.optionsMerge( this.actionHotkeyMap, this.actionHotkeyMapRTL )
+			: this.actionHotkeyMap;
+	}
+
+	/**
 	 * Event that emits when the View dialog fires hotkey event.
 	 * @private
+	 * @param {KeyboardEvent} event - Keyboard event
 	 */
 	onHotkey( event ) {
 		if ( !settings.get( 'enableHotkeys' ) ) return;
 
-		const isCtrlPressed = event.ctrlKey;
-		const isShiftPressed = event.shiftKey;
-		const isAltPressed = event.altKey;
+		// Get an action map for the current text direction
+		const actionMap = this.getActionHotkeyMap();
 
-		// Define actions map
-		const actionMaps = {
-			ctrl: {
-				ArrowLeft: 'snapshotPrev',
-				ArrowRight: 'snapshotNext',
-				ArrowUp: 'switch',
-				ArrowDown: 'actions',
-				KeyZ: 'back',
-				KeyP: 'unpatrolled',
-			},
-			none: {
-				ArrowLeft: 'prev',
-				ArrowRight: 'next',
-			},
-			alt: {},
-			shift: {},
-		};
+		// Get modifier and action
+		const modifier = event.altKey ? 'alt' : event.ctrlKey ? 'ctrl' : event.shiftKey ? 'shift' : 'none';
 
-		// Define an RTL-specific actions map
-		if ( document.dir === 'rtl' ) {
-			actionMaps.ctrl.ArrowRight = 'snapshotPrev';
-			actionMaps.ctrl.ArrowLeft = 'snapshotNext';
-			actionMaps.none.ArrowRight = 'prev';
-			actionMaps.none.ArrowLeft = 'next';
-		}
-
-		// Get action
-		const modifier = isAltPressed ? 'alt' : isCtrlPressed ? 'ctrl' : isShiftPressed ? 'shift' : 'none';
-		const action = actionMaps[ modifier ]?.[ event.code ];
+		// Get action for a key combination
+		const action = actionMap[ modifier ]?.[ event.code ];
 
 		if ( action ) {
-			// Prevent default arrow key behavior
+			// Prevent default behavior and execute action
 			event.preventDefault();
 			event.stopPropagation();
-
-			// Execute action
-			this.clickAction( action );
+			this.execAction( action );
 		}
 	}
 
