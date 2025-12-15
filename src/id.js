@@ -6,12 +6,13 @@
  * @property {boolean} isFirstRun - Initial first run started
  * @property {boolean} isRunCompleted - Initial first run finished
  * @property {boolean} isReady - Script initialized
- * @property {boolean} isReplaced
- * @property {boolean} isUnloading
- * @property {boolean} isPageAdjustmentsApplied
+ * @property {boolean} isReplaced - Script instance was replaced
+ * @property {boolean} isUnloading - Script activity is pending due inactive tab
+ * @property {boolean} isPageAdjustmentsApplied - Page-specific adjustments was applied
  * @property {import('./config').config} config - Configuration
  * @property {import('./config').local} local - Local variables
  * @property {import('./config').timers} timers - Script timer loggers
+ * @property {Record<string, Record>} i18n - Language strings map
  * @property {Record<string, any>} settings - User-defined setting options
  * @property {Record<string, any>} defaults - User-defined setting defaults
  * @property {import('./utils')} utils - Utility functions

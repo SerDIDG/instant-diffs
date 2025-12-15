@@ -1,14 +1,10 @@
 import id from './id';
 import * as utils from './utils';
 import { tweakUserOoUiClass } from './utils-oojs';
-import { getHref } from './utils-article';
 import { renderSuccessBox } from './utils-settings';
+import { schema } from './schema-settings';
 
-import view from './view';
 import settings from './settings';
-
-const { h } = utils;
-
 /**
  * Class representing a SettingsDialog.
  * @augments OO.ui.ProcessDialog
@@ -42,27 +38,12 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	/**
 	 * @type {Object}
 	 */
-	inputs = {};
-
-	/**
-	 * @type {Object}
-	 */
-	inputOptions = {};
+	tabs = {};
 
 	/**
 	 * @type {Object}
 	 */
 	fields = {};
-
-	/**
-	 * @type {Object}
-	 */
-	layouts = {};
-
-	/**
-	 * @type {Object}
-	 */
-	tabs = {};
 
 	/**
 	 * Create a SettingsDialog instance.
@@ -102,32 +83,29 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	 * @returns {OO.ui.PanelLayout}
 	 */
 	renderEditPanel() {
-		// Render fieldsets
-		this.renderLinksFieldset();
-		this.renderDialogFieldset();
-		this.renderMenuFieldset();
-		this.renderGeneralFieldset();
+		// Render settings schema
+		for ( const [ name, item ] of Object.entries( schema ) ) {
+			this.tabs[ name ] = this.renderTab( name, item );
+		}
+
+		// Get only visible tabs
+		const tabs = Object.values( this.tabs )
+			.map( entry => entry.tab )
+			.filter( entry => entry.isVisible() );
 
 		// Render tabs index layout
-		/** @type {OO.ui.IndexLayout} */
-		this.layouts.tabs = new OO.ui.IndexLayout( {
+		const layout = new OO.ui.IndexLayout( {
 			expanded: true,
 			framed: false,
 		} );
-
-		// Get only visible tabs and add them to the layout
-		/** @type {OO.ui.TabPanelLayout[]} */
-		const tabs = Object
-			.values( this.tabs )
-			.filter( tab => tab.isVisible() );
-		this.layouts.tabs.addTabPanels( tabs, 0 );
+		layout.addTabPanels( tabs, 0 );
 
 		// Combine fieldsets into the panel
 		return new OO.ui.PanelLayout( {
 			classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--edit' ],
 			padded: false,
 			expanded: true,
-			content: [ this.layouts.tabs ],
+			content: [ layout ],
 		} );
 	}
 
@@ -151,6 +129,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 			alt: utils.msg( 'settings-saved-icon' ),
 		} );
 
+		// Combine fieldsets into the panel
 		return new OO.ui.PanelLayout( {
 			classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--finish' ],
 			padded: true,
@@ -159,364 +138,181 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		} );
 	}
 
-	/******* FIELDSETS ******/
+	/******* CONSTRUCTOR *******/
 
-	renderLinksFieldset() {
-		// Show Link
-		this.inputs.showLink = new OO.ui.CheckboxInputWidget( {
-			selected: settings.get( 'showLink' ),
-		} );
-		this.fields.showLink = new OO.ui.FieldLayout( this.inputs.showLink, {
-			label: utils.msg( 'settings-show-link' ),
-			align: 'inline',
-			help: utils.msg( 'settings-show-link-help' ),
-			helpInline: true,
-		} );
-		this.fields.showLink.toggle( settings.check( 'showLink' ) );
+	renderTab( name, item ) {
+		item = utils.optionsMerge( {
+			name: name,
+			fields: {},
+			fieldset: null,
+			tab: null,
+			config: {
+				label: null,
+			},
+		}, item );
 
-		// Show Page Link
-		this.inputs.showPageLink = new OO.ui.CheckboxInputWidget( {
-			selected: settings.get( 'showPageLink' ),
-		} );
-		this.fields.showPageLink = new OO.ui.FieldLayout( this.inputs.showPageLink, {
-			label: utils.msg( 'settings-show-page-link' ),
-			align: 'inline',
-			help: utils.msgDom( 'settings-show-page-link-help' ),
-			helpInline: true,
-		} );
-		this.fields.showPageLink.toggle( settings.check( 'showPageLink' ) );
-
-		// Highlight list lines when the View dialog opens
-		this.inputs.highlightLine = new OO.ui.CheckboxInputWidget( {
-			selected: settings.get( 'highlightLine' ),
-		} );
-		this.fields.highlightLine = new OO.ui.FieldLayout( this.inputs.highlightLine, {
-			label: utils.msg( 'settings-highlight-line' ),
-			align: 'inline',
-		} );
-		this.fields.highlightLine.toggle( settings.check( 'highlightLine' ) );
-
-		// Mark watched lines when the View dialog opens
-		this.inputs.markWatchedLine = new OO.ui.CheckboxInputWidget( {
-			selected: settings.get( 'markWatchedLine' ),
-		} );
-		this.fields.markWatchedLine = new OO.ui.FieldLayout( this.inputs.markWatchedLine, {
-			label: utils.msg( 'settings-mark-watched-line' ),
-			align: 'inline',
-		} );
-		this.fields.markWatchedLine.toggle( settings.check( 'markWatchedLine' ) );
+		// Fields
+		for ( const [ fieldName, fieldItem ] of Object.entries( item.fields ) ) {
+			this.fields[ fieldName ] = item.fields[ fieldName ] = this.renderField( fieldName, fieldItem );
+		}
 
 		// Fieldset
-		this.layouts.links = new OO.ui.FieldsetLayout();
-		this.layouts.links.addItems( [
-			this.fields.showLink,
-			this.fields.showPageLink,
-			this.fields.highlightLine,
-			this.fields.markWatchedLine,
-		] );
+		const fields = Object.values( item.fields )
+			.map( entry => entry.field );
+
+		item.fieldset = new OO.ui.FieldsetLayout()
+			.addItems( fields );
 
 		// Tab
-		this.tabs.links = new OO.ui.TabPanelLayout( 'links', {
-			label: utils.msg( 'settings-fieldset-links' ),
-			content: [ this.layouts.links ],
-		} );
-		this.tabs.links.toggle(
-			settings.check( 'showLink' ) ||
-			settings.check( 'showPageLink' ) ||
-			settings.check( 'highlightLine' ) ||
-			settings.check( 'markWatchedLine' ),
-		);
-	};
+		const hasFields = Object.keys( item.fields )
+			.map( entry => settings.check( entry ) )
+			.some( entry => entry === true );
 
-	renderDialogFieldset() {
-		// Dialog width
-		this.inputOptions.viewWidth = {};
-		this.inputOptions.viewWidth.compact = new OO.ui.ButtonOptionWidget( {
-			data: 'compact',
-			label: utils.msg( 'settings-view-width-compact' ),
-			title: utils.msg( 'settings-view-width-option-title', view.constructor.getSize( 'compact' ).width ),
-		} );
-		this.inputOptions.viewWidth.standard = new OO.ui.ButtonOptionWidget( {
-			data: 'standard',
-			label: utils.msg( 'settings-view-width-standard' ),
-			title: utils.msg( 'settings-view-width-option-title', view.constructor.getSize( 'standard' ).width ),
-		} );
-		this.inputOptions.viewWidth.wide = new OO.ui.ButtonOptionWidget( {
-			data: 'wide',
-			label: utils.msg( 'settings-view-width-wide' ),
-			title: utils.msg( 'settings-view-width-option-title', view.constructor.getSize( 'wide' ).width ),
-		} );
-		this.inputOptions.viewWidth.full = new OO.ui.ButtonOptionWidget( {
-			data: 'full',
-			label: utils.msg( 'settings-view-width-full' ),
-			title: utils.msg( 'settings-view-width-full-title' ),
-		} );
-		this.inputs.viewWidth = new OO.ui.ButtonSelectWidget( {
-			items: Object.values( this.inputOptions.viewWidth ),
-		} );
+		item.tab = new OO.ui.TabPanelLayout( item.name, {
+			...item.config,
+			content: [ item.fieldset ],
+		} )
+			.toggle( hasFields );
 
-		this.fields.viewWidth = new OO.ui.FieldLayout( this.inputs.viewWidth, {
-			label: utils.msg( 'settings-view-width' ),
-			align: 'inline',
-			help: utils.msg( 'settings-view-width-help' ),
-			helpInline: true,
-		} );
-		this.fields.viewWidth.toggle( settings.check( 'viewWidth' ) );
+		return item;
+	}
 
-		// Close the dialog when clicking outside it
-		this.inputs.closeOutside = new OO.ui.CheckboxInputWidget( {
-			selected: settings.get( 'closeOutside' ),
-		} );
-		this.fields.closeOutside = new OO.ui.FieldLayout( this.inputs.closeOutside, {
-			label: utils.msg( 'settings-close-outside' ),
-			align: 'inline',
-		} );
-		this.fields.closeOutside.toggle( settings.check( 'closeOutside' ) );
+	renderField( name, item ) {
+		item = utils.optionsMerge( {
+			name: name,
+			type: null,
+			input: null,
+			field: null,
+			config: {
+				label: null,
+				align: 'inline',
+				help: null,
+				helpInline: true,
+			},
+			optionsType: null,
+			options: {},
+			onSelect: () => {},
+		}, item );
 
-		// Enable keyboard hotkeys
-		this.inputs.enableHotkeys = new OO.ui.CheckboxInputWidget( {
-			selected: settings.get( 'enableHotkeys' ),
-		} );
-		this.fields.enableHotkeys = new OO.ui.FieldLayout( this.inputs.enableHotkeys, {
-			label: utils.msg( 'settings-enable-hotkeys' ),
-			align: 'inline',
-		} );
-		this.fields.enableHotkeys.toggle( settings.check( 'enableHotkeys' ) );
+		// Options
+		for ( const [ optionName, optionItem ] of Object.entries( item.options ) ) {
+			item.options[ optionName ] = this.renderInputOption( optionName, optionItem, item.optionsType );
+		}
 
-		// Show the inline format toggle button
-		this.inputs.showDiffTools = new OO.ui.CheckboxInputWidget( {
-			selected: settings.get( 'showDiffTools' ),
-		} );
-		this.fields.showDiffTools = new OO.ui.FieldLayout( this.inputs.showDiffTools, {
-			label: utils.msg( 'settings-show-diff-tools' ),
-			align: 'inline',
-		} );
-		this.fields.showDiffTools.toggle( settings.check( 'showDiffTools' ) );
+		const options = Object.values( item.options )
+			.map( entry => entry.option );
 
-		// Show diff info in the revisions
-		this.inputs.showRevisionInfo = new OO.ui.CheckboxInputWidget( {
-			selected: settings.get( 'showRevisionInfo' ),
-		} );
-		this.fields.showRevisionInfo = new OO.ui.FieldLayout( this.inputs.showRevisionInfo, {
-			label: utils.msg( 'settings-show-revision-info' ),
-			align: 'inline',
-		} );
-		this.fields.showRevisionInfo.toggle( settings.check( 'showRevisionInfo' ) );
+		// Input
+		switch ( item.type ) {
+			case 'checkbox':
+				item.input = new OO.ui.CheckboxInputWidget();
+				break;
 
-		// Unhide revisions and diff content for administrators
-		this.inputs.unHideDiffs = new OO.ui.CheckboxInputWidget( {
-			selected: settings.get( 'unHideDiffs' ),
-		} );
-		this.fields.unHideDiffs = new OO.ui.FieldLayout( this.inputs.unHideDiffs, {
-			label: utils.msg( 'settings-unhide-diffs' ),
-			align: 'inline',
-			help: utils.msgDom( 'settings-unhide-diffs-help', 'suppressrevision' ),
-			helpInline: true,
-		} );
-		this.fields.unHideDiffs.toggle( settings.check( 'unHideDiffs' ) );
+			case 'radioSelect':
+				item.input = new OO.ui.RadioSelectWidget( {
+					items: options,
+				} );
+				break;
 
-		// Open links in the new tab
-		this.inputs.openInNewTab = new OO.ui.CheckboxInputWidget( {
-			selected: settings.get( 'openInNewTab' ),
-		} );
-		this.fields.openInNewTab = new OO.ui.FieldLayout( this.inputs.openInNewTab, {
-			label: utils.msg( 'settings-open-in-new-tab' ),
-			align: 'inline',
-		} );
-		this.fields.openInNewTab.toggle( settings.check( 'openInNewTab' ) );
+			case 'buttonSelect':
+				item.input = new OO.ui.ButtonSelectWidget( {
+					items: options,
+				} );
+				break;
+		}
 
-		// Fieldset
-		this.layouts.dialog = new OO.ui.FieldsetLayout();
-		this.layouts.dialog.addItems( [
-			this.fields.viewWidth,
-			this.fields.closeOutside,
-			this.fields.enableHotkeys,
-			this.fields.showDiffTools,
-			this.fields.showRevisionInfo,
-			this.fields.unHideDiffs,
-			this.fields.openInNewTab,
-		] );
+		// Input handlers
+		if ( utils.isFunction( item.onSelect ) ) {
+			item.input.on( 'select', () => item.onSelect.call( this, item ) );
+		}
 
-		// Tab
-		this.tabs.dialog = new OO.ui.TabPanelLayout( 'dialog', {
-			label: utils.msg( 'settings-fieldset-dialog' ),
-			content: [ this.layouts.dialog ],
-		} );
-		this.tabs.dialog.toggle(
-			settings.check( 'viewWidth' ) ||
-			settings.check( 'closeOutside' ) ||
-			settings.check( 'enableHotkeys' ) ||
-			settings.check( 'showDiffTools' ) ||
-			settings.check( 'showRevisionInfo' ) ||
-			settings.check( 'unHideDiffs' ) ||
-			settings.check( 'openInNewTab' ),
-		);
+		// Field
+		item.field = new OO.ui.FieldLayout( item.input, item.config )
+			.toggle( settings.check( item.name ) );
 
-		// Trigger selects actions
-		this.inputs.viewWidth.selectItemByData( settings.get( 'viewWidth' ) );
-	};
+		return item;
+	}
 
-	renderMenuFieldset() {
-		// Show icons in the dropdown menu
-		this.inputs.showMenuIcons = new OO.ui.CheckboxInputWidget( {
-			selected: settings.get( 'showMenuIcons' ),
-		} );
-		this.fields.showMenuIcons = new OO.ui.FieldLayout( this.inputs.showMenuIcons, {
-			label: utils.msg( 'settings-show-menu-icons' ),
-			align: 'inline',
-		} );
-		this.fields.showMenuIcons.toggle( settings.check( 'showMenuIcons' ) );
+	renderInputOption( name, item, type ) {
+		item = utils.optionsMerge( {
+			name: name,
+			type: type,
+			data: name,
+			option: null,
+		}, item );
 
-		// Copy links format
-		this.inputOptions.linksFormat = {};
-		this.inputOptions.linksFormat.full = new OO.ui.RadioOptionWidget( {
-			data: 'full',
-			label: utils.msg( 'settings-links-format-full' ),
-		} );
-		this.inputOptions.linksFormat.minify = new OO.ui.RadioOptionWidget( {
-			data: 'minify',
-			label: utils.msg( 'settings-links-format-minify' ),
-		} );
-		this.inputs.linksFormat = new OO.ui.RadioSelectWidget( {
-			items: Object.values( this.inputOptions.linksFormat ),
-		} );
-		this.inputs.linksFormat.on( 'select', this.onLinksFormatChoose );
+		switch ( item.type ) {
+			case 'radioOption':
+				item.option = new OO.ui.RadioOptionWidget( item );
+				break;
 
-		this.fields.linksFormat = new OO.ui.FieldLayout( this.inputs.linksFormat, {
-			label: utils.msg( 'settings-links-format' ),
-			align: 'inline',
-			help: 'placeholder',
-			helpInline: true,
-		} );
-		this.fields.linksFormat.toggle( settings.check( 'linksFormat' ) );
+			case 'buttonOption':
+				item.option = new OO.ui.ButtonOptionWidget( item );
+				break;
+		}
 
-		// Copy wikilinks format
-		this.inputOptions.wikilinksFormat = {};
-		this.inputOptions.wikilinksFormat.link = new OO.ui.RadioOptionWidget( {
-			data: 'link',
-			label: utils.msg( 'settings-wikilinks-format-link' ),
-		} );
-		this.inputOptions.wikilinksFormat.spacial = new OO.ui.RadioOptionWidget( {
-			data: 'special',
-			label: utils.msg( 'settings-wikilinks-format-special' ),
-		} );
-		this.inputs.wikilinksFormat = new OO.ui.RadioSelectWidget( {
-			items: Object.values( this.inputOptions.wikilinksFormat ),
-		} );
-		this.inputs.wikilinksFormat.on( 'select', this.onWikilinksFormatChoose );
+		return item;
+	}
 
-		this.fields.wikilinksFormat = new OO.ui.FieldLayout( this.inputs.wikilinksFormat, {
-			label: utils.msg( 'settings-wikilinks-format' ),
-			align: 'inline',
-			help: 'placeholder',
-			helpInline: true,
-		} );
-		this.fields.wikilinksFormat.toggle( settings.check( 'wikilinksFormat' ) );
+	getField( name ) {
+		return this.fields[ name ];
+	}
 
-		// Fieldset
-		this.layouts.menu = new OO.ui.FieldsetLayout();
-		this.layouts.menu.addItems( [
-			this.fields.showMenuIcons,
-			this.fields.linksFormat,
-			this.fields.wikilinksFormat,
-		] );
+	getFields() {
+		return this.fields;
+	}
 
-		// Tab
-		this.tabs.menu = new OO.ui.TabPanelLayout( 'menu', {
-			label: utils.msg( 'settings-fieldset-menu' ),
-			content: [ this.layouts.menu ],
-		} );
-		this.tabs.menu.toggle(
-			settings.check( 'showMenuIcons' ) ||
-			settings.check( 'linksFormat' ) ||
-			settings.check( 'wikilinksFormat' ),
-		);
+	getFieldValue( name ) {
+		const item = this.getField( name );
+		if ( !item ) return;
 
-		// Trigger selects actions
-		this.inputs.linksFormat.selectItemByData( settings.get( 'linksFormat' ) );
-		this.inputs.wikilinksFormat.selectItemByData( settings.get( 'wikilinksFormat' ) );
-	};
+		if ( [ 'checkbox' ].includes( item.type ) ) {
+			return item.input.isSelected();
+		}
+		if ( [ 'radioSelect', 'buttonSelect' ].includes( item.type ) ) {
+			return item.input.findFirstSelectedItem()?.getData();
+		}
+	}
 
-	renderGeneralFieldset() {
-		// Enable on the mobile skin
-		this.inputs.enableMobile = new OO.ui.CheckboxInputWidget( {
-			selected: settings.get( 'enableMobile' ),
-		} );
-		this.fields.enableMobile = new OO.ui.FieldLayout( this.inputs.enableMobile, {
-			label: utils.msg( 'settings-enable-mobile' ),
-			align: 'inline',
-			help: utils.msg( 'settings-enable-mobile-help' ),
-			helpInline: true,
-		} );
-		this.fields.enableMobile.toggle( settings.check( 'enableMobile' ) );
+	getFieldValues() {
+		const values = {};
 
-		// Show popup alerts for critical errors
-		this.inputs.notifyErrors = new OO.ui.CheckboxInputWidget( {
-			selected: settings.get( 'notifyErrors' ),
-		} );
-		this.fields.notifyErrors = new OO.ui.FieldLayout( this.inputs.notifyErrors, {
-			label: utils.msg( 'settings-notify-errors' ),
-			align: 'inline',
-		} );
-		this.fields.notifyErrors.toggle( settings.check( 'notifyErrors' ) );
+		for ( const [ name ] of Object.entries( this.fields ) ) {
+			values[ name ] = this.getFieldValue( name );
+		}
 
-		// Fieldset
-		this.layouts.general = new OO.ui.FieldsetLayout();
-		this.layouts.general.addItems( [
-			this.fields.enableMobile,
-			this.fields.notifyErrors,
-		] );
+		return values;
+	}
 
-		// Tab
-		this.tabs.general = new OO.ui.TabPanelLayout( 'general', {
-			label: utils.msg( 'settings-fieldset-general' ),
-			content: [ this.layouts.general ],
-		} );
-		this.tabs.general.toggle(
-			settings.check( 'enableMobile' ) ||
-			settings.check( 'notifyErrors' ),
-		);
-	};
+	setFieldValue( name, value ) {
+		const item = this.getField( name );
+		if ( !item ) return;
 
-	onLinksFormatChoose = () => {
-		const linkFormat = this.inputs.linksFormat.findFirstSelectedItem()?.getData();
+		if ( [ 'checkbox' ].includes( item.type ) ) {
+			item.input.setSelected( value );
+		}
+		if ( [ 'radioSelect', 'buttonSelect' ].includes( item.type ) ) {
+			item.input.selectItemByData( value );
+		}
 
-		const options = {
-			relative: false,
-			minify: linkFormat === 'minify',
-		};
-		const $help = this.getLinksFormatExample( options );
-		this.fields.linksFormat.$help.empty().append( $help );
+		return this;
+	}
 
-		// Update the Wikilink field help text
-		this.onWikilinksFormatChoose();
-	};
+	setFieldHelp( name, $help ) {
+		const item = this.getField( name );
+		if ( !item ) return;
 
-	onWikilinksFormatChoose = () => {
-		const linkFormat = this.inputs.linksFormat.findFirstSelectedItem()?.getData();
-		const wikilinkFormat = this.inputs.wikilinksFormat.findFirstSelectedItem()?.getData();
+		item.field.$help.empty().append( $help );
+		return this;
+	}
 
-		const options = {
-			relative: false,
-			minify: linkFormat === 'minify',
-			wikilink: true,
-			wikilinkPreset: wikilinkFormat,
-		};
-		const $help = this.getLinksFormatExample( options );
-		this.fields.wikilinksFormat.$help.empty().append( $help );
-	};
+	setFieldDisabled( name, value ) {
+		const item = this.getField( name );
+		if ( !item ) return;
 
-	getLinksFormatExample( options ) {
-		const title = utils.msg( 'copy-wikilink-example-title' );
-		const diff = getHref( { title, diff: '12345', type: 'diff' }, {}, options );
-		const revision = getHref( { title, oldid: '12345', type: 'revision' }, {}, options );
-		const page = getHref( { title, curid: '12345', type: 'revision', typeVariant: 'page' }, {}, options );
-		return h( 'ul.instantDiffs-list--settings',
-			h( 'li', h( 'i', diff ) ),
-			h( 'li', h( 'i', revision ) ),
-			h( 'li', h( 'i', page ) ),
-		);
-	};
+		item.input.setDisabled( value );
+		return this;
+	}
 
 	/******* SETUP PROCESS *******/
 
@@ -557,8 +353,8 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		this.pushPending();
 
 		// Update input values
-		for ( const input of Object.values( this.inputs ) ) {
-			input.setDisabled( true );
+		for ( const [ name ] of Object.entries( this.fields ) ) {
+			this.setFieldDisabled( name, true );
 		}
 
 		settings.request()
@@ -633,21 +429,13 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		this.popPending();
 
 		// Update input values
-		for ( const [ key, input ] of Object.entries( this.inputs ) ) {
-			input.setDisabled( false );
+		for ( const [ name ] of Object.entries( this.fields ) ) {
+			this.setFieldDisabled( name, false );
 
-			const option = options[ key ];
-			if ( typeof option === 'undefined' ) return;
+			const option = options[ name ];
+			if ( typeof option === 'undefined' ) continue;
 
-			if ( input instanceof OO.ui.CheckboxInputWidget ) {
-				input.setSelected( option );
-			}
-			if ( input instanceof OO.ui.RadioSelectWidget ) {
-				input.selectItemByData( option );
-			}
-			if ( input instanceof OO.ui.ButtonSelectWidget ) {
-				input.selectItemByData( option );
-			}
+			this.setFieldValue( name, option );
 		}
 	}
 
@@ -656,21 +444,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	processActionSave() {
 		this.pushPending();
 
-		// Collect input values
-		const options = {};
-		for ( const [ key, input ] of Object.entries( this.inputs ) ) {
-			if ( input instanceof OO.ui.CheckboxInputWidget ) {
-				options[ key ] = input.isSelected();
-			}
-			if ( input instanceof OO.ui.RadioSelectWidget ) {
-				options[ key ] = input.findFirstSelectedItem()?.getData();
-			}
-			if ( input instanceof OO.ui.ButtonSelectWidget ) {
-				options[ key ] = input.findFirstSelectedItem()?.getData();
-			}
-		}
-
-		settings.save( options )
+		settings.save( this.getFieldValues() )
 			.then( this.onActionSaveSuccess.bind( this ) )
 			.fail( this.onActionSaveError.bind( this ) )
 			.always( () => this.popPending() );
