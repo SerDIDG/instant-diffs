@@ -14,7 +14,7 @@ class ViewButton extends Button {
 
 	/**
 	 * Create a dialog button.
-	 * @param {Object} [options] configuration options
+	 * @param {Object} [options] - Configuration options
 	 */
 	constructor( options ) {
 		super( {
@@ -46,6 +46,7 @@ class ViewButton extends Button {
 
 	/**
 	 * Event that emits before the View dialog loads.
+	 * @private
 	 */
 	onDialogRequest() {
 		this.pending( true );
@@ -54,6 +55,7 @@ class ViewButton extends Button {
 
 	/**
 	 * Event that emits after the View dialog loads.
+	 * @private
 	 */
 	onDialogLoad() {
 		this.pending( false );
@@ -62,6 +64,7 @@ class ViewButton extends Button {
 
 	/**
 	 * Event that emits after the View dialog opens.
+	 * @private
 	 */
 	onDialogOpen() {
 		this.emit( 'opened' );
@@ -69,6 +72,7 @@ class ViewButton extends Button {
 
 	/**
 	 * Event that emits after the View dialog closes.
+	 * @private
 	 */
 	onDialogClose() {
 		this.emit( 'closed' );

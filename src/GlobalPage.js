@@ -37,8 +37,8 @@ class GlobalPage extends Page {
 
 	/**
 	 * Create a foreign diff instance.
-	 * @param {import('./Article').default} article an Article instance
-	 * @param {Object} [options] configuration options
+	 * @param {import('./Article').default} article - An Article instance
+	 * @param {Object} [options] - Configuration options
 	 */
 	constructor( article, options ) {
 		super( article, {

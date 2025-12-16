@@ -14,7 +14,7 @@ class Snapshot {
 
 	/**
 	 * Create a new snapshot instance.
-	 * @param {Object} [options] configuration options
+	 * @param {Object} [options] - Configuration options
 	 */
 	static newInstance( options ) {
 		this.instance = new Snapshot( options );
@@ -38,8 +38,8 @@ class Snapshot {
 	/**
 	 * Create a snapshot instance.
 	 * @param {Object} [options] configuration options
-	 * @param {string} [options.filterType] a link type to filter
-	 * @param {boolean} [options.filterMWLine] filter by mw generated links in changes lists
+	 * @param {string} [options.filterType] - A link type to filter
+	 * @param {boolean} [options.filterMWLine] - Filter by mw generated links in changes lists
 	 */
 	constructor( options ) {
 		this.options = {
@@ -53,7 +53,7 @@ class Snapshot {
 
 	/**
 	 * Set the link relative to which previous and next links will be determined.
-	 * @param {import('./Link').default} link a Link instance
+	 * @param {import('./Link').default} link - A Link instance
 	 */
 	setLink( link ) {
 		this.link = link;
@@ -61,7 +61,7 @@ class Snapshot {
 
 	/**
 	 * Check if the link belongs to the links' snapshot.
-	 * @param {import('./Link').default} link a Link instance
+	 * @param {import('./Link').default} link - A Link instance
 	 * @returns {boolean}
 	 */
 	hasLink( link ) {
@@ -70,7 +70,7 @@ class Snapshot {
 
 	/**
 	 * Check if the link is valid and can be navigated to.
-	 * @param {import('./Link').default} link a Link instance
+	 * @param {import('./Link').default} link - A Link instance
 	 * @returns {boolean}
 	 */
 	isLinkValid( link ) {
@@ -110,8 +110,8 @@ class Snapshot {
 
 	/**
 	 * Get the previous link relative to the given index if exists.
-	 * @param {number} [currentIndex] current relative index
-	 * @returns {import('./Link').default|undefined} a Link instance
+	 * @param {number} [currentIndex] - Current relative index
+	 * @returns {import('./Link').default|undefined} A Link instance
 	 */
 	getPreviousLink( currentIndex ) {
 		if ( typeof currentIndex === 'undefined' ) {
@@ -126,8 +126,8 @@ class Snapshot {
 
 	/**
 	 * Get the next link relative to the given index if exists.
-	 * @param {number} [currentIndex] current relative index
-	 * @returns {import('./Link').default|undefined} a Link instance
+	 * @param {number} [currentIndex] - Current relative index
+	 * @returns {import('./Link').default|undefined} A Link instance
 	 */
 	getNextLink( currentIndex ) {
 		if ( typeof currentIndex === 'undefined' ) {

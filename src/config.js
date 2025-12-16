@@ -128,25 +128,8 @@ export const config = {
 		},
 	},
 
-	// Settings list
-	settings: {
-		showLink: true,
-		showPageLink: true,
-		highlightLine: true,
-		markWatchedLine: true,
-		viewWidth: true,
-		closeOutside: true,
-		enableHotkeys: true,
-		showDiffTools: true,
-		showRevisionInfo: true,
-		unHideDiffs: true,
-		openInNewTab: true,
-		showMenuIcons: true,
-		linksFormat: true,
-		wikilinksFormat: true,
-		enableMobile: true,
-		notifyErrors: true,
-	},
+	// Settings options
+	settings: {},
 
 	// Settings defaults
 	defaults: {
@@ -155,22 +138,6 @@ export const config = {
 		standalone: false,                                              // Standalone mode
 		storageExpiry: 60 * 60 * 24,                                    // Cache local storage for 1 day
 		logTimers: true,
-		showLink: false,
-		showPageLink: true,
-		highlightLine: true,
-		markWatchedLine: true,
-		viewWidth: 'standard',
-		closeOutside: true,
-		enableHotkeys: true,
-		showDiffTools: true,
-		showRevisionInfo: true,
-		unHideDiffs: true,
-		openInNewTab: true,
-		showMenuIcons: true,
-		linksFormat: 'full',
-		wikilinksFormat: 'special',
-		enableMobile: true,
-		notifyErrors: true,
 	},
 
 	// Including / excluding rules

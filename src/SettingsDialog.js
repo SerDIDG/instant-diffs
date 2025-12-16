@@ -5,6 +5,7 @@ import { renderSuccessBox } from './utils-settings';
 import { schema } from './schema-settings';
 
 import settings from './settings';
+
 /**
  * Class representing a SettingsDialog.
  * @augments OO.ui.ProcessDialog
@@ -151,6 +152,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 			},
 		}, item );
 
+		// Validate
+		item.config = this.validateFieldConfig( item.config );
+
 		// Fields
 		for ( const [ fieldName, fieldItem ] of Object.entries( item.fields ) ) {
 			this.fields[ fieldName ] = item.fields[ fieldName ] = this.renderField( fieldName, fieldItem );
@@ -193,6 +197,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 			options: {},
 			onSelect: () => {},
 		}, item );
+
+		// Validate
+		item.config = this.validateFieldConfig( item.config );
 
 		// Options
 		for ( const [ optionName, optionItem ] of Object.entries( item.options ) ) {
@@ -241,6 +248,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 			option: null,
 		}, item );
 
+		// Validate
+		item = this.validateFieldConfig( item );
+
 		switch ( item.type ) {
 			case 'radioOption':
 				item.option = new OO.ui.RadioOptionWidget( item );
@@ -252,6 +262,22 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		}
 
 		return item;
+	}
+
+	validateFieldConfig( config ) {
+		// Validate message options
+		[ 'label', 'title', 'help' ].forEach( option => {
+			const value = config[ option ];
+			if ( utils.isEmpty( value ) ) return;
+
+			const msg = [ 'title' ].includes( option )
+				? utils.msg : utils.msgDom;
+
+			config[ option ] = utils.isArray( value )
+				? msg.apply( null, value ) : msg( value );
+		} );
+
+		return config;
 	}
 
 	getField( name ) {
@@ -358,18 +384,18 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		}
 
 		settings.request()
-			.then( this.onActionRequestSuccess.bind( this ) )
-			.fail( this.onActionRequestError.bind( this ) )
+			.then( this.onActionRequestSuccess )
+			.fail( this.onActionRequestError )
 			.always( () => this.popPending() );
 	}
 
 	/**
 	 * Event that emits after a user options request failed.
+	 * @private
 	 * @param {Object} [error]
 	 * @param {Object} [data]
-	 * @private
 	 */
-	onActionRequestError( error, data ) {
+	onActionRequestError = ( error, data ) => {
 		const params = {
 			type: 'settings',
 			message: error,
@@ -384,14 +410,14 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 			{ recoverable: true },
 		);
 		this.showErrors( errorMessage );
-	}
+	};
 
 	/**
 	 * Event that emits after user options request successively.
-	 * @param {Object} [data]
 	 * @private
+	 * @param {Object} [data]
 	 */
-	onActionRequestSuccess( data ) {
+	onActionRequestSuccess = ( data ) => {
 		if ( id.local.mwIsAnon ) {
 			return this.update();
 		}
@@ -408,7 +434,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		} catch {}
 
 		this.update();
-	}
+	};
 
 	/******* UPDATE PROCESS *******/
 
@@ -445,18 +471,18 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		this.pushPending();
 
 		settings.save( this.getFieldValues() )
-			.then( this.onActionSaveSuccess.bind( this ) )
-			.fail( this.onActionSaveError.bind( this ) )
+			.then( this.onActionSaveSuccess )
+			.fail( this.onActionSaveError )
 			.always( () => this.popPending() );
 	}
 
 	/**
 	 * Event that emits after save request failed.
+	 * @private
 	 * @param {Object} [error]
 	 * @param {Object} [data]
-	 * @private
 	 */
-	onActionSaveError( error, data ) {
+	onActionSaveError = ( error, data ) => {
 		const params = {
 			type: 'settings',
 			message: error,
@@ -471,16 +497,16 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 			{ recoverable: true },
 		);
 		this.showErrors( errorMessage );
-	}
+	};
 
 	/**
 	 * Event that emits after save request successive.
 	 * @private
 	 */
-	onActionSaveSuccess() {
+	onActionSaveSuccess = () => {
 		this.actions.setMode( 'finish' );
 		this.stackLayout.setItem( this.panelFinish );
-	}
+	};
 
 	/******* RELOAD PROCESS *******/
 

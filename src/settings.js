@@ -288,18 +288,16 @@ class Settings {
 	 */
 	get( key, userOption ) {
 		if ( userOption ) {
-			const userOptions = Object.fromEntries(
-				Object
-					.entries( id.local.defaults )
-					.filter( ( [ key ] ) => key in id.config.settings ),
-			);
+			const entries = Object.entries( id.local.defaults )
+				.filter( ( [ key ] ) => key in id.config.settings );
+			const userOptions = Object.fromEntries( entries );
 			return key ? userOptions[ key ] : userOptions;
 		}
 		return key ? id.local.defaults[ key ] : id.local.defaults;
 	}
 
 	/**
-	 * Check is a setting option stored in the config is enabled.
+	 * Check if a setting option stored in the config is enabled.
 	 * @param {string} [key] for specific option, or undefined for the option's object
 	 * @returns {*|object} a specific option, or the option's object
 	 */

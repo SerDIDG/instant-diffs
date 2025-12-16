@@ -35,6 +35,7 @@ class HistoryCompareButton extends ViewButton {
 
 	/**
 	 * Event that emits after the View dialog opens.
+	 * @private
 	 */
 	onDialogOpen() {
 		if ( settings.get( 'highlightLine' ) ) {
@@ -46,6 +47,7 @@ class HistoryCompareButton extends ViewButton {
 
 	/**
 	 * Event that emits after the View dialog closes.
+	 * @private
 	 */
 	onDialogClose() {
 		if ( settings.get( 'highlightLine' ) ) {

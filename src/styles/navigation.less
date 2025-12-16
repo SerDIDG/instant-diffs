@@ -1,4 +1,5 @@
 @import ( reference ) '@wikimedia/codex-design-tokens/theme-wikimedia-ui.less';
+@import ( reference ) 'variables.less';
 
 /******* NAVIGATION *******/
 
@@ -19,16 +20,6 @@
 
 	@media (max-width: @max-width-breakpoint-mobile) {
 		padding: 0.5em;
-
-		.instantDiffs-button--switch,
-		.instantDiffs-button--pending,
-		.instantDiffs-button--back {
-			display: none;
-		}
-
-		.instantDiffs-button--link {
-			display: block;
-		}
 	}
 }
 
@@ -41,6 +32,13 @@
 	&--left {
 		justify-content: flex-start;
 		flex: 1;
+
+		@media (max-width: @max-width-breakpoint-mobile) {
+			.instantDiffs-button--pending,
+			.instantDiffs-button--back {
+				display: none;
+			}
+		}
 	}
 
 	&--center {
@@ -58,17 +56,30 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
+
+		@media (max-width: @max-width-breakpoint-mobile) {
+			.instantDiffs-button--switch {
+				display: none;
+			}
+		}
 	}
 
 	&--right {
 		justify-content: flex-end;
 		flex: 1;
+
+		@media (max-width: @max-width-breakpoint-laptop) {
+			.instantDiffs-button--shortcut {
+				display: none;
+			}
+		}
 	}
 }
 
 /******* BUTTON GROUPS *******/
 
 .instantDiffs-buttons-group {
+	min-width: 0;
 	margin: 0;
 	padding: 0;
 	display: flex;
@@ -91,8 +102,14 @@
 		}
 	}
 
-	@media (min-width: @min-width-breakpoint-tablet) {
-		&--mobile {
+	&--shortcuts-custom {
+		@media (max-width: @max-width-breakpoint-laptop) {
+			display: none;
+		}
+	}
+
+	&--mobile {
+		@media (min-width: @min-width-breakpoint-tablet) {
 			&& {
 				display: none;
 			}
@@ -106,6 +123,7 @@
 
 .instantDiffs-buttons-separator {
 	margin: 0;
+	flex: none;
 }
 
 .instantDiffs-buttons-popup {
@@ -198,13 +216,13 @@
 		text-overflow: ellipsis;
 	}
 
-	@media (min-width: 960px) {
+	@media (min-width: @min-width-breakpoint-laptop) {
 		&--short {
 			display: none;
 		}
 	}
 
-	@media (max-width: 959px) {
+	@media (max-width: @max-width-breakpoint-laptop) {
 		&--long {
 			display: none;
 		}

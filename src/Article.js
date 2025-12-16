@@ -51,8 +51,8 @@ class Article {
 
 	/**
 	 * Create an Article instance.
-	 * @param {Object} values a key-value pairs object
-	 * @param {Object} [options] configuration options
+	 * @param {Object} values - A key-value pairs object
+	 * @param {Object} [options] - Configuration options
 	 * @param {boolean} [options.fixTenet]
 	 */
 	constructor( values, options ) {

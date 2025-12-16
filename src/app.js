@@ -2,7 +2,7 @@ import id from './id';
 import { config, local, timers } from './config';
 import * as utils from './utils';
 import { mixEventEmitterInObject } from './utils-oojs';
-import { getQueryDefaults } from './utils-settings';
+import { getQueryDefaults, getSchemaDefaults, getSchemaSettings } from './utils-settings';
 
 import './styles/app.less';
 
@@ -301,7 +301,11 @@ function assembleLinkSelector() {
 /******* BOOTSTRAP *******/
 
 function app() {
-	// Merge default options with user-defined options
+	// Merge base settings options with schema options
+	config.settings = { ...getSchemaSettings(), ...config.settings };
+	config.defaults = { ...getSchemaDefaults(), ...config.defaults };
+
+	// Merge default settings options with user-defined options
 	const settingOptions = { ...config.settings, ...id.settings };
 	const defaultOptions = { ...config.defaults, ...id.defaults, ...getQueryDefaults() };
 

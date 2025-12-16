@@ -24,8 +24,8 @@ class ConfigManager {
 
 	/**
 	 * Create the Config Manager instance.
-	 * @param {Object<string|*>} values key-value pairs
-	 * @param {import('types-mediawiki/mw/Map').ExtensibleMap} [config] a config object to process
+	 * @param {Object<string|*>} values - Key-value pairs
+	 * @param {import('types-mediawiki/mw/Map').ExtensibleMap} [config] - A config object to process
 	 */
 	constructor( values, config ) {
 		if ( config ) {

@@ -8,20 +8,24 @@ const { h } = utils;
 export const schema = {
 	general: {
 		config: {
-			label: utils.msg( 'settings-fieldset-general' ),
+			label: 'settings-fieldset-general',
 		},
 		fields: {
 			enableMobile: {
 				type: 'checkbox',
+				enabled: true,
+				default: true,
 				config: {
-					label: utils.msg( 'settings-enable-mobile' ),
-					help: utils.msg( 'settings-enable-mobile-help' ),
+					label: 'settings-enable-mobile',
+					help: 'settings-enable-mobile-help',
 				},
 			},
 			notifyErrors: {
 				type: 'checkbox',
+				enabled: true,
+				default: true,
 				config: {
-					label: utils.msg( 'settings-notify-errors' ),
+					label: 'settings-notify-errors',
 				},
 			},
 		},
@@ -29,33 +33,41 @@ export const schema = {
 
 	links: {
 		config: {
-			label: utils.msg( 'settings-fieldset-links' ),
+			label: 'settings-fieldset-links',
 		},
 		fields: {
 			showLink: {
 				type: 'checkbox',
+				enabled: true,
+				default: false,
 				config: {
-					label: utils.msg( 'settings-show-link' ),
-					help: utils.msg( 'settings-show-link-help' ),
+					label: 'settings-show-link',
+					help: 'settings-show-link-help',
 				},
 			},
 			showPageLink: {
 				type: 'checkbox',
+				enabled: true,
+				default: true,
 				config: {
-					label: utils.msg( 'settings-show-page-link' ),
-					help: utils.msgDom( 'settings-show-page-link-help' ),
+					label: 'settings-show-page-link',
+					help: 'settings-show-page-link-help',
 				},
 			},
 			highlightLine: {
 				type: 'checkbox',
+				enabled: true,
+				default: true,
 				config: {
-					label: utils.msg( 'settings-highlight-line' ),
+					label: 'settings-highlight-line',
 				},
 			},
 			markWatchedLine: {
 				type: 'checkbox',
+				enabled: true,
+				default: true,
 				config: {
-					label: utils.msg( 'settings-mark-watched-line' ),
+					label: 'settings-mark-watched-line',
 				},
 			},
 		},
@@ -63,70 +75,84 @@ export const schema = {
 
 	dialog: {
 		config: {
-			label: utils.msg( 'settings-fieldset-dialog' ),
+			label: 'settings-fieldset-dialog',
 		},
 		fields: {
 			viewWidth: {
 				type: 'buttonSelect',
+				enabled: true,
+				default: 'standard',
 				config: {
-					label: utils.msg( 'settings-view-width' ),
-					help: utils.msgDom( 'settings-view-width-help' ),
+					label: 'settings-view-width',
+					help: 'settings-view-width-help',
 				},
 				optionsType: 'buttonOption',
 				options: {
 					compact: {
-						label: utils.msg( 'settings-view-width-compact' ),
-						title: utils.msg( 'settings-view-width-option-title', view.constructor.getSize( 'compact' ).width ),
+						label: 'settings-view-width-compact',
+						title: [ 'settings-view-width-option-title', view.constructor.getSize( 'compact' ).width ],
 					},
 					standard: {
-						label: utils.msg( 'settings-view-width-standard' ),
-						title: utils.msg( 'settings-view-width-option-title', view.constructor.getSize( 'standard' ).width ),
+						label: 'settings-view-width-standard',
+						title: [ 'settings-view-width-option-title', view.constructor.getSize( 'standard' ).width ],
 					},
 					wide: {
-						label: utils.msg( 'settings-view-width-wide' ),
-						title: utils.msg( 'settings-view-width-option-title', view.constructor.getSize( 'wide' ).width ),
+						label: 'settings-view-width-wide',
+						title: [ 'settings-view-width-option-title', view.constructor.getSize( 'wide' ).width ],
 					},
 					full: {
-						label: utils.msg( 'settings-view-width-full' ),
-						title: utils.msg( 'settings-view-width-full-title' ),
+						label: 'settings-view-width-full',
+						title: 'settings-view-width-full-title',
 					},
 				},
 			},
 			closeOutside: {
 				type: 'checkbox',
+				enabled: true,
+				default: true,
 				config: {
-					label: utils.msg( 'settings-close-outside' ),
+					label: 'settings-close-outside',
 				},
 			},
 			enableHotkeys: {
 				type: 'checkbox',
+				enabled: true,
+				default: true,
 				config: {
-					label: utils.msg( 'settings-enable-hotkeys' ),
+					label: 'settings-enable-hotkeys',
 				},
 			},
 			showDiffTools: {
 				type: 'checkbox',
+				enabled: true,
+				default: true,
 				config: {
-					label: utils.msg( 'settings-show-diff-tools' ),
+					label: 'settings-show-diff-tools',
 				},
 			},
 			showRevisionInfo: {
 				type: 'checkbox',
+				enabled: true,
+				default: true,
 				config: {
-					label: utils.msg( 'settings-show-revision-info' ),
+					label: 'settings-show-revision-info',
 				},
 			},
 			unHideDiffs: {
 				type: 'checkbox',
+				enabled: true,
+				default: true,
 				config: {
-					label: utils.msg( 'settings-unhide-diffs' ),
-					help: utils.msgDom( 'settings-unhide-diffs-help', 'suppressrevision' ),
+					label: 'settings-unhide-diffs',
+					help: [ 'settings-unhide-diffs-help', 'suppressrevision' ],
 				},
 			},
 			openInNewTab: {
 				type: 'checkbox',
+				enabled: true,
+				default: true,
 				config: {
-					label: utils.msg( 'settings-open-in-new-tab' ),
+					label: 'settings-open-in-new-tab',
 				},
 			},
 		},
@@ -134,45 +160,51 @@ export const schema = {
 
 	menu: {
 		config: {
-			label: utils.msg( 'settings-fieldset-menu' ),
+			label: 'settings-fieldset-menu',
 		},
 		fields: {
 			showMenuIcons: {
 				type: 'checkbox',
+				enabled: true,
+				default: true,
 				config: {
-					label: utils.msg( 'settings-show-menu-icons' ),
+					label: 'settings-show-menu-icons',
 				},
 			},
 			linksFormat: {
 				type: 'radioSelect',
+				enabled: true,
+				default: 'full',
 				config: {
-					label: utils.msg( 'settings-links-format' ),
+					label: 'settings-links-format',
 					help: 'placeholder',
 				},
 				optionsType: 'radioOption',
 				options: {
 					full: {
-						label: utils.msg( 'settings-links-format-full' ),
+						label: 'settings-links-format-full',
 					},
 					minify: {
-						label: utils.msg( 'settings-links-format-minify' ),
+						label: 'settings-links-format-minify',
 					},
 				},
 				onSelect: onLinksFormatSelect,
 			},
 			wikilinksFormat: {
 				type: 'radioSelect',
+				enabled: true,
+				default: 'special',
 				config: {
-					label: utils.msg( 'settings-wikilinks-format' ),
+					label: 'settings-wikilinks-format',
 					help: 'placeholder',
 				},
 				optionsType: 'radioOption',
 				options: {
 					link: {
-						label: utils.msg( 'settings-wikilinks-format-link' ),
+						label: 'settings-wikilinks-format-link',
 					},
 					special: {
-						label: utils.msg( 'settings-wikilinks-format-special' ),
+						label: 'settings-wikilinks-format-special',
 					},
 				},
 				onSelect: onWikilinksFormatSelect,

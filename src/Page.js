@@ -109,12 +109,12 @@ class Page {
 
 	/**
 	 * Create a diff instance.
-	 * @param {import('./Article').default} article a page object
-	 * @param {Object} [options] configuration options
-	 * @param {string[]} [options.initiatorAction] an action name
-	 * @param {import('./Page').default} [options.initiatorPage] a Page instance
-	 * @param {boolean} [options.fireDiffHook] fire 'wikipage.diff' hook on fire method
-	 * @param {boolean} [options.fireContentHook] fire 'wikipage.content' hook on fire method
+	 * @param {import('./Article').default} article - An Article instance
+	 * @param {Object} [options] - Configuration options
+	 * @param {string[]} [options.initiatorAction] - An action name
+	 * @param {import('./Page').default} [options.initiatorPage] - A Page instance
+	 * @param {boolean} [options.fireDiffHook] - Fire 'wikipage.diff' hook on fire method
+	 * @param {boolean} [options.fireContentHook] - Fire 'wikipage.content' hook on fire method
 	 */
 	constructor( article, options ) {
 		this.article = article;

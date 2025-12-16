@@ -21,7 +21,7 @@ class Api {
 	static foreignApi = {};
 
 	/**
-	 * Gets instance of the Api.
+	 * Gets the Api instance.
 	 * @param {string} [hostname]
 	 * @return {mw.Api|mw.ForeignApi}
 	 */

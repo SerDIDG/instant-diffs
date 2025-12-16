@@ -34,7 +34,7 @@ class RequestManager {
 
 	/**
 	 * $.when wrapper.
-	 * @param {...*} args - arguments to pass to $.when
+	 * @param {...*} args - Arguments to pass to $.when
 	 * @returns {JQuery.Promise}
 	 */
 	when( ...args ) {
