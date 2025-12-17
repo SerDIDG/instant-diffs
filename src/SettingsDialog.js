@@ -202,6 +202,10 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		item.config = this.validateFieldConfig( item.config );
 
 		// Options
+		if ( utils.isFunction( item.options ) ) {
+			item.options = item.options.call( this, item );
+		}
+
 		for ( const [ optionName, optionItem ] of Object.entries( item.options ) ) {
 			item.options[ optionName ] = this.renderInputOption( optionName, optionItem, item.optionsType );
 		}
@@ -223,6 +227,12 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
 			case 'buttonSelect':
 				item.input = new OO.ui.ButtonSelectWidget( {
+					items: options,
+				} );
+				break;
+
+			case 'checkboxMultiselect':
+				item.input = new OO.ui.CheckboxMultiselectWidget( {
 					items: options,
 				} );
 				break;
@@ -259,22 +269,37 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 			case 'buttonOption':
 				item.option = new OO.ui.ButtonOptionWidget( item );
 				break;
+
+			case 'checkboxMultioption':
+				item.option = new OO.ui.CheckboxMultioptionWidget( item );
+				break;
 		}
 
 		return item;
 	}
 
+	/**
+	 * Validate and process field configuration message options.
+	 * Converts message keys/arrays into actual messages.
+	 * @param {Object} config - Field configuration object
+	 * @returns {Object} Validated configuration
+	 */
 	validateFieldConfig( config ) {
-		// Validate message options
-		[ 'label', 'title', 'help' ].forEach( option => {
-			const value = config[ option ];
-			if ( utils.isEmpty( value ) ) return;
+		// Process message options
+		const msgOptions = [
+			{ key: 'labelMsg', target: 'label', useDom: true },
+			{ key: 'titleMsg', target: 'title', useDom: false },
+			{ key: 'helpMsg', target: 'help', useDom: true },
+		];
 
-			const msg = [ 'title' ].includes( option )
-				? utils.msg : utils.msgDom;
+		msgOptions.forEach( ( { key, target, useDom } ) => {
+			const value = config[ key ];
+			if ( !value ) return;
 
-			config[ option ] = utils.isArray( value )
-				? msg.apply( null, value ) : msg( value );
+			const msgFn = useDom ? utils.msgDom : utils.msg;
+			config[ target ] = Array.isArray( value )
+				? msgFn( ...value )
+				: msgFn( value );
 		} );
 
 		return config;
@@ -298,6 +323,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		if ( [ 'radioSelect', 'buttonSelect' ].includes( item.type ) ) {
 			return item.input.findFirstSelectedItem()?.getData();
 		}
+		if ( [ 'checkboxMultiselect' ].includes( item.type ) ) {
+			return item.input.findSelectedItemsData();
+		}
 	}
 
 	getFieldValues() {
@@ -319,6 +347,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		}
 		if ( [ 'radioSelect', 'buttonSelect' ].includes( item.type ) ) {
 			item.input.selectItemByData( value );
+		}
+		if ( [ 'checkboxMultiselect' ].includes( item.type ) ) {
+			item.input.selectItemsByData( value );
 		}
 
 		return this;

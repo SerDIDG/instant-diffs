@@ -107,15 +107,6 @@ export function isActiveElement() {
 /******* COMMON *******/
 
 /**
- * Get module-specific utils.
- * @param {string} module
- * @returns {*}
- */
-export function getUtils( module ) {
-	return id.modules[ module ]?.utils;
-}
-
-/**
  * Adds an origin prefix to the href.
  * @param {string} path
  * @returns {string}
@@ -296,6 +287,22 @@ export function arrayIntersperse( arr, separator ) {
 		}
 		return [ item ];
 	} );
+}
+
+/**
+ * Check whether a value matches an entry.
+ * @param {Array<*>|string} arrOrStr - Array to search in, or a string to compare
+ * @param {*} entry - Value to look for or compare against
+ * @returns {boolean} `true` if the entry matches, otherwise `false`
+ */
+export function inArray( arrOrStr, entry ) {
+	if ( isArray( arrOrStr ) ) {
+		return arrOrStr.includes( entry );
+	}
+	if ( isString( arrOrStr ) && isString( entry ) ) {
+		return arrOrStr === entry;
+	}
+	return false;
 }
 
 /**

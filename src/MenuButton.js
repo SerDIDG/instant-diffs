@@ -9,7 +9,7 @@ import settings from './settings';
  * MenuButton's configuration options, extends OO.ui.ButtonWidget configuration
  * @typedef {OO.ui.ButtonWidget.ConfigOptions & Object} MenuButton.Options
  * @property {string} [name] - A button name, used for the data-mw-ui-id attribute
- * @property {'default'|'navigation'|'shortcut'|'menu'} [type='default'] - A Button view type
+ * @property {'default'|'navigation'|'pin'|'menu'} [type='default'] - A Button view type
  * @property {boolean} [invisibleLabel=false] - Hide the button label
  * @property {boolean} [invisibleIcon=false] - Hide the button icon
  * @property {string} [href] - Button link href
@@ -75,9 +75,9 @@ class MenuButton extends OO.ui.ButtonWidget {
 			options.classes = [ ...options.classes, 'instantDiffs-button--navigation' ];
 		}
 
-		if ( options.type === 'shortcut' ) {
+		if ( options.type === 'pin' ) {
 			options.invisibleLabel = true;
-			options.classes = [ ...options.classes, 'instantDiffs-button--shortcut' ];
+			options.classes = [ ...options.classes, 'instantDiffs-button--pin' ];
 		}
 
 		if ( options.type === 'menu' ) {

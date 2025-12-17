@@ -7,10 +7,16 @@ import settings from './settings';
  * @typedef {MenuButton.Options & Object} Menu.ButtonOptions
  * @property {string} [name] - A button name, used for the data-mw-ui-id attribute
  * @property {string} [group] - A group name, used for grouping buttons
- * @property {boolean} [canShortcut=false] - Whether to render a shortcut button
- * @property {MenuButton.Options['type']} [shortcutType='shortcut'] - Shortcut button type
- * @property {string} [shortcutGroup='shortcuts'] - Shortcut button group
+ * @property {boolean} [canSystem=false] - Whether to render a system button
+ * @property {boolean} [isSystem=false] - Button is system action
+ * @property {MenuButton.Options['type']} [systemType='navigation'] - System button type
+ * @property {string} [systemGroup='navigation'] - System button group
+ * @property {boolean} [canPin=false] - Whether to render a pinned button
+ * @property {boolean} [isPin=false] - Button is pinned action
+ * @property {MenuButton.Options['type']} [pinType='pin'] - Pined button type
+ * @property {string} [pinGroup='pins'] - Pinned button group
  * @property {boolean} [canMenu=true] - Whether to render a menu button
+ * @property {boolean} [isMnu=false] - Button is menu action
  * @property {MenuButton.Options['type']} [menuType='menu'] - Menu button type
  * @property {string} [menuGroup='menu'] - Menu button group
  * @property {import('./MenuButton').default|OO.ui.PopupButtonWidget} [widget] - The Button widget instance
@@ -181,14 +187,13 @@ class Menu {
 	}
 
 	/**
-	 * Get all buttons belonging to a specific group.
-	 * @param {string} name - Group name
+	 * Get all buttons belonging to the specific group(s).
+	 * @param {string|string[]} name - Group name(s) to filter by
 	 * @returns {Menu.ButtonOptions[]} Array of button configuration objects
 	 */
 	getGroupButtons( name ) {
 		return this.getButtons()
-			.map( entries => entries.find( entry => entry.group === name ) )
-			.filter( entry => !utils.isEmpty( entry ) );
+			.filter( entry => utils.inArray( name, entry.group ) );
 	}
 
 	/******* BUTTONS *******/
@@ -203,9 +208,12 @@ class Menu {
 			article: this.article,
 			name: null,
 			group: null,
-			canShortcut: false,
-			shortcutType: 'shortcut',
-			shortcutGroup: 'shortcuts',
+			canSystem:false,
+			systemType: 'pin',
+			systemGroup: 'navigation',
+			canPin: false,
+			pinType: 'pin',
+			pinGroup: 'pins',
 			canMenu: true,
 			menuGroup: 'menu',
 			menuType: 'menu',
@@ -216,11 +224,25 @@ class Menu {
 		if ( this.buttons[ options.name ] ) return;
 		const buttons = this.buttons[ options.name ] = [];
 
-		if ( options.canShortcut ) {
+		if ( options.canSystem ) {
 			const button = this.renderButtonHelper( {
 				...options,
-				type: options.shortcutType,
-				group: options.shortcutGroup,
+				type: options.systemType,
+				group: options.systemGroup,
+				isSystem: true,
+			} );
+			buttons.push( button );
+		}
+
+		if (
+			options.canPin &&
+			utils.inArray( settings.get( 'pinnedActions' ), options.name )
+		) {
+			const button = this.renderButtonHelper( {
+				...options,
+				type: options.pinType,
+				group: options.pinGroup,
+				isPin: true,
 			} );
 			buttons.push( button );
 		}
@@ -230,6 +252,7 @@ class Menu {
 				...options,
 				type: options.menuType,
 				group: options.menuGroup,
+				isMenu: true,
 			} );
 			buttons.push( button );
 		}
@@ -305,7 +328,7 @@ class Menu {
 	 * @returns {Array} Array of button configuration arrays
 	 */
 	getButtons() {
-		return Object.values( this.buttons );
+		return Object.values( this.buttons ).flat();
 	}
 
 	/**

@@ -122,7 +122,7 @@ class Navigation {
 		this.renderMenu();
 		this.renderSnapshotLinks();
 		this.renderNavigationLinks();
-		this.renderShortcutsLinks();
+		this.renderActionLinks();
 
 		// Fire hook on complete
 		mw.hook( `${ id.config.prefix }.navigation.complete` ).fire( this );
@@ -137,7 +137,7 @@ class Navigation {
 	groupsMap = {
 		left: [ 'snapshot' ],
 		center: [ 'navigation' ],
-		right: [ 'shortcuts-custom', 'shortcuts' ],
+		right: [ 'pins-custom', 'pins' ],
 	};
 
 	/**
@@ -194,8 +194,10 @@ class Navigation {
 	 */
 	renderSnapshotLinks() {
 		const options = {
-			canShortcut: true,
-			shortcutGroup: 'snapshot',
+			canSystem: true,
+			systemType: 'pin',
+			systemGroup: 'snapshot',
+			canPin: false,
 			canMenu: false,
 		};
 
@@ -227,9 +229,10 @@ class Navigation {
 	 */
 	renderNavigationLinks() {
 		const options = {
-			canShortcut: true,
-			shortcutType: 'navigation',
-			shortcutGroup: 'navigation',
+			canSystem: true,
+			systemType: 'navigation',
+			systemGroup: 'navigation',
+			canPin: false,
 			canMenu: false,
 		};
 
@@ -254,7 +257,7 @@ class Navigation {
 	 * Render a context buttons group.
 	 * @private
 	 */
-	renderShortcutsLinks() {
+	renderActionLinks() {
 		// Render button link groups
 		this.renderMenuLinks();
 		this.renderMenuFooterLinks();
@@ -269,8 +272,8 @@ class Navigation {
 	 */
 	renderMenuLinks() {
 		const options = {
-			canShortcut: true,
-			shortcutGroup: 'shortcuts',
+			canPin: true,
+			pinGroup: 'pins',
 			canMenu: true,
 			menuGroup: 'menu',
 		};
@@ -279,7 +282,7 @@ class Navigation {
 		this.renderCopyLink( options );
 
 		// Copy a wikilink to the clipboard action
-		this.renderCopyWikiLink( options );
+		this.renderCopyWikilink( options );
 
 		// Link to the revision or to the edit
 		this.renderTypeLink( options );
@@ -321,7 +324,7 @@ class Navigation {
 	 */
 	renderMenuFooterLinks() {
 		const options = {
-			canShortcut: false,
+			canPin: false,
 			canMenu: true,
 			menuGroup: 'footer',
 		};
@@ -348,8 +351,8 @@ class Navigation {
 
 		this.menu.registerButton( {
 			name: 'actions',
-			group: 'shortcuts',
-			type: 'shortcut',
+			group: 'pins',
+			type: 'pin',
 			widget,
 		} );
 	}
@@ -590,9 +593,9 @@ class Navigation {
 	 * @private
 	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
-	renderCopyWikiLink( options ) {
+	renderCopyWikilink( options ) {
 		this.menu.renderButton( {
-			name: 'copyWikiLink',
+			name: 'copyWikilink',
 			label: utils.msg( 'copy-wikilink' ),
 			icon: 'wikiText',
 			handler: this.actionCopyWikilink.bind( this ),
@@ -1012,6 +1015,7 @@ class Navigation {
 
 	/**
 	 * Set to the register currently executed switch action, like navigation, etc.
+	 * @param {string} name - Action name
 	 */
 	setActionRegister( name ) {
 		this.actionRegister = name;
@@ -1019,9 +1023,19 @@ class Navigation {
 
 	/**
 	 * Get from the register previously executed switch action, like navigation, etc.
+	 * @returns {string} Action name
 	 */
 	getActionRegister() {
 		return this.actionRegister;
+	}
+
+	/**
+	 * Get actions that can be pinned.
+	 * @returns {Array} Pinnable action buttons
+	 */
+	getPinnableActions() {
+		return this.menu.getButtons()
+			.filter( entry => entry.canPin );
 	}
 
 	/******* CUSTOM ACTIONS *******/
@@ -1035,8 +1049,9 @@ class Navigation {
 		// Note that the custom action-specific options must override some user options.
 		options = {
 			...options,
-			canShortcut: true,
-			shortcutGroup: 'shortcuts-custom',
+			canSystem: false,
+			canPin: true,
+			pinGroup: 'pins-custom',
 			canMenu: true,
 			menuGroup: 'menu-custom',
 		};
@@ -1058,7 +1073,7 @@ class Navigation {
 		if ( utils.isEmpty( name ) ) return;
 		name = `custom-${ name }`;
 
-		return this.menu.getButton( name, [ 'shortcuts-custom', 'menu-custom' ] );
+		return this.menu.getButton( name, [ 'pins-custom', 'menu-custom' ] );
 	}
 
 	/**

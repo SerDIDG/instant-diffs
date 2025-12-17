@@ -8,7 +8,7 @@ const { h } = utils;
 export const schema = {
 	general: {
 		config: {
-			label: 'settings-fieldset-general',
+			labelMsg: 'settings-fieldset-general',
 		},
 		fields: {
 			enableMobile: {
@@ -16,8 +16,8 @@ export const schema = {
 				enabled: true,
 				default: true,
 				config: {
-					label: 'settings-enable-mobile',
-					help: 'settings-enable-mobile-help',
+					labelMsg: 'settings-enable-mobile',
+					helpMsg: 'settings-enable-mobile-help',
 				},
 			},
 			notifyErrors: {
@@ -25,7 +25,7 @@ export const schema = {
 				enabled: true,
 				default: true,
 				config: {
-					label: 'settings-notify-errors',
+					labelMsg: 'settings-notify-errors',
 				},
 			},
 		},
@@ -33,7 +33,7 @@ export const schema = {
 
 	links: {
 		config: {
-			label: 'settings-fieldset-links',
+			labelMsg: 'settings-fieldset-links',
 		},
 		fields: {
 			showLink: {
@@ -41,8 +41,8 @@ export const schema = {
 				enabled: true,
 				default: false,
 				config: {
-					label: 'settings-show-link',
-					help: 'settings-show-link-help',
+					labelMsg: 'settings-show-link',
+					helpMsg: 'settings-show-link-help',
 				},
 			},
 			showPageLink: {
@@ -50,8 +50,8 @@ export const schema = {
 				enabled: true,
 				default: true,
 				config: {
-					label: 'settings-show-page-link',
-					help: 'settings-show-page-link-help',
+					labelMsg: 'settings-show-page-link',
+					helpMsg: 'settings-show-page-link-help',
 				},
 			},
 			highlightLine: {
@@ -59,7 +59,7 @@ export const schema = {
 				enabled: true,
 				default: true,
 				config: {
-					label: 'settings-highlight-line',
+					labelMsg: 'settings-highlight-line',
 				},
 			},
 			markWatchedLine: {
@@ -67,7 +67,7 @@ export const schema = {
 				enabled: true,
 				default: true,
 				config: {
-					label: 'settings-mark-watched-line',
+					labelMsg: 'settings-mark-watched-line',
 				},
 			},
 		},
@@ -75,7 +75,7 @@ export const schema = {
 
 	dialog: {
 		config: {
-			label: 'settings-fieldset-dialog',
+			labelMsg: 'settings-fieldset-dialog',
 		},
 		fields: {
 			viewWidth: {
@@ -83,26 +83,26 @@ export const schema = {
 				enabled: true,
 				default: 'standard',
 				config: {
-					label: 'settings-view-width',
-					help: 'settings-view-width-help',
+					labelMsg: 'settings-view-width',
+					helpMsg: 'settings-view-width-help',
 				},
 				optionsType: 'buttonOption',
 				options: {
 					compact: {
-						label: 'settings-view-width-compact',
-						title: [ 'settings-view-width-option-title', view.constructor.getSize( 'compact' ).width ],
+						labelMsg: 'settings-view-width-compact',
+						titleMsg: [ 'settings-view-width-option-title', view.constructor.getSize( 'compact' ).width ],
 					},
 					standard: {
-						label: 'settings-view-width-standard',
-						title: [ 'settings-view-width-option-title', view.constructor.getSize( 'standard' ).width ],
+						labelMsg: 'settings-view-width-standard',
+						titleMsg: [ 'settings-view-width-option-title', view.constructor.getSize( 'standard' ).width ],
 					},
 					wide: {
-						label: 'settings-view-width-wide',
-						title: [ 'settings-view-width-option-title', view.constructor.getSize( 'wide' ).width ],
+						labelMsg: 'settings-view-width-wide',
+						titleMsg: [ 'settings-view-width-option-title', view.constructor.getSize( 'wide' ).width ],
 					},
 					full: {
-						label: 'settings-view-width-full',
-						title: 'settings-view-width-full-title',
+						labelMsg: 'settings-view-width-full',
+						titleMsg: 'settings-view-width-full-title',
 					},
 				},
 			},
@@ -111,7 +111,7 @@ export const schema = {
 				enabled: true,
 				default: true,
 				config: {
-					label: 'settings-close-outside',
+					labelMsg: 'settings-close-outside',
 				},
 			},
 			enableHotkeys: {
@@ -119,7 +119,7 @@ export const schema = {
 				enabled: true,
 				default: true,
 				config: {
-					label: 'settings-enable-hotkeys',
+					labelMsg: 'settings-enable-hotkeys',
 				},
 			},
 			showDiffTools: {
@@ -127,7 +127,7 @@ export const schema = {
 				enabled: true,
 				default: true,
 				config: {
-					label: 'settings-show-diff-tools',
+					labelMsg: 'settings-show-diff-tools',
 				},
 			},
 			showRevisionInfo: {
@@ -135,7 +135,7 @@ export const schema = {
 				enabled: true,
 				default: true,
 				config: {
-					label: 'settings-show-revision-info',
+					labelMsg: 'settings-show-revision-info',
 				},
 			},
 			unHideDiffs: {
@@ -143,7 +143,7 @@ export const schema = {
 				enabled: true,
 				default: true,
 				config: {
-					label: 'settings-unhide-diffs',
+					labelMsg: 'settings-unhide-diffs',
 					help: [ 'settings-unhide-diffs-help', 'suppressrevision' ],
 				},
 			},
@@ -152,7 +152,7 @@ export const schema = {
 				enabled: true,
 				default: true,
 				config: {
-					label: 'settings-open-in-new-tab',
+					labelMsg: 'settings-open-in-new-tab',
 				},
 			},
 		},
@@ -160,7 +160,7 @@ export const schema = {
 
 	menu: {
 		config: {
-			label: 'settings-fieldset-menu',
+			labelMsg: 'settings-fieldset-menu',
 		},
 		fields: {
 			showMenuIcons: {
@@ -168,7 +168,7 @@ export const schema = {
 				enabled: true,
 				default: true,
 				config: {
-					label: 'settings-show-menu-icons',
+					labelMsg: 'settings-show-menu-icons',
 				},
 			},
 			linksFormat: {
@@ -176,16 +176,16 @@ export const schema = {
 				enabled: true,
 				default: 'full',
 				config: {
-					label: 'settings-links-format',
-					help: 'placeholder',
+					labelMsg: 'settings-links-format',
+					helpMsg: 'placeholder',
 				},
 				optionsType: 'radioOption',
 				options: {
 					full: {
-						label: 'settings-links-format-full',
+						labelMsg: 'settings-links-format-full',
 					},
 					minify: {
-						label: 'settings-links-format-minify',
+						labelMsg: 'settings-links-format-minify',
 					},
 				},
 				onSelect: onLinksFormatSelect,
@@ -195,28 +195,38 @@ export const schema = {
 				enabled: true,
 				default: 'special',
 				config: {
-					label: 'settings-wikilinks-format',
-					help: 'placeholder',
+					labelMsg: 'settings-wikilinks-format',
+					helpMsg: 'placeholder',
 				},
 				optionsType: 'radioOption',
 				options: {
 					link: {
-						label: 'settings-wikilinks-format-link',
+						labelMsg: 'settings-wikilinks-format-link',
 					},
 					special: {
-						label: 'settings-wikilinks-format-special',
+						labelMsg: 'settings-wikilinks-format-special',
 					},
 				},
 				onSelect: onWikilinksFormatSelect,
 			},
+		},
+	},
+
+	pinnedActions: {
+		config: {
+			labelMsg: 'settings-fieldset-pinned-actions',
+		},
+		fields: {
 			pinnedActions: {
-				type: 'checkboxMultiSelect',
+				type: 'checkboxMultiselect',
 				enabled: true,
-				default: ['copyLink', 'copyWikilink'],
+				default: [ 'copyLink', 'copyWikilink' ],
 				config: {
-					label: 'settings-pinned-actions',
-					help: 'settings-pinned-actions-help',
+					labelMsg: 'settings-pinned-actions',
+					helpMsg: 'settings-pinned-actions-help',
 				},
+				optionsType: 'checkboxMultioption',
+				options: getNavigationPinOptions,
 			},
 		},
 	},
@@ -261,4 +271,22 @@ function getLinksFormatExample( options ) {
 		h( 'li', h( 'i', revision ) ),
 		h( 'li', h( 'i', page ) ),
 	);
+}
+
+/**
+ * Get navigation pinnable actions as options object.
+ * @returns {Record<string, {label: string}>} Map of action names to their options
+ * @example
+ * // Returns: { prev: { labelMsg: 'Previous' }, next: { labelMsg: 'Next' } }
+ */
+function getNavigationPinOptions() {
+	const actions = view.getPage()?.getNavigation()?.getPinnableActions();
+	if ( !actions ) return {};
+
+	const entries = actions.map( action => [
+		action.name,
+		{ label: action.label },
+	] );
+
+	return Object.fromEntries( entries );
 }
