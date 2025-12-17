@@ -209,6 +209,15 @@ export const schema = {
 				},
 				onSelect: onWikilinksFormatSelect,
 			},
+			pinnedActions: {
+				type: 'checkboxMultiSelect',
+				enabled: true,
+				default: ['copyLink', 'copyWikilink'],
+				config: {
+					label: 'settings-pinned-actions',
+					help: 'settings-pinned-actions-help',
+				},
+			},
 		},
 	},
 };
