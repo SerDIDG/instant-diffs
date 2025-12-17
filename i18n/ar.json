@@ -3,6 +3,7 @@
 		"authors": [
 			"Mdktb",
 			"Meno25",
+			"Mohammed Qays",
 			"Serhio Magpie"
 		]
 	},
@@ -67,10 +68,10 @@
 	"copy-wikilink-example-title": "الصفحة الرئيسية",
 	"dialog-title-empty": "[لا يوجد عنوان]",
 	"dialog-title-not-found": "[لم يتم العثور عليه]",
-	"dialog-notice-wikilambda": "يعرض تطبيق WikiLambda حاليًا أحدث إصدار فقط. راجع [[phab:T397902|تذكرة]] على Phabricator.",
+	"dialog-notice-wikilambda": "يعرض تطبيق ويكي دوال حاليًا أحدث إصدار فقط. راجع [[phab:T397902|تذكرة]] على فبريكاتور.",
 	"dialog-notice-foreign-diff": "أنت تشاهد فرقًا أجنبيًا من [ $1 $2 ]. يمكن تقييد بعض الميزات.",
 	"dialog-notice-foreign-revision": "أنت تشاهد نسخة أجنبية من [ $1 $2 ]. قد تكون بعض الميزات محدودة.",
-	"dialog-notice-foreign-wikilambda": "لا يتم دعم تطبيق WikiLambda حاليًا في الإصدارات الأجنبية.",
+	"dialog-notice-foreign-wikilambda": "لا يتم دعم تطبيق ويكي دوال حاليًا في الإصدارات الأجنبية.",
 	"settings-title": "إعدادات الاختلافات الفورية",
 	"settings-saved": "تم حفظ الإعدادات بنجاح.! أعد تحميل الصفحة لتطبيقها.",
 	"settings-saved-icon": "أيقونة علامة الاختيار",
