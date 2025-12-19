@@ -83,7 +83,7 @@ class Deploy {
 			languages.forEach( file => {
 				this.deployTargets.push( {
 					file: `${ dir }/${ file }`,
-					target: `${ project.i18n }${ file }`,
+					target: `${ project.i18nProcessed }${ file }`,
 				} );
 			} );
 		}

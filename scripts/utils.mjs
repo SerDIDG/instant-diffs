@@ -27,8 +27,8 @@ export function getProject( name ) {
 	project.homepage = pkg.homepage;
 
 	project.postfix = args.dev ? '.test' : '';
-	project.target = project.target.replace( '$name', project.name ) + project.postfix;
-	project.i18n = project.i18n.replace( '$name', project.name );
+	project.targetProcessed = project.target.replace( '$name', project.name ) + project.postfix;
+	project.i18nProcessed = project.i18n.replace( '$name', project.name );
 	project.i18nDeploy = !args.dev && ( project.i18nDeploy ?? true );
 
 	project.credentials ||= {};
