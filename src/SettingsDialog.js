@@ -1,7 +1,7 @@
 import id from './id';
 import * as utils from './utils';
 import { tweakUserOoUiClass } from './utils-oojs';
-import { renderSuccessBox } from './utils-settings';
+import { renderNoticeBox } from './utils-settings';
 import { schema } from './schema-settings';
 
 import settings from './settings';
@@ -27,7 +27,13 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 			flags: [ 'primary', 'progressive' ],
 		},
 		{
-			modes: [ 'edit', 'finish' ],
+			action: 'close',
+			modes: 'empty',
+			label: utils.msg( 'action-close' ),
+			flags: [ 'primary', 'progressive' ],
+		},
+		{
+			modes: [ 'edit', 'finish', 'empty' ],
 			label: utils.msg( 'action-close' ),
 			title: utils.msg( 'action-close' ),
 			invisibleLabel: true,
@@ -37,12 +43,22 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	];
 
 	/**
-	 * @type {Object}
+	 * @type {Record<string, OO.ui.PanelLayout>}
+	 */
+	panels = {};
+
+	/**
+	 * @type {Record}
 	 */
 	tabs = {};
 
 	/**
-	 * @type {Object}
+	 * @type {OO.ui.TabPanelLayout[]}
+	 */
+	visibleTabWidgets = [];
+
+	/**
+	 * @type {Record}
 	 */
 	fields = {};
 
@@ -59,19 +75,18 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		super.initialize( ...args );
 
 		// Render panels
-		this.panelEdit = this.renderEditPanel();
-		this.panelFinish = this.renderFinishPanel();
+		this.panels.edit = this.renderEditPanel();
+		this.panels.finish = this.renderFinishPanel();
+		this.panels.empty = this.renderEmptyPanel();
 
 		// Render switchable layout
 		this.stackLayout = new OO.ui.StackLayout( {
 			items: [
-				this.panelEdit,
-				this.panelFinish,
+				this.panels.edit,
+				this.panels.finish,
+				this.panels.empty,
 			],
 		} );
-
-		// Process links target
-		this.processLinksAttr( this.stackLayout.$element );
 
 		// Append stackLayout to the dialog
 		this.$body.append( this.stackLayout.$element );
@@ -84,29 +99,10 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	 * @returns {OO.ui.PanelLayout}
 	 */
 	renderEditPanel() {
-		// Render settings schema
-		for ( const [ name, item ] of Object.entries( schema ) ) {
-			this.tabs[ name ] = this.renderTab( name, item );
-		}
-
-		// Get only visible tabs
-		const tabs = Object.values( this.tabs )
-			.map( entry => entry.tab )
-			.filter( entry => entry.isVisible() );
-
-		// Render tabs index layout
-		const layout = new OO.ui.IndexLayout( {
-			expanded: true,
-			framed: false,
-		} );
-		layout.addTabPanels( tabs, 0 );
-
-		// Combine fieldsets into the panel
 		return new OO.ui.PanelLayout( {
 			classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--edit' ],
 			padded: false,
 			expanded: true,
-			content: [ layout ],
 		} );
 	}
 
@@ -115,28 +111,146 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	 * @returns {OO.ui.PanelLayout}
 	 */
 	renderFinishPanel() {
-		/**
+		return new OO.ui.PanelLayout( {
+			classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--finish' ],
+			padded: true,
+			expanded: true,
+		} );
+	}
+
+	/**
+	 * Render the empty panel when no edit tabs are available.
+	 * @returns {OO.ui.PanelLayout}
+	 */
+	renderEmptyPanel() {
+		return new OO.ui.PanelLayout( {
+			classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--empty' ],
+			padded: true,
+			expanded: true,
+		} );
+	}
+
+	/**
+	 * Set active panel.
+	 * @param {string} name - Panel name
+	 */
+	setPanel( name ) {
+		if ( !this.panels[ name ] ) return;
+
+		this.actions.setMode( name );
+		this.stackLayout.setItem( this.panels[ name ] );
+	}
+
+	/******* CONTENTS ******/
+
+	renderContents() {
+		// Render contents
+		this.renderEditContent();
+		this.renderFinishContent();
+		this.renderEmptyContent();
+
+		// Process links target
+		this.processLinksAttr( this.stackLayout.$element );
+	}
+
+	renderEditContent() {
+		// Render settings schema
+		for ( const [ name, item ] of Object.entries( schema ) ) {
+			this.tabs[ name ] = this.renderTab( name, item );
+		}
+
+		// Get only visible tabs
+		this.visibleTabWidgets = Object.values( this.tabs )
+			.map( entry => entry.tab )
+			.filter( entry => entry.isVisible() );
+
+		// Render tabs index layout
+		const layout = new OO.ui.IndexLayout( {
+			expanded: true,
+			framed: false,
+		} );
+		layout.addTabPanels( this.visibleTabWidgets, 0 );
+
+		// Append layout to the edit panel
+		this.panels.edit.$element
+			.empty()
+			.append( layout.$element );
+	}
+
+	renderFinishContent() {
+		/*!
 		 * Icon "Eo circle light-green checkmark.svg"
 		 * @author IagoQnsi
-		 * @see {@link https://commons.wikimedia.org/wiki/User:IagoQnsi}
 		 * @see {@link https://commons.wikimedia.org/wiki/File:Eo_circle_light-green_checkmark.svg}
-		 * @type {string}
 		 */
+
 		const image = '/6/6f/Eo_circle_light-green_checkmark.svg';
 
-		const content = renderSuccessBox( {
+		const content = renderNoticeBox( {
 			image,
 			content: utils.msg( 'settings-saved' ),
 			alt: utils.msg( 'settings-saved-icon' ),
 		} );
 
-		// Combine fieldsets into the panel
-		return new OO.ui.PanelLayout( {
-			classes: [ 'instantDiffs-settings-panel', 'instantDiffs-settings-panel--finish' ],
-			padded: true,
-			expanded: true,
-			$content: content,
+		// Append content to the finish panel
+		this.panels.finish.$element
+			.empty()
+			.append( content );
+	}
+
+	renderEmptyContent() {
+		/*!
+		 * Icon "Cappuccino.svg"
+		 * @author OpenClipArt
+		 * @see {@link https://commons.wikimedia.org/wiki/File:Cappuccino.svg}
+		 */
+
+		/*!
+		 * Icon "Coffe.svg"
+		 * @author OpenClipArt
+		 * @see {@link https://commons.wikimedia.org/wiki/File:Coffe.svg}
+		 */
+
+		/*!
+		 * Icon "Coffee cup icon.svg"
+		 * @author OpenClipArt
+		 * @see {@link https://commons.wikimedia.org/wiki/File:Coffee_cup_icon.svg}
+		 */
+
+		/*!
+		 * Icon "Applications-ristretto.svg"
+		 * @author Sebastian Kraft
+		 * @see {@link https://commons.wikimedia.org/wiki/File:Applications-ristretto.svg}
+		 */
+
+		/*!
+		 * Icon "Cup-o-coffee-simple.svg"
+		 * @author Peewack
+		 * @author Julius Schorzman (Quasipalm)
+		 * @see {@link https://commons.wikimedia.org/wiki/File:Cup-o-coffee-simple.svg}
+		 */
+
+		const images = [
+			'/2/2f/Cappuccino.svg',
+			'/c/ca/Coffe.svg',
+			'/9/9a/Coffee_cup_icon.svg',
+			'/1/1a/Applications-ristretto.svg',
+			'/f/f7/Cup-o-coffee-simple.svg',
+		];
+		const index = Math.floor( Math.random() * images.length );
+		const image = images[ index ] || images[ 0 ];
+
+		const content = renderNoticeBox( {
+			image,
+			content: utils.msg( 'settings-empty' ),
+			alt: utils.msg( 'settings-empty-icon' ),
+			modifiers: [ 'empty' ],
 		} );
+
+		// Append content to the empty panel
+		this.panels.empty.$element
+			.empty()
+			.append( content );
 	}
 
 	/******* CONSTRUCTOR *******/
@@ -256,6 +370,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 			type: type,
 			data: name,
 			option: null,
+			show: true,
 		}, item );
 
 		// Validate
@@ -274,6 +389,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 				item.option = new OO.ui.CheckboxMultioptionWidget( item );
 				break;
 		}
+
+		// Toggle visibility
+		item.option.toggle( item.show );
 
 		return item;
 	}
@@ -375,8 +493,6 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
 	getSetupProcess( data ) {
 		return super.getSetupProcess( data ).next( () => {
-			this.actions.setMode( 'edit' );
-			this.stackLayout.setItem( this.panelEdit );
 			this.$body.scrollTop( 0 );
 			this.processActionRequest();
 		} );
@@ -388,6 +504,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		}
 		if ( action === 'reload' ) {
 			return new OO.ui.Process( () => this.processActionReload() );
+		}
+		if ( action === 'close' ) {
+			return new OO.ui.Process( () => this.close() );
 		}
 		return super.getActionProcess( action );
 	}
@@ -408,6 +527,12 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	processActionRequest() {
 		// Show the pending loader in the header
 		this.pushPending();
+
+		// Render panels contents
+		this.renderContents();
+
+		// Set an action panel
+		this.setPanel( this.visibleTabWidgets.length > 0 ? 'edit' : 'empty' );
 
 		// Update input values
 		for ( const [ name ] of Object.entries( this.fields ) ) {
@@ -475,8 +600,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
 	getUpdateProcess() {
 		return new OO.ui.Process( () => {
-			this.actions.setMode( 'edit' );
-			this.stackLayout.setItem( this.panelEdit );
+			this.setPanel( this.visibleTabWidgets.length > 0 ? 'edit' : 'empty' );
 			this.processActionUpdate( settings.get() );
 		} );
 	}
@@ -535,8 +659,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	 * @private
 	 */
 	onActionSaveSuccess = () => {
-		this.actions.setMode( 'finish' );
-		this.stackLayout.setItem( this.panelFinish );
+		this.setPanel( 'finish' );
 	};
 
 	/******* RELOAD PROCESS *******/

@@ -81,6 +81,8 @@
     "settings-title": "Instant Diffs Settings",
     "settings-saved": "The settings have been saved successfully.\nReload the page to apply them.",
     "settings-saved-icon": "Checkmark icon",
+    "settings-empty": "Oops, looks like the admin disabled all settings.\nTime to relax and grab some coffee!",
+    "settings-empty-icon": "Coffee cup icon",
     "settings-fieldset-links": "Links",
     "settings-show-link": "Show action link",
     "settings-show-link-help": "Displays an action button (❖) after the link to open the Instant Diffs dialog. Otherwise, the click action is added directly to the link. You can still open the link in the current tab by pressing Alt+Click.",
@@ -118,7 +120,7 @@
     "settings-notify-errors": "Show popup alerts for critical errors.",
     "settings-fieldset-pinned-actions": "Pinned Actions",
     "settings-pinned-actions": "Pin selected actions in the quick access menu:",
-    "settings-pinned-actions-help": "Pinned actions will only appear in desktop view.",
+    "settings-pinned-actions-help": "This list shows only actions available for the current view. Pinned actions appear only in desktop view.",
 
     "error-generic": "Something went wrong: $4",
     "error-server": "Server error, please try again later",

@@ -60,21 +60,28 @@ export function getQueryDefaults() {
 
 /**
  * Renders a success message box.
- * @param {Object} [params] configuration params
- * @param {Element|*} [params.content] message content
- * @param {string} [params.image] image file path
- * @param {string} [params.alt] image alternative text
+ * @param {Object} [params] - Configuration params
+ * @param {Array} [params.modifiers] - CSS class modifiers
+ * @param {Element|*} [params.content] - Message content
+ * @param {string} [params.image] - Image file path
+ * @param {string} [params.alt] - Image alternative text
  * @returns {Element}
  */
-export function renderSuccessBox( params ) {
+export function renderNoticeBox( params ) {
 	params = {
+		modifiers: [],
 		content: null,
 		image: null,
 		alt: null,
 		...params,
 	};
 
-	return h( 'div.instantDiffs-success-box',
+	const classes = [ 'instantDiffs-notice-box' ];
+	params.modifiers.forEach( modifier => classes.push( `instantDiffs-notice-box--${ modifier }` ) );
+
+	return h( 'div', {
+			class: classes,
+		},
 		h( 'img', {
 			src: `${ id.config.commonsAssetsPath }${ params.image }`,
 			alt: params.alt,

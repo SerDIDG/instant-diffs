@@ -2,6 +2,7 @@ import * as utils from './utils';
 import { getHref } from './utils-article';
 
 import view from './view';
+import settings from './settings';
 
 const { h } = utils;
 
@@ -275,18 +276,40 @@ function getLinksFormatExample( options ) {
 
 /**
  * Get navigation pinnable actions as options object.
- * @returns {Record<string, {label: string}>} Map of action names to their options
+ * Includes both currently available actions and previously pinned actions.
+ * @returns {Record<string, Record>} Map of action names to their options
  * @example
- * // Returns: { prev: { labelMsg: 'Previous' }, next: { labelMsg: 'Next' } }
+ * // Returns: { prev: { label: 'Previous' }, next: { label: 'Next' } }
  */
 function getNavigationPinOptions() {
 	const actions = view.getPage()?.getNavigation()?.getPinnableActions();
 	if ( !actions ) return {};
 
-	const entries = actions.map( action => [
-		action.name,
-		{ label: action.label },
-	] );
+	// Build entries from available actions
+	const addedActionNames = new Set();
+	const entries = actions.map( action => {
+		addedActionNames.add( action.name );
+		return [
+			action.name,
+			{
+				label: action.label,
+			},
+		];
+	} );
+
+	// Add previously pinned actions that are not currently available
+	const pinnedActions = settings.get( 'pinnedActions' ) || [];
+	pinnedActions.forEach( name => {
+		if ( addedActionNames.has( name ) ) return;
+
+		entries.push( [
+			name,
+			{
+				label: name,
+				show: false,  // Mark as hidden since not currently available
+			},
+		] );
+	} );
 
 	return Object.fromEntries( entries );
 }

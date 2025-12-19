@@ -195,6 +195,28 @@ export function isMF() {
 }
 
 /**
+ * Checks if a given breakpoint matched in the window.matchMedia.
+ * @param {string} breakpoint
+ * @returns {boolean}
+ */
+export function isBreakpoint( breakpoint ) {
+	breakpoint = id.config.breakpoints[ breakpoint ];
+	return breakpoint ? window.matchMedia( breakpoint ) : false;
+}
+
+/**
+ * Delays callback execution by two animation frames to ensure DOM updates are complete.
+ * @param {Function} callback
+ * @description Uses double requestAnimationFrame to guarantee the callback runs after
+ * both layout and paint phases are complete, useful for DOM measurements after changes.
+ */
+export function onSchedule( callback ) {
+	requestAnimationFrame( () => {
+		requestAnimationFrame( callback );
+	} );
+}
+
+/**
  * Calls a console object method with a script's prefix attached before the message.
  * @param {string} type
  * @param {string} message
@@ -223,28 +245,6 @@ export function logTimer( name, start, end ) {
 		diff = `${ ( diff / 1000 ).toFixed( 2 ) }s`;
 	}
 	log( 'info', `${ name }: ${ diff }` );
-}
-
-/**
- * Checks if a given breakpoint matched in the window.matchMedia.
- * @param {string} breakpoint
- * @returns {boolean}
- */
-export function isBreakpoint( breakpoint ) {
-	breakpoint = id.config.breakpoints[ breakpoint ];
-	return breakpoint ? window.matchMedia( breakpoint ) : false;
-}
-
-/**
- * Delays callback execution by two animation frames to ensure DOM updates are complete.
- * @param {Function} callback
- * @description Uses double requestAnimationFrame to guarantee the callback runs after
- * both layout and paint phases are complete, useful for DOM measurements after changes.
- */
-export function onSchedule( callback ) {
-	requestAnimationFrame( () => {
-		requestAnimationFrame( callback );
-	} );
 }
 
 /**
