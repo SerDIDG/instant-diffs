@@ -9,7 +9,7 @@ const path = require( 'path' );
 const chalk = require( 'chalk' );
 const createDOMPurify = require( 'dompurify' );
 const { JSDOM } = require( 'jsdom' );
-const { replaceEntitiesInI18n, unhideText, hideText } = require( './utils' );
+const { replaceEntitiesInI18n, unhideText, hideText, getProject } = require( './utils.mjs' );
 
 const window = new JSDOM( '' ).window;
 const DOMPurify = createDOMPurify( window );
@@ -39,8 +39,7 @@ const ALLOWED_TAGS = [
 ];
 
 // Project config
-const env = require( '../env.json' );
-const project = env[ process.env.PROJECT ];
+const project = getProject( process.env.PROJECT );
 if ( !project ) {
 	warning( 'Please provide a valid PROJECT environment variable.' );
 	process.exit( 1 );

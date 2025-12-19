@@ -227,12 +227,16 @@ export const schema = {
 					helpMsg: 'settings-pinned-actions-help',
 				},
 				optionsType: 'checkboxMultioption',
-				options: getNavigationPinOptions,
+				options: getPinnedActionsOptions,
 			},
 		},
 	},
 };
 
+/**
+ * Event that emits after a link format setting was changed.
+ * @private
+ */
 function onLinksFormatSelect() {
 	const linkFormat = this.getFieldValue( 'linksFormat' );
 
@@ -247,6 +251,10 @@ function onLinksFormatSelect() {
 	onWikilinksFormatSelect.call( this, this.getField( 'wikilinksFormat' ) );
 }
 
+/**
+ * Event that emits after a wikilink format setting was changed.
+ * @private
+ */
 function onWikilinksFormatSelect() {
 	const linkFormat = this.getFieldValue( 'linksFormat' );
 	const wikilinkFormat = this.getFieldValue( 'wikilinksFormat' );
@@ -281,7 +289,7 @@ function getLinksFormatExample( options ) {
  * @example
  * // Returns: { prev: { label: 'Previous' }, next: { label: 'Next' } }
  */
-function getNavigationPinOptions() {
+function getPinnedActionsOptions() {
 	const actions = view.getPage()?.getNavigation()?.getPinnableActions();
 	if ( !actions ) return {};
 
@@ -289,6 +297,7 @@ function getNavigationPinOptions() {
 	const addedActionNames = new Set();
 	const entries = actions.map( action => {
 		addedActionNames.add( action.name );
+
 		return [
 			action.name,
 			{

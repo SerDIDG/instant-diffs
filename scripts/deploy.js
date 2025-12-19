@@ -10,19 +10,19 @@ const { execSync } = require( 'child_process' );
 const prompts = require( 'prompts' );
 const chalk = require( 'chalk' );
 const minimist = require( 'minimist' );
-const { isEmpty } = require( './utils' );
+const { isEmpty, getProject } = require( './utils.mjs' );
 
 const args = minimist( process.argv.slice( 2 ) );
-
-// Package config
-const pkg = require( '../package.json' );
-const version = args.dev ? pkg.version : pkg.version.split( '+' ).shift();
+const warning = ( text ) => console.log( chalk.yellowBright( text ) );
 
 // Project config
-const env = require( '../env.json' );
-const project = env[ process.env.PROJECT ];
-project.i18n = project.i18n.replace( '$name', project.name );
+const project = getProject( process.env.PROJECT );
+if ( !project ) {
+	warning( 'Please provide a valid PROJECT environment variable.' );
+	process.exit( 1 );
+}
 
+// Deploy config
 const deployConfig = {
 	build: [
 		`${ project.name }.css`,
@@ -77,7 +77,7 @@ class Deploy {
 		} );
 
 		// Push i18n files to the deployment targets
-		if ( !args.dev ) {
+		if ( project.i18nDeploy ) {
 			const dir = `${ project.dir }/${ project.name }-i18n`;
 			const languages = await this.readDir( dir );
 			languages.forEach( file => {
@@ -128,7 +128,7 @@ class Deploy {
 	// ToDo: read last saved commit hash and use that to construct a meaningful summary
 	async makeEditSummary() {
 		const sha = execSync( 'git rev-parse --short HEAD' ).toString( 'utf8' ).trim();
-		this.editSummary = `[${ sha }] [v${ version }]: Updated from repository.`;
+		this.editSummary = `[${ sha }] [v${ project.version }]: Updated from repository.`;
 	}
 
 	async readFile( filepath ) {

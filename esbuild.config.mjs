@@ -1,38 +1,26 @@
-import fs from 'fs/promises';
 import minimist from 'minimist';
 import chalk from 'chalk';
 import * as esbuild from 'esbuild';
 import { replace } from 'esbuild-plugin-replace';
 import { lessLoader } from 'esbuild-plugin-less';
+import { getProject } from './scripts/utils.mjs';
 
 const args = minimist( process.argv.slice( 2 ) );
 const warning = ( text ) => console.log( chalk.yellowBright( text ) );
 
-// Package config
-const pkg = JSON.parse(
-	await fs.readFile( new URL( './package.json', import.meta.url ) ),
-);
-const version = args.dev ? pkg.version : pkg.version.split( '+' ).shift();
-const postfix = args.dev ? '.test' : '';
-
 // Project config
-const env = JSON.parse(
-	await fs.readFile( new URL( './env.json', import.meta.url ) ),
-);
-const project = env[ process.env.PROJECT ];
+const project = getProject( process.env.PROJECT );
 if ( !project ) {
 	warning( 'Please provide a valid PROJECT environment variable.' );
 	process.exit( 1 );
 }
-project.target = project.target.replace( '$name', project.name ) + postfix;
-project.i18n = project.i18n.replace( '$name', project.name );
 
 // String to replace in the files
 const strings = {
 	include: /\.js$/,
 	__outname__: project.name,
 	__outdir__: project.dir,
-	__version__: version,
+	__version__: project.version,
 	__origin__: 'https://www.mediawiki.org',
 	__server__: project.server,
 	__styles__: `${ project.scriptPath }/index.php?title=${ project.target }.css&action=raw&ctype=text/css`,
@@ -49,10 +37,10 @@ if ( args.start ) {
 const banner = `/**
  * Instant Diffs
  *
- * Version: ${ version }
- * Author: ${ pkg.author.name }
- * Licenses: ${ pkg.license }
- * Documentation: ${ pkg.homepage }
+ * Version: ${ project.version }
+ * Author: ${ project.author }
+ * Licenses: ${ project.license }
+ * Documentation: ${ project.homepage }
  *
  * For license information please see: https://www.mediawiki.org/wiki/User:Serhio_Magpie/instantDiffs.js.LEGAL.txt
  */
@@ -66,7 +54,7 @@ const config = {
 	entryPoints: [ 'src/app.js' ],
 	bundle: true,
 	treeShaking: true,
-	outfile: `${ project.dir }/${ project.name }${ postfix }.js`,
+	outfile: `${ project.dir }/${ project.name }${ project.postfix }.js`,
 	format: 'iife',
 	banner: {
 		js: banner,
@@ -90,6 +78,7 @@ if ( args.build ) {
 			minify: true,
 			sourcemap: false,
 			legalComments: 'external',
+			...project.esbuild,
 		} );
 }
 
@@ -100,6 +89,7 @@ if ( args.start ) {
 			...config,
 			minify: false,
 			sourcemap: true,
+			...project.esbuild,
 		} )
 		.then( async ( ctx ) => {
 			await ctx.watch();

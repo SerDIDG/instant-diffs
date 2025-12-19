@@ -181,7 +181,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		/*!
 		 * Icon "Eo circle light-green checkmark.svg"
 		 * @author IagoQnsi
-		 * @see {@link https://commons.wikimedia.org/wiki/File:Eo_circle_light-green_checkmark.svg}
+		 * @see {@link https://commons.wikimedia.org/wiki/File:Eo_circle_light-green_checkmark.svg }
 		 */
 
 		const image = '/6/6f/Eo_circle_light-green_checkmark.svg';
@@ -202,32 +202,32 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		/*!
 		 * Icon "Cappuccino.svg"
 		 * @author OpenClipArt
-		 * @see {@link https://commons.wikimedia.org/wiki/File:Cappuccino.svg}
+		 * @see {@link https://commons.wikimedia.org/wiki/File:Cappuccino.svg }
 		 */
 
 		/*!
 		 * Icon "Coffe.svg"
 		 * @author OpenClipArt
-		 * @see {@link https://commons.wikimedia.org/wiki/File:Coffe.svg}
+		 * @see {@link https://commons.wikimedia.org/wiki/File:Coffe.svg }
 		 */
 
 		/*!
 		 * Icon "Coffee cup icon.svg"
 		 * @author OpenClipArt
-		 * @see {@link https://commons.wikimedia.org/wiki/File:Coffee_cup_icon.svg}
+		 * @see {@link https://commons.wikimedia.org/wiki/File:Coffee_cup_icon.svg }
 		 */
 
 		/*!
 		 * Icon "Applications-ristretto.svg"
 		 * @author Sebastian Kraft
-		 * @see {@link https://commons.wikimedia.org/wiki/File:Applications-ristretto.svg}
+		 * @see {@link https://commons.wikimedia.org/wiki/File:Applications-ristretto.svg }
 		 */
 
 		/*!
 		 * Icon "Cup-o-coffee-simple.svg"
 		 * @author Peewack
 		 * @author Julius Schorzman (Quasipalm)
-		 * @see {@link https://commons.wikimedia.org/wiki/File:Cup-o-coffee-simple.svg}
+		 * @see {@link https://commons.wikimedia.org/wiki/File:Cup-o-coffee-simple.svg }
 		 */
 
 		const images = [
