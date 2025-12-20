@@ -958,24 +958,32 @@ class Navigation {
 	}
 
 	/**
+	 * Get a specified button name.
+	 * @param {import('./MenuButton').default|string} widgetOrName - Button widget or action name
+	 * @returns {string} - Action name
+	 */
+	getActionName( widgetOrName ) {
+		// Handle MenuButton instance
+		if ( widgetOrName instanceof this.MenuButton ) {
+			return widgetOrName.getOption( 'name' );
+		}
+
+		// Handle string action name
+		if ( utils.isString( widgetOrName ) ) {
+			return widgetOrName;
+		}
+	}
+
+	/**
 	 * Set the pending state of the specified button.
 	 * @param {import('./MenuButton').default|string} widgetOrName - Button widget or action name
 	 * @param {boolean} value - State
 	 */
 	pendingAction( widgetOrName, value ) {
-		let name;
+		const name = this.getActionName( widgetOrName );
+		if ( !name ) return;
 
-		// Handle MenuButton instance
-		if ( widgetOrName instanceof this.MenuButton ) {
-			name = widgetOrName.getOption( 'name' );
-		}
-
-		// Handle string action name
-		if ( utils.isString( widgetOrName ) ) {
-			name = widgetOrName;
-		}
-
-		this.menu.pendingButton( name, null, value );
+		this.menu.pendingButton( this.getActionName( widgetOrName ), null, value );
 	}
 
 	/**
@@ -983,17 +991,8 @@ class Navigation {
 	 * @param {import('./MenuButton').default|string} widgetOrName - Button widget or action name
 	 */
 	execAction( widgetOrName ) {
-		let name;
-
-		// Handle MenuButton instance
-		if ( widgetOrName instanceof this.MenuButton ) {
-			name = widgetOrName.getOption( 'name' );
-		}
-
-		// Handle string action name
-		if ( utils.isString( widgetOrName ) ) {
-			name = widgetOrName;
-		}
+		const name = this.getActionName( widgetOrName );
+		if ( !name ) return;
 
 		// FixMe: find a way to make the popup hide automatically when the button loses focus
 		if ( name !== 'actions' ) {
@@ -1072,23 +1071,32 @@ class Navigation {
 
 	/**
 	 * Get a custom action button.
-	 * @param {string} name - An action button name
+	 * @param {import('./MenuButton').default|string} widgetOrName - Button widget or action name
 	 * @returns {*}
 	 */
-	getCustomAction( name ) {
-		if ( utils.isEmpty( name ) ) return;
-		name = `custom-${ name }`;
+	getCustomAction( widgetOrName ) {
+		let name;
+
+		// Handle MenuButton instance
+		if ( widgetOrName instanceof this.MenuButton ) {
+			name = widgetOrName.getOption( 'name' );
+		}
+
+		// Handle string action name
+		if ( utils.isString( widgetOrName ) ) {
+			name = `custom-${ widgetOrName }`;
+		}
 
 		return this.menu.getButton( name, [ 'pins-custom', 'menu-custom' ] );
 	}
 
 	/**
 	 * Get a custom action button widget.
-	 * @param {string} name - An action button name
+	 * @param {import('./MenuButton').default|string} widgetOrName - Button widget or action name
 	 * @returns {*}
 	 */
-	getCustomActionWidget( name ) {
-		const action = this.getCustomAction( name );
+	getCustomActionWidget( widgetOrName ) {
+		const action = this.getCustomAction( widgetOrName );
 		if ( !action ) return;
 
 		return action.map( entry => entry.widget );
@@ -1096,11 +1104,11 @@ class Navigation {
 
 	/**
 	 * Execute a handler on each custom action button.
-	 * @param {string} name - An action button name
+	 * @param {import('./MenuButton').default|string} widgetOrName - Button widget or action name
 	 * @param {Function} handler - An action handler
 	 */
-	eachCustomAction( name, handler ) {
-		const action = this.getCustomAction( name );
+	eachCustomAction( widgetOrName, handler ) {
+		const action = this.getCustomAction( widgetOrName );
 		if ( !action ) return;
 
 		action.forEach( entry => handler( entry ) );
@@ -1108,11 +1116,11 @@ class Navigation {
 
 	/**
 	 * Execute a handler on each custom action button widget.
-	 * @param {string} name - An action name
+	 * @param {import('./MenuButton').default|string} widgetOrName - Button widget or action name
 	 * @param {Function} handler - An action handler
 	 */
-	eachCustomActionWidget( name, handler ) {
-		const action = this.getCustomActionWidget( name );
+	eachCustomActionWidget( widgetOrName, handler ) {
+		const action = this.getCustomActionWidget( widgetOrName );
 		if ( !action ) return;
 
 		action.forEach( entry => handler( entry ) );

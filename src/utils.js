@@ -861,6 +861,13 @@ export function addClick( node, handler, useAltKey = true ) {
 
 	node.addEventListener( 'click', callback );
 	node.addEventListener( 'keypress', callback );
+
+	return callback;
+}
+
+export function removeClick( node, callback ) {
+	node.removeEventListener( 'click', callback );
+	node.removeEventListener( 'keypress', callback );
 }
 
 /**

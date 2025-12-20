@@ -42,6 +42,11 @@ class MenuButton extends OO.ui.ButtonWidget {
 	link;
 
 	/**
+	 * @type {Function}
+	 */
+	handler;
+
+	/**
 	 * Create a MenuButton instance.
 	 * @param {MenuButton.Options} [options] - A MenuButton configuration options
 	 */
@@ -140,14 +145,18 @@ class MenuButton extends OO.ui.ButtonWidget {
 
 	/**
 	 * Set a click handler to the button element.
-	 * @param {(widget: MenuButton, event: Event) => void} handler - A click handler
+	 * @param {(widget: MenuButton, event: Event) => void} [handler] - A click handler
 	 * @param {boolean} [useAltKey] - Use the alt key to bypass the handler
 	 * @returns {MenuButton}
 	 */
 	setHandler( handler, useAltKey ) {
+		if ( utils.isFunction( this.handler ) ) {
+			utils.removeClick( this.$button.get( 0 ), this.handler );
+		}
+
 		if ( utils.isFunction( handler ) ) {
 			const helper = ( event ) => handler( this, event );
-			utils.addClick( this.$button.get( 0 ), helper, useAltKey );
+			this.handler = utils.addClick( this.$button.get( 0 ), helper, useAltKey );
 		}
 
 		return this;

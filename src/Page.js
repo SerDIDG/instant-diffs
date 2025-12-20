@@ -679,7 +679,7 @@ class Page {
 		}
 
 		// Replace link target attributes after the hooks have fired
-		//utils.addTargetToLinks( this.nodes.$container );
+		utils.addTargetToLinks( this.nodes.$container );
 
 		// Fire hook on complete
 		mw.hook( `${ id.config.prefix }.page.complete` ).fire( this );

@@ -263,7 +263,7 @@ export const config = {
 		'table.diff #differences-prevlink',                             // [[Special:Diff]]: Previous edit
 		'table.diff #differences-nextlink',                             // [[Special:Diff]]: Next edit
 		'.mw-diff-revision-history-links a',                            // [[Special:Diff]]: MobileDiff navigation links
-		'li[data-afl-log-id] a',                                        // [[Special:AbuseLog]]
+		'[data-afl-log-id] a',                                          // [[Special:AbuseLog]]
 		'li[class^="mw-tag"] a',                                        // [[Special:EditTags]]
 		'li.mw-logline-tag a',                                          // [[Special:EditTags]]
 		'a.ext-globalwatchlist-diff',                                   // [[Special:GlobalWatchlist]]
@@ -279,7 +279,7 @@ export const config = {
 			'.mw-changeslist-line',                                     // Changelists
 			'.mw-contributions-list li',                                // Contributions
 			'.mw-fr-pending-changes-table tr',                          // [[Special:PendingChanges]]
-			'.mw-special-AbuseLog li[data-afl-log-id]',                 // [[Special:AbuseLog]]
+			'.mw-special-AbuseLog [data-afl-log-id]',                   // [[Special:AbuseLog]]
 			'.mw-special-EditTags li[class^="mw-tag"]',                 // [[Special:EditTags]]
 			'.mw-special-EditTags li.mw-logline-tag',                   // [[Special:EditTags]]
 			'.ext-globalwatchlist-site li',                             // [[Special:GlobalWatchlist]]
