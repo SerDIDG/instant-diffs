@@ -15,16 +15,16 @@ class Article {
 	/**
 	 * @type {Record<string, *>}
 	 */
+	options = {};
+
+	/**
+	 * @type {Record<string, *>}
+	 */
 	values = {
 		type: null,
 		typeVariant: null,
 		hostname: location.hostname,
 	};
-
-	/**
-	 * @type {Record<string, *>}
-	 */
-	options = {};
 
 	/**
 	 * @type {Record<string, *>}
@@ -53,7 +53,7 @@ class Article {
 	 * Create an Article instance.
 	 * @param {Record<string, *>} values - A key-value pairs object
 	 * @param {Record<string, *>} [options] - Configuration options
-	 * @param {boolean} [options.fixTenet]
+	 * @param {boolean} [options.fixTenet] - Fix order of the oldid and diff parameters
 	 */
 	constructor( values, options ) {
 		this.options = {
@@ -66,30 +66,57 @@ class Article {
 		}
 	}
 
+	/**
+	 * Set initial values that will be validated and processed.
+	 * @param {Record<string, *>} values
+	 */
 	set( values ) {
 		this.values = { ...this.values, ...this.validateValues( values ) };
 		this.isValid = this.validate();
 		this.process();
 	}
 
+	/**
+	 * Add a key-value pair to the values record.
+	 * @param {string} name
+	 * @param {*} value
+	 */
 	setValue( name, value ) {
 		this.values[ name ] = value;
 	}
 
+	/**
+	 * Add key-value pairs to the values record.
+	 * @param {Record<string, *>} values
+	 */
 	setValues( values ) {
 		for ( const [ name, value ] of Object.entries( values ) ) {
 			this.setValue( name, value );
 		}
 	}
 
+	/**
+	 * Get value from the values record.
+	 * @param {string} name
+	 * @returns {*}
+	 */
 	get( name ) {
 		return this.values[ name ];
 	}
 
+	/**
+	 * Get all values from the values record.
+	 * @returns {Record<string, *>}
+	 */
 	getValues() {
 		return this.values;
 	}
 
+	/**
+	 * Get value from the mw values record.
+	 * @param {string} name
+	 * @returns {*}
+	 */
 	getMW( name ) {
 		return this.mw[ name ];
 	}

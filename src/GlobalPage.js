@@ -127,7 +127,7 @@ class GlobalPage extends Page {
 		if ( !utils.isEmptyObject( data ) ) {
 			const general = data.general;
 			if ( !utils.isEmptyObject( general ) ) {
-				// Set article hostname to revalidate server names
+				// Set the article hostname to revalidate server names
 				this.article.set( { hostname: general.servername } );
 
 				this.configManager.setValues( {
@@ -221,6 +221,8 @@ class GlobalPage extends Page {
 			title: utils.getCompareTitle( this.data ),
 			section: this.data.tosection,
 			timestamp: this.data.totimestamp,
+			user: this.data.touser,
+			userhidden: this.data.touserhidden,
 		};
 		if ( this.data.fromid !== this.data.toid ) {
 			articleValues.page1 = this.data.fromtitle;

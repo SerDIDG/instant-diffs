@@ -254,6 +254,15 @@ class LocalPage extends Page {
 			delete articleValues.page2;
 		}
 
+		// Populate user name
+		const $userLink = this.nodes.$data.find( '#mw-diff-ntitle2 .mw-userlink' );
+		if ( $userLink.length > 0 ) {
+			articleValues.userhidden = $userLink.hasClass( 'history-deleted' );
+			if ( !articleValues.userhidden ) {
+				articleValues.user = $userLink.text();
+			}
+		}
+
 		// Populate timestamps
 		const $toTimestamp = this.nodes.$data.find( '#mw-diff-ntitle1 .mw-diff-timestamp' );
 		if ( $toTimestamp.length > 0 ) {
@@ -278,12 +287,8 @@ class LocalPage extends Page {
 		// Save the title values to the mw.config
 		this.configManager.setTitle( this.article.getMW( 'title' ) );
 
-		/**
-		 * Save additional user options dependent of a page type.
-		 * @type {Object}
-		 *
-		 * FixMe: See T346252 for the details about Visual Diffs.
-		 */
+		// Save additional user options dependent of a page type.
+		// FixMe: See T346252 for the details about Visual Diffs.
 		if (
 			this.article.get( 'type' ) !== 'diff' &&
 			!utilsPage.isVisualDiffsAvailable( this.configManager.get( 'wgPageContentModel' ) )

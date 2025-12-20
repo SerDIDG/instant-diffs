@@ -477,11 +477,11 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		return this;
 	}
 
-	setFieldHelp( name, $help ) {
+	setFieldHelp( name, help ) {
 		const item = this.getField( name );
 		if ( !item ) return;
 
-		item.field.$help.empty().append( $help );
+		item.field.$help.empty().append( help );
 		return this;
 	}
 

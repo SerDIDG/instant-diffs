@@ -6,6 +6,10 @@ import settings from './settings';
 
 const { h } = utils;
 
+/**
+ * Settings Shema
+ * @type {Record<string, Record>}
+ */
 export const schema = {
 	general: {
 		config: {
@@ -243,13 +247,17 @@ export const schema = {
 	},
 };
 
+/**
+ * Event that emits after a links revision hash setting was changed.
+ * @private
+ */
 function onLinksRevisionHashChange() {
 	// Update the Links Format field help text
 	onLinksFormatSelect.call( this, this.getField( 'linksFormat' ) );
 }
 
 /**
- * Event that emits after a link format setting was changed.
+ * Event that emits after a links format setting was changed.
  * @private
  */
 function onLinksFormatSelect() {
@@ -261,15 +269,15 @@ function onLinksFormatSelect() {
 		hash: linksRevisionHash,
 		minify: linkFormat === 'minify',
 	};
-	const $help = getLinksFormatExample( options );
-	this.setFieldHelp( 'linksFormat', $help );
+	const help = getLinksFormatExample( options );
+	this.setFieldHelp( 'linksFormat', help );
 
 	// Update the Wikilink field help text
 	onWikilinksFormatSelect.call( this, this.getField( 'wikilinksFormat' ) );
 }
 
 /**
- * Event that emits after a wikilink format setting was changed.
+ * Event that emits after a wikilinks format setting was changed.
  * @private
  */
 function onWikilinksFormatSelect() {
@@ -284,10 +292,16 @@ function onWikilinksFormatSelect() {
 		wikilink: true,
 		wikilinkPreset: wikilinkFormat,
 	};
-	const $help = getLinksFormatExample( options );
-	this.setFieldHelp( 'wikilinksFormat', $help );
+	const help = getLinksFormatExample( options );
+	this.setFieldHelp( 'wikilinksFormat', help );
 }
 
+/**
+ * Renders link href examples.
+ * @private
+ * @param {Record<string, *>} options - Href options
+ * @returns {HTMLElement}
+ */
 function getLinksFormatExample( options ) {
 	const title = utils.msg( 'copy-wikilink-example-title' );
 	const diff = getHref( {

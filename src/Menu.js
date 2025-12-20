@@ -334,7 +334,7 @@ class Menu {
 	/**
 	 * Iterate over button(s) and execute a handler function for each.
 	 * @param {string} name - Button name
-	 * @param {string|string[]} group - Group name(s) to filter by
+	 * @param {string|string[]} [group] - Group name(s) to filter by
 	 * @param {function(Menu.ButtonOptions): void} handler - Handler function to execute for each button
 	 */
 	eachButton( name, group, handler ) {
@@ -347,7 +347,7 @@ class Menu {
 	/**
 	 * Iterate over button widget(s) and execute a handler function for each.
 	 * @param {string} name - Button name
-	 * @param {string|string[]} group - Group name(s) to filter by
+	 * @param {string|string[]} [group] - Group name(s) to filter by
 	 * @param {function(import('./MenuButton').default): void} handler - Handler function to execute for each widget
 	 */
 	eachButtonWidget( name, group, handler ) {
@@ -360,7 +360,7 @@ class Menu {
 	/**
 	 * Focus button by a given name.
 	 * @param {string} name - Button name
-	 * @param {string|string[]} group - Group name(s) to filter by
+	 * @param {string|string[]} [group] - Group name(s) to filter by
 	 * @returns {boolean} True if a button was successfully focused
 	 */
 	focusButton( name, group ) {
@@ -380,7 +380,7 @@ class Menu {
 	/**
 	 * Pending button by a given name.
 	 * @param {string} name - Button name
-	 * @param {string|string[]} group - Group name(s) to filter by
+	 * @param {string|string[]} [group] - Group name(s) to filter by
 	 * @param {boolean} value - State
 	 */
 	pendingButton( name, group, value ) {
