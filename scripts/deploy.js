@@ -12,7 +12,6 @@ const chalk = require( 'chalk' );
 const minimist = require( 'minimist' );
 const { isEmpty, getProject } = require( './utils.mjs' );
 
-const args = minimist( process.argv.slice( 2 ) );
 const warning = ( text ) => console.log( chalk.yellowBright( text ) );
 
 // Project config
@@ -23,18 +22,10 @@ if ( !project ) {
 }
 
 // Deploy config
-const deployConfig = {
-	build: [
-		`${ project.name }.css`,
-		`${ project.name }.js`,
-		`${ project.name }.js.LEGAL.txt`,
-		`${ project.name }-i18n.json`,
-	],
-	dev: [
-		`${ project.name }.test.css`,
-		`${ project.name }.test.js`,
-		`${ project.name }.test.js.LEGAL.txt`,
-	],
+const deploy = {
+	main: [ '.css', '.js' ],
+	i18n: [ '-i18n.json' ],
+	legal: [ '.js.LEGAL.txt' ],
 };
 
 class Deploy {
@@ -67,12 +58,19 @@ class Deploy {
 	}
 
 	async getDeployTargets() {
-		// Push main files to the deployment targets
-		const files = args.dev ? deployConfig.dev : deployConfig.build;
+		let files = [ ...deploy.main ];
+		if ( project.i18nDeploy ) {
+			files = [ ...files, ...deploy.i18n ];
+		}
+		if ( project.legalDeploy ) {
+			files = [ ...files, ...deploy.legal ];
+		}
+
+		// Push files to the deployment targets
 		files.forEach( file => {
 			this.deployTargets.push( {
-				file: `${ project.dir }/${ file }`,
-				target: project.target.replace( '$name', file ),
+				file: `${ project.dir }/${ project.fileName }${ file }`,
+				target: `${ project.target }${ file }`,
 			} );
 		} );
 
@@ -83,7 +81,7 @@ class Deploy {
 			languages.forEach( file => {
 				this.deployTargets.push( {
 					file: `${ dir }/${ file }`,
-					target: `${ project.i18nProcessed }${ file }`,
+					target: `${ project.i18n }${ file }`,
 				} );
 			} );
 		}

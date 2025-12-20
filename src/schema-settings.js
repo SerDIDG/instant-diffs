@@ -231,7 +231,7 @@ export const schema = {
 			pinnedActions: {
 				type: 'checkboxMultiselect',
 				enabled: true,
-				default: [ 'copyLink', 'copyWikilink' ],
+				default: [ 'copyLink' ],
 				config: {
 					labelMsg: 'settings-pinned-actions',
 					helpMsg: 'settings-pinned-actions-help',
