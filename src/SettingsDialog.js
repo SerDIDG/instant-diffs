@@ -310,6 +310,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 			optionsType: null,
 			options: {},
 			onSelect: () => {},
+			onChange: () => {},
 		}, item );
 
 		// Validate
@@ -355,6 +356,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		// Input handlers
 		if ( utils.isFunction( item.onSelect ) ) {
 			item.input.on( 'select', () => item.onSelect.call( this, item ) );
+		}
+		if ( utils.isFunction( item.onChange ) ) {
+			item.input.on( 'change', () => item.onChange.call( this, item ) );
 		}
 
 		// Field

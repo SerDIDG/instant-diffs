@@ -59,19 +59,25 @@ class ViewDialog extends OO.ui.MessageDialog {
 
 	/******* SETUP PROCESS *******/
 
+	/**
+	 * @private
+	 */
 	getSetupProcess( data ) {
 		return super.getSetupProcess( data ).next( () => {
 			// Make floatable elements accessible
 			fixFloatedElementsIsolation();
 
 			// Set a vertical scroll position to the top of the content
-			this.container.$element.scrollTop( 0 );
+			this.scrollContentTop( 0 );
 
 			// Restore focus on the content
 			this.focus();
 		} );
 	}
 
+	/**
+	 * @private
+	 */
 	onDialogKeyDown( event ) {
 		super.onDialogKeyDown( event );
 
@@ -91,21 +97,30 @@ class ViewDialog extends OO.ui.MessageDialog {
 		return this.getUpdateProcess( data ).execute();
 	}
 
+	/**
+	 * @private
+	 */
 	getUpdateProcess( data ) {
 		return new OO.ui.Process().next( () => {
-			// Hide progress bar
+			// Validate data
+			data = {
+				title: this.constructor.static.title,
+				message: this.constructor.static.message,
+				scrollTop: 0,
+				...data,
+			};
+
+			// Hide the progress bar
 			this.toggleProgress( false );
 
 			// Set content
-			this.title.setLabel(
-				data.title !== undefined ? data.title : this.constructor.static.title,
-			);
-			this.message.setLabel(
-				data.message !== undefined ? data.message : this.constructor.static.message,
-			);
+			this.title.setLabel( data.title );
+			this.message.setLabel( data.message );
 
 			// Set a vertical scroll position to the top of the content
-			this.container.$element.scrollTop( 0 );
+			this.scrollContentTop(
+				utils.isFunction( data.scrollTop ) ? data.scrollTop() : data.scrollTop,
+			);
 
 			// Toggle content visibility
 			this.toggleVisibility( true );
@@ -117,9 +132,12 @@ class ViewDialog extends OO.ui.MessageDialog {
 
 	/******* TEARDOWN PROCESS *******/
 
+	/**
+	 * @private
+	 */
 	getTeardownProcess( data ) {
 		return super.getTeardownProcess( data ).next( () => {
-			// Hide progress bar
+			// Hide the progress bar
 			this.toggleProgress( false );
 
 			// Toggle content visibility
@@ -133,7 +151,7 @@ class ViewDialog extends OO.ui.MessageDialog {
 		if ( focusLast ) {
 			super.focus( focusLast );
 		} else {
-			// Focus scroll element so user can immediately interact with a content without pressing another tab
+			// Focus scroll element so the user can immediately interact with a content without pressing another tab
 			this.container.$element.trigger( 'focus' );
 		}
 		return this;
@@ -141,10 +159,64 @@ class ViewDialog extends OO.ui.MessageDialog {
 
 	toggleVisibility( value ) {
 		this.message.toggleVisibility( value );
+		return this;
 	}
 
 	toggleProgress( ...args ) {
 		this.progressBar.toggleVisibility( ...args );
+		return this;
+	}
+
+	/**
+	 * Scroll element offset top relative to the dialog content.
+	 * @param {HTMLElement|JQuery<HTMLElement>} element
+	 * @param {number} [offset=0]
+	 * @return {number}
+	 */
+	getContentOffsetTop( element, offset = 0 ) {
+		let position = 0;
+
+		if ( utils.isElement( element ) || element instanceof jQuery ) {
+			position = utils.getOffsetRelativeToContainer( element, this.container.$element )?.top;
+		}
+
+		if ( typeof position === 'number' ) {
+			return position + offset;
+		}
+	}
+
+	/**
+	 * Set dialog content scroll padding top offset.
+	 * @param {number} [position=0]
+	 * @return {ViewDialog}
+	 */
+	setScrollOffsetTop( position = 0 ) {
+		this.container.$element.css( '--instantDiffs-view-scroll-padding-top', `${ position }px` );
+		return this;
+	}
+
+	/**
+	 * Scroll dialog content to the specific position.
+	 * @param {number|HTMLElement|JQuery<HTMLElement>} [elementOrPosition = 0]
+	 * @param {number} [offset=0]
+	 * @return {ViewDialog}
+	 */
+	scrollContentTop( elementOrPosition = 0, offset = 0 ) {
+		let position = 0;
+
+		if ( typeof elementOrPosition === 'number' ) {
+			position = elementOrPosition;
+		}
+
+		if ( utils.isElement( elementOrPosition ) || elementOrPosition instanceof jQuery ) {
+			position = utils.getOffsetRelativeToContainer( elementOrPosition, this.container.$element )?.top;
+		}
+
+		if ( typeof position === 'number' ) {
+			this.container.$element.scrollTop( position + offset );
+		}
+
+		return this;
 	}
 }
 

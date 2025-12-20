@@ -104,6 +104,8 @@
 	"settings-open-in-new-tab": "Label of the checkbox in the Settings dialog.",
     "settings-fieldset-menu": "Title for the field group that combines menu-related settings.\n\nDisplayed in the Settings dialog.",
     "settings-show-menu-icons": "Label of the checkbox in the settings dialog.",
+	"settings-links-revision-hash": "Label of the checkbox in the settings dialog.",
+	"settings-links-revision-hash-help": "Help text for the button group widget labeled with the {{msg-wm|Instant-diffs-settings-links-revision-hash}} message in the Settings dialog.",
     "settings-links-format": "Label of the radio select in the settings dialog.",
     "settings-links-format-full": "Label of the item of the radio select labeled with the {{msg-wm|Instant-diffs-settings-links-format}} message in the Settings dialog.",
     "settings-links-format-minify": "Label of the item of the radio select labeled with the {{msg-wm|Instant-diffs-settings-links-format}} message in the Settings dialog.",

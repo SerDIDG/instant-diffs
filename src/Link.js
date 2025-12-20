@@ -229,6 +229,7 @@ class Link {
 		// Get article values
 		let articleValues = {
 			hostname: this.url.hostname,
+			hash: this.url.hash,
 		};
 
 		if ( id.local.specialPagesLinksSearchRegExp.test( urlParts.title ) ) {

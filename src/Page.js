@@ -308,7 +308,7 @@ class Page {
 
 		// Check if there are no errors,
 		// then check if it's a comparePages type variant of the diff,
-		// then check if an oldid and a diff is not the valid ids,
+		// then check if oldid and diff are not the valid ids,
 		// otherwise terminate.
 		if (
 			this.error ||
@@ -624,7 +624,7 @@ class Page {
 		return mw.loader.using( utils.getDependencies( dependencies ) );
 	}
 
-	/******* RESTORE FUNCTIONALITY *******/
+	/******* HELPERS *******/
 
 	async restoreFunctionality() {
 		if ( this.error ) return;
@@ -637,6 +637,17 @@ class Page {
 				utils.embed( content, this.nodes.$diffTitle, 'insertAfter' );
 			}
 		}
+	}
+
+	getScrollableSection() {
+		const name = this.article.get( 'hash' );
+		if ( !utils.isEmpty( name ) ) {
+			return utils.getTargetFromFragment( name, this.nodes.$body );
+		}
+	}
+
+	getScrollableOffsetTop() {
+		return this.getNavigation()?.getOuterHeight( true );
 	}
 
 	/******* ACTIONS *******/
@@ -668,7 +679,7 @@ class Page {
 		}
 
 		// Replace link target attributes after the hooks have fired
-		utils.addTargetToLinks( this.nodes.$container );
+		//utils.addTargetToLinks( this.nodes.$container );
 
 		// Fire hook on complete
 		mw.hook( `${ id.config.prefix }.page.complete` ).fire( this );

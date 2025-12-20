@@ -691,6 +691,97 @@ export function hj( $node ) {
 }
 
 /**
+ * Get the target element from a link hash.
+ * @param {string} hash - Fragment identifier (without #)
+ * @param {HTMLElement|JQuery<HTMLElement>} [container] - Container to search within
+ * @returns {HTMLElement|null} Target element or null if not found
+ */
+export function getTargetFromFragment( hash, container ) {
+	if ( isEmpty( hash ) ) return null;
+
+	// Use MediaWiki's method if no container specified
+	if ( !container ) {
+		return mw.util.getTargetFromFragment( hash );
+	}
+
+	// Get HTMLElement from container
+	const element = container instanceof jQuery ? container[ 0 ] : container;
+	if ( !element ) return null;
+
+	// Search within container using querySelector
+	const target = element.querySelector( `#${ CSS.escape( hash ) }` );
+	if ( target ) return target;
+
+	// Try with decoded hash
+	const decodedHash = mw.util.percentDecodeFragment( hash );
+	if ( !decodedHash ) return null;
+
+	return element.querySelector( `#${ CSS.escape( decodedHash ) }` );
+}
+
+/**
+ * Get cumulative offset of an element relative to container.
+ * @param {HTMLElement|JQuery<HTMLElement>} element - Target element
+ * @param {HTMLElement|JQuery<HTMLElement>} container - Container to calculate offset from
+ * @returns {{top: number, left: number}|null} Cumulative offset or null if invalid
+ */
+export function getOffsetRelativeToContainer( element, container ) {
+	// Convert jQuery to HTMLElement
+	if ( element instanceof jQuery ) {
+		element = element[ 0 ];
+	}
+	if ( container instanceof jQuery ) {
+		container = container[ 0 ];
+	}
+
+	// Validate inputs
+	if ( !element || !container ) return null;
+
+	let top = 0;
+	let left = 0;
+	let current = element;
+
+	// Sum up offsets until we reach the container
+	while ( current && current !== container ) {
+		top += current.offsetTop;
+		left += current.offsetLeft;
+		current = current.offsetParent;
+
+		// Stop if we've gone past the container
+		if ( current && !container.contains( current ) ) {
+			break;
+		}
+	}
+
+	return { top, left };
+}
+
+/**
+ * Get element's outer height (equivalent to jQuery's outerHeight)
+ * @param {HTMLElement|JQuery<HTMLElement>} element - Target element
+ * @param {boolean} [includeMargin=false] - Include margin in height
+ * @returns {number} Outer height in pixels
+ */
+export function outerHeight( element, includeMargin = false ) {
+	// Convert jQuery to HTMLElement
+	if ( element instanceof jQuery ) {
+		element = element[ 0 ];
+	}
+
+	if ( !element ) return 0;
+
+	let height = element.offsetHeight;
+
+	if ( includeMargin ) {
+		const style = getComputedStyle( element );
+		height += parseFloat( style.marginTop ) || 0;
+		height += parseFloat( style.marginBottom ) || 0;
+	}
+
+	return height;
+}
+
+/**
  * Removes all text nodes from the provided node.
  * @param {JQuery<HTMLElement>} $node
  */
@@ -877,9 +968,9 @@ export function addTargetToLinks( $content ) {
 
 	const handler = ( i, el ) => {
 		// Add a target attribute only to links with non-empty href.
-		// Some scripts add links with href="#" - bypass those as well.
+		// Also bypass urls that start with hash.
 		const href = el.getAttribute( 'href' );
-		if ( isEmpty( href ) || href === '#' ) return;
+		if ( isEmpty( href ) || /^#/.test( href ) ) return;
 
 		el.setAttribute( 'target', '_blank' );
 	};

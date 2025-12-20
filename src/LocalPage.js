@@ -422,7 +422,7 @@ class LocalPage extends Page {
 
 	}
 
-	/******* RESTORE FUNCTIONALITY *******/
+	/******* HELPERS *******/
 
 	restoreFunctionalityEmbed() {
 		if ( this.error ) return;

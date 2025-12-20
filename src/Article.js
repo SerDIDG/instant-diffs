@@ -13,7 +13,7 @@ class Article {
 	static utils = utilsArticle;
 
 	/**
-	 * @type {Object}
+	 * @type {Record<string, *>}
 	 */
 	values = {
 		type: null,
@@ -22,12 +22,12 @@ class Article {
 	};
 
 	/**
-	 * @type {Object}
+	 * @type {Record<string, *>}
 	 */
 	options = {};
 
 	/**
-	 * @type {Object}
+	 * @type {Record<string, *>}
 	 */
 	mw = {
 		serverName: mw.config.get( 'wgServerName' ),
@@ -51,8 +51,8 @@ class Article {
 
 	/**
 	 * Create an Article instance.
-	 * @param {Object} values - A key-value pairs object
-	 * @param {Object} [options] - Configuration options
+	 * @param {Record<string, *>} values - A key-value pairs object
+	 * @param {Record<string, *>} [options] - Configuration options
 	 * @param {boolean} [options.fixTenet]
 	 */
 	constructor( values, options ) {
@@ -121,6 +121,10 @@ class Article {
 		}
 
 		// Validate section
+		if ( !utils.isEmpty( values.hash ) ) {
+			values.hash = decodeURIComponent( values.hash )
+				.replace( /^#/, '' );
+		}
 		if ( !utils.isEmpty( values.section ) ) {
 			values.section = values.section.replace( /^#/, '' );
 		}

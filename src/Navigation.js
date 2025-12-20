@@ -498,14 +498,14 @@ class Navigation {
 	 */
 	renderSwitchLink( options ) {
 		const type = this.article.get( 'type' ) === 'diff' ? 'revision' : 'diff';
-		const articleOptions = { type };
+		const hrefOptions = { type };
 
 		options = {
 			name: 'switch',
 			label: utils.msg( `goto-view-${ type }` ),
 			title: utils.msgHint( `goto-view-${ type }`, 'switch', settings.get( 'enableHotkeys' ) ),
 			icon: 'specialPages',
-			href: getHref( this.article, {}, articleOptions ),
+			href: getHref( this.article, {}, hrefOptions ),
 			classes: [ 'instantDiffs-button--switch' ],
 			setLink: true,
 			linkOptions: {
@@ -609,11 +609,16 @@ class Navigation {
 	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderTypeLink( options ) {
+		const type = this.article.get( 'type' );
+		const hrefOptions = {
+			hash: type === 'revision' ? settings.get( 'linksRevisionHash' ) : false,
+		};
+
 		this.menu.renderButton( {
 			name: 'link',
-			label: utils.msg( `goto-${ this.article.get( 'type' ) }` ),
+			label: utils.msg( `goto-${ type }` ),
 			icon: 'articleRedirect',
-			href: getHref( this.article ),
+			href: getHref( this.article, {}, hrefOptions ),
 			...options,
 		} );
 	}
@@ -784,11 +789,12 @@ class Navigation {
 	 * @param {import('./MenuButton').default} widget
 	 */
 	actionCopyLink( widget ) {
-		const options = {
+		const hrefOptions = {
 			relative: false,
+			hash: this.article.get( 'type' ) === 'revision' ? settings.get( 'linksRevisionHash' ) : false,
 			minify: settings.get( 'linksFormat' ) === 'minify',
 		};
-		const href = getHref( this.article, {}, options );
+		const href = getHref( this.article, {}, hrefOptions );
 
 		// Copy href to the clipboard
 		utils.clipboardWriteLink( href );
@@ -1191,6 +1197,15 @@ class Navigation {
 	}
 
 	/******* ACTIONS *******/
+
+	/**
+	 * Get the navigation bar outer offset height.
+	 * @param {boolean} [includeMargin=false]- Include margin in height
+	 * @return {number}
+	 */
+	getOuterHeight( includeMargin = false ) {
+		return utils.outerHeight( this.nodes.container, includeMargin );
+	}
 
 	/**
 	 * Get the Article instance.

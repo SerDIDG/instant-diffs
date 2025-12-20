@@ -172,6 +172,16 @@ export const schema = {
 					labelMsg: 'settings-show-menu-icons',
 				},
 			},
+			linksRevisionHash: {
+				type: 'checkbox',
+				enabled: true,
+				default: false,
+				config: {
+					labelMsg: 'settings-links-revision-hash',
+					helpMsg: 'settings-links-revision-hash-help',
+				},
+				onChange: onLinksRevisionHashChange,
+			},
 			linksFormat: {
 				type: 'radioSelect',
 				enabled: true,
@@ -233,15 +243,22 @@ export const schema = {
 	},
 };
 
+function onLinksRevisionHashChange() {
+	// Update the Links Format field help text
+	onLinksFormatSelect.call( this, this.getField( 'linksFormat' ) );
+}
+
 /**
  * Event that emits after a link format setting was changed.
  * @private
  */
 function onLinksFormatSelect() {
+	const linksRevisionHash = this.getFieldValue( 'linksRevisionHash' );
 	const linkFormat = this.getFieldValue( 'linksFormat' );
 
 	const options = {
 		relative: false,
+		hash: linksRevisionHash,
 		minify: linkFormat === 'minify',
 	};
 	const $help = getLinksFormatExample( options );
@@ -256,11 +273,13 @@ function onLinksFormatSelect() {
  * @private
  */
 function onWikilinksFormatSelect() {
+	const linksRevisionHash = this.getFieldValue( 'linksRevisionHash' );
 	const linkFormat = this.getFieldValue( 'linksFormat' );
 	const wikilinkFormat = this.getFieldValue( 'wikilinksFormat' );
 
 	const options = {
 		relative: false,
+		hash: linksRevisionHash,
 		minify: linkFormat === 'minify',
 		wikilink: true,
 		wikilinkPreset: wikilinkFormat,
@@ -271,9 +290,15 @@ function onWikilinksFormatSelect() {
 
 function getLinksFormatExample( options ) {
 	const title = utils.msg( 'copy-wikilink-example-title' );
-	const diff = getHref( { title, diff: '12345', type: 'diff' }, {}, options );
-	const revision = getHref( { title, oldid: '12345', type: 'revision' }, {}, options );
-	const page = getHref( { title, curid: '12345', type: 'revision', typeVariant: 'page' }, {}, options );
+	const diff = getHref( {
+		title, diff: '12345', type: 'diff',
+	}, {}, options );
+	const revision = getHref( {
+		title, oldid: '12345', type: 'revision', section: 'Section',
+	}, {}, options );
+	const page = getHref( {
+		title, curid: '12345', type: 'revision', typeVariant: 'page', section: 'Section',
+	}, {}, options );
 
 	return h( 'ul.instantDiffs-list--settings',
 		h( 'li', h( 'i', diff ) ),

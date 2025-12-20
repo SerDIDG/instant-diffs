@@ -395,7 +395,7 @@ class View {
 		this.error = null;
 		this.previousPage = this.page;
 
-		// Show progress bar in the dialog
+		// Show the progress bar in the dialog
 		this.dialog.toggleProgress( true );
 
 		// When the Page is about to change, restore configs to the initial state
@@ -435,10 +435,11 @@ class View {
 		// The Page can be already detached from the DOM once the dialog closes
 		if ( !this.page || this.page.isDetached ) return;
 
-		// Embed the Pages's content to the dialog
+		// Embed the Page's content to the dialog
 		const options = {
 			title: this.page.getArticleTitleText(),
 			message: this.page.getContainer(),
+			scrollTop: this.getContentOffset.bind( this ),
 		};
 		this.dialog.update( options )
 			.then( this.onUpdate.bind( this ) );
@@ -456,7 +457,7 @@ class View {
 		// Track on dialog process start time
 		id.timers.dialogProcesStart = mw.now();
 
-		// Start loading process
+		// Start the loading process
 		return this.load();
 	}
 
@@ -472,6 +473,10 @@ class View {
 		// Fire the Page hooks and events
 		$.when( this.page.fire() )
 			.always( () => {
+				// Scroll to the section again,
+				// because the position can be changed after the hooks and events fired.
+				this.setContentOffset();
+
 				// Track on dialog process end time
 				id.timers.dialogProcesEnd = mw.now();
 
@@ -496,6 +501,22 @@ class View {
 	 */
 	close() {
 		this.dialog.close();
+	}
+
+	getContentOffset() {
+		const section = this.page.getScrollableSection();
+		const offset = this.page.getScrollableOffsetTop();
+		return this.dialog.getContentOffsetTop( section, -offset );
+	}
+
+	setContentOffset() {
+		const article = this.page.getArticle();
+		if ( !article ) return;
+
+		if ( article.get( 'type' ) === 'revision' ) {
+			this.dialog.setScrollOffsetTop( this.page.getScrollableOffsetTop() );
+			this.dialog.scrollContentTop( this.getContentOffset() );
+		}
 	}
 
 	/**

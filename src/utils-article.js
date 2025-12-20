@@ -215,8 +215,9 @@ export function removeLinkTags( tags ) {
  * @returns {string} formated wikilink
  */
 export async function getWikilink( article ) {
-	const options = {
+	const hrefOptions = {
 		relative: false,
+		hash: article.get( 'type' ) === 'revision' ? settings.get( 'linksRevisionHash' ) : false,
 		minify: settings.get( 'linksFormat' ) === 'minify',
 		wikilink: true,
 		wikilinkPreset: settings.get( 'wikilinksFormat' ),
@@ -226,19 +227,19 @@ export async function getWikilink( article ) {
 	if ( article.isForeign ) {
 		const interwikiMap = await Api.getInterwikiMap();
 		if ( interwikiMap ) {
-			options.interwiki = interwikiMap
+			hrefOptions.interwiki = interwikiMap
 				.filter( entry => entry.url.includes( article.getMW( 'serverName' ) ) )
 				.reduce( ( accumulator, entry ) => !accumulator || accumulator.prefix.length > entry.prefix.length ? entry : accumulator );
 		}
 	}
 
 	// Get wikilink
-	return getHref( article, {}, options );
+	return getHref( article, {}, hrefOptions );
 }
 
 /**
- * Gets article's formatted url href.
- * @param {import('./Article').default|Object} article an Article instance
+ * Gets Article's formatted url href.
+ * @param {import('./Article').default|Object} article - Article instance
  * @param {Object} [articleParams]
  * @param {Object} [options]
  * @returns {string}
@@ -255,7 +256,7 @@ export function getHref( article, articleParams, options ) {
 		...options,
 	};
 
-	// Get copy of the values
+	// Get a copy of the values
 	const values = { ...article.getValues() };
 
 	// Validate options
@@ -366,7 +367,10 @@ function processHref( article, articleParams, options ) {
 
 	// Add hash
 	if ( options.hash && !utils.isEmpty( article.get( 'section' ) ) ) {
-		url.hash = `#${ article.get( 'section' ) }`;
+		const hashEncoded = mw.util.escapeIdForLink( article.get( 'section' ) );
+		if ( hashEncoded ) {
+			url.hash = `#${ hashEncoded }`;
+		}
 	}
 
 	// Minify href

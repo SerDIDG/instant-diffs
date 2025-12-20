@@ -108,6 +108,8 @@
     "settings-open-in-new-tab": "Open links inside the Instant Diffs dialog in a new tab.",
     "settings-fieldset-menu": "Menu",
     "settings-show-menu-icons": "Show icons in the Instant Diffs dialog dropdown menu.",
+    "settings-links-revision-hash": "Include section name in revision links",
+    "settings-links-revision-hash-help": "The section name will also be appended as a hash to the link URL when using copy actions with the selected non-minified format.",
     "settings-links-format": "Link format for the copy action:",
     "settings-links-format-full": "Full url with a page title",
     "settings-links-format-minify": "Minified url",
