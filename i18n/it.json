@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Beta16",
+			"GseSro",
 			"Serhio Magpie"
 		]
 	},
@@ -80,11 +81,15 @@
 	"settings-highlight-line": "Evidenzia le righe negli Osservati speciali e liste simili quando la finestra di Instant Diffs viene aperta dal collegamento correlato.",
 	"settings-mark-watched-line": "Segna le modifiche come visitate negli Osservati speciali quando si apre Instant Diffs dal collegamento correlato.",
 	"settings-fieldset-dialog": "Finestra",
+	"settings-enable-hotkeys": "Abilita le scorciatoie da tastiera nel dialogo di Instant Diffs.",
 	"settings-show-diff-tools": "Mostra strumenti aggiuntivi per le differenze, come l'interruttore del formato in linea.",
 	"settings-show-revision-info": "Mostra le informazioni sulle modifiche durante la visualizzazione di una revisione.",
 	"settings-unhide-diffs": "Mostra il contenuto delle revisioni nascoste e le informazioni sui diff senza passaggi aggiuntivi.",
 	"settings-unhide-diffs-help": "Per visualizzare il contenuto della revisione è necessario il [[mw:Special:MyLanguage/Help:RevisionDelete|diritto utente]] \"$1\".",
 	"settings-open-in-new-tab": "Apri i collegamenti all'interno di Instant Diffs in una nuova scheda.",
+	"settings-show-menu-icons": "Mostra le icone nel menu a discesa del dialogo Instant Diffs.",
+	"settings-links-revision-hash": "Includi il nome della sezione nei link alla revisione",
+	"settings-links-revision-hash-help": "Il nome della sezione verrà aggiunto anche come hash all'URL del link quando si utilizzano le azioni di copia con il formato non minimizzato selezionato.",
 	"settings-links-format": "Formato del collegamento per l'azione di copia:",
 	"settings-links-format-full": "URL completo con titolo della pagina",
 	"settings-links-format-minify": "URL abbreviato",
@@ -94,8 +99,6 @@
 	"settings-fieldset-general": "Generale",
 	"settings-enable-mobile": "Abilita Instant Diffs nel tema mobile (Minerva).",
 	"settings-enable-mobile-help": "Per riabilitare Instant Diffs dovrai passare a un altro tema.",
-	"settings-enable-hotkeys": "Abilita le scorciatoie da tastiera nel dialogo di Instant Diffs.",
-	"settings-show-menu-icons": "Mostra le icone nel menu a discesa del dialogo Instant Diffs.",
 	"settings-notify-errors": "Mostra popup di avviso per errori critici.",
 	"error-generic": "Si è verificato un errore: $4",
 	"error-server": "Errore del server, riprova più tardi",
