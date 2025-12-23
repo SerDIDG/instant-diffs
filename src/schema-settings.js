@@ -149,7 +149,7 @@ export const schema = {
 				default: true,
 				config: {
 					labelMsg: 'settings-unhide-diffs',
-					help: [ 'settings-unhide-diffs-help', 'suppressrevision' ],
+					helpMsg: [ 'settings-unhide-diffs-help', 'suppressrevision' ],
 				},
 			},
 			openInNewTab: {
