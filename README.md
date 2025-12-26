@@ -91,3 +91,11 @@ instantDiffs.js | instantDiffs.css | instantDiffs-i18n/uk.js
 * [Feedback](https://www.mediawiki.org/wiki/Talk:Instant_Diffs)
 * [Developer guide](https://www.mediawiki.org/wiki/Instant_Diffs/API)
 * [Translations](https://translatewiki.net/wiki/Translating:Instant_Diffs)
+
+---
+
+<p align="center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Outline_of_Ukraine.svg/256px-Outline_of_Ukraine.svg.png" alt="Ukraine" width="128"/>
+  <br>
+  <b><a href="https://stand-with-ukraine.pp.ua">Support Ukraine</a></b>
+</p>
