@@ -224,6 +224,7 @@ class View {
 
 		this.error = {
 			type: 'dependencies',
+			tag: 'view',
 			message: error && error.message ? error.message : null,
 		};
 
@@ -231,7 +232,7 @@ class View {
 	};
 
 	/**
-	 * Event that emits after dependency loading successive.
+	 * Event that emits after dependency loading successively.
 	 */
 	onLoadSuccess() {
 		this.isLoading = false;

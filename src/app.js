@@ -317,9 +317,10 @@ function app() {
 		id.isReplaced = handleReplace( settingOptions, defaultOptions );
 
 		utils.notifyError( id.isReplaced ? 'error-prepare-replaced' : 'error-prepare-version', {
-			type: 'version',
+			tag: 'app',
 			message: `loaded: ${ id.config.version }, concurrent: ${ config.version }`,
-		}, null, true );
+			silent: true,
+		} );
 		return;
 	}
 
@@ -327,6 +328,7 @@ function app() {
 	id.isRunning = true;
 
 	// Export to global scope
+	id.i18n ||= {};
 	id.config = config;
 	id.local = local;
 	id.local.settings = settingOptions;
@@ -352,7 +354,7 @@ function app() {
 	id.timers.run = mw.now();
 
 	// Bundle language strings
-	require( `../${ id.config.outdir }/${ id.config.outname }-i18n/en.js` );
+	i18nBundle();
 
 	// Pre-process language strings
 	utils.processMessages();
@@ -364,6 +366,19 @@ function app() {
 	load();
 }
 
+/**
+ * Load and bundle i18n language files
+ */
+function i18nBundle() {
+	// Require the bundled language loaders
+	const { loaders } = require( `../${ id.config.outdir }/${ id.config.outname }-i18n-bundle.js` );
+
+	// Load language files
+	for ( const load of Object.values( loaders ) ) {
+		load();
+	}
+}
+
 function load() {
 	mw.loader.load( utils.server( id.config.dependencies.styles ), 'text/css' );
 	mw.loader.using( id.config.dependencies.main )
@@ -371,7 +386,7 @@ function load() {
 		.then( () => $( ready ) )
 		.fail( error => {
 			utils.notifyError( 'error-prepare-generic', {
-				type: 'prepare',
+				tag: 'app',
 				message: error?.message,
 			} );
 		} );
@@ -383,7 +398,10 @@ async function ready() {
 
 	// Check if the script is enabled on mobile skin (Minerva)
 	if ( mw.config.get( 'skin' ) === 'minerva' && !settings.get( 'enableMobile' ) ) {
-		utils.notifyError( 'error-prepare-mobile', { type: 'mobile' }, null, true );
+		utils.notifyError( 'error-prepare-mobile', {
+			tag: 'app',
+			silent: true,
+		} );
 		return;
 	}
 

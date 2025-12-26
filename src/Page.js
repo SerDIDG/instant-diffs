@@ -509,22 +509,23 @@ class Page {
 	async renderError() {
 		const type = this.article.get( 'type' );
 		const typeVariant = this.article.get( 'typeVariant' );
-
-		// Create error object
 		const code = typeVariant === 'page'
 			? 'curid' : typeVariant === 'comparePages'
 				? 'compare-pages' : 'generic';
 
+		// Create error object
 		this.error = {
 			type,
 			code,
+			tag: 'page',
 			status: this.error?.status,
 			statusText: this.error?.statusText,
 			message: this.errorData?.info || utils.getErrorStatusText( this.error?.status ),
+			article: this.article,
 		};
 
 		// Show a critical notification popup
-		utils.notifyError( `error-${ this.error.type }-${ this.error.code }`, this.error, this.article );
+		utils.notifyError( `error-${ this.error.type }-${ this.error.code }`, this.error );
 
 		await this.render();
 

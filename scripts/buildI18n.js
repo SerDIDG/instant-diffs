@@ -155,7 +155,16 @@ instantDiffs.i18n['${ lang }'] = ${ jsonText };
 	}
 }
 
-const i18nListText = JSON.stringify( Object.keys( i18n ), null, '\t' ) + '\n';
+// List all available languages
+const i18nListKeys = Object.keys( i18n );
+const i18nListText = JSON.stringify( i18nListKeys, null, '\t' ) + '\n';
 fs.writeFileSync( `./${ project.dir }/${ project.name }-i18n.json`, i18nListText );
+
+// Bundle language loaders
+const i18nBundleKeys = i18nListKeys.filter( key => project.i18nBundle.includes( key ) );
+const i18nBundleLoaders = `exports.loaders = {
+${ i18nBundleKeys.map( code => `  '${ code }': () => require('../${ project.dir }/${ project.name }-i18n/${ code }.js'),` ).join( '\n' ) }
+};`;
+fs.writeFileSync( `./${ project.dir }/${ project.name }-i18n-bundle.js`, i18nBundleLoaders );
 
 console.log( 'Internationalization files have been built successfully.' );

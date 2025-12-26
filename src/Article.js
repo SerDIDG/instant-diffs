@@ -13,11 +13,13 @@ class Article {
 	static utils = utilsArticle;
 
 	/**
+	 * Configuration options.
 	 * @type {Record<string, *>}
 	 */
 	options = {};
 
 	/**
+	 * A key-value pairs object.
 	 * @type {Record<string, *>}
 	 */
 	values = {
@@ -27,6 +29,7 @@ class Article {
 	};
 
 	/**
+	 * An object with specific processed values, like mw.Title, stc.
 	 * @type {Record<string, *>}
 	 */
 	mw = {
@@ -35,16 +38,19 @@ class Article {
 	};
 
 	/**
+	 * Flag that indicates if the link is valid and can be processed by Instant Diffs.
 	 * @type {boolean}
 	 */
 	isValid = false;
 
 	/**
+	 * Flag that indicates if the link is from foreign interwiki.
 	 * @type {boolean}
 	 */
 	isForeign = false;
 
 	/**
+	 * Flag that indicates if the diff or revision is hidden.
 	 * @type {boolean}
 	 */
 	isHidden = false;
@@ -68,7 +74,7 @@ class Article {
 
 	/**
 	 * Set initial values that will be validated and processed.
-	 * @param {Record<string, *>} values
+	 * @param {Record<string, *>} values - A key-value pairs object
 	 */
 	set( values ) {
 		this.values = { ...this.values, ...this.validateValues( values ) };
@@ -87,7 +93,7 @@ class Article {
 
 	/**
 	 * Add key-value pairs to the values record.
-	 * @param {Record<string, *>} values
+	 * @param {Record<string, *>} values - A key-value pairs object
 	 */
 	setValues( values ) {
 		for ( const [ name, value ] of Object.entries( values ) ) {
@@ -106,7 +112,7 @@ class Article {
 
 	/**
 	 * Get all values from the values record.
-	 * @returns {Record<string, *>}
+	 * @returns {Record<string, *>} A key-value pairs object
 	 */
 	getValues() {
 		return this.values;

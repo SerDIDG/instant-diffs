@@ -29,8 +29,15 @@ export function getProject( name ) {
 	project.postfix = args.dev ? '.test' : '';
 	project.fileName = `${ project.name }${ project.postfix }`;
 	project.target = project.target.replace( '$name', project.fileName );
+
 	project.i18n = project.i18n.replace( '$name', project.name );
 	project.i18nDeploy = !args.dev && ( project.i18nDeploy ?? true );
+
+	const i18nBundle = ( Array.isArray( project.i18nBundle ) ? project.i18nBundle : [] )
+		.map( s => s.trim() )
+		.filter( Boolean );
+	project.i18nBundle = [ ...new Set( [ 'en', ...i18nBundle ] ) ];
+
 	project.legalDeploy = project.legalDeploy ?? true;
 
 	project.credentials ||= {};

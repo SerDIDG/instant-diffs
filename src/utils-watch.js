@@ -265,13 +265,15 @@ export function updateGlobalWatchlistStatus( article, watched, expiry ) {
 		if ( !watchedSites ) return;
 
 		// Use origTitle value instead of title or titleText,
-		// because article's title is formatted with canonical prefixes,
-		// but extension is expected title in the local format .
+		// because the article's title is formatted with canonical prefixes,
+		// but extension is expected title in the local format.
 		watchedSites.processUpdateWatched( article.get( 'origTitle' ), !watched );
 	} catch ( error ) {
 		utils.notifyError( 'error-global-watchlist', {
-			type: 'watchstar',
+			article,
+			tag: 'watch',
 			message: error?.message || error,
-		}, article, true );
+			silent: true,
+		} );
 	}
 }

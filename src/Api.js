@@ -90,9 +90,10 @@ class Api {
 	 */
 	static notifyError( error ) {
 		utils.notifyError( 'error-api-generic', {
-			type: 'api',
+			tag: 'api',
 			message: error?.message || error,
-		}, null, true );
+			silent: true,
+		} );
 	}
 
 	/******* TOKENS *******/

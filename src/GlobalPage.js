@@ -415,17 +415,19 @@ class GlobalPage extends Page {
 	 * @private
 	 */
 	onRequestRevisionError = ( message, data, params ) => {
-		const error = {
+		const errorParams = {
 			message,
 			type: 'dependencies',
+			tag: 'page',
+			article: this.article,
 		};
 		if ( data?.error ) {
-			error.code = data.error.code;
-			error.message = data.error.info;
+			errorParams.code = data.error.code;
+			errorParams.message = data.error.info;
 		}
 
 		const type = params.oldid ? 'revid' : 'curid';
-		utils.notifyError( `error-dependencies-${ type }`, error, this.article );
+		utils.notifyError( `error-dependencies-${ type }`, errorParams );
 	};
 
 	/**

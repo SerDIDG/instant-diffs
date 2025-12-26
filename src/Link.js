@@ -343,9 +343,11 @@ class Link {
 			} catch ( error ) {
 				const errorParams = {
 					type: 'link',
+					tag: 'link',
 					message: error?.message || error,
+					silent: true,
 				};
-				utils.notifyError( 'error-link-options', errorParams, null, true );
+				utils.notifyError( 'error-link-options', errorParams );
 			}
 		}
 
@@ -459,7 +461,10 @@ class Link {
 
 		this.error = {
 			type: 'revision',
+			tag: 'link',
 			code: !utils.isEmpty( this.article.get( 'curid' ) ) ? 'curid' : 'generic',
+			article: this.article,
+			silent: true,
 		};
 
 		if ( data?.error ) {
@@ -467,7 +472,7 @@ class Link {
 			this.error.message = data.error.info;
 		} else {
 			this.error.message = error;
-			utils.notifyError( `error-revision-${ this.error.code }`, this.error, this.article, true );
+			utils.notifyError( `error-revision-${ this.error.code }`, this.error );
 		}
 
 		this.renderError();
@@ -546,6 +551,9 @@ class Link {
 
 		this.error = {
 			type: 'diff',
+			tag: 'link',
+			article: this.article,
+			silent: true,
 		};
 
 		if ( data?.error ) {
@@ -553,7 +561,7 @@ class Link {
 			this.error.message = data.error.info;
 		} else {
 			this.error.message = error;
-			utils.notifyError( 'error-diff-generic', this.error, this.article, true );
+			utils.notifyError( 'error-diff-generic', this.error );
 		}
 
 		this.renderError();
@@ -608,6 +616,9 @@ class Link {
 
 		this.error = {
 			type: 'diff',
+			tag: 'link',
+			article: this.article,
+			silent: true,
 		};
 
 		if ( data?.error ) {
@@ -615,7 +626,7 @@ class Link {
 			this.error.message = data.error.info;
 		} else {
 			this.error.message = error;
-			utils.notifyError( 'error-diff-generic', this.error, this.article, true );
+			utils.notifyError( 'error-diff-generic', this.error );
 		}
 
 		this.renderError();

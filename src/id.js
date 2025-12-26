@@ -9,6 +9,7 @@
  * @property {boolean} isReplaced - Script instance was replaced
  * @property {boolean} isUnloading - Script activity is pending due inactive tab
  * @property {boolean} isPageAdjustmentsApplied - Page-specific adjustments was applied
+ * @property {Record<string, Record>} i18n - Localized strings map
  * @property {import('./config').config} config - Configuration
  * @property {import('./config').local} local - Local variables
  * @property {import('./config').timers} timers - Script timer loggers

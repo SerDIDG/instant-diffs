@@ -95,6 +95,7 @@ class Settings {
 
 		this.error = {
 			type: 'dependencies',
+			tag: 'settings',
 			message: error?.message,
 		};
 

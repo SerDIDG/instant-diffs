@@ -94,9 +94,8 @@ export function isElement( value ) {
  */
 export function isActiveElement() {
 	const nonTypeableInputs = [ 'button', 'submit', 'reset', 'file', 'checkbox', 'radio', 'range', 'color', 'image', 'hidden' ];
-	/**
-	 * @type {HTMLElement}
-	 */
+
+	/** @type {HTMLElement|HTMLInputElement} */
 	const element = document.activeElement;
 	return !element ||
 		element.contentEditable === 'true' ||
@@ -158,7 +157,7 @@ export function moduleRequire( name ) {
 }
 
 /**
- * Checks if a current runed version of Instant Diffs is different from a last used.
+ * Checks if a current runed version of Instant Diffs is different from the last used.
  * @returns {boolean}
  */
 export function isNew() {
@@ -220,15 +219,24 @@ export function onSchedule( callback ) {
  * Calls a console object method with a script's prefix attached before the message.
  * @param {string} type
  * @param {string} message
- * @param {Array} [data]
+ * @param {Array|*} [data]
  */
-export function log( type, message, data = [] ) {
+export function log( type, message, data ) {
 	const logger = console[ type ];
 	if ( !logger ) return;
+
+	const name = isMessageExists( 'script-name' ) ? msg( 'script-name' ) : 'Instant Diffs';
 	if ( !/\.$/.test( message ) ) {
 		message = `${ message }.`;
 	}
-	logger( `${ msg( 'script-name' ) }: ${ message }`, ...data );
+
+	const params = [ `${ name }: ${ message }` ];
+	if ( isArray( data ) ) {
+		params.push( ...data );
+	} else if ( !isEmpty( data ) ) {
+		params.push( data );
+	}
+	logger( ...params );
 }
 
 /**
@@ -383,7 +391,7 @@ export function processMessages() {
 
 	// Merge current language strings with English for fallback
 	id.local.language = id.i18n[ id.local.userLanguage ] ? id.local.userLanguage : 'en';
-	id.local.messages = id.i18n[ id.local.language ];
+	id.local.messages = id.i18n[ id.local.language ] || {};
 	if ( id.local.language !== 'en' ) {
 		id.local.messages = { ...id.i18n.en, ...id.local.messages };
 	}
@@ -422,17 +430,17 @@ export function getErrorStatusText( status ) {
 	}
 }
 
-export function getErrorMessage( str, error, article ) {
+export function getErrorMessage( str, params ) {
 	str = isMessageExists( str ) ? str : 'error-generic';
-	error = { ...error };
-	article = { ...article?.values };
+	params = { ...params };
 
+	const values = { ...params.article?.getValues() };
 	let message = msg(
 		str,
-		article.oldid || article.curid || article.page1 || article.rev1,
-		article.diff || article.page2 || article.rev2,
-		article.titleText || article.title,
-		error.message || msg( 'error-wasted' ),
+		values.oldid || values.curid || values.page1 || values.rev1,
+		values.diff || values.page2 || values.rev2,
+		values.titleText || values.title,
+		params.message || msg( 'error-wasted' ),
 	);
 	if ( !/\.$/.test( message ) ) {
 		message = `${ message }.`;
@@ -441,18 +449,31 @@ export function getErrorMessage( str, error, article ) {
 	return message;
 }
 
-export function notifyError( str, error, article, silent ) {
-	silent = isBoolean( silent ) ? silent : !settings.get( 'notifyErrors' );
+/**
+ *
+ * @param str
+ * @param {Record<string, *>} params
+ * @param {import('./Article').default} [params.article]
+ * @param {boolean} [params.silent]
+ */
+export function notifyError( str, params ) {
+	params = {
+		article: null,
+		silent: null,
+		...params,
+	};
+
+	params.silent = isBoolean( params.silent ) ? params.silent : !settings.get( 'notifyErrors' );
 
 	// Silent all errors if a document is hidden or in the process of unloading
 	if ( id.isUnloading ) return;
 	if ( document.visibilityState === 'hidden' ) {
-		silent = true;
+		params.silent = true;
 	}
 
-	const message = getErrorMessage( str, error, article );
-	if ( silent ) {
-		log( 'warn', message, [ article, error ] );
+	const message = getErrorMessage( str, params );
+	if ( params.silent ) {
+		log( 'warn', message, params );
 		return;
 	}
 
@@ -463,10 +484,14 @@ export function notifyError( str, error, article, silent ) {
 			),
 			ht( message ),
 		);
-		mw.notify( content, { type: 'error', tag: `${ id.config.prefix }-${ error.type }` } );
+		notifyMsg( content, params );
 	}
 
-	log( 'error', message, [ article, error ] );
+	log( 'error', message, params );
+}
+
+export function notifyMsg( content, params ) {
+	mw.notify( content, { type: 'error', tag: `${ id.config.prefix }-${ params.tag }` } );
 }
 
 /******* LINKS *******/

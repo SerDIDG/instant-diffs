@@ -84,16 +84,19 @@ class LocalPage extends Page {
 	onRequestPageError = ( message, data, params ) => {
 		this.isDependenciesLoaded = true;
 
-		const error = {
+		const errorParams = {
 			message,
 			type: 'dependencies',
+			tag: 'page',
+			article: this.article,
+			silent: true,
 		};
 		if ( data?.error ) {
-			error.code = data.error.code;
-			error.message = data.error.info;
+			errorParams.code = data.error.code;
+			errorParams.message = data.error.info;
 		}
 		const type = params.oldid ? 'revid' : 'curid';
-		utils.notifyError( `error-dependencies-${ type }`, error, this.article, true );
+		utils.notifyError( `error-dependencies-${ type }`, errorParams );
 	};
 
 	/**
