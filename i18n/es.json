@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Avengium",
 			"Dgstranz",
 			"Serhio Magpie"
 		]
@@ -41,6 +42,7 @@
 	"goto-edit": "Editar",
 	"goto-source": "Ver código fuente",
 	"goto-history": "Ver historial",
+	"goto-info": "Ver información",
 	"goto-talkpage": "Discusión",
 	"goto-settings": "Ajustes",
 	"goto-actions": "Acciones",
@@ -70,6 +72,8 @@
 	"settings-title": "Configuración de Instant Diffs",
 	"settings-saved": "La configuración se ha guardado correctamente.\nRecarga la página para aplicarla.",
 	"settings-saved-icon": "Icono de marca de verificación",
+	"settings-empty": "¡Ups! Parece que el administrador ha desactivado todas las configuraciones. ¡Es hora de relajarse y tomar un café!",
+	"settings-empty-icon": "Icono de taza de café",
 	"settings-fieldset-links": "Enlaces",
 	"settings-show-link": "Mostrar botón de acción",
 	"settings-show-link-help": "Muestra un botón de acción (❖) después del enlace para abrir el diálogo de Instant Diffs. De lo contrario, la acción de clic se añade directamente al enlace. Aún puedes abrir el enlace en la pestaña actual presionando Alt+Clic.",
@@ -78,13 +82,17 @@
 	"settings-highlight-line": "Resaltar líneas en las listas de seguimiento y listas similares cuando el diálogo de Instant Diffs se abre desde el enlace relacionado.",
 	"settings-mark-watched-line": "Marcar los cambios como visitados en las listas de seguimiento cuando se abre el diálogo de Instant Diffs desde el enlace relacionado.",
 	"settings-fieldset-dialog": "Diálogo",
+	"settings-close-outside": "Cerrar el cuadro de diálogo Diferencias instantáneas al hacer clic fuera de él.",
 	"settings-enable-hotkeys": "Habilitar los atajos de teclado en el cuadro de diálogo de Instant Diffs.",
 	"settings-show-diff-tools": "Mostrar herramientas adicionales de diferencia, como el selector de formato en línea.",
 	"settings-show-revision-info": "Mostrar información de cambios al ver una revisión.",
 	"settings-unhide-diffs": "Mostrar el contenido de las revisiones ocultas y la información de diferencias sin pasos adicionales.",
 	"settings-unhide-diffs-help": "Para ver el contenido de la revisión, se requiere el [[mw:Special:MyLanguage/Help:RevisionDelete|permiso de usuario]] \"$1\".",
 	"settings-open-in-new-tab": "Abrir los enlaces dentro del diálogo Instant Diffs en una nueva pestaña.",
+	"settings-fieldset-menu": "Menú",
 	"settings-show-menu-icons": "Mostrar iconos en el menú desplegable del diálogo de Instant Diffs.",
+	"settings-links-revision-hash": "Incluir el nombre de la sección en los enlaces de revisión",
+	"settings-links-revision-hash-help": "El nombre de la sección también se agregará como un hash a la URL del enlace cuando se utilicen acciones de copia con el formato no minimizado seleccionado.",
 	"settings-links-format": "Formato del enlace para la acción de copia",
 	"settings-links-format-full": "URL completa con el título de la página",
 	"settings-links-format-minify": "URL acortada",
@@ -95,6 +103,9 @@
 	"settings-enable-mobile": "Habilitar Instant Diffs en la apariencia móvil (Minerva).",
 	"settings-enable-mobile-help": "Para volver a habilitar Instant Diffs, tendrás que cambiar a otra apariencia.",
 	"settings-notify-errors": "Mostrar alertas emergentes para errores críticos.",
+	"settings-fieldset-pinned-actions": "Acciones fijadas",
+	"settings-pinned-actions": "Anclar acciones seleccionadas en el menú de acceso rápido:",
+	"settings-pinned-actions-help": "Esta lista muestra solo las acciones disponibles para la vista actual. Las acciones ancladas solo aparecen en la vista de escritorio.",
 	"error-generic": "Ha ocurrido un error: $4",
 	"error-server": "Error del servidor, inténtalo de nuevo más tarde",
 	"error-offline": "Por favor, comprueba tu conexión a Internet",
