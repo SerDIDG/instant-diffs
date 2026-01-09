@@ -528,7 +528,7 @@ class Navigation {
 			name: 'unpatrolled',
 			label: utils.msg( 'goto-view-unpatrolled' ),
 			title: utils.msgHint( 'goto-view-unpatrolled', 'unpatrolled', settings.get( 'enableHotkeys' ) ),
-			icon: 'info',
+			icon: 'eyeClosed',
 			href: this.options.links.unpatrolled,
 			classes: [ 'instantDiffs-button--pending' ],
 			setLink: true,

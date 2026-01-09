@@ -7,9 +7,10 @@
 
 @media screen {
 	--instantDiffs-border-color: #ccc;
+	--instantDiffs-line-height: 1.5;
 	--instantDiffs-font-size: 0.794rem; /* 127% (12.7px) */
 	--instantDiffs-font-size-navigation: var(--instantDiffs-font-size);
-	--instantDiffs-line-height: 1.5;
+	--instantDiffs-button-radius: var(--border-radius-base, 3px);
 }
 
 /******* VIEW *******/
@@ -31,15 +32,5 @@
 
 	@media (max-width: @max-width-breakpoint-mobile) {
 		padding: 0.5rem 1rem;
-	}
-}
-
-/*** BUTTON GROUPS ***/
-
-.instantDiffs-buttons-group {
-	&--vertical {
-		hr {
-			background-color: var(--instantDiffs-border-color);
-		}
 	}
 }

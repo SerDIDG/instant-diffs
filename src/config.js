@@ -39,6 +39,7 @@ export const config = {
 			'oojs-ui-core',
 			'oojs-ui-widgets',
 			'oojs-ui-windows',
+			'oojs-ui.styles.icons-accessibility',
 			'oojs-ui.styles.icons-movement',
 			'oojs-ui.styles.icons-content',
 			'oojs-ui.styles.icons-alerts',

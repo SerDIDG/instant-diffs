@@ -4,10 +4,13 @@
 	padding-inline: var(--instantDiffs-gap);
 	-webkit-box-decoration-break: clone;
 	box-decoration-break: clone;
-	border-radius: 1em;
 	background: var(--instantDiffs-background-link);
 	color: var(--instantDiffs-color-link);
 	text-decoration: none;
+
+	&:where(:not(.cdx-button)) {
+		border-radius: 1em;
+	}
 
 	&::before {
 		margin-inline-end: var(--instantDiffs-gap);
@@ -104,6 +107,11 @@
 		&-info {
 			cursor: help;
 		}
+	}
+
+	// /* Edge-case when the panel is inside a codex dialog footer */
+	.cdx-dialog__footer__actions & {
+		align-self: center;
 	}
 }
 
