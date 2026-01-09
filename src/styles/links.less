@@ -5,7 +5,7 @@
 	-webkit-box-decoration-break: clone;
 	box-decoration-break: clone;
 	border-radius: 1em;
-	background: var(--background-color-progressive-subtle, #f1f4fd);
+	background: var(--instantDiffs-background-link);
 	color: var(--instantDiffs-color-link);
 	text-decoration: none;
 
@@ -18,13 +18,13 @@
 	}
 
 	&:is(:hover, :focus-visible) {
-		background: var(--background-color-interactive-subtle--hover, #eaecf0);
+		background: var(--instantDiffs-background-link--hover);
 		color: var(--instantDiffs-color-link--hover);
 		text-decoration: none;
 	}
 
 	&:is(:active, :focus) {
-		background: var(--background-color-interactive-subtle--active, #dadde3);
+		background: var(--instantDiffs-background-link--active);
 		color: var(--instantDiffs-color-link--active);
 		text-decoration: none;
 	}
@@ -50,17 +50,17 @@
 	}
 
 	&--error {
-		background: var(--background-color-error-subtle, #ffe9e5);
-		color: var(--color-error, #bf3c2c);
+		background: var(--instantDiffs-background-link-error);
+		color: var(--instantDiffs-color-link-error);
 
 		&:is(:hover, :focus-visible) {
-			background: var(--background-color-error-subtle--hover, #ffdad3);
-			color: var(--color-error--hover, #9f3526);
+			background: var(--instantDiffs-background-link-error--hover);
+			color: var(--instantDiffs-color-link-error--hover);
 		}
 
 		&:is(:active, :focus) {
-			background: var(--background-color-error-subtle--active, #ffc8bd);
-			color: var(--color-error--active, #612419);
+			background: var(--instantDiffs-background-link-error--active);
+			color: var(--instantDiffs-color-link-error--active);
 		}
 	}
 

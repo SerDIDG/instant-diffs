@@ -1,0 +1,24 @@
+/**
+ * Skin:Vector specific styles
+ * @see {@link https://www.mediawiki.org/wiki/Skin:Vector}
+ */
+
+
+/*
+ * Dark grey theme variant
+ * @see {@link https://www.mediawiki.org/wiki/Extension:Theme}
+ */
+
+&.theme-dark-grey {
+	@media screen {
+		--instantDiffs-color-link: var(--link, #e6820f);
+		--instantDiffs-color-link--hover: var(--link-vis, #b95500);
+		--instantDiffs-color-link--active: var(--link-vis, #b95500);
+
+		--instantDiffs-background-link: var(--btn-bg, #2d2d2d);
+		--instantDiffs-background-link--hover: var(--btn-bg, #2d2d2d);
+		--instantDiffs-background-link--active: var(--btn-bg, #2d2d2d);
+
+		--instantDiffs-background-navigation: color-mix(in srgb, var(--bg-main, #232323) 70%, transparent);
+	}
+}
