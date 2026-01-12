@@ -6,7 +6,8 @@
 			"Escargot bleu",
 			"Gomoko",
 			"Pyschobbens",
-			"Serhio Magpie"
+			"Serhio Magpie",
+			"SleaY"
 		]
 	},
 	"script-name": "Instant Diffs",
@@ -100,7 +101,7 @@
 	"settings-unhide-diffs-help": "Pour afficher le contenu de la version, le [[mw:Special:MyLanguage/Help:RevisionDelete|droit utilisateur]] « $1 » est requis.",
 	"settings-open-in-new-tab": "Ouvrir les liens du dialogue Instant Diffs dans un nouvel onglet.",
 	"settings-show-menu-icons": "Afficher les icônes dans le menu déroulant de la boîte de dialogue Instant Diffs.",
-	"settings-links-revision-hash": "Inclure le nom de la section dans les liens de révision",
+	"settings-links-revision-hash": "Inclure le nom de la section dans les liens de version",
 	"settings-links-format": "Format du lien pour l’action de copie :",
 	"settings-links-format-full": "URL complète avec le titre de la page",
 	"settings-links-format-minify": "URL raccourcie",
