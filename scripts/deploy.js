@@ -9,7 +9,6 @@ const { Mwn } = require( 'mwn' );
 const { execSync } = require( 'child_process' );
 const prompts = require( 'prompts' );
 const chalk = require( 'chalk' );
-const minimist = require( 'minimist' );
 const { isEmpty, getProject } = require( './utils.mjs' );
 
 const warning = ( text ) => console.log( chalk.yellowBright( text ) );
@@ -147,20 +146,33 @@ class Deploy {
 
 		log( 'yellow', '--- Starting deployment ---' );
 
-		for await ( const { file, target } of this.deployTargets ) {
-			const fileText = await this.readFile( file );
-			try {
-				const response = await this.api.save( target, fileText, this.editSummary );
-				if ( response && response.nochange ) {
-					log( 'yellow', `━ No change saving ${ file } to ${ target } on ${ this.siteName }` );
-				} else {
-					log( 'green', `✔ Successfully saved ${ file } to ${ target } on ${ this.siteName }` );
-				}
-			} catch ( error ) {
-				log( 'red', `✘ Failed to save ${ file } to ${ target } on ${ this.siteName }` );
-				logError( error );
-			}
-		}
+		const worker = ( { file, target } ) => {
+			return this.readFile( file )
+				.then( fileText => this.api.save( target, fileText, this.editSummary ) )
+				.then( response => {
+					if ( response?.nochange ) {
+						log( 'yellow', `━ No change saving ${ file } to ${ target } on ${ this.siteName }` );
+						return { success: true, noChange: true, file, target };
+					} else {
+						log( 'green', `✔ Successfully saved ${ file } to ${ target } on ${ this.siteName }` );
+						return { success: true, noChange: false, file, target, response };
+					}
+				} )
+				.catch( error => {
+					log( 'red', `✘ Failed to save ${ file } to ${ target } on ${ this.siteName }` );
+					logError( error );
+					return { success: false, file, target, error };
+				} );
+		};
+
+		const delay = project.rateLimit ? Math.ceil( 1000 / project.rateLimit ) : 0;
+		await this.api.seriesBatchOperation(
+			this.deployTargets,
+			worker,
+			delay,
+			project.retries,
+		);
+
 		log( 'yellow', '--- End of deployment ---' );
 	}
 }

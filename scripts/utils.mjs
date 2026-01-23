@@ -40,6 +40,9 @@ export function getProject( name ) {
 
 	project.legalDeploy = project.legalDeploy ?? true;
 
+	project.rateLimit ||= 0;
+	project.retries ||= 0;
+
 	project.credentials ||= {};
 	project.esbuild ||= {};
 
