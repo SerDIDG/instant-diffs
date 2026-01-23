@@ -166,7 +166,7 @@ class Deploy {
 			}
 		};
 
-		const delay = project.rateLimit ? Math.ceil( 1000 / project.rateLimit ) : 0;
+		const delay = project.rateLimit ? Math.ceil( (1000 * 60) / project.rateLimit ) : 0;
 		await this.api.seriesBatchOperation(
 			this.deployTargets,
 			worker,
