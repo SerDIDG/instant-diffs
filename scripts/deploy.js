@@ -146,23 +146,24 @@ class Deploy {
 
 		log( 'yellow', '--- Starting deployment ---' );
 
-		const worker = ( { file, target } ) => {
-			return this.readFile( file )
-				.then( fileText => this.api.save( target, fileText, this.editSummary ) )
-				.then( response => {
-					if ( response?.nochange ) {
-						log( 'yellow', `━ No change saving ${ file } to ${ target } on ${ this.siteName }` );
-						return { success: true, noChange: true, file, target };
-					} else {
-						log( 'green', `✔ Successfully saved ${ file } to ${ target } on ${ this.siteName }` );
-						return { success: true, noChange: false, file, target, response };
-					}
-				} )
-				.catch( error => {
-					log( 'red', `✘ Failed to save ${ file } to ${ target } on ${ this.siteName }` );
-					logError( error );
-					return { success: false, file, target, error };
-				} );
+		const worker = async ( { file, target } ) => {
+			const fileText = await this.readFile( file );
+
+			try {
+				const response = await this.api.save( target, fileText, this.editSummary );
+
+				if ( response?.nochange ) {
+					log( 'yellow', `━ No change saving ${ file } to ${ target } on ${ this.siteName }` );
+					return { success: true, noChange: true, file, target };
+				} else {
+					log( 'green', `✔ Successfully saved ${ file } to ${ target } on ${ this.siteName }` );
+					return { success: true, noChange: false, file, target, response };
+				}
+			} catch ( error ) {
+				log( 'red', `✘ Failed to save ${ file } to ${ target } on ${ this.siteName }` );
+				logError( error );
+				return { success: false, file, target, error };
+			}
 		};
 
 		const delay = project.rateLimit ? Math.ceil( 1000 / project.rateLimit ) : 0;
