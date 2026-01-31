@@ -533,6 +533,28 @@ export function getComponentFromUrl( param, href ) {
 	return url[ param ];
 }
 
+export function getTitleFromUrl( href ) {
+	// Try query parameter first (?title=Page_Name)
+	let title = mw.util.getParamValue( 'title', href );
+
+	if ( !title ) {
+		// Try path-based URL (/wiki/Page_Name)
+		try {
+			const url = new URL( href, location.href );
+			const prefix = mw.config.get( 'wgArticlePath' )?.split( '$1' )[ 0 ];
+
+			if ( url.pathname.startsWith( prefix ) ) {
+				title = decodeURIComponent( url.pathname.substring( prefix.length ) );
+			}
+		} catch ( error ) {
+			log( 'error', 'Error parsing URL', error );
+			return null;
+		}
+	}
+
+	return title;
+}
+
 export function parseQuery( href ) {
 	const url = getURL( href );
 	if ( !url ) return;

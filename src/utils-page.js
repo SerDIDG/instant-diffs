@@ -302,6 +302,12 @@ export function isVisualDiffsAvailable( contentModel ) {
 export function restoreRollbackLink( $container ) {
 	if ( !$container || $container.length === 0 ) return false;
 
+	// Target elements map
+	const selectors = [
+		'.mw-rollback-link a[data-mw="interface"]',     // Pre 1.46
+		'.mw-rollback-link a[data-mw-interface]',       // From 1.46 (T409187)
+	];
+
 	// Make the rollback link confirmable
 	$container.confirmable( {
 		i18n: {
@@ -309,7 +315,7 @@ export function restoreRollbackLink( $container ) {
 			yes: mw.msg( 'rollback-confirmation-yes' ),
 			no: mw.msg( 'rollback-confirmation-no' ),
 		},
-		delegate: '.mw-rollback-link a[data-mw="interface"]',
+		delegate: selectors.join( ',' ),
 		handler: ( e ) => {
 			e.preventDefault();
 			postRollback( e.target );
@@ -326,7 +332,7 @@ function postRollback( link ) {
 
 	const params = {
 		action: 'rollback',
-		title: mw.util.getParamValue( 'title', link.href ),
+		title: utils.getTitleFromUrl( link.href ),
 		user: mw.util.getParamValue( 'from', link.href ),
 		token: mw.util.getParamValue( 'token', link.href ),
 		formatversion: 2,
