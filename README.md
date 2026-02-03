@@ -1,5 +1,5 @@
 # Instant Diffs ![lic](https://img.shields.io/github/license/SerDIDG/instant-diffs)
-<img align="right" width="128" alt="Logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Instant_Diffs_logo.svg/256px-Instant_Diffs_logo.svg.png" />
+<img align="right" width="128" alt="Logo" src="https://raw.githubusercontent.com/SerDIDG/instant-diffs/main/assets/Logo.svg" />
 
 **Instant Diffs** (**ID**) is a free [open-source](https://en.wikipedia.org/wiki/Open-source_software) JavaScript tool that enhances [MediaWiki](https://www.mediawiki.org) diff links with interactive functionality — dynamically loaded content via [AJAX](https://en.wikipedia.org/wiki/Ajax_(programming)) technology in dialog windows. It enables users to interact with diffs and revisions directly within the page, rather than being redirected to a separate page. These features are integrated not only into all core interface pages where revision diffs are linked, like local and global watchlists, user contributions, recent changes and new pages, but also into user-contributed content. The minimal required version of MediaWiki is [1.35](https://www.mediawiki.org/wiki/MediaWiki_1.35), but it is strongly recommended to upgrade to at least [1.43](https://www.mediawiki.org/wiki/MediaWiki_1.43) LTS.
 
@@ -97,7 +97,9 @@ instantDiffs.js | instantDiffs.css | instantDiffs-i18n/uk.js
 ---
 
 <p align="center">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Outline_of_Ukraine.svg/256px-Outline_of_Ukraine.svg.png" alt="Ukraine" width="128"/>
-  <br>
-  <b><a href="https://stand-with-ukraine.pp.ua">Support Ukraine</a></b>
+  <a href="https://stand-with-ukraine.pp.ua">
+    <img src="https://raw.githubusercontent.com/SerDIDG/instant-diffs/main/assets/Outline of Ukraine.svg" alt="Ukraine" width="128"/>
+    <br>
+    <b>Support Ukraine</b>
+  </a>
 </p>
