@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Bachounda",
 			"Mdktb",
 			"Meno25",
 			"Mohammed Qays",
@@ -129,14 +130,14 @@
 	"error-link-options": "فشل تحليل سمة الرابط \"data-instantdiffs-options\": $4",
 	"error-revision-generic": "فشل تحميل بيانات المراجعة \"oldid= $1 \": $4",
 	"error-revision-curid": "فشل تحميل بيانات المراجعة \"curid= $1 \": $4",
-	"error-revision-badrevids": "لم يتم العثور على المراجعة",
+	"error-revision-badrevids": "المراجعة غير موجودة",
 	"error-revision-badpageids": "لم يتم العثور على الصفحة",
 	"error-revision-missing": "لم يتم العثور على الصفحة",
 	"error-revision-invalid": "لم يتم العثور على الصفحة: $4",
 	"error-diff-generic": "فشل تحميل بيانات مقارنة المراجعة \"oldid= $1 \"، \"diff= $2 \": $4",
 	"error-diff-compare-pages": "فشل تحميل بيانات مقارنة الصفحة \"page1= $1 \"، \"page2= $2 \": $4",
 	"error-diff-missingcontent": "المراجعة مخفية",
-	"error-diff-nosuchrevid": "لم يتم العثور على المراجعة",
+	"error-diff-nosuchrevid": "المراجعة غير موجودة",
 	"error-diff-missingtitle": "لم يتم العثور على الصفحة",
 	"error-api-generic": "فشل في طلب واجهة برمجة التطبيقات: $4",
 	"error-dependencies-generic": "فشل تحميل التبعيات: $4",
