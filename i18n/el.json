@@ -125,6 +125,7 @@
 	"error-prepare-generic": "Αποτυχία προετοιμασίας διαμόρφωσης: $4",
 	"error-prepare-version": "Μια άλλη παρουσία εκτελείται ήδη: $4",
 	"error-prepare-mobile": "Το script είναι απενεργοποιημένο στις ρυθμίσεις για το skin κινητού (Minerva)",
+	"error-link-options": "Αποτυχία ανάλυσης της ιδιότητας \"data-instantdiffs-options\" του συνδέσμου: $4",
 	"error-revision-generic": "Αποτυχία φόρτωσης δεδομένων αναθεώρησης \"oldid=$1\": $4",
 	"error-revision-curid": "Αποτυχία φόρτωσης δεδομένων αναθεώρησης \"curid=$1\": $4",
 	"error-revision-badrevids": "Η αναθεώρηση δεν βρέθηκε",
