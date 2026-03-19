@@ -961,13 +961,7 @@ export function setHTML( container, value ) {
 		return;
 	}
 
-	if ( !( Element.prototype.setHTML instanceof Function ) ) {
-		Element.prototype.setHTML = function ( html ) {
-			this.innerHTML = html;
-		};
-	}
-
-	container.setHTML( value );
+	container.innerHTML = value;
 }
 
 /**
