@@ -904,6 +904,9 @@ export function addClick( node, handler, useAltKey = true ) {
 		// Set alt title temporary to increase compatibility with the other scripts
 		node.addEventListener( 'mouseenter', () => ( node.title = node.dataset.altTitle ) );
 		node.addEventListener( 'mouseleave', () => ( node.title = node.dataset.origTitle ) );
+
+		// Disable link text selection on alt key press
+		node.addEventListener( 'mousedown', (event) => event.preventDefault());
 	}
 
 	node.addEventListener( 'click', callback );
