@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Nike",
 			"Serhio Magpie"
 		]
 	},
@@ -21,7 +22,7 @@
 	"action-close": "Label for the button that closes the dialog.\n\n{{identical|Close}}",
 	"action-reload": "Label for the button that reloads the page after saving settings in the dialog.\n\n{{identical|Reload}}",
 	"action-watch": "Label for the button that adds page to the watchlist.\n\n{{identical|Watch}}",
-	"action-unwatch": "Label for the button that removes page from the watchlist.\n\n{{identical|Unwatch}}",
+	"action-unwatch": "Label for the button that removes page from the watchlist.",
 	"goto-snapshot-prev": "Label for the button that navigates to the previous link on the page.\n\nDisplayed in the Instant Diffs dialog navigation.",
 	"goto-snapshot-next": "Label for the button that navigates to the next link on the page.\n\nDisplayed in the Instant Diffs dialog navigation.",
 	"goto-view-diff": "Label for the button that switches view to the diff.\n\nDisplayed in the Instant Diffs dialog navigation.",
