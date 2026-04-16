@@ -81,15 +81,22 @@
 		display: none;
 	}
 
-	// /*** FOREIGN RELATED STYLES ***/
+	// /*** WIKIBASE RELATED STYLES ***/
+
+	.wikibase-statementgroupview {
+		// /* Reset right margin in the wikibase statements */
+		.wikibase-snakview-body {
+			margin-right: 0 !important;
+		}
+
+		.wikibase-statementview-mainsnak {
+			max-width: none !important;
+			margin-right: 0 !important;
+		}
+	}
 
 	&--foreign {
 		.wikibase-statementgroupview {
-			// /* Reset right margin in the wikibase statements */
-			.wikibase-snakview-body {
-				margin-right: 0 !important;
-			}
-
 			// /* Uncollapse all statement sources */
 			.wikibase-initially-collapsed {
 				display: block !important;
