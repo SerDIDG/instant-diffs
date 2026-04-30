@@ -155,8 +155,10 @@ class Article {
 
 		// Validate section
 		if ( !utils.isEmpty( values.hash ) ) {
-			values.hash = decodeURIComponent( values.hash )
-				.replace( /^#/, '' );
+			values.hash = mw.util.percentDecodeFragment( values.hash );
+			if ( values.hash ) {
+				values.hash = values.hash.replace( /^#/, '' );
+			}
 		}
 		if ( !utils.isEmpty( values.section ) ) {
 			values.section = values.section.replace( /^#/, '' );
