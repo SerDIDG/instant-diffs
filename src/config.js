@@ -267,7 +267,6 @@ export const config = {
 		'.mw-logevent-loglines a',                                      // [[Special:Logs]]
 		'[data-afl-log-id] a',                                          // [[Special:AbuseLog]]
 		'li[class^="mw-tag"] a',                                        // [[Special:EditTags]]
-		'li.mw-logline-tag a',                                          // [[Special:EditTags]]
 		'a.ext-globalwatchlist-diff',                                   // [[Special:GlobalWatchlist]]
 		'.wikibase-statementview-references a',                         // Wikibase statements references
 		'a.edit-summary-time',                                          // [[Extension:Translate]]
@@ -284,7 +283,6 @@ export const config = {
 			'.mw-logevent-loglines li',                                 // [[Special:Logs]]
 			'.mw-special-AbuseLog [data-afl-log-id]',                   // [[Special:AbuseLog]]
 			'.mw-special-EditTags li[class^="mw-tag"]',                 // [[Special:EditTags]]
-			'.mw-special-EditTags li.mw-logline-tag',                   // [[Special:EditTags]]
 			'.ext-globalwatchlist-site li',                             // [[Special:GlobalWatchlist]]
 			//'.mw-undelete-revlist li',                                // [[Special:Undelete]]
 		],
@@ -337,7 +335,6 @@ export const config = {
 			'.mw-logevent-loglines',                                    // [[Special:Logs]]
 			'.mw-special-AbuseLog li[data-afl-log-id]',                 // [[Special:AbuseLog]]
 			'.mw-special-EditTags li[class^="mw-tag"]',                 // [[Special:EditTags]]
-			'.mw-special-EditTags li.mw-logline-tag',                   // [[Special:EditTags]]
 			'.wikibase-statementview-references',                       // Wikibase statement references
 			'.ext-globalwatchlist-site',                                // [[Special:GlobalWatchlist]]
 			'.tux-message-editor',                                      // [[Extension:Translate]]
