@@ -3,6 +3,7 @@ import * as utils from './utils';
 import * as utilsApi from './utils-api';
 
 import settings from './settings';
+import Article from './Article';
 
 class Api {
 	/**
@@ -22,10 +23,12 @@ class Api {
 
 	/**
 	 * Gets the Api instance.
-	 * @param {string} [hostname]
+	 * @param {import('./Article').default|string} [articleOrHostname]
 	 * @return {mw.Api|mw.ForeignApi}
 	 */
-	static getApi( hostname ) {
+	static getApi( articleOrHostname ) {
+		const hostname = articleOrHostname instanceof Article ? articleOrHostname.get( 'hostname' ) : articleOrHostname;
+
 		if ( !utils.isForeign( hostname ) ) {
 			if ( !this.api ) {
 				this.api = new mw.Api();
@@ -45,22 +48,22 @@ class Api {
 	 * mw.Api.get wrapper.
 	 * // @param {import('types-mediawiki/api_params').UnknownApiParams} params
 	 * @param {Object} params
-	 * @param {string} [hostname]
+	 * @param {import('./Article').default|string} [articleOrHostname]
 	 * @return {mw.Api.AbortablePromise}
 	 */
-	static get( params, hostname ) {
-		return this.getApi( hostname ).get( params );
+	static get( params, articleOrHostname ) {
+		return this.getApi( articleOrHostname ).get( params );
 	}
 
 	/**
 	 * mw.Api.post wrapper.
 	 * //@param {import('types-mediawiki/api_params').UnknownApiParams} params
 	 * @param {Object} params
-	 * @param {string} [hostname]
+	 * @param {import('./Article').default|string} [articleOrHostname]
 	 * @return {mw.Api.AbortablePromise}
 	 */
-	static post( params, hostname ) {
-		return this.getApi( hostname ).post( params );
+	static post( params, articleOrHostname ) {
+		return this.getApi( articleOrHostname ).post( params );
 	}
 
 	/**
@@ -68,48 +71,32 @@ class Api {
 	 * //@param {import('types-mediawiki/api_params').UnknownApiParams} params
 	 * @param {string} action
 	 * @param {Object} params
-	 * @param {string} [hostname]
+	 * @param {import('./Article').default|string} [articleOrHostname]
 	 * @return {mw.Api.AbortablePromise}
 	 */
-	static postWithToken( action, params, hostname ) {
-		return this.getApi( hostname ).postWithToken( action, params );
+	static postWithToken( action, params, articleOrHostname ) {
+		return this.getApi( articleOrHostname ).postWithToken( action, params );
 	}
 
 	/**
 	 * mw.Api.watch wrapper.
 	 * @param {string|Array<string>} pages
 	 * @param {string} [expiry]
-	 * @param {string} [hostname]
+	 * @param {import('./Article').default|string} [articleOrHostname]
 	 * @return {jQuery.Promise<mw.Api.WatchedPage|mw.Api.WatchedPage[]>}
 	 */
-	static watch( pages, expiry, hostname ) {
-		const params = {
-			action: 'watch',
-			titles: pages,
-			expiry: expiry,
-			format: 'json',
-			formatversion: 2,
-			uselang: id.local.language,
-		};
-		return this.postWithToken( 'watch', params, hostname );
+	static watch( pages, expiry, articleOrHostname ) {
+		return this.getApi( articleOrHostname ).watch( pages, expiry );
 	}
 
 	/**
 	 * mw.Api.unwatch wrapper.
 	 * @param {string|Array<string>} pages
-	 * @param {string} [hostname]
+	 * @param {import('./Article').default|string} [articleOrHostname]
 	 * @return {jQuery.Promise<mw.Api.WatchedPage|mw.Api.WatchedPage[]>}
 	 */
-	static unwatch( pages, hostname ) {
-		const params = {
-			action: 'watch',
-			titles: pages,
-			unwatch: true,
-			format: 'json',
-			formatversion: 2,
-			uselang: id.local.language,
-		};
-		return this.postWithToken( 'watch', params, hostname );
+	static unwatch( pages, articleOrHostname ) {
+		return this.getApi( articleOrHostname ).unwatch( pages );
 	}
 
 	/**
@@ -126,14 +113,14 @@ class Api {
 
 	/******* TOKENS *******/
 
-	static getAuthToken( hostname ) {
+	static getAuthToken( articleOrHostname ) {
 		const params = {
 			action: 'centralauthtoken',
 			format: 'json',
 			formatversion: 2,
 			uselang: id.local.language,
 		};
-		return this.get( params, hostname );
+		return this.get( params, articleOrHostname );
 	}
 
 	/******* MESSAGES *******/
@@ -141,17 +128,17 @@ class Api {
 	/**
 	 * Gets the interface messages if missing.
 	 * @param {array|string} messages
-	 * @param {string} [hostname]
+	 * @param {import('./Article').default|string} [articleOrHostname]
 	 * @returns {JQuery.Promise|mw.Api.Promise}
 	 */
-	static loadMessage( messages, hostname ) {
+	static loadMessage( messages, articleOrHostname ) {
 		messages = typeof messages === 'string' ? [ messages ] : messages;
 
 		// Return results as soon as possible
 		const missing = messages.filter( msg => !mw.message( msg ).exists() );
 		if ( missing.length === 0 ) return $.Deferred().resolve().promise();
 
-		return this.getApi( hostname )
+		return this.getApi( articleOrHostname )
 			.loadMessagesIfMissing( messages, {
 				uselang: id.local.userLanguage,
 			} );
@@ -162,10 +149,10 @@ class Api {
 	/**
 	 * Gets a parsed wikitext.
 	 * @param {Object} params
-	 * @param {string} [hostname]
+	 * @param {import('./Article').default|string} [articleOrHostname]
 	 * @return {Promise<*|string>}
 	 */
-	static async parseWikitext( params, hostname ) {
+	static async parseWikitext( params, articleOrHostname ) {
 		params = {
 			action: 'parse',
 			contentmodel: 'wikitext',
@@ -176,7 +163,7 @@ class Api {
 		};
 
 		try {
-			const { parse } = await this.post( params, hostname );
+			const { parse } = await this.post( params, articleOrHostname );
 			return parse.text;
 		} catch ( error ) {
 			this.notifyError( error );
@@ -185,7 +172,7 @@ class Api {
 
 	/******* PAGE INFO *******/
 
-	static async getCompare( params, hostname, requestManager ) {
+	static async getCompare( params, articleOrHostname, requestManager ) {
 		params = {
 			action: 'compare',
 			prop: [ 'title', 'ids', 'timestamp', 'comment' ],
@@ -197,14 +184,14 @@ class Api {
 		const api = requestManager ? requestManager : this;
 
 		try {
-			const data = await api.get( params, hostname );
+			const data = await api.get( params, articleOrHostname );
 			return data.compare;
 		} catch ( error ) {
 			this.notifyError( error );
 		}
 	}
 
-	static async getPageInfo( params, hostname, requestManager ) {
+	static async getPageInfo( params, articleOrHostname, requestManager ) {
 		const language = id.local.userLanguage;
 		params = {
 			action: 'query',
@@ -221,14 +208,14 @@ class Api {
 		const api = requestManager ? requestManager : this;
 
 		try {
-			const data = await api.get( params, hostname );
+			const data = await api.get( params, articleOrHostname );
 			return data.query.pages[ 0 ];
 		} catch ( error ) {
 			this.notifyError( error );
 		}
 	}
 
-	static async markAsSeen( params, hostname ) {
+	static async markAsSeen( params, articleOrHostname ) {
 		params = {
 			action: 'setnotificationtimestamp',
 			redirects: 1,
@@ -239,7 +226,7 @@ class Api {
 		};
 
 		try {
-			const data = await this.postWithToken( 'csrf', params, hostname );
+			const data = await this.postWithToken( 'csrf', params, articleOrHostname );
 			return data.setnotificationtimestamp[ 0 ].notificationtimestamp;
 		} catch ( error ) {
 			this.notifyError( error );
@@ -261,11 +248,12 @@ class Api {
 	/**
 	 * Gets the project info.
 	 * @param {Array} fields
-	 * @param {string} [hostname]
+	 * @param {import('./Article').default|string} [articleOrHostname]
 	 * @param {import('./RequestManager').default} [requestManager]
 	 * @return {Promise<*|{}>}
 	 */
-	static async getSiteInfo( fields = [], hostname, requestManager ) {
+	static async getSiteInfo( fields = [], articleOrHostname, requestManager ) {
+		let hostname = articleOrHostname instanceof Article ? articleOrHostname.get( 'hostname' ) : articleOrHostname;
 		if ( utils.isEmpty( hostname ) ) {
 			hostname = mw.config.get( 'wgServerName' );
 		}
@@ -350,10 +338,10 @@ class Api {
 
 	/**
 	 * Requests localized special page names.
-	 * @param {string} [hostname]
+	 * @param {import('./Article').default|string} [articleOrHostname]
 	 * @returns {Promise<*|{}>}
 	 */
-	static async getSpecialPages( hostname ) {
+	static async getSpecialPages( articleOrHostname ) {
 		// Convert data array to the pairs
 		if ( utils.isEmptyObject( this.specialPages ) ) {
 			id.config.specialPages.forEach( name => {
@@ -386,7 +374,7 @@ class Api {
 		};
 
 		try {
-			const { query } = await this.get( params, hostname );
+			const { query } = await this.get( params, articleOrHostname );
 
 			// Set the localized specialPages pairs
 			if ( query.normalized ) {
@@ -411,7 +399,7 @@ class Api {
 	 */
 	static interwikiMap = [];
 
-	static async getInterwikiMap( hostname ) {
+	static async getInterwikiMap( articleOrHostname ) {
 		// Try to get cached data from the local storage
 		if ( !utils.isNew() && utils.isEmpty( this.interwikiMap ) ) {
 			this.interwikiMap = mw.storage.getObject( `${ id.config.prefix }-interwikiMap` ) || [];
@@ -433,7 +421,7 @@ class Api {
 		};
 
 		try {
-			const { query } = await this.get( params, hostname );
+			const { query } = await this.get( params, articleOrHostname );
 
 			// Cache data with expiry
 			this.interwikiMap = query.interwikimap;
@@ -450,11 +438,11 @@ class Api {
 	/**
 	 * Geta a localized page label from Wikibase.
 	 * @param {string} entityId
-	 * @param {string} [hostname]
+	 * @param {import('./Article').default|string} [articleOrHostname]
 	 * @param {import('./RequestManager').default} [requestManager]
 	 * @return {Promise<*|string>}
 	 */
-	static async getWBLabel( entityId, hostname, requestManager ) {
+	static async getWBLabel( entityId, articleOrHostname, requestManager ) {
 		if ( !utilsApi.isProbablyWbTitle( entityId ) ) return;
 
 		const language = id.local.userLanguage;
@@ -471,7 +459,7 @@ class Api {
 		const api = requestManager ? requestManager : this;
 
 		try {
-			const { entities } = await api.get( params, hostname );
+			const { entities } = await api.get( params, articleOrHostname );
 			const entity = entities[ entityId ];
 
 			if ( entity.type === 'lexeme' ) {

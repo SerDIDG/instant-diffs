@@ -451,7 +451,7 @@ class Link {
 			params.pageids = this.article.get( 'curid' );
 		}
 
-		return Api.get( params, this.article.get( 'hostname' ) )
+		return Api.get( params, this.article )
 			.then( this.onRequestRevisionDone )
 			.fail( this.onRequestRevisionError );
 	}
@@ -541,7 +541,7 @@ class Link {
 			formatversion: 2,
 			uselang: id.local.userLanguage,
 		};
-		return Api.get( params, this.article.get( 'hostname' ) )
+		return Api.get( params, this.article )
 			.then( this.onRequestDiffDone )
 			.fail( this.onRequestDiffError );
 	}
@@ -606,7 +606,7 @@ class Link {
 			formatversion: 2,
 			uselang: id.local.userLanguage,
 		};
-		return Api.get( params, this.article.get( 'hostname' ) )
+		return Api.get( params, this.article )
 			.then( this.onRequestCompareDone )
 			.fail( this.onRequestCompareError );
 	}
@@ -885,6 +885,12 @@ class Link {
 			) {
 				this.mw.line.classList.remove( ...id.config.mwLine.unseen );
 				this.mw.line.classList.add( ...id.config.mwLine.seen );
+			}
+			if (
+				settings.get( 'markWatchedLine' ) &&
+				id.local.mwCanonicalSpecialPageName === 'GlobalWatchlist'
+			) {
+				this.mw.line.classList.add( 'instantDiffs-line--seen' );
 			}
 		}
 

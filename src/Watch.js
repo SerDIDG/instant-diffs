@@ -3,8 +3,8 @@ import * as utils from './utils';
 import * as utilsWatch from './utils-watch';
 import { getModuleExport } from './utils-oojs';
 
-import Api from './Api';
 import settings from './settings';
+import Api from './Api';
 
 const { h } = utils;
 
@@ -29,12 +29,6 @@ class Watch {
 	 * @type {import('./Article').default}
 	 */
 	article;
-
-	/**
-	 * Hostname of the wiki.
-	 * @type {string}
-	 */
-	hostname;
 
 	/**
 	 * Configuration options.
@@ -98,8 +92,6 @@ class Watch {
 	 */
 	constructor( article, options ) {
 		this.article = article;
-
-		this.hostname = this.article.get( 'hostname' );
 
 		this.options = {
 			onUpdate: () => {},
@@ -179,8 +171,8 @@ class Watch {
 		const title = this.article.getMW( 'title' ).getPrefixedDb();
 
 		const request = this.isWatched
-			? Api.unwatch( title, this.hostname )
-			: Api.watch( title, this.preferredExpiry, this.hostname );
+			? Api.unwatch( title, this.article )
+			: Api.watch( title, this.preferredExpiry, this.article );
 
 		return request
 			.then( this.showNotice )
@@ -208,14 +200,13 @@ class Watch {
 	 * Shows a notification about watch status change.
 	 * Displays either an interactive popup (if expiry/labels are enabled) or basic notification.
 	 * @see {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/ceeb57e7cb8c45524e70612e84ab6a1817198e10/resources/src/mediawiki.page.watch.ajax/watch-ajax.js#355}
-	 * @param {Object} response - API response object
-	 * @param {boolean} response.watched - Whether the page is now watched
-	 * @param {string} [response.expiry] - Expiry timestamp or 'infinity'
+	 * @param {Object} data - API response object
+	 * @param {boolean} data.watched - Whether the page is now watched
+	 * @param {string} [data.expiry] - Expiry timestamp or 'infinity'
 	 */
-	showNotice = ( response ) => {
-		const data = response.watch?.[ 0 ];
-		if (!data) {
-			return this.showError(undefined, response);
+	showNotice = ( data ) => {
+		if ( !data ) {
+			return this.showError( undefined, data );
 		}
 
 		this.isWatched = data.watched === true;
@@ -258,8 +249,9 @@ class Watch {
 	 * @returns {JQuery} Parsed DOM message with properly configured links
 	 */
 	getNoticeMessage( mwTitle, message ) {
+		const hostname = this.article.get( 'hostname' );
 		const $message = mw.message( message, mwTitle.getPrefixedText(), this.preferredExpiry ).parseDom();
-		utils.addBaseToLinks( $message, `https://${ this.hostname }` );
+		utils.addBaseToLinks( $message, `https://${ hostname }` );
 		utils.addTargetToLinks( $message );
 		return $message;
 	}

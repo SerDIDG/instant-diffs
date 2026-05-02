@@ -105,7 +105,7 @@ class GlobalPage extends Page {
 			params.torelative = 'cur';
 		}
 
-		return this.requestManager.get( params, this.article.get( 'hostname' ) );
+		return this.requestManager.get( params, this.article );
 	}
 
 	/**
@@ -123,7 +123,7 @@ class GlobalPage extends Page {
 	 */
 	async requestSiteInfo() {
 		const fields = [ 'general', 'namespaces', 'namespacealiases' ];
-		const data = await Api.getSiteInfo( fields, this.article.get( 'hostname' ), this.requestManager ) || {};
+		const data = await Api.getSiteInfo( fields, this.article, this.requestManager ) || {};
 		if ( !utils.isEmptyObject( data ) ) {
 			const general = data.general;
 			if ( !utils.isEmptyObject( general ) ) {
@@ -365,7 +365,7 @@ class GlobalPage extends Page {
 		const message = await Api.parseWikitext( {
 			title: this.article.get( 'title' ),
 			text: mw.msg( 'rev-deleted-no-diff' ),
-		}, this.article.get( 'hostname' ) );
+		}, this.article );
 
 		const $content = $( message ).find( 'p' );
 
@@ -405,7 +405,7 @@ class GlobalPage extends Page {
 		}
 
 		return this.requestManager
-			.get( params, this.article.get( 'hostname' ) )
+			.get( params, this.article )
 			.then( ( data ) => this.onRequestRevisionDone( data, params ) )
 			.fail( ( message, data ) => this.onRequestRevisionError( message, data, params ) );
 	}

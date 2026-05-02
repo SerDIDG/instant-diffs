@@ -384,7 +384,7 @@ class Page {
 			params.titles = title;
 		}
 
-		const data = await Api.getPageInfo( params, this.article.get( 'hostname' ), this.requestManager );
+		const data = await Api.getPageInfo( params, this.article, this.requestManager );
 		if ( data ) {
 			const props = data.pageprops || {};
 			const entity = data.entityterms || {};
@@ -444,7 +444,7 @@ class Page {
 		}
 
 		const title = this.article.getMW( 'title' )?.getMain();
-		const label = await Api.getWBLabel( title, this.article.get( 'hostname' ), this.requestManager );
+		const label = await Api.getWBLabel( title, this.article, this.requestManager );
 		if ( !utils.isEmpty( label ) ) {
 			this.configManager.set( 'wbEntityId', title );
 			this.article.setValue( 'label', label );
@@ -483,7 +483,7 @@ class Page {
 			titles: this.article.get( 'titleText' ),
 			newerthanrevid: this.article.get( 'revid' ),
 		};
-		Api.markAsSeen( params, this.article.get( 'hostname' ) );
+		Api.markAsSeen( params, this.article );
 	}
 
 	/**

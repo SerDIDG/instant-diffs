@@ -353,7 +353,7 @@ class View {
 			this.initiator.options.onClose( this );
 		}
 
-		// Restore document scroll top position after the dialog closes.
+		// Restore the document scroll top position after the dialog closes.
 		// In the revision view, some module dependencies cause the page
 		// to scroll to the top after loading, for some reason.
 		this.document.scrollableRoot.scrollTop = this.document.scrollTop;

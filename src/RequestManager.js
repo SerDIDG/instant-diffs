@@ -12,11 +12,11 @@ class RequestManager {
 	/**
 	 * mw.Api.get wrapper.
 	 * @param {Object} params
-	 * @param {string} [hostname]
+	 * @param {import('./Article').default|string} [articleOrHostname]
 	 * @returns {mw.Api.AbortablePromise}
 	 */
-	get( params, hostname ) {
-		const request = Api.get( params, hostname );
+	get( params, articleOrHostname ) {
+		const request = Api.get( params, articleOrHostname );
 		this.add( request );
 		return request;
 	}

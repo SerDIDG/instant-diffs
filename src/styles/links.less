@@ -20,6 +20,24 @@
 		margin-inline-start: var(--instantDiffs-gap);
 	}
 
+	&.is-insertBefore {
+		&::before {
+			content: var(--instantDiffs-label);
+		}
+	}
+
+	&.is-insertAfter {
+		&::after {
+			content: var(--instantDiffs-label);
+		}
+
+		&[rel~="mw:ExtLink"]:empty::after {
+			margin-inline: 0;
+			content: '[' counter(mw-numbered-ext-link) '] ' var(--instantDiffs-label);
+			counter-increment: mw-numbered-ext-link;
+		}
+	}
+
 	&:is(:hover, :focus-visible) {
 		background: var(--instantDiffs-background-link--hover);
 		color: var(--instantDiffs-color-link--hover);
@@ -33,23 +51,11 @@
 	}
 
 	&--diff {
-		&.is-insertBefore::before {
-			content: var(--instantDiffs-label-diff);
-		}
-
-		&.is-insertAfter::after {
-			content: var(--instantDiffs-label-diff);
-		}
+		--instantDiffs-label: var(--instantDiffs-label-diff);
 	}
 
 	&--revision {
-		&.is-insertBefore::before {
-			content: var(--instantDiffs-label-revision);
-		}
-
-		&.is-insertAfter::after {
-			content: var(--instantDiffs-label-revision);
-		}
+		--instantDiffs-label: var(--instantDiffs-label-revision);
 	}
 
 	&--error {

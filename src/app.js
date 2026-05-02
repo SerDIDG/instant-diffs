@@ -173,11 +173,14 @@ function prepare( require ) {
 	mw.config.set( 'wgMobileServerName', utils.getComponentFromUrl( 'hostname', mobileServer ) );
 
 	// Get hostnames (including predicted mobile variants) used to assemble the link selector
-	id.local.mwServers = [ mw.config.get( 'wgServer' ), mw.config.get( 'wgMobileServer' ) ]
+	const mwServers = [ mw.config.get( 'wgServer' ), mw.config.get( 'wgMobileServer' ) ]
 		.filter( value => !utils.isEmpty( value ) )
 		.map( utils.getHref );
-	id.local.mwServerNames = [ mw.config.get( 'wgServerName' ), mw.config.get( 'wgMobileServerName' ) ]
+	id.local.mwServers = [ ...new Set( mwServers ) ];
+
+	const mwServerNames = [ mw.config.get( 'wgServerName' ), mw.config.get( 'wgMobileServerName' ) ]
 		.filter( value => !utils.isEmpty( value ) );
+	id.local.mwServerNames = [ ...new Set( mwServerNames ) ];
 
 	// Save the current version number to the local storage
 	id.local.lastVersion = mw.storage.get( `${ id.config.prefix }-version` );
@@ -215,11 +218,14 @@ async function getSiteInfo() {
 		}
 
 		// Get hostnames (including mobile variants) used to assemble the link selector
-		id.local.mwServers = [ general.server, general.mobileserver ]
+		const mwServers = [ ...id.local.mwServers, general.server, general.mobileserver ]
 			.filter( value => !utils.isEmpty( value ) )
 			.map( utils.getHref );
-		id.local.mwServerNames = [ general.servername, general.mobileservername ]
+		id.local.mwServers = [ ...new Set( mwServers ) ];
+
+		const mwServerNames = [ ...id.local.mwServerNames, general.servername, general.mobileservername ]
 			.filter( value => !utils.isEmpty( value ) );
+		id.local.mwServerNames = [ ...new Set( mwServerNames ) ];
 	}
 }
 
