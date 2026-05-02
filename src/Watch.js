@@ -189,7 +189,7 @@ class Watch {
 
 	/**
 	 * Shows an error notification when the watch/unwatch request fails.
-	 * @param {string} code - Error code
+	 * @param {string|undefined} code - Error code
 	 * @param {Object} data - Error data from API
 	 */
 	showError = ( code, data ) => {
@@ -213,10 +213,14 @@ class Watch {
 	 * @param {string} [response.expiry] - Expiry timestamp or 'infinity'
 	 */
 	showNotice = ( response ) => {
-		this.isWatched = response.watched === true;
+		const data = response.watch?.[ 0 ];
+		if (!data) {
+			return this.showError(undefined, response);
+		}
 
+		this.isWatched = data.watched === true;
 		const mwTitle = this.article.getMW( 'title' );
-		const expiry = response.expiry || 'infinity';
+		const expiry = data.expiry || 'infinity';
 
 		let message = this.isWatched ? 'addedwatchtext' : 'removedwatchtext';
 		if ( mwTitle.isTalkPage() ) {

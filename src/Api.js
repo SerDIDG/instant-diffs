@@ -64,6 +64,18 @@ class Api {
 	}
 
 	/**
+	 * mw.Api.postWithToken wrapper.
+	 * //@param {import('types-mediawiki/api_params').UnknownApiParams} params
+	 * @param {string} action
+	 * @param {Object} params
+	 * @param {string} [hostname]
+	 * @return {mw.Api.AbortablePromise}
+	 */
+	static postWithToken( action, params, hostname ) {
+		return this.getApi( hostname ).postWithToken( action, params );
+	}
+
+	/**
 	 * mw.Api.watch wrapper.
 	 * @param {string|Array<string>} pages
 	 * @param {string} [expiry]
@@ -71,7 +83,15 @@ class Api {
 	 * @return {jQuery.Promise<mw.Api.WatchedPage|mw.Api.WatchedPage[]>}
 	 */
 	static watch( pages, expiry, hostname ) {
-		return this.getApi( hostname ).watch( pages, expiry );
+		const params = {
+			action: 'watch',
+			titles: pages,
+			expiry: expiry,
+			format: 'json',
+			formatversion: 2,
+			uselang: id.local.language,
+		};
+		return this.postWithToken( 'watch', params, hostname );
 	}
 
 	/**
@@ -81,7 +101,15 @@ class Api {
 	 * @return {jQuery.Promise<mw.Api.WatchedPage|mw.Api.WatchedPage[]>}
 	 */
 	static unwatch( pages, hostname ) {
-		return this.getApi( hostname ).unwatch( pages );
+		const params = {
+			action: 'watch',
+			titles: pages,
+			unwatch: true,
+			format: 'json',
+			formatversion: 2,
+			uselang: id.local.language,
+		};
+		return this.postWithToken( 'watch', params, hostname );
 	}
 
 	/**
@@ -211,8 +239,8 @@ class Api {
 		};
 
 		try {
-			const data = await Api.getApi( hostname ).postWithToken( 'csrf', params );
-			return data.setnotificationtimestamp.notificationtimestamp;
+			const data = await this.postWithToken( 'csrf', params, hostname );
+			return data.setnotificationtimestamp[ 0 ].notificationtimestamp;
 		} catch ( error ) {
 			this.notifyError( error );
 		}
@@ -358,7 +386,7 @@ class Api {
 		};
 
 		try {
-			const { query } = await Api.get( params, hostname );
+			const { query } = await this.get( params, hostname );
 
 			// Set the localized specialPages pairs
 			if ( query.normalized ) {
