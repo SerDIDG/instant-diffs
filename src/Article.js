@@ -1,6 +1,7 @@
 import * as utils from './utils';
 import * as utilsArticle from './utils-article';
 
+import settings from './settings';
 import Api from './Api';
 
 /**
@@ -310,7 +311,7 @@ class Article {
 			this.values.titleText = this.mw.title.getPrefixedText();
 		} catch {}
 
-		if ( !utils.isEmpty( this.values.section ) ) {
+		if ( settings.get( 'linksHash' ) && !utils.isEmpty( this.values.section ) ) {
 			this.values.titleSection = [ this.values.title, this.values.section ].join( '#' );
 			this.values.titleTextSection = [ this.values.titleText, this.values.section ].join( '#' );
 		}

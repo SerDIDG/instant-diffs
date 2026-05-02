@@ -93,7 +93,7 @@
 	"settings-open-in-new-tab": "Deschide legăturile dinăuntrul dialogului Instant Diffs într-o filă nouă.",
 	"settings-fieldset-menu": "Meniu",
 	"settings-show-menu-icons": "Afișează pictograme în meniul derulant al dialogului Instant Diffs.",
-	"settings-links-revision-hash": "Include numele secțiunii în legăturile versiunilor",
+	"settings-links-hash": "Include numele secțiunii în legăturile versiunilor",
 	"settings-links-format": "Formatul legăturii pentru acțiunea de copiere:",
 	"settings-links-format-full": "URL întreg cu un titlu de pagină",
 	"settings-links-format-minify": "URL micșorat",

@@ -185,15 +185,15 @@ export const schema = {
 					helpMsg: 'settings-show-watchlist-popup-help',
 				},
 			},
-			linksRevisionHash: {
+			linksHash: {
 				type: 'checkbox',
 				enabled: true,
 				default: false,
 				config: {
-					labelMsg: 'settings-links-revision-hash',
-					helpMsg: 'settings-links-revision-hash-help',
+					labelMsg: 'settings-links-hash',
+					helpMsg: 'settings-links-hash-help',
 				},
-				onChange: onLinksRevisionHashChange,
+				onChange: onLinksHashChange,
 			},
 			linksFormat: {
 				type: 'radioSelect',
@@ -260,7 +260,7 @@ export const schema = {
  * Event that emits after a links revision hash setting was changed.
  * @private
  */
-function onLinksRevisionHashChange() {
+function onLinksHashChange() {
 	// Update the Links Format field help text
 	onLinksFormatSelect.call( this, this.getField( 'linksFormat' ) );
 }
@@ -270,12 +270,12 @@ function onLinksRevisionHashChange() {
  * @private
  */
 function onLinksFormatSelect() {
-	const linksRevisionHash = this.getFieldValue( 'linksRevisionHash' );
+	const linksHash = this.getFieldValue( 'linksHash' );
 	const linkFormat = this.getFieldValue( 'linksFormat' );
 
 	const options = {
 		relative: false,
-		hash: linksRevisionHash,
+		hash: linksHash,
 		minify: linkFormat === 'minify',
 	};
 	const help = getLinksFormatExample( options );
@@ -290,13 +290,13 @@ function onLinksFormatSelect() {
  * @private
  */
 function onWikilinksFormatSelect() {
-	const linksRevisionHash = this.getFieldValue( 'linksRevisionHash' );
+	const linksHash = this.getFieldValue( 'linksHash' );
 	const linkFormat = this.getFieldValue( 'linksFormat' );
 	const wikilinkFormat = this.getFieldValue( 'wikilinksFormat' );
 
 	const options = {
 		relative: false,
-		hash: linksRevisionHash,
+		hash: linksHash,
 		minify: linkFormat === 'minify',
 		wikilink: true,
 		wikilinkPreset: wikilinkFormat,
@@ -314,7 +314,7 @@ function onWikilinksFormatSelect() {
 function getLinksFormatExample( options ) {
 	const title = utils.msg( 'copy-wikilink-example-title' );
 	const diff = getHref( {
-		title, diff: '12345', type: 'diff',
+		title, diff: '12345', type: 'diff', section: 'Section',
 	}, {}, options );
 	const revision = getHref( {
 		title, oldid: '12345', type: 'revision', section: 'Section',

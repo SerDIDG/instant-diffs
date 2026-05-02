@@ -342,6 +342,11 @@ export const config = {
 			//'.mw-undelete-revlist',                                   // [[Special:Undelete]]
 		],
 	},
+	mwLinkExclude: {
+		hasClass: [
+			'mw-contributions-title'                                    // [[Special:GlobalWatchlist]]
+		],
+	},
 	mwLinkDiffOnly: {
 		id: [
 			'differences-prevlink',                                     // [[Special:Diff]]: Previous edit

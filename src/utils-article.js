@@ -217,7 +217,7 @@ export function removeLinkTags( tags ) {
 export async function getWikilink( article ) {
 	const hrefOptions = {
 		relative: false,
-		hash: article.get( 'type' ) === 'revision' ? settings.get( 'linksRevisionHash' ) : false,
+		hash: settings.get( 'linksHash' ),
 		minify: settings.get( 'linksFormat' ) === 'minify',
 		wikilink: true,
 		wikilinkPreset: settings.get( 'wikilinksFormat' ),
@@ -382,6 +382,7 @@ function processHref( article, articleParams, options ) {
 
 	// Get relative or absolute href
 	options.href = decodeURIComponent( options.relative ? ( url.pathname + url.search + url.hash ) : url.toString() );
+	options.hash = decodeURIComponent( url.hash );
 
 	// Get wikilink
 	if ( options.wikilink ) {
@@ -395,6 +396,7 @@ function processWikilink( article, articleParams, options ) {
 	articleParams = { ...articleParams };
 	options = {
 		href: null,
+		hash: null,
 		type: 'diff',
 		minify: false,
 		relative: true,
@@ -414,6 +416,11 @@ function processWikilink( article, articleParams, options ) {
 		attr = articleParams.diff;
 	} else if ( !utils.isEmpty( articleParams.curid ) ) {
 		attr = articleParams.curid;
+	}
+
+	// Add hash
+	if ( !utils.isEmpty( options.hash ) ) {
+		attr = `${ attr }${ options.hash }`;
 	}
 
 	// Get preset

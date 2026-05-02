@@ -226,6 +226,9 @@ class Link {
 		// Exclude links with specific action parameters
 		if ( id.config.exclude.linkActions.includes( this.url.searchParams.get( 'action' ) ) ) return;
 
+		// Exclude links with specific selectors
+		if ( utilsLink.isMWLink( this.node, id.config.mwLinkExclude ) ) return;
+
 		// Get article values
 		let articleValues = {
 			hostname: this.url.hostname,
@@ -437,7 +440,7 @@ class Link {
 		const params = {
 			action: 'query',
 			prop: 'revisions',
-			rvprop: [ 'ids', 'timestamp', 'comment', 'content' ],
+			rvprop: [ 'ids', 'timestamp', 'comment', 'content', 'user' ],
 			rvslots: 'main',
 			rvsection: 0,
 			format: 'json',
@@ -532,7 +535,7 @@ class Link {
 
 		const params = {
 			action: 'compare',
-			prop: [ 'title', 'ids', 'timestamp', 'comment' ],
+			prop: [ 'title', 'ids', 'timestamp', 'comment', 'user' ],
 			fromrev: utils.isValidID( this.article.get( 'oldid' ) ) ? this.article.get( 'oldid' ) : undefined,
 			fromtitle: !utils.isEmpty( this.article.get( 'title' ) ) ? this.article.get( 'title' ) : undefined,
 			torev: utils.isValidID( this.article.get( 'diff' ) ) ? this.article.get( 'diff' ) : undefined,
@@ -597,7 +600,7 @@ class Link {
 		const values = this.article.getValues();
 		const params = {
 			action: 'compare',
-			prop: [ 'title', 'ids', 'timestamp', 'comment' ],
+			prop: [ 'title', 'ids', 'timestamp', 'comment', 'user' ],
 			fromrev: utils.isValidID( values.rev1 ) ? values.rev1 : undefined,
 			fromtitle: !utils.isEmpty( values.page1 ) ? values.page1 : undefined,
 			torev: utils.isValidID( values.rev2 ) ? values.rev2 : undefined,

@@ -103,7 +103,7 @@
 	"settings-open-in-new-tab": "פתח קישורים בחלון Instant Diffs בטאב חדש.",
 	"settings-fieldset-menu": "תפריט",
 	"settings-show-menu-icons": "הצגת סמלים בתפריט הנפתח של חלונית Instant Diffs.",
-	"settings-links-revision-hash": "לכלול את שם הסעיף בקישורי הגרסאות",
+	"settings-links-hash": "לכלול את שם הסעיף בקישורי הגרסאות",
 	"settings-links-format": "תבנית קישור לפעולת ההעתקה:",
 	"settings-links-format-full": "קישור מלא עם כותרת העמוד",
 	"settings-links-format-minify": "קישור מקוצר",

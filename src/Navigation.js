@@ -611,7 +611,7 @@ class Navigation {
 	renderTypeLink( options ) {
 		const type = this.article.get( 'type' );
 		const hrefOptions = {
-			hash: type === 'revision' ? settings.get( 'linksRevisionHash' ) : false,
+			hash: settings.get( 'linksHash' ),
 		};
 
 		this.menu.renderButton( {
@@ -791,7 +791,7 @@ class Navigation {
 	actionCopyLink( widget ) {
 		const hrefOptions = {
 			relative: false,
-			hash: this.article.get( 'type' ) === 'revision' ? settings.get( 'linksRevisionHash' ) : false,
+			hash: settings.get( 'linksHash' ),
 			minify: settings.get( 'linksFormat' ) === 'minify',
 		};
 		const href = getHref( this.article, {}, hrefOptions );
