@@ -240,6 +240,20 @@ export function log( type, message, data ) {
 }
 
 /**
+ * Log an exception message.
+ * @param {string} name
+ * @param {string} [description]
+ * @param {Array|*} [data]
+ */
+export function logException( name, description, data ) {
+	let message = `Exception in "${ name }"`;
+	if ( !isEmpty( description ) ) {
+		message = `${ message }: ${ description }`;
+	}
+	log( 'warn', message, data );
+}
+
+/**
  * Logs a time difference between start and end.
  * @param {string} name
  * @param {number} start
@@ -906,7 +920,7 @@ export function addClick( node, handler, useAltKey = true ) {
 		node.addEventListener( 'mouseleave', () => ( node.title = node.dataset.origTitle ) );
 
 		// Disable link text selection on alt key press
-		node.addEventListener( 'mousedown', (event) => event.preventDefault());
+		node.addEventListener( 'mousedown', ( event ) => event.preventDefault() );
 	}
 
 	node.addEventListener( 'click', callback );

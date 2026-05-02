@@ -69,35 +69,42 @@ export function updateWatchButtonStatus( article, button ) {
  * @param {string} expiry
  */
 export function updateWatchlistStatus( article, watched, expiry ) {
+	const title = article.get( 'titleText' );
 	if ( watched ) {
-		forEachWatchlistLines( article.get( 'titleText' ), ( rowTitle, $row, $link ) => {
-			$link
-				.text( mw.msg( 'watchlist-unwatch' ) )
-				.attr( 'title', mw.msg( 'tooltip-ca-unwatch' ) )
-				.attr( 'href', mw.util.getUrl( rowTitle, { action: 'unwatch' } ) )
-				.removeClass( 'mw-watch-link loading' )
-				.addClass( 'mw-unwatch-link' );
-
+		forEachWatchlistLines( title, ( rowTitle, $row, $link ) => {
 			$row
 				.find( '.mw-changelist-line-inner-unwatched' )
 				.addBack( '.mw-enhanced-rc-nested' )
 				.removeClass( 'mw-changelist-line-inner-unwatched' );
 
+			if ( $link.length > 0 ) {
+				$link
+					.text( mw.msg( 'watchlist-unwatch' ) )
+					.attr( 'title', mw.msg( 'tooltip-ca-unwatch' ) )
+					.attr( 'href', mw.util.getUrl( rowTitle, { action: 'unwatch' } ) )
+					.removeClass( 'mw-watch-link loading' )
+					.addClass( 'mw-unwatch-link' );
+			}
+
 			updateWatchlistExpiryStatus( $row, watched, expiry );
 		} );
 	} else {
-		forEachWatchlistLines( article.get( 'titleText' ), ( rowTitle, $row, $link ) => {
-			$link
-				.text( mw.msg( 'watchlist-unwatch-undo' ) )
-				.attr( 'title', mw.msg( 'tooltip-ca-watch' ) )
-				.attr( 'href', mw.util.getUrl( rowTitle, { action: 'watch' } ) )
-				.removeClass( 'mw-unwatch-link loading' )
-				.addClass( 'mw-watch-link' );
-
+		forEachWatchlistLines( title, ( rowTitle, $row, $link ) => {
 			$row
 				.find( '.mw-changeslist-line-inner, .mw-enhanced-rc-nested' )
 				.addBack( '.mw-enhanced-rc-nested' ) // For matching log sub-entry
 				.addClass( 'mw-changelist-line-inner-unwatched' );
+
+			if ( $link.length > 0 ) {
+				$link
+					.text( mw.msg( 'watchlist-unwatch-undo' ) )
+					.attr( 'title', mw.msg( 'tooltip-ca-watch' ) )
+					.attr( 'href', mw.util.getUrl( rowTitle, { action: 'watch' } ) )
+					.removeClass( 'mw-unwatch-link loading' )
+					.addClass( 'mw-watch-link' );
+			}
+
+			updateWatchlistExpiryStatus( $row, watched, expiry );
 		} );
 	}
 }

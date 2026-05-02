@@ -264,6 +264,7 @@ export const config = {
 		'table.diff #differences-prevlink',                             // [[Special:Diff]]: Previous edit
 		'table.diff #differences-nextlink',                             // [[Special:Diff]]: Next edit
 		'.mw-diff-revision-history-links a',                            // [[Special:Diff]]: MobileDiff navigation links
+		'.mw-logevent-loglines a',                                      // [[Special:Logs]]
 		'[data-afl-log-id] a',                                          // [[Special:AbuseLog]]
 		'li[class^="mw-tag"] a',                                        // [[Special:EditTags]]
 		'li.mw-logline-tag a',                                          // [[Special:EditTags]]
@@ -280,6 +281,7 @@ export const config = {
 			'.mw-changeslist-line',                                     // Changelists
 			'.mw-contributions-list li',                                // Contributions
 			'.mw-fr-pending-changes-table tr',                          // [[Special:PendingChanges]]
+			'.mw-logevent-loglines li',                                 // [[Special:Logs]]
 			'.mw-special-AbuseLog [data-afl-log-id]',                   // [[Special:AbuseLog]]
 			'.mw-special-EditTags li[class^="mw-tag"]',                 // [[Special:EditTags]]
 			'.mw-special-EditTags li.mw-logline-tag',                   // [[Special:EditTags]]
@@ -332,6 +334,7 @@ export const config = {
 			'.mw-specialpage-summary',                                  // Page header on certain Special pages
 			'#mw-revision-nav',                                         // [[Special:PermanentLink]] / Revision
 			'.mw-fr-pending-changes-table',                             // [[Special:PendingChanges]]
+			'.mw-logevent-loglines',                                    // [[Special:Logs]]
 			'.mw-special-AbuseLog li[data-afl-log-id]',                 // [[Special:AbuseLog]]
 			'.mw-special-EditTags li[class^="mw-tag"]',                 // [[Special:EditTags]]
 			'.mw-special-EditTags li.mw-logline-tag',                   // [[Special:EditTags]]

@@ -4,6 +4,9 @@ import * as utilsWatch from './utils-watch';
 import { getModuleExport } from './utils-oojs';
 
 import Api from './Api';
+import settings from './settings';
+
+const { h } = utils;
 
 /**
  * Class representing a Watch handler for managing article watchlist status.
@@ -58,10 +61,34 @@ class Watch {
 	watchlistLabelsEnabled = false;
 
 	/**
+	 * Whether a watchlist popup is enabled.
+	 * @type {boolean}
+	 */
+	isWatchListPopupEnabled = false;
+
+	/**
 	 * Current watch status of the article.
 	 * @type {boolean}
 	 */
 	isWatched = false;
+
+	/**
+	 * jQuery link element for the fake watch button.
+	 * @type {JQuery<HTMLElement>}
+	 */
+	$watchLink;
+
+	/**
+	 * WatchlistPopup wrapper element.
+	 * @type {HTMLElement}
+	 */
+	watchlistPopupWrapper;
+
+	/**
+	 * WatchlistPopup instance.
+	 * @type {Vue.App<import('vue').ComponentOptions>}
+	 */
+	watchlistPopup;
 
 	/**
 	 * Creates a Watch instance.
@@ -79,10 +106,15 @@ class Watch {
 			...options,
 		};
 
+		// Render a fake watch button that required in watchlist popup
+		this.$watchLink = $( '<a class="instantDiffs-button--fake-watch">' );
+		utils.embed( this.$watchLink, document.body );
+
 		// Get ajax watch config
 		const config = getModuleExport( 'mediawiki.page.watch.ajax', 'config.json' ) || {};
 		this.isWatchlistExpiryEnabled = !this.article.isForeign && ( config.WatchlistExpiry || false );
 		this.watchlistLabelsEnabled = !this.article.isForeign && ( config.EnableWatchlistLabels || false );
+		this.isWatchListPopupEnabled = settings.get( 'showWatchlistPopup' ) && ( this.isWatchlistExpiryEnabled || this.watchlistLabelsEnabled );
 
 		// Preload the notification module for mw.notify
 		const modulesToLoad = [ 'mediawiki.notification' ];
@@ -99,27 +131,6 @@ class Watch {
 	}
 
 	/**
-	 * Adds or removes a page from the watchlist based on the current status.
-	 * @returns {Promise<mw.Api.AbortablePromise>} API request promise
-	 */
-	async request() {
-		await this.preloadMessages();
-
-		this.preferredExpiry = mw.user.options.get( 'watchstar-expiry', 'infinity' );
-		this.isWatched = this.article.get( 'watched' );
-
-		const title = this.article.getMW( 'title' ).getPrefixedDb();
-
-		const request = this.isWatched
-			? Api.unwatch( title, this.hostname )
-			: Api.watch( title, this.preferredExpiry, this.hostname );
-
-		return request
-			.then( this.showNotice )
-			.fail( this.showError );
-	}
-
-	/**
 	 * Preloads watch-related i18n messages from the API.
 	 * @returns {Promise<void>}
 	 */
@@ -132,6 +143,48 @@ class Watch {
 			'tooltip-ca-unwatch-expiring',
 			'tooltip-ca-unwatch-expiring-hours',
 		] );
+	}
+
+	/**
+	 * Adds or removes a page from the watchlist based on the current status.
+	 * @returns {Promise<mw.Api.AbortablePromise>} API request promise
+	 */
+	async request() {
+		await this.preloadMessages();
+
+		this.preferredExpiry = mw.user.options.get( 'watchstar-expiry', 'infinity' );
+		this.isWatched = this.article.get( 'watched' );
+
+		if ( this.isWatchListPopupEnabled ) {
+			return this.requestModules();
+		} else {
+			return this.requestWatchStatus();
+		}
+	}
+
+	requestModules() {
+		return mw.loader.using( 'mediawiki.watchstar.widgets' ).then( ( require ) => {
+			const watchlistWidgets = require( 'mediawiki.watchstar.widgets' );
+
+			// @since 1.46 a popup is shown (T417847)
+			if ( utils.isObject( watchlistWidgets ) ) {
+				return this.showWatchlistPopup();
+			} else {
+				return this.requestWatchStatus();
+			}
+		} );
+	}
+
+	requestWatchStatus() {
+		const title = this.article.getMW( 'title' ).getPrefixedDb();
+
+		const request = this.isWatched
+			? Api.unwatch( title, this.hostname )
+			: Api.watch( title, this.preferredExpiry, this.hostname );
+
+		return request
+			.then( this.showNotice )
+			.fail( this.showError );
 	}
 
 	/**
@@ -164,7 +217,6 @@ class Watch {
 
 		const mwTitle = this.article.getMW( 'title' );
 		const expiry = response.expiry || 'infinity';
-		const $link = $( '<a>' );
 
 		let message = this.isWatched ? 'addedwatchtext' : 'removedwatchtext';
 		if ( mwTitle.isTalkPage() ) {
@@ -175,7 +227,7 @@ class Watch {
 
 		// @since 1.35 - pop up notification will be loaded with OO.ui
 		// only if one or both of watchlist expiry or watchlist labels are enabled
-		if ( this.isWatchlistExpiryEnabled || this.watchlistLabelsEnabled ) {
+		if ( this.isWatchListPopupEnabled ) {
 			if ( this.isWatched ) {
 				// The message should include the 'infinite' watch period
 				message = !this.preferredExpiry || mw.util.isInfinity( this.preferredExpiry ) ? 'addedwatchindefinitelytext' : 'addedwatchexpirytext';
@@ -183,18 +235,15 @@ class Watch {
 					message += '-talk';
 				}
 			}
-			notifyPromise = this.showWatchlistPopup( $link, mwTitle, message, expiry );
+			notifyPromise = this.showWatchlistNotice( mwTitle, message, expiry );
 		} else {
 			notifyPromise = this.showBasicNotice( mwTitle, message );
 		}
 
-		// The notifications are stored as a promise, and the watch link is only updated
-		// once it is resolved. Otherwise, if $wgWatchlistExpiry set, the loading of
-		// OO.ui could cause a race condition and the link is updated before the popup
-		// actually is shown. See T263135
+		// Re-set to idle.
 		notifyPromise.always( () => {
-			const action = this.isWatched ? 'unwatch' : 'watch';
-			this.updateStatus( $link, action, 'idle', expiry, 'infinity' );
+			const otherAction = this.isWatched ? 'unwatch' : 'watch';
+			this.updateStatus( this.$watchLink, otherAction, 'idle', expiry, 'infinity' );
 		} );
 	};
 
@@ -223,18 +272,17 @@ class Watch {
 			tag: 'watch-self',
 			id: this.constructor.notificationId,
 		} );
-	};
+	}
 
 	/**
-	 * Shows an interactive watchlist popup notification with expiry and label options.
-	 * Falls back to basic notice if the popup widget fails to load or construct.
-	 * @param {JQuery} $link - jQuery link element for the watch button
+	 * Shows an interactive watchlist notification with expiry and label options.
+	 * Falls back to basic notice if the notification widget fails to load or construct.
 	 * @param {mw.Title} mwTitle - MediaWiki title object
 	 * @param {string} message - Message key
 	 * @param {string} expiry - Current expiry value
 	 * @returns {JQuery.Promise} Promise that resolves when the popup is shown
 	 */
-	showWatchlistPopup( $link, mwTitle, message, expiry ) {
+	showWatchlistNotice( mwTitle, message, expiry ) {
 		return mw.loader.using( 'mediawiki.watchstar.widgets' ).then( ( require ) => {
 			const WatchlistPopup = require( 'mediawiki.watchstar.widgets' );
 			if ( !WatchlistPopup ) {
@@ -253,13 +301,13 @@ class Watch {
 				{
 					expiryEnabled: this.isWatchlistExpiryEnabled,
 					labelsEnabled: this.watchlistLabelsEnabled,
-					$link,
+					$link: this.$watchLink,
 					message: $message,
 				},
 			];
 
-			// Remove the expiry argument that was added @since 1.45 (T265716)
-			// for the older MediaWiki versions.
+			// Remove the expiry argument added @since 1.45 (T265716)
+			// for older MediaWiki versions.
 			if ( utils.semverCompare( mw.config.get( 'wgVersion' ), '1.45.0' ) < 0 ) {
 				params.splice( 2, 1 );
 			}
@@ -272,10 +320,58 @@ class Watch {
 					id: this.constructor.notificationId,
 					autoHideSeconds: 'short',
 				} );
-			} catch {
+			} catch ( error ) {
+				utils.logException( this.constructor.name, 'Falls back to basic watch/unwatch functionality', error );
 				this.showBasicNotice( mwTitle, message );
 			}
 		} );
+	}
+
+	showWatchlistPopup() {
+		if ( this.watchlistPopup ) {
+			if ( this.watchlistPopup.isOpen ) {
+				this.watchlistPopup.isOpen = false;
+			} else {
+				this.watchlistPopup.openPopup( this.$watchLink[ 0 ] );
+			}
+			return $.Deferred().resolve().promise();
+		}
+
+		return mw.loader.using( [ '@wikimedia/codex', 'mediawiki.watchstar.widgets' ] )
+			.then( require => {
+				const Vue = require( 'vue' );
+				const watchlistWidgets = require( 'mediawiki.watchstar.widgets' );
+				const WatchlistPopup = watchlistWidgets.WatchlistPopup;
+
+				this.watchlistPopupWrapper = h( 'span.mw-watchlink-popup' );
+				utils.embed( this.watchlistPopupWrapper, document.body );
+
+				this.watchlistPopup = Vue.createMwApp( WatchlistPopup, {
+					initialAction: this.isWatched ? 'unwatch' : 'watch',
+					expiryEnabled: this.isWatchlistExpiryEnabled,
+					labelsEnabled: this.watchlistLabelsEnabled,
+					title: this.article.getMW( 'title' ),
+					dataExpiryOptions: watchlistWidgets.dataExpiryOptions,
+					preferredExpiry: this.preferredExpiry,
+					link: this.$watchLink[ 0 ],
+				} ).mount( this.watchlistPopupWrapper );
+
+				window.addEventListener( 'WatchlistPopup.watch', this.onWatchlistPopupWatch );
+				window.addEventListener( 'WatchlistPopup.unwatch', this.onWatchlistPopupUnwatch );
+			} );
+	}
+
+	onWatchlistPopupWatch = ( event ) => {
+		this.isWatched = true;
+		const expiry = event.detail?.watchResponse
+			? event.detail.watchResponse.expiry || event.detail.watchResponse._rawValue?.expiry
+			: 'infinity';
+		this.updateStatus( this.$watchLink, 'unwatch', 'idle', expiry );
+	};
+
+	onWatchlistPopupUnwatch = ( event ) => {
+		this.isWatched = false;
+		this.updateStatus( this.$watchLink, 'watch', 'idle' );
 	};
 
 	/**
@@ -313,7 +409,6 @@ class Watch {
 			// For the watchlist, also update watchlist lines.
 			if (
 				!this.article.isForeign &&
-				mw.user.options.get( 'watchlistunwatchlinks' ) &&
 				id.local.mwCanonicalSpecialPageName === 'Watchlist'
 			) {
 				utilsWatch.updateWatchlistStatus( this.article, watched, expiry );
@@ -326,7 +421,7 @@ class Watch {
 		}
 	};
 
-	/******* ARTICLE *******/
+	/******* ACTIONS *******/
 
 	/**
 	 * Gets the associated Article instance.
@@ -334,7 +429,22 @@ class Watch {
 	 */
 	getArticle() {
 		return this.article;
-	};
+	}
+
+	detach() {
+		// Detach watchlist popup and associated events
+		if ( this.watchlistPopup ) {
+			window.removeEventListener( 'WatchlistPopup.watch', this.onWatchlistPopupWatch );
+			window.removeEventListener( 'WatchlistPopup.unwatch', this.onWatchlistPopupUnwatch );
+
+			this.watchlistPopup.isOpen = false;
+			//this.watchlistPopup.unmount();
+			this.watchlistPopupWrapper.remove();
+		}
+
+		// Detach the fake watch button
+		this.$watchLink.detach();
+	}
 }
 
 export default Watch;

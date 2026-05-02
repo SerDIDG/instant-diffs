@@ -108,6 +108,8 @@
     "settings-open-in-new-tab": "Open links inside the Instant Diffs dialog in a new tab.",
     "settings-fieldset-menu": "Menu",
     "settings-show-menu-icons": "Show icons in the Instant Diffs dialog dropdown menu.",
+    "settings-show-watchlist-popup": "Show advanced options when adding or removing pages from the Watchlist.",
+    "settings-show-watchlist-popup-help": "When available, displays a popup with watchlist time period and label settings.",
     "settings-links-revision-hash": "Include section name in revision links",
     "settings-links-revision-hash-help": "The section name will also be appended as a hash to the link URL when using copy actions with the selected non-minified format.",
     "settings-links-format": "Link format for the copy action:",

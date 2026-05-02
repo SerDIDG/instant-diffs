@@ -1251,6 +1251,9 @@ class Navigation {
 	 * Detach a navigation bar from the DOM.
 	 */
 	detach() {
+		// Destroy components
+		this.watch?.detach();
+
 		// Hide menu dropdown
 		this.toggleActions( false );
 

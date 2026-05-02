@@ -176,6 +176,15 @@ export const schema = {
 					labelMsg: 'settings-show-menu-icons',
 				},
 			},
+			showWatchlistPopup: {
+				type: 'checkbox',
+				enabled: true,
+				default: true,
+				config: {
+					labelMsg: 'settings-show-watchlist-popup',
+					helpMsg: 'settings-show-watchlist-popup-help',
+				},
+			},
 			linksRevisionHash: {
 				type: 'checkbox',
 				enabled: true,
