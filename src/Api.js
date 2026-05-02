@@ -211,7 +211,7 @@ class Api {
 		};
 
 		try {
-			const data = await Api.getApi( hostname ).postWithEditToken( params );
+			const data = await Api.getApi( hostname ).postWithToken( 'csrf', params );
 			return data.setnotificationtimestamp.notificationtimestamp;
 		} catch ( error ) {
 			this.notifyError( error );
