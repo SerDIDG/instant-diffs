@@ -78,7 +78,7 @@ class Snapshot {
 		const isLink = link instanceof Link;
 		if ( !isLink ) return false;
 
-		// Check if link is valid
+		// Check if a link is valid
 		const isProcessed = link.isValid && ( link.isProcessed || ( link.hasRequest && !link.isLoaded ) );
 		if ( !isProcessed ) return false;
 

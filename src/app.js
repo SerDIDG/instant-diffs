@@ -23,6 +23,10 @@ import './styles/skins.less';
 
 /******* PAGE SPECIFIC ADJUSTMENTS *******/
 
+/**
+ * Apply page-specific adjustments based on the current MediaWiki page type.
+ * Adds CSS classes and initializes page-specific processing.
+ */
 function applyPageAdjustments() {
 	if ( id.isPageAdjustmentsApplied || !utils.isAllowed() ) return;
 
@@ -52,11 +56,19 @@ function applyPageAdjustments() {
 	}
 }
 
+/**
+ * Process changelists (RecentChanges, Watchlist, etc.).
+ * Adds styling classes to changelist lines.
+ */
 function processChangelistPage() {
 	// Add an instantDiffs-line CSS class
 	$( '.mw-changeslist-line' ).addClass( 'instantDiffs-line' );
 }
 
+/**
+ * Process user contribution pages.
+ * Fills empty diff links with placeholders and handles GlobalContributions.
+ */
 function processContributionsPage() {
 	// Fill empty links
 	const $contributionsLines = $( '.mw-contributions-list .mw-changeslist-links:not(.mw-pager-tools) > span:first-child' );
@@ -73,6 +85,11 @@ function processContributionsPage() {
 	}
 }
 
+/**
+ * Process GlobalContributions extension pages.
+ * Fixes relative links in edit summaries by adding base URLs.
+ * @see {@link https://phabricator.wikimedia.org/T398108}
+ */
 function processGlobalContributionsPage() {
 	// Fix relative links in the edit comments
 	// The bug was particularly fixed in MediaWiki 1.45.0 (T398108)
@@ -90,6 +107,11 @@ function processGlobalContributionsPage() {
 	} );
 }
 
+/**
+ * Process GlobalWatchlist extension pages.
+ * Sets up mutation observer to detect dynamic content changes.
+ * @see {@link https://phabricator.wikimedia.org/T275159}
+ */
 function processGlobalWatchlistPage() {
 	// ToDo: remove mutation observer after hooks are implemented (T275159)
 	const container = document.getElementById( 'ext-globalwatchlist-watchlistsfeed' );
@@ -98,6 +120,10 @@ function processGlobalWatchlistPage() {
 	} );
 }
 
+/**
+ * Process page history pages.
+ * Adds styling, fills empty diff links, and creates compare buttons.
+ */
 function processHistoryPage() {
 	// Add an instantDiffs-line CSS class that adds spaces between selector checkboxes
 	const $revisionLines = $( '#pagehistory > li, #pagehistory .mw-contributions-list > li' )
@@ -142,6 +168,12 @@ function processHistoryPage() {
 
 /******* PREPARE ******/
 
+/**
+ * Prepare the application after dependencies are loaded.
+ * Initializes OOJS mixins, locale variables, observers, and fetches site info.
+ * @param {Function} require - Module require function
+ * @return {Promise<PromiseSettledResult<any>[]>} Promise that resolves when all preparations complete
+ */
 function prepare( require ) {
 	// Save exported modules to the ID singleton
 	id.local.require = require;
@@ -207,6 +239,11 @@ function prepare( require ) {
 	] );
 }
 
+/**
+ * Fetch site information from the MediaWiki API.
+ * Updates mobile server configuration and server name lists.
+ * @return {Promise<void>}
+ */
 async function getSiteInfo() {
 	const { general } = await Api.getSiteInfo( [ 'general' ] ) || {};
 	if ( !utils.isEmptyObject( general ) ) {
@@ -229,6 +266,10 @@ async function getSiteInfo() {
 	}
 }
 
+/**
+ * Load i18n message files for the user's language and English fallback.
+ * @return {Promise<void>[]} Array of promises for loading message scripts
+ */
 function getMessages() {
 	/** @type {string} */
 	const userLanguage = mw.config.get( 'wgUserLanguage' );
@@ -243,6 +284,10 @@ function getMessages() {
 		} );
 }
 
+/**
+ * Assemble special page aliases and prefixed versions.
+ * Creates optimized flat arrays for special page matching.
+ */
 function assembleSpecialPages() {
 	for ( const [ name, local ] of Object.entries( Api.specialPagesLocal ) ) {
 		id.local.specialPagesLocalPrefixed[ name ] = new mw.Title( local ).getPrefixedDb();
@@ -262,6 +307,10 @@ function assembleSpecialPages() {
 	id.local.specialPagesLinksAliasesPrefixedFlat = Object.values( id.local.specialPagesLinksAliasesPrefixed ).flat();
 }
 
+/**
+ * Assemble CSS selectors and RegExps for finding diff links.
+ * Generates selectors based on server URLs and special page aliases.
+ */
 function assembleLinkSelector() {
 	// Assemble RegExp for testing for mwArticlePath
 	id.local.articlePathRegExp = new RegExp(
@@ -306,6 +355,10 @@ function assembleLinkSelector() {
 
 /******* BOOTSTRAP *******/
 
+/**
+ * Main application entry point.
+ * Initializes configuration, checks for concurrent instances, and starts the loading process.
+ */
 function app() {
 	// Merge base settings options with schema options
 	config.settings = { ...getSchemaSettings(), ...config.settings };
@@ -373,7 +426,8 @@ function app() {
 }
 
 /**
- * Load and bundle i18n language files
+ * Load and bundle i18n language files.
+ * Executes all language loaders from the bundled i18n file.
  */
 function i18nBundle() {
 	// Require the bundled language loaders
@@ -385,6 +439,10 @@ function i18nBundle() {
 	}
 }
 
+/**
+ * Load external dependencies (styles and scripts).
+ * Starts the preparation process once dependencies are loaded.
+ */
 function load() {
 	mw.loader.load( utils.server( id.config.dependencies.styles ), 'text/css' );
 	mw.loader.using( id.config.dependencies.main )
@@ -398,6 +456,11 @@ function load() {
 		} );
 }
 
+/**
+ * Called when the application is ready to process content.
+ * Finalizes settings, assembles selectors, and sets up content processing hooks.
+ * @return {Promise<void>}
+ */
 async function ready() {
 	await settings.processDefaults();
 	utils.processMessages();
@@ -429,6 +492,11 @@ async function ready() {
 	mw.hook( `${ id.config.prefix }.replace` ).add( processReplace );
 }
 
+/**
+ * Process content from the 'wikipage.content' hook.
+ * Handles first run initialization and permission checks.
+ * @param {JQuery<HTMLElement>} $context - jQuery context containing content to process
+ */
 function processContent( $context ) {
 	// Check the including / excluding rules only for the 'wikipage.content' hook
 	if ( !$context || !utils.isAllowed() ) return;
@@ -450,16 +518,24 @@ function processContent( $context ) {
 	}
 }
 
+/**
+ * Process links in the given context.
+ * Finds unprocessed diff links, creates Link instances, and fires processing hooks.
+ * @param {JQuery<HTMLElement>} $context - jQuery context to search for links
+ */
 function process( $context ) {
 	if ( !$context ) return;
 
 	// Track on process start time
 	id.timers.processStart = mw.now();
 
-	// Get all links using the assembled selector and skip those already processed
-	const links = Array.from( Link.findLinks( $context ) )
-		.filter( ( node ) => !Link.hasLink( node ) )
-		.map( ( node ) => new Link( node ) );
+	// Get all unprocessed links and instantiate Link objects
+	// Using for-of loop instead of .filter().map() to reduce iterations
+	const links = [];
+	for ( const node of Link.findLinks( $context ) ) {
+		if ( Link.hasLink( node ) ) continue;
+		links.push( new Link( node ) );
+	}
 
 	// Get only processed links
 	const processedLinks = links.filter( link => link.isValid );
@@ -478,6 +554,12 @@ function process( $context ) {
 	mw.hook( `${ id.config.prefix }.processed` ).fire( processedLinks );
 }
 
+/**
+ * Handle replacement of a standalone instance with a non-standalone instance.
+ * @param {Object} settingOptions - New setting options
+ * @param {Object} defaultOptions - New default options
+ * @return {boolean} True if replacement occurred
+ */
 function handleReplace( settingOptions, defaultOptions ) {
 	if ( id.modules.settings.get( 'standalone' ) && !defaultOptions.standalone ) {
 		// Call an internal hook to modify settings of the original instance.
@@ -489,6 +571,13 @@ function handleReplace( settingOptions, defaultOptions ) {
 	return false;
 }
 
+/**
+ * Process configuration replacement for a running instance.
+ * Updates settings and re-processes content with new configuration.
+ * @param {Object} settingOptions - New setting options
+ * @param {Object} defaultOptions - New default options
+ * @return {Promise<void>}
+ */
 async function processReplace( settingOptions, defaultOptions ) {
 	if ( !settingOptions || !defaultOptions ) return;
 
@@ -508,6 +597,11 @@ async function processReplace( settingOptions, defaultOptions ) {
 	}
 }
 
+/**
+ * IntersectionObserver callback to handle link visibility changes.
+ * Triggers link intersection handlers when links enter the viewport.
+ * @param {IntersectionObserverEntry[]} entries - Array of intersection entries
+ */
 function observeInteractions( entries ) {
 	if ( id.isUnloading ) return;
 
@@ -521,6 +615,11 @@ function observeInteractions( entries ) {
 	} );
 }
 
+/**
+ * MutationObserver callback to handle DOM changes.
+ * Processes newly added content for diff links.
+ * @param {MutationRecord[]} entries - Array of mutation records
+ */
 function observeMutations( entries ) {
 	if ( id.isUnloading ) return;
 
@@ -531,6 +630,11 @@ function observeMutations( entries ) {
 	} );
 }
 
+/**
+ * Handle page refresh/restore from the browser cache (pageshow event).
+ * Resets an unloading flag when the page is restored from bfcache.
+ * @param {PageTransitionEvent} event - Page transition event
+ */
 function refresh( event ) {
 	// Session was restored from the browser cache
 	if ( event.persisted ) {
@@ -538,6 +642,10 @@ function refresh( event ) {
 	}
 }
 
+/**
+ * Handle page unload (beforeunload event).
+ * Sets a flag to prevent processing during when the page is unloaded.
+ */
 function unload() {
 	id.isUnloading = true;
 }
