@@ -22,9 +22,9 @@ class Api {
 	static foreignApi = {};
 
 	/**
-	 * Gets the Api instance.
-	 * @param {import('./Article').default|string} [articleOrHostname]
-	 * @return {mw.Api|mw.ForeignApi}
+	 * Gets the Api instance (local or foreign based on hostname).
+	 * @param {import('./Article').default|string} [articleOrHostname] - Article instance or hostname
+	 * @returns {mw.Api} mw.Api or mw.ForeignApi instance
 	 */
 	static getApi( articleOrHostname ) {
 		const hostname = articleOrHostname instanceof Article ? articleOrHostname.get( 'hostname' ) : articleOrHostname;
@@ -45,34 +45,31 @@ class Api {
 	}
 
 	/**
-	 * mw.Api.get wrapper.
-	 * // @param {import('types-mediawiki/api_params').UnknownApiParams} params
-	 * @param {Object} params
-	 * @param {import('./Article').default|string} [articleOrHostname]
-	 * @return {mw.Api.AbortablePromise}
+	 * mw.Api.get wrapper for GET requests.
+	 * @param {Object} params - API request parameters
+	 * @param {import('./Article').default|string} [articleOrHostname] - Article instance or hostname
+	 * @returns {JQuery.Promise} Promise that resolves with API response data
 	 */
 	static get( params, articleOrHostname ) {
 		return this.getApi( articleOrHostname ).get( params );
 	}
 
 	/**
-	 * mw.Api.post wrapper.
-	 * //@param {import('types-mediawiki/api_params').UnknownApiParams} params
-	 * @param {Object} params
-	 * @param {import('./Article').default|string} [articleOrHostname]
-	 * @return {mw.Api.AbortablePromise}
+	 * mw.Api.post wrapper for POST requests.
+	 * @param {Object} params - API request parameters
+	 * @param {import('./Article').default|string} [articleOrHostname] - Article instance or hostname
+	 * @returns {JQuery.Promise} Promise that resolves with API response data
 	 */
 	static post( params, articleOrHostname ) {
 		return this.getApi( articleOrHostname ).post( params );
 	}
 
 	/**
-	 * mw.Api.postWithToken wrapper.
-	 * //@param {import('types-mediawiki/api_params').UnknownApiParams} params
-	 * @param {string} action
-	 * @param {Object} params
-	 * @param {import('./Article').default|string} [articleOrHostname]
-	 * @return {mw.Api.AbortablePromise}
+	 * mw.Api.postWithToken wrapper for authenticated POST requests.
+	 * @param {string} action - Token type (e.g., 'csrf', 'watch')
+	 * @param {Object} params - API request parameters
+	 * @param {import('./Article').default|string} [articleOrHostname] - Article instance or hostname
+	 * @returns {JQuery.Promise} Promise that resolves with API response data
 	 */
 	static postWithToken( action, params, articleOrHostname ) {
 		return this.getApi( articleOrHostname ).postWithToken( action, params );

@@ -49,7 +49,7 @@ class GlobalPage extends Page {
 
 	/**
 	 * Get a promise array for the main load request.
-	 * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
+	 * @return {(Promise|JQuery.jqXHR|JQuery.Promise|Promise<mw.Api.AbortablePromise>)[]}
 	 */
 	getLoadPromises() {
 		return [
@@ -61,7 +61,7 @@ class GlobalPage extends Page {
 
 	/**
 	 * Get a promise array for the secondary load request.
-	 * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
+	 * @return {(Promise|JQuery.jqXHR|JQuery.Promise|Promise<mw.Api.AbortablePromise>)[]}
 	 */
 	getLoadSecondaryPromises() {
 		const promises = super.getLoadSecondaryPromises();
@@ -78,7 +78,7 @@ class GlobalPage extends Page {
 
 	/**
 	 * Request process to get diff compare content.
-	 * @returns {mw.Api.AbortablePromise}
+	 * @returns {JQuery.Promise}
 	 */
 	requestProcess() {
 		const values = this.article.getValues();
@@ -138,7 +138,7 @@ class GlobalPage extends Page {
 				} );
 			}
 
-			// Process namespace list into mw.config format
+			// Process a namespace list into the mw.config format
 			const namespaceConfig = getNamespaceConfig( this.article.get( 'hostname' ) );
 			this.configManager.setValues( namespaceConfig );
 
@@ -317,7 +317,7 @@ class GlobalPage extends Page {
 	}
 
 	async renderErrorContent() {
-		// Render a custom error warning is a revision was hidden
+		// Render a custom error warning if a revision was hidden
 		if ( this.errorData?.code === 'missingcontent' ) {
 			await this.renderDeletedWarning();
 		} else {

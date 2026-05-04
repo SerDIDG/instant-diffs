@@ -13,7 +13,7 @@ class RequestManager {
 	 * mw.Api.get wrapper.
 	 * @param {Object} params
 	 * @param {import('./Article').default|string} [articleOrHostname]
-	 * @returns {mw.Api.AbortablePromise}
+	 * @returns {JQuery.Promise}
 	 */
 	get( params, articleOrHostname ) {
 		const request = Api.get( params, articleOrHostname );
@@ -50,7 +50,7 @@ class RequestManager {
 
 	/**
 	 * Add promise to the set.
-	 * @param {JQuery.jqXHR|mw.Api.AbortablePromise} request
+	 * @param {JQuery.Promise|JQuery.jqXHR|mw.Api.AbortablePromise} request
 	 * @returns {JQuery.Promise|mw.Api.AbortablePromise}
 	 */
 	add( request ) {

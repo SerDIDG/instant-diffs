@@ -529,16 +529,25 @@ function process( $context ) {
 	// Track on process start time
 	id.timers.processStart = mw.now();
 
+	// Get all link nodes in the provided context that matched the selectors
+	id.timers.findLinksStart = mw.now();
+	const nodes = Link.findLinks( $context );
+	id.timers.findLinksEnd = mw.now();
+
 	// Get all unprocessed links and instantiate Link objects
 	// Using for-of loop instead of .filter().map() to reduce iterations
 	const links = [];
-	for ( const node of Link.findLinks( $context ) ) {
+	const processedLinks = [];
+	for ( const node of nodes ) {
 		if ( Link.hasLink( node ) ) continue;
-		links.push( new Link( node ) );
-	}
 
-	// Get only processed links
-	const processedLinks = links.filter( link => link.isValid );
+		const link = new Link( node );
+		links.push( link );
+
+		if ( link.isValid ) {
+			processedLinks.push( link );
+		}
+	}
 
 	// Track on process end time
 	id.timers.processEnd = mw.now();
@@ -547,7 +556,8 @@ function process( $context ) {
 	if ( settings.get( 'logTimers' ) && links.length > 0 ) {
 		utils.log( 'info', `links found: ${ links.length }` );
 		utils.log( 'info', `links processed: ${ processedLinks.length }` );
-		utils.logTimer( 'process time', id.timers.processStart, id.timers.processEnd );
+		utils.logTimer( 'links selector time', id.timers.findLinksStart, id.timers.findLinksEnd );
+		utils.logTimer( 'links process time', id.timers.processStart, id.timers.processEnd );
 	}
 
 	// Fire the process end hook

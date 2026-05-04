@@ -139,7 +139,7 @@ class Watch {
 
 	/**
 	 * Adds or removes a page from the watchlist based on the current status.
-	 * @returns {Promise<mw.Api.AbortablePromise>} API request promise
+	 * @returns {JQuery.Promise} API request promise
 	 */
 	async request() {
 		await this.preloadMessages();
@@ -147,18 +147,23 @@ class Watch {
 		this.preferredExpiry = mw.user.options.get( 'watchstar-expiry', 'infinity' );
 		this.isWatched = this.article.get( 'watched' );
 
-		if ( this.isWatchListPopupEnabled ) {
+		if ( settings.get( 'expEnableWatchlistPopup' ) && this.isWatchListPopupEnabled ) {
 			return this.requestModules();
 		} else {
 			return this.requestWatchStatus();
 		}
 	}
 
+	/**
+	 * Loads watchlist widget modules and determines whether to show a popup or a basic status.
+	 * @returns {Promise} Promise that resolves when modules are loaded and action is taken
+	 * @private
+	 */
 	requestModules() {
 		return mw.loader.using( 'mediawiki.watchstar.widgets' ).then( ( require ) => {
 			const watchlistWidgets = require( 'mediawiki.watchstar.widgets' );
 
-			// @since 1.46 a popup is shown (T417847)
+			// @since 1.47 a popup is shown (T417847)
 			if ( utils.isObject( watchlistWidgets ) ) {
 				return this.showWatchlistPopup();
 			} else {
@@ -167,6 +172,11 @@ class Watch {
 		} );
 	}
 
+	/**
+	 * Performs the watch/unwatch API request.
+	 * @returns {JQuery.Promise} API request promise that resolves with watch status
+	 * @private
+	 */
 	requestWatchStatus() {
 		const title = this.article.getMW( 'title' ).getPrefixedDb();
 
@@ -323,6 +333,12 @@ class Watch {
 		} );
 	}
 
+	/**
+	 * Shows the watchlist popup interface for managing watch status, expiry, and labels.
+	 * @since MediaWiki 1.47 (T417847)
+	 * @returns {JQuery.Promise} Promise that resolves when popup is shown or toggled
+	 * @private
+	 */
 	showWatchlistPopup() {
 		if ( this.watchlistPopup ) {
 			if ( this.watchlistPopup.isOpen ) {
@@ -357,6 +373,12 @@ class Watch {
 			} );
 	}
 
+	/**
+	 * Event handler for WatchlistPopup watch events.
+	 * Updates watch status to watched state with expiry information.
+	 * @param {CustomEvent} event - Custom event with watch response details
+	 * @private
+	 */
 	onWatchlistPopupWatch = ( event ) => {
 		this.isWatched = true;
 		const expiry = event.detail?.watchResponse
@@ -365,6 +387,12 @@ class Watch {
 		this.updateStatus( this.$watchLink, 'unwatch', 'idle', expiry );
 	};
 
+	/**
+	 * Event handler for WatchlistPopup unwatch events.
+	 * Updates watch status to unwatched state.
+	 * @param {CustomEvent} event - Custom event with unwatch response details
+	 * @private
+	 */
 	onWatchlistPopupUnwatch = ( event ) => {
 		this.isWatched = false;
 		this.updateStatus( this.$watchLink, 'watch', 'idle' );
@@ -378,13 +406,17 @@ class Watch {
 	 * @param {mw.Title|JQuery<HTMLElement>} titleOrLink - Title or link element
 	 * @param {('watch'|'unwatch')} action - Next available action
 	 * @param {('idle'|'loading')} state - Current state
-	 * @param {string} [expiry] - Expiry timestamp or 'infinity'
-	 * @param {string} [expirySelected] - Selected expiry value
+	 * @param {string} [expiry='infinity'] - Expiry timestamp or 'infinity'
+	 * @param {string} [expirySelected='infinity'] - Selected expiry value
 	 */
-	updateStatus = ( titleOrLink, action, state, expiry, expirySelected ) => {
+	updateStatus = (
+		titleOrLink,
+		action,
+		state,
+		expiry = 'infinity',
+		expirySelected = 'infinity',
+	) => {
 		const watched = action === 'unwatch';
-		expiry ||= 'infinity';
-		expirySelected ||= 'infinity';
 
 		// Update the article watch status
 		this.isWatched = watched;
@@ -427,6 +459,10 @@ class Watch {
 		return this.article;
 	}
 
+	/**
+	 * Cleans up and detaches watch-related UI elements and event listeners.
+	 * Removes the watchlist popup, event handlers, and fake watch button from the DOM.
+	 */
 	detach() {
 		// Detach watchlist popup and associated events
 		if ( this.watchlistPopup ) {

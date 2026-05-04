@@ -33,7 +33,7 @@ class View {
 	};
 
 	/**
-	 * Get size object by given name.
+	 * Get a size object by a given name.
 	 * @param {string} name
 	 * @returns {Object}
 	 */
@@ -129,7 +129,7 @@ class View {
 	}
 
 	/**
-	 * Setup configuration options.
+	 * Set up the configuration options.
 	 * @param {import('./Link').default|import('./ViewButton').default} link a Link, or a ViewButton instance
 	 * @param {Object} [options] configuration options
 	 * @param {import('./Page').default} [options.initiatorPage] a Page instance
@@ -158,7 +158,7 @@ class View {
 			// Get a new snapshot of the links to properly calculate indexes for navigation between them
 			const options = {};
 
-			// Add filter by article type when link generated my MediaWiki in the changes lists
+			// Add filter by article type when a link generated my MediaWiki in the changes lists
 			if ( this.opener.link.getMW?.().hasLine ) {
 				options.filterType = this.opener.link.getArticle().get( 'type' );
 				options.filterMWLine = true;
@@ -207,7 +207,7 @@ class View {
 	};
 
 	/**
-	 * Join a dialog and a dialog content dependencies.
+	 * Join dialog dependencies with content dependencies.
 	 * @returns {Array}
 	 */
 	getDependencies() {
@@ -275,7 +275,7 @@ class View {
 		}
 
 		if ( !this.isOpen ) {
-			// Save document scroll top position before the dialog opens.
+			// Save a document scroll top position before the dialog opens.
 			this.document.scrollableRoot = OO.ui.Element.static.getRootScrollableElement( document.body );
 			this.document.scrollTop = this.document.scrollableRoot.scrollTop;
 
@@ -349,9 +349,23 @@ class View {
 		if ( utils.isFunction( this.opener.options.onClose ) && this.opener.link !== this.link ) {
 			this.opener.options.onClose( this );
 		}
-		if ( utils.isFunction( this.initiator.options.onClose ) ) {
+		if ( utils.isFunction( this.initiator.options.onClose ) && this.initiator.link !== this.link ) {
 			this.initiator.options.onClose( this );
 		}
+
+		// Reset the opener and initiator links
+		this.opener = {
+			link: null,
+			options: {},
+		};
+		this.initiator = {
+			link: null,
+			options: {},
+		};
+		this.previousInitiator = {
+			link: null,
+			options: {},
+		};
 
 		// Restore the document scroll top position after the dialog closes.
 		// In the revision view, some module dependencies cause the page

@@ -1,8 +1,6 @@
 import * as utils from './utils';
 import { getHrefAbsolute } from './utils-article';
 
-import settings from './settings';
-
 /**
  * Gets how many expiry days left in the watchlist.
  * @param {string} expiry
@@ -92,7 +90,7 @@ export function updateWatchlistStatus( article, watched, expiry ) {
 		forEachWatchlistLines( title, ( rowTitle, $row, $link ) => {
 			$row
 				.find( '.mw-changeslist-line-inner, .mw-enhanced-rc-nested' )
-				.addBack( '.mw-enhanced-rc-nested' ) // For matching log sub-entry
+				.addBack( '.mw-enhanced-rc-nested' ) // For matching log subentry
 				.addClass( 'mw-changelist-line-inner-unwatched' );
 
 			if ( $link.length > 0 ) {
@@ -209,7 +207,7 @@ function renderWatchlistExpiryStatus( $row, message ) {
 }
 
 /**
- * Callback for utility function.
+ * Callback for the utility function.
  * @callback forEachWatchlistLinesCallback
  * @param {string} ttile
  * @param {JQuery<HTMLElement>} $row
@@ -237,10 +235,10 @@ function forEachWatchlistLines( title, callback ) {
 			const rowTitle = String( $this.data( 'targetPage' ) );
 
 			if ( rowTitle === title || rowTitle === associatedTitle ) {
-				// EnhancedChangesList groups log entries by performer rather than target page.
+				// EnhancedChangesList groups log entries by performer rather than the target page.
 				// Therefore...
 				// * If using OldChangesList, use the <li>
-				// * If using EnhancedChangesList and $this is part of a grouped log entry, use the <td> sub-entry
+				// * If using EnhancedChangesList and $this is part of a grouped log entry, use the <td> subentry
 				// * If using EnhancedChangesList and $this is not part of a grouped log entry, use the <table> grouped entry
 				const $row = $this
 					.closest( 'li, .mw-enhancedchanges-checkbox + table.mw-changeslist-log td[data-target-page], table' );
@@ -265,7 +263,7 @@ function forEachWatchlistLines( title, callback ) {
 export function updateGlobalWatchlistStatus( article, watched, expiry ) {
 	if ( !mw.globalwatchlist ) return;
 
-	// Follows defensive programming fot the external scripts
+	// Follows defensive programming for the external scripts
 	try {
 		const watchedSites = mw.globalwatchlist.watchedSites.siteList
 			.find( entry => entry.site === article.get( 'hostname' ) );
