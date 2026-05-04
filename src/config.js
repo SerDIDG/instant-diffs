@@ -224,6 +224,8 @@ export const config = {
 		monobook: [ 'monobook-body' ],
 		minerva: [ 'content' ],
 		timeless: [ 'mw-body' ],
+		fandomdesktop: ['page-content'],
+		fandommobile: ['page-content'],
 	},
 
 	// Content selectors

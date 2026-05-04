@@ -203,7 +203,7 @@ export function renderUserInfoCardButton( user ) {
 	);
 
 	// Set non-standard attributes
-	buton.setAttribute('aria-haspopover', 'dialog');
+	buton.setAttribute( 'aria-haspopover', 'dialog' );
 
 	return buton;
 }

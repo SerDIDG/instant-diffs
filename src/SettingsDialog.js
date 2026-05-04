@@ -143,9 +143,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
 	/******* CONTENTS ******/
 
-	renderContents() {
+	async renderContents() {
 		// Render contents
-		this.renderEditContent();
+		await this.renderEditContent();
 		this.renderFinishContent();
 		this.renderEmptyContent();
 
@@ -153,10 +153,10 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		this.processLinksAttr( this.stackLayout.$element );
 	}
 
-	renderEditContent() {
+	async renderEditContent() {
 		// Render settings schema
 		for ( const [ name, item ] of Object.entries( schema ) ) {
-			this.tabs[ name ] = this.renderTab( name, item );
+			this.tabs[ name ] = await this.renderTab( name, item );
 		}
 
 		// Get only visible tabs
@@ -255,7 +255,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
 	/******* CONSTRUCTOR *******/
 
-	renderTab( name, item ) {
+	async renderTab( name, item ) {
 		item = utils.optionsMerge( {
 			name: name,
 			fields: {},
@@ -271,7 +271,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
 		// Fields
 		for ( const [ fieldName, fieldItem ] of Object.entries( item.fields ) ) {
-			this.fields[ fieldName ] = item.fields[ fieldName ] = this.renderField( fieldName, fieldItem );
+			this.fields[ fieldName ] = item.fields[ fieldName ] = await this.renderField( fieldName, fieldItem );
 		}
 
 		// Fieldset
@@ -283,8 +283,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
 		// Tab
 		const hasFields = Object.keys( item.fields )
-			.map( entry => settings.check( entry ) )
-			.some( entry => entry === true );
+			.some( fieldName => this.fields[ fieldName ].enabled );
 
 		item.tab = new OO.ui.TabPanelLayout( item.name, {
 			...item.config,
@@ -295,7 +294,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		return item;
 	}
 
-	renderField( name, item ) {
+	async renderField( name, item ) {
 		item = utils.optionsMerge( {
 			name: name,
 			type: null,
@@ -314,6 +313,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		}, item );
 
 		// Validate
+		item.enabled = await this.checkField( name, item );
 		item.config = this.validateFieldConfig( item.config );
 
 		// Options
@@ -363,9 +363,15 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
 		// Field
 		item.field = new OO.ui.FieldLayout( item.input, item.config )
-			.toggle( settings.check( item.name ) );
+			.toggle( item.enabled );
 
 		return item;
+	}
+
+	async checkField( name, field ) {
+		if ( !settings.check( name ) ) return false;
+		if ( !utils.isFunction( field.enabledCondition ) ) return true;
+		return await field.enabledCondition( name, field );
 	}
 
 	renderInputOption( name, item, type ) {
@@ -496,9 +502,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	/******* SETUP PROCESS *******/
 
 	getSetupProcess( data ) {
-		return super.getSetupProcess( data ).next( () => {
+		return super.getSetupProcess( data ).next( async () => {
 			this.$body.scrollTop( 0 );
-			this.processActionRequest();
+			await this.processActionRequest();
 		} );
 	};
 
@@ -528,12 +534,12 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
 	/******* REQUEST PROCESS ******/
 
-	processActionRequest() {
+	async processActionRequest() {
 		// Show the pending loader in the header
 		this.pushPending();
 
 		// Render panels contents
-		this.renderContents();
+		await this.renderContents();
 
 		// Set an action panel
 		this.setPanel( this.visibleTabWidgets.length > 0 ? 'edit' : 'empty' );

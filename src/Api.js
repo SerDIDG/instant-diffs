@@ -244,12 +244,16 @@ class Api {
 
 	/**
 	 * Gets the project info.
-	 * @param {Array} fields
+	 * @param {Array} [fields=['general', 'skins']]
 	 * @param {import('./Article').default|string} [articleOrHostname]
 	 * @param {import('./RequestManager').default} [requestManager]
 	 * @return {Promise<*|{}>}
 	 */
-	static async getSiteInfo( fields = [], articleOrHostname, requestManager ) {
+	static async getSiteInfo(
+		fields = [ 'general', 'skins' ],
+		articleOrHostname,
+		requestManager,
+	) {
 		let hostname = articleOrHostname instanceof Article ? articleOrHostname.get( 'hostname' ) : articleOrHostname;
 		if ( utils.isEmpty( hostname ) ) {
 			hostname = mw.config.get( 'wgServerName' );
@@ -262,7 +266,7 @@ class Api {
 		}
 
 		// Ty to get data from the static property
-		if ( !utils.isEmptyObject( this.siteInfoAliases[ hostname ] ) || !utils.isEmptyObject( this.siteInfo[ hostname ] ) ) {
+		if ( this.checkSiteInfo( hostname, fields ) ) {
 			return this.siteInfoAliases[ hostname ] || this.siteInfo[ hostname ];
 		}
 
@@ -319,6 +323,30 @@ class Api {
 			site.general.mobileservername = utils.getComponentFromUrl( 'hostname', site.general.mobileserver );
 			this.siteInfoAliases[ site.general.mobileservername ] = site;
 		}
+	}
+
+	/**
+	 * @private
+	 */
+	static checkSiteInfo( hostname, fields = [] ) {
+		if ( this.siteInfoAliases[ hostname ] ) {
+			return utils.isEmpty( fields ) || fields.every( field => this.siteInfoAliases[ hostname ][ field ] );
+		}
+		if ( this.siteInfo[ hostname ] ) {
+			return utils.isEmpty( fields ) || fields.every( field => this.siteInfo[ hostname ][ field ] );
+		}
+		return false;
+	}
+
+	/**
+	 * Check if the site has a specified registered skin.
+	 * @param {string} name - Skin code name
+	 * @param {import('./Article').default|string} [articleOrHostname] - Article instance or hostname
+	 * @returns {Promise<*>}
+	 */
+	static async siteInfoHasSkin( name, articleOrHostname ) {
+		const { skins } = await Api.getSiteInfo( [ 'skins' ], articleOrHostname ) || {};
+		return skins?.some( skin => skin.code === name );
 	}
 
 	/******* SPECIAL PAGES *******/

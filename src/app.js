@@ -245,7 +245,7 @@ function prepare( require ) {
  * @return {Promise<void>}
  */
 async function getSiteInfo() {
-	const { general } = await Api.getSiteInfo( [ 'general' ] ) || {};
+	const { general } = await Api.getSiteInfo() || {};
 	if ( !utils.isEmptyObject( general ) ) {
 		// Add a mobile server name to the mw.config
 		// ToDo: mobile server name will be deprecated soon (T214998)
