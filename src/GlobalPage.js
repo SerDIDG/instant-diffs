@@ -3,6 +3,7 @@ import * as utils from './utils';
 import * as utilsPage from './utils-page';
 import * as utilsArticle from './utils-article';
 import { getNamespaceConfig } from './utils-api';
+import { getDate } from './utils-user';
 
 import Api from './Api';
 import Page from './Page';
@@ -148,7 +149,7 @@ class GlobalPage extends Page {
 	}
 
 	/**
-	 * Request MediaWiki interface messages is missing.
+	 * Request missing MediaWiki interface messages.
 	 * @returns {Promise}
 	 */
 	async requestMessages() {
@@ -165,6 +166,7 @@ class GlobalPage extends Page {
 			'rev-deleted-user',
 			'rev-deleted-comment',
 			'diff-empty',
+			'checkuser-userinfocard-toggle-button-aria-label',
 		];
 		await Api.loadMessage( messages );
 	}
@@ -303,7 +305,7 @@ class GlobalPage extends Page {
 			utilsPage.processRevisionDiffTable( this.nodes.$table );
 		}
 
-		// Render mobile diff footer to the top
+		// Render and append mobile diff footer to the bottom
 		if ( this.data.toid ) {
 			const footer = utilsPage.renderMobileDiffFooter( {
 				title: this.data.totitle,
@@ -312,7 +314,7 @@ class GlobalPage extends Page {
 				user: this.data.touser,
 				userhidden: this.data.touserhidden,
 			} );
-			utils.embed( footer, this.nodes.$body, 'prependTo' );
+			utils.embed( footer, this.nodes.$body, 'appendTo' );
 		}
 	}
 
@@ -465,7 +467,7 @@ class GlobalPage extends Page {
 		const title = this.article.get( 'revid' ) === this.article.get( 'curRevid' )
 			? 'currentrev-asof' : 'revisionasof';
 		this.nodes.diffTitle = h( 'h2', { class: 'diff-currentversion-title' },
-			mw.msg( title, utilsPage.getUserDate( this.data.totimestamp ) ),
+			mw.msg( title, getDate( this.data.totimestamp ) ),
 		);
 		this.nodes.$diffTitle = $( this.nodes.diffTitle ).appendTo( this.nodes.$body );
 

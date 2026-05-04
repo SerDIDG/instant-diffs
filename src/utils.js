@@ -742,6 +742,7 @@ export function hs( ...children ) {
 export function hf( ...children ) {
 	const fragment = new DocumentFragment();
 	for ( const child of children ) {
+		if ( !child ) continue;
 		fragment.append( child );
 	}
 	return fragment;

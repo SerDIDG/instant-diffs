@@ -65,8 +65,8 @@ export const config = {
 		page: {
 			'*': [
 				'ext.thanks.corethank',
-				'ext.checkUser.userInfoCard',
 				'ext.checkUser.styles',
+				'ext.checkUser.userInfoCard',
 			],
 		},
 		revision: {
@@ -86,6 +86,7 @@ export const config = {
 		skins: {
 			minerva: {
 				'*': [
+					'codex-styles',
 					'skins.minerva.categories.styles',
 				],
 			},

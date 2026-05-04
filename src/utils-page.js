@@ -2,6 +2,7 @@ import id from './id';
 import * as utils from './utils';
 import { getModuleExport } from './utils-oojs';
 import { getHref, getHrefAbsolute } from './utils-article';
+import { getDate, isRegistered, isTemporary } from './utils-user';
 
 import Api from './Api';
 import Article from './Article';
@@ -93,8 +94,8 @@ export function renderDiffTableSide( data ) {
 		h( 'div', { id: `${ prefix }1` },
 			h( 'strong',
 				!data.texthidden
-					? h( 'a', { href: getHref( article ) }, mw.msg( title, getUserDate( data.timestamp ) ) )
-					: h( 'span', { class: 'history-deleted' }, mw.msg( title, getUserDate( data.timestamp ) ) ),
+					? h( 'a', { href: getHref( article ) }, mw.msg( title, getDate( data.timestamp ) ) )
+					: h( 'span', { class: 'history-deleted' }, mw.msg( title, getDate( data.timestamp ) ) ),
 			),
 		),
 		h( 'div', { id: `${ prefix }2` },
@@ -160,6 +161,7 @@ export function renderUserLink( article, user ) {
 	);
 
 	return hf(
+		renderUserInfoCardButton( user ),
 		h( 'a', {
 				class: 'mw-userlink',
 				title: title,
@@ -175,21 +177,35 @@ export function renderUserLink( article, user ) {
 }
 
 /**
- * Gets a date in the user format.
- * Uses "mediawiki.DateFormatter" module for formatting if exists, otherwise uses "date.toLocaleString".
- * @param {string|Date} date a date string, or a Date instance
- * @returns {string|undefined}
+ * Renders the user info card button element.
+ * @returns {HTMLAnchorElement|undefined} The created button element
  */
-export function getUserDate( date ) {
-	if ( utils.isString( date ) ) {
-		date = new Date( date );
-	}
-	if ( !( date instanceof Date ) ) return;
+export function renderUserInfoCardButton( user ) {
+	if ( !mw.user.options.get( 'checkuser-userinfocard-enable' ) || !isRegistered( user ) ) return;
 
-	const DateFormatter = utils.moduleRequire( 'mediawiki.DateFormatter' );
-	return DateFormatter
-		? DateFormatter.forUser().formatTimeAndDate( date )
-		: date.toLocaleString();
+	const iconClasses = [
+		'cdx-button__icon',
+		'ext-checkuser-userinfocard-button__icon',
+		( isTemporary( user )
+			? 'ext-checkuser-userinfocard-button__icon--userTemporary'
+			: 'ext-checkuser-userinfocard-button__icon--userAvatar' ),
+	];
+
+	const buton = h( 'a', {
+			class: 'ext-checkuser-userinfocard-button cdx-button cdx-button--action-default cdx-button--weight-quiet cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--icon-only cd-comment-author-userInfoCard-button',
+			role: 'button',
+			tabindex: 0,
+			href: 'javascript:void(0)',
+			ariaLabel: mw.msg( 'checkuser-userinfocard-toggle-button-aria-label' ),
+			'data-username': user,
+		},
+		h( 'span', { class: iconClasses } ),
+	);
+
+	// Set non-standard attributes
+	buton.setAttribute('aria-haspopover', 'dialog');
+
+	return buton;
 }
 
 /**

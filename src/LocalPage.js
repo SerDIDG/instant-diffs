@@ -304,8 +304,8 @@ class LocalPage extends Page {
 		this.nodes.$diffMobileFooter = this.nodes.$data.filter( '.mw-diff-mobile-footer' );
 		if ( this.nodes.$diffMobileFooter.length === 0 ) return;
 
-		// Prepend mobile diff footer to the top
-		this.nodes.$diffMobileFooter.prependTo( this.nodes.$body );
+		// Append mobile diff footer to the bottom
+		this.nodes.$diffMobileFooter.appendTo( this.nodes.$body );
 
 		// @see {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/50449784d02a0a46297fdd040bdc02a3ca76688e/resources/src/mediawiki.diff/undoButtonToggle.js#8}
 		const buttonClasses = 'cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--action-default';
