@@ -328,6 +328,15 @@ export function inArray( arrOrStr, entry ) {
 }
 
 /**
+ * Remove duplicates from an array.
+ * @param {Array<*>} arr
+ * @returns {any[]}
+ */
+export function arrayUnique( arr ) {
+	return [ ...new Set( arr ) ];
+}
+
+/**
  * Deep merge configuration objects.
  * Arrays and primitive values are replaced, not merged.
  * @template {Record<string, any>} T
@@ -690,7 +699,7 @@ export function getSpecialPageAliases( data, name ) {
 	localNameParts[ 0 ] = namespace;
 
 	const values = [ name, localName, nameParts.join( ':' ), localNameParts.join( ':' ) ];
-	return [ ...new Set( values ) ];
+	return arrayUnique( values );
 }
 
 export function getCanonicalSpecialPage( value ) {

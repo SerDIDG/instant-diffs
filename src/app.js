@@ -208,11 +208,11 @@ function prepare( require ) {
 	const mwServers = [ mw.config.get( 'wgServer' ), mw.config.get( 'wgMobileServer' ) ]
 		.filter( value => !utils.isEmpty( value ) )
 		.map( utils.getHref );
-	id.local.mwServers = [ ...new Set( mwServers ) ];
+	id.local.mwServers = utils.arrayUnique( mwServers );
 
 	const mwServerNames = [ mw.config.get( 'wgServerName' ), mw.config.get( 'wgMobileServerName' ) ]
 		.filter( value => !utils.isEmpty( value ) );
-	id.local.mwServerNames = [ ...new Set( mwServerNames ) ];
+	id.local.mwServerNames = utils.arrayUnique( mwServerNames );
 
 	// Save the current version number to the local storage
 	id.local.lastVersion = mw.storage.get( `${ id.config.prefix }-version` );
@@ -258,11 +258,11 @@ async function getSiteInfo() {
 		const mwServers = [ ...id.local.mwServers, general.server, general.mobileserver ]
 			.filter( value => !utils.isEmpty( value ) )
 			.map( utils.getHref );
-		id.local.mwServers = [ ...new Set( mwServers ) ];
+		id.local.mwServers = utils.arrayUnique( mwServers );
 
 		const mwServerNames = [ ...id.local.mwServerNames, general.servername, general.mobileservername ]
 			.filter( value => !utils.isEmpty( value ) );
-		id.local.mwServerNames = [ ...new Set( mwServerNames ) ];
+		id.local.mwServerNames = utils.arrayUnique( mwServerNames );
 	}
 }
 
@@ -301,10 +301,18 @@ function assembleSpecialPages() {
 	}
 
 	// Make the flat versions of special pages aliases for optimization purposes
-	id.local.specialPagesAliasesFlat = Object.values( id.local.specialPagesAliases ).flat();
-	id.local.specialPagesAliasesPrefixedFlat = Object.values( id.local.specialPagesAliasesPrefixed ).flat();
-	id.local.specialPagesLinksAliasesFlat = Object.values( id.local.specialPagesLinksAliases ).flat();
-	id.local.specialPagesLinksAliasesPrefixedFlat = Object.values( id.local.specialPagesLinksAliasesPrefixed ).flat();
+	id.local.specialPagesAliasesFlat = utils.arrayUnique(
+		Object.values( id.local.specialPagesAliases ).flat(),
+	);
+	id.local.specialPagesAliasesPrefixedFlat = utils.arrayUnique(
+		Object.values( id.local.specialPagesAliasesPrefixed ).flat(),
+	);
+	id.local.specialPagesLinksAliasesFlat = utils.arrayUnique(
+		Object.values( id.local.specialPagesLinksAliases ).flat(),
+	);
+	id.local.specialPagesLinksAliasesPrefixedFlat = utils.arrayUnique(
+		Object.values( id.local.specialPagesLinksAliasesPrefixed ).flat(),
+	);
 }
 
 /**
