@@ -155,18 +155,19 @@ class Deploy {
 				if ( response?.nochange ) {
 					log( 'yellow', `━ No change saving ${ file } to ${ target } on ${ this.siteName }` );
 					return { success: true, noChange: true, file, target };
-				} else {
-					log( 'green', `✔ Successfully saved ${ file } to ${ target } on ${ this.siteName }` );
-					return { success: true, noChange: false, file, target, response };
 				}
+
+				log( 'green', `✔ Successfully saved ${ file } to ${ target } on ${ this.siteName }` );
+				return { success: true, noChange: false, file, target, response };
+
 			} catch ( error ) {
 				log( 'red', `✘ Failed to save ${ file } to ${ target } on ${ this.siteName }` );
 				logError( error );
-				return { success: false, file, target, error };
+				throw error;
 			}
 		};
 
-		const delay = project.rateLimit ? Math.ceil( (1000 * 60) / project.rateLimit ) : 0;
+		const delay = project.rateLimit ? Math.ceil( ( 1000 * 60 ) / project.rateLimit ) : 0;
 		await this.api.seriesBatchOperation(
 			this.deployTargets,
 			worker,
