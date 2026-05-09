@@ -4,12 +4,12 @@
  * (MIT Licence)
  */
 
-const fs = require( 'fs/promises' );
-const { Mwn } = require( 'mwn' );
-const { execSync } = require( 'child_process' );
-const prompts = require( 'prompts' );
-const chalk = require( 'chalk' );
-const { isEmpty, getProject } = require( './utils.mjs' );
+import fs from 'fs/promises';
+import { Mwn } from 'mwn';
+import { execSync } from 'child_process';
+import prompts from 'prompts';
+import chalk from 'chalk';
+import { isEmpty, getProject } from './utils.mjs';
 
 const warning = ( text ) => console.log( chalk.yellowBright( text ) );
 
@@ -129,11 +129,11 @@ class Deploy {
 	}
 
 	async readFile( filepath ) {
-		return ( await fs.readFile( __dirname + '/../' + filepath ) ).toString();
+		return ( await fs.readFile( import.meta.dirname + '/../' + filepath ) ).toString();
 	}
 
 	async readDir( path ) {
-		return ( await fs.readdir( __dirname + '/../' + path ) );
+		return ( await fs.readdir( import.meta.dirname + '/../' + path ) );
 	}
 
 	async savePages() {

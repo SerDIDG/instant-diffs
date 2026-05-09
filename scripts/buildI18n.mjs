@@ -3,17 +3,18 @@
  * @see {@link https://github.com/jwbth/convenient-discussions/blob/main/buildI18n.js}
  */
 
-const fs = require( 'fs' );
-const path = require( 'path' );
+import { readdirSync, writeFileSync, mkdirSync } from 'fs';
+import { extname, basename } from 'path';
+import { createRequire } from 'module';
 
-const chalk = require( 'chalk' );
-const createDOMPurify = require( 'dompurify' );
-const { JSDOM } = require( 'jsdom' );
-const { replaceEntitiesInI18n, unhideText, hideText, getProject } = require( './utils.mjs' );
+import chalk from 'chalk';
+import { JSDOM } from 'jsdom';
+import DOMPurify from 'dompurify';
+import { replaceEntitiesInI18n, unhideText, hideText, getProject } from './utils.mjs';
 
+const require = createRequire( import.meta.url );
 const window = new JSDOM( '' ).window;
-const DOMPurify = createDOMPurify( window );
-
+const purify = DOMPurify( window );
 const warning = ( text ) => console.log( chalk.yellowBright( text ) );
 const code = chalk.inverse;
 const keyword = chalk.cyan;
@@ -45,7 +46,7 @@ if ( !project ) {
 	process.exit( 1 );
 }
 
-DOMPurify.addHook( 'uponSanitizeElement', ( currentNode, data, config ) => {
+purify.addHook( 'uponSanitizeElement', ( currentNode, data, config ) => {
 	if (
 		!Object.keys( data.allowedTags ).includes( data.tagName ) &&
 		![ 'body', '#comment' ].includes( data.tagName )
@@ -56,17 +57,17 @@ DOMPurify.addHook( 'uponSanitizeElement', ( currentNode, data, config ) => {
 	}
 } );
 
-DOMPurify.addHook( 'uponSanitizeAttribute', ( currentNode, hookEvent, config ) => {
+purify.addHook( 'uponSanitizeAttribute', ( currentNode, hookEvent, config ) => {
 	if ( !Object.keys( hookEvent.allowedAttributes ).includes( hookEvent.attrName ) ) {
 		warning( `Disallowed attribute found and sanitized in the string "${ keyword( config.stringName ) }" in ${ keyword( config.filename ) }: ${ code( hookEvent.attrName ) } with value "${ hookEvent.attrValue }". See\nhttps://translatewiki.net/wiki/Wikimedia:Convenient-discussions-${ config.stringName }/${ config.lang }.` );
 	}
 } );
 
 const i18n = {};
-fs.readdirSync( './i18n/' )
-	.filter( filename => path.extname( filename ) === '.json' && filename !== 'qqq.json' )
+readdirSync( './i18n/' )
+	.filter( filename => extname( filename ) === '.json' && filename !== 'qqq.json' )
 	.forEach( ( filename ) => {
-		const [ , lang ] = path.basename( filename ).match( /^(.+)\.json$/ ) || [];
+		const [ , lang ] = basename( filename ).match( /^(.+)\.json$/ ) || [];
 		const strings = require( `../i18n/${ filename }` );
 		Object.keys( strings )
 			.filter( ( name ) => typeof strings[ name ] === 'string' )
@@ -78,7 +79,7 @@ fs.readdirSync( './i18n/' )
 					hidden,
 				);
 
-				sanitized = DOMPurify.sanitize( sanitized, {
+				sanitized = purify.sanitize( sanitized, {
 					ALLOWED_TAGS,
 					ALLOWED_ATTR: [
 						'class',
@@ -150,21 +151,21 @@ instantDiffs.i18n ||= {};
 instantDiffs.i18n['${ lang }'] = ${ jsonText };
 `;
 
-		fs.mkdirSync( `./${ project.dir }/${ project.name }-i18n/`, { recursive: true } );
-		fs.writeFileSync( `./${ project.dir }/${ project.name }-i18n/${ lang }.js`, text );
+		mkdirSync( `./${ project.dir }/${ project.name }-i18n/`, { recursive: true } );
+		writeFileSync( `./${ project.dir }/${ project.name }-i18n/${ lang }.js`, text );
 	}
 }
 
 // List all available languages
 const i18nListKeys = Object.keys( i18n );
 const i18nListText = JSON.stringify( i18nListKeys, null, '\t' ) + '\n';
-fs.writeFileSync( `./${ project.dir }/${ project.name }-i18n.json`, i18nListText );
+writeFileSync( `./${ project.dir }/${ project.name }-i18n.json`, i18nListText );
 
 // Bundle language loaders
 const i18nBundleKeys = i18nListKeys.filter( key => project.i18nBundle.includes( key ) );
 const i18nBundleLoaders = `exports.loaders = {
 ${ i18nBundleKeys.map( code => `  '${ code }': () => require('../${ project.dir }/${ project.name }-i18n/${ code }.js'),` ).join( '\n' ) }
 };`;
-fs.writeFileSync( `./${ project.dir }/${ project.name }-i18n-bundle.js`, i18nBundleLoaders );
+writeFileSync( `./${ project.dir }/${ project.name }-i18n-bundle.js`, i18nBundleLoaders );
 
 console.log( 'Internationalization files have been built successfully.' );

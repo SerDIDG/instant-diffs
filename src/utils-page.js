@@ -152,7 +152,7 @@ export function renderUserLink( article, user ) {
 		),
 		ht( mw.msg( 'pipe-separator' ) ),
 		h( 'a', {
-				class: [ 'mw-redirect', 'mw-usertoollinks-talk' ],
+				class: [ 'mw-redirect', 'mw-usertoollinks-contribs' ],
 				title: contribsTitle,
 				href: getHrefAbsolute( article, mw.util.getUrl( contribsTitle ) ),
 			},
@@ -230,9 +230,11 @@ export function renderMobileDiffFooter( data ) {
 	} );
 
 	return h( 'div', { class: [ 'mw-diff-mobile-footer' ] },
-		!data.userhidden
-			? renderUserLink( article, data.user )
-			: h( 'span', { class: [ 'mw-userlink', 'history-deleted' ] }, mw.msg( 'rev-deleted-user' ) ),
+		h( 'h3', { class: [ 'mw-diff-mobile-footer__header' ] },
+			!data.userhidden
+				? renderUserLink( article, data.user )
+				: h( 'span', { class: [ 'mw-userlink', 'history-deleted' ] }, mw.msg( 'rev-deleted-user' ) ),
+		),
 	);
 }
 

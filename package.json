@@ -1,6 +1,6 @@
 {
 	"name": "instant-diffs",
-	"version": "5.5.1+build.1",
+	"version": "5.5.2+build.1",
 	"description": "A JavaScript tool that enhances MediaWiki diff links with interactive functionality.",
 	"keywords": [
 		"wikipedia",
@@ -29,7 +29,7 @@
 	},
 	"main": "src/app.js",
 	"scripts": {
-		"buildI18n": "node ./scripts/buildI18n",
+		"buildI18n": "node ./scripts/buildI18n.mjs",
 
 		"start": "npm run buildI18n && node esbuild.config.mjs --start --dev",
 		"start:local": "cross-env PROJECT=local npm run start",
@@ -42,19 +42,22 @@
 		"build:testwiki": "cross-env PROJECT=testwiki npm run build",
 		"build:mediawiki": "cross-env PROJECT=mediawiki npm run build",
 
-		"deploy-dev": "npm run dev && node ./scripts/deploy.js --dev",
+		"deploy-dev": "npm run dev && node scripts/deploy.mjs --dev",
 		"deploy-dev:testwiki": "cross-env PROJECT=testwiki npm run deploy-dev",
 		"deploy-dev:mediawiki": "cross-env PROJECT=mediawiki npm run deploy-dev",
 
-		"deploy": "npm run build && node ./scripts/deploy.js",
+		"deploy": "npm run build && node scripts/deploy.mjs",
 		"deploy:testwiki": "cross-env PROJECT=testwiki npm run deploy",
 		"deploy:mediawiki": "cross-env PROJECT=mediawiki npm run deploy"
+	},
+	"engines": {
+		"node": ">=21.2.0"
 	},
 	"devDependencies": {
 		"@fal-works/esbuild-plugin-global-externals": "^2.1.2",
 		"@types/oojs-ui": "^0.49.4",
 		"@wikimedia/codex-design-tokens": "^2.5.1",
-		"chalk": "^4.1.2",
+		"chalk": "^5.6.2",
 		"cross-env": "^10.1.0",
 		"dompurify": "^3.4.2",
 		"esbuild": "0.28.0",
