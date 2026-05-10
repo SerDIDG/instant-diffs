@@ -402,6 +402,8 @@ function app() {
 	id.local.defaults = defaultOptions;
 	id.timers = timers;
 	id.utils = utils;
+	id.view = view;
+	id.settings = settings;
 	id.modules = {
 		Api,
 		Article,
@@ -413,8 +415,6 @@ function app() {
 		LocalPage,
 		GlobalPage,
 		Watch,
-		view,
-		settings,
 	};
 
 	// Track on run start time
@@ -579,7 +579,7 @@ function process( $context ) {
  * @return {boolean} True if replacement occurred
  */
 function handleReplace( settingOptions, defaultOptions ) {
-	if ( id.modules.settings.get( 'standalone' ) && !defaultOptions.standalone ) {
+	if ( id.settings.get( 'standalone' ) && !defaultOptions.standalone ) {
 		// Call an internal hook to modify settings of the original instance.
 		// We want to use the original instance because each new one will construct
 		// a new set of the modules with a new context.

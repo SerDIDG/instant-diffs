@@ -872,7 +872,6 @@ class Link {
 	 * Renders an action button with the specified configuration.
 	 * @param {Object} params - Button configuration parameters
 	 * @returns {import('./Button').default} Created Button instance
-	 * @private
 	 */
 	renderAction( params ) {
 		params = {
