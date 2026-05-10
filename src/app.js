@@ -268,7 +268,8 @@ async function getSiteInfo() {
 
 /**
  * Load i18n message files for the user's language and English fallback.
- * @return {Promise<void>[]} Array of promises for loading message scripts
+ * Skips languages already present in the i18n cache.
+ * @return {JQuery.Promise<any>[]} Promises for each language file being loaded, empty if all cached
  */
 function getMessages() {
 	/** @type {string} */
@@ -368,20 +369,12 @@ function assembleLinkSelector() {
  * Initializes configuration, checks for concurrent instances, and starts the loading process.
  */
 function app() {
-	// Merge base settings options with schema options
-	config.settings = { ...getSchemaSettings(), ...config.settings };
-	config.defaults = { ...getSchemaDefaults(), ...config.defaults };
-
-	// Merge default settings options with user-defined options
-	const settingOptions = { ...config.settings, ...id.settings };
-	const defaultOptions = { ...config.defaults, ...id.defaults, ...getQueryDefaults() };
-
 	// Prevent multiple instances of the script from running.
 	// However, if a new instance is replacing a standalone instance,
 	// ensure it updates the config and starts processing content.
 	if ( id.isRunning ) {
 		// Replace standalone instance with newer non-standalone instance
-		id.isReplaced = handleReplace( settingOptions, defaultOptions );
+		id.isReplaced = handleReplace();
 
 		utils.notifyError( id.isReplaced ? 'error-prepare-replaced' : 'error-prepare-version', {
 			tag: 'app',
@@ -393,6 +386,9 @@ function app() {
 
 	// Initialize application state
 	id.isRunning = true;
+
+	// Merge settings and defaults
+	const { settingOptions, defaultOptions } = mergeSettings();
 
 	// Export to global scope
 	id.i18n ||= {};
@@ -415,9 +411,11 @@ function app() {
 		LocalPage,
 		GlobalPage,
 		Watch,
+		view,
+		settings,
 	};
 
-	// Track on run start time
+	// Track run start time
 	id.timers.run = mw.now();
 
 	// Bundle language strings
@@ -431,6 +429,34 @@ function app() {
 
 	// Load dependencies and prepare variables
 	load();
+}
+
+/**
+ * Merge settings and defaults from the config and user-defined options.
+ * @param {boolean} [replace=false] - Whether merging is part of an instance replacement; skips re-initializing user options
+ * @returns {{ settingOptions: Record<string, boolean>, defaultOptions: Record<string, boolean> }}
+ */
+function mergeSettings( replace = false ) {
+	// Merge base settings options with schema options
+	config.settings = { ...getSchemaSettings(), ...config.settings };
+	config.defaults = { ...getSchemaDefaults(), ...config.defaults };
+
+	// Ensure id.user exists for the replacement path (old instances may not have it)
+	id.user ||= {};
+
+	// Move user-defined settings to id.user, freeing id.settings for the Settings instance
+	if ( !replace ) {
+		id.user.settings = id.settings || id.user.settings || {};
+		id.user.defaults = id.defaults || id.user.defaults || {};
+		delete id.settings;
+		delete id.defaults;
+	}
+
+	// Merge config and user-defined options
+	const settingOptions = { ...config.settings, ...id.user.settings };
+	const defaultOptions = { ...config.defaults, ...id.user.defaults, ...getQueryDefaults() };
+
+	return { settingOptions, defaultOptions };
 }
 
 /**
@@ -488,7 +514,7 @@ async function ready() {
 	assembleLinkSelector();
 	applyPageAdjustments();
 
-	// Track on ready time
+	// Track ready time
 	id.timers.ready = mw.now();
 
 	// Fire the ready state hook
@@ -534,7 +560,7 @@ function processContent( $context ) {
 function process( $context ) {
 	if ( !$context ) return;
 
-	// Track on process start time
+	// Track the process start time
 	id.timers.processStart = mw.now();
 
 	// Get all link nodes in the provided context that matched the selectors
@@ -557,7 +583,7 @@ function process( $context ) {
 		}
 	}
 
-	// Track on process end time
+	// Track the process end time
 	id.timers.processEnd = mw.now();
 
 	// Log timers for the process
@@ -574,18 +600,21 @@ function process( $context ) {
 
 /**
  * Handle replacement of a standalone instance with a non-standalone instance.
- * @param {Object} settingOptions - New setting options
- * @param {Object} defaultOptions - New default options
  * @return {boolean} True if replacement occurred
  */
-function handleReplace( settingOptions, defaultOptions ) {
-	if ( id.settings.get( 'standalone' ) && !defaultOptions.standalone ) {
+function handleReplace() {
+	// Merge settings and defaults
+	const { settingOptions, defaultOptions } = mergeSettings( true );
+
+	// Use id.modules.settings (legacy alias for id.settings) to access the running instance
+	if ( id.modules.settings.get( 'standalone' ) && !defaultOptions.standalone ) {
 		// Call an internal hook to modify settings of the original instance.
 		// We want to use the original instance because each new one will construct
 		// a new set of the modules with a new context.
 		mw.hook( `${ id.config.prefix }.replace` ).fire( settingOptions, defaultOptions );
 		return true;
 	}
+	
 	return false;
 }
 

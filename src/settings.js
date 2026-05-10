@@ -284,10 +284,10 @@ class Settings {
 	/**
 	 * Get a setting default stored in the config.
 	 * @param {string} [key] for specific option, or undefined for the option's object
-	 * @param {boolean} [userOption] get an option only declarative in the settings schema
+	 * @param {boolean} [userOption=false] get an option only declarative in the settings schema
 	 * @returns {*|object} a specific option, or the option's object
 	 */
-	get( key, userOption ) {
+	get( key, userOption = false ) {
 		if ( userOption ) {
 			const entries = Object.entries( id.local.defaults )
 				.filter( ( [ key ] ) => key in id.config.settings );

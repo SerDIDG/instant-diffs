@@ -1,6 +1,6 @@
 /**
  * Configuration.
- * @type {Object<string, *>}
+ * @type {Record<string, any>}
  */
 export const config = {
 	version: '__version__',
@@ -388,7 +388,7 @@ export const config = {
 
 /**
  * Local variables.
- * @type {Object<string, *>}
+ * @type {Record<string, any>}
  */
 export const local = {
 	/**
@@ -544,6 +544,6 @@ export const local = {
 
 /**
  * Script timer loggers.
- * @type {Object<string, Number>}
+ * @type {Record<string, Number>}
  */
 export const timers = {};
