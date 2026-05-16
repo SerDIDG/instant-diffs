@@ -20,9 +20,10 @@ const { h, ht } = utils;
  * @property {boolean} [showLink=true] - Whether to show the link action
  * @property {boolean} [showPageLink=true] - Whether to show the page link action
  * @property {boolean} [showAltTitle=false] - Show an original title instead of processed
+ * @property {boolean|'always'|'clear'} [setClasses=true] - Set classes on the existing link element
  * @property {import('./Link').default} [initiatorLink] - A Link instance that initiated this link
  * @property {import('./Page').default} [initiatorPage] - A Page instance that initiated this link
- * @property {View} [initiatorView] - A View instance that initiated this link
+ * @property {InstanceType<typeof import('./view').default>} [initiatorView] - A View instance that initiated this link
  * @property {(link: import('./Link').default) => void} [onRequest] - Callback fired before the View dialog loads
  * @property {(link: import('./Link').default) => void} [onLoad] - Callback fired after the View dialog loads
  * @property {(link: import('./Link').default) => void} [onOpen] - Callback fired after the View dialog opens
@@ -214,6 +215,7 @@ class Link {
 			showLink: settings.get( 'showLink' ),
 			showPageLink: settings.get( 'showPageLink' ),
 			showAltTitle: false,
+			setClasses: true,
 			initiatorLink: null,
 			initiatorPage: null,
 			initiatorView: null,
@@ -435,7 +437,12 @@ class Link {
 		}
 
 		// Check conditions for rendering a page link action
+		this.options.showLink &&= this.options.behavior !== 'event';
 		this.options.showPageLink &&= this.options.behavior === 'request';
+		this.options.showAltTitle ||= this.options.behavior === 'event';
+		if ( ![ 'always', 'clear' ].includes( this.options.setClasses ) ) {
+			this.options.setClasses &&= this.options.behavior !== 'event';
+		}
 	}
 
 	/******* OBSERVER *******/
@@ -780,12 +787,6 @@ class Link {
 	renderEvent() {
 		if ( !this.isValid ) return;
 
-		this.actions.action = new Button( {
-			node: this.node,
-			handler: this.openDialog.bind( this ),
-			ariaHaspopup: true,
-		} );
-
 		this.renderSuccess();
 	}
 
@@ -844,6 +845,11 @@ class Link {
 		this.isLoaded = true;
 		this.isProcessed = true;
 		this.toggleSpinner( false );
+
+		// Mutate existing link element
+		if ( this.options.behavior === 'event' ) {
+			this.renderLinkAction();
+		}
 
 		// Render actions panel
 		if ( this.options.behavior !== 'event' ) {
@@ -948,14 +954,23 @@ class Link {
 	 * @private
 	 */
 	mutateLinkAction( title ) {
-		const classes = [ 'instantDiffs-link', `instantDiffs-link--${ this.article.get( 'type' ) }`, `is-${ this.options.insertMethod }` ];
-		if ( this.article.isHidden ) {
-			classes.push( 'instantDiffs-link--error' );
-		}
-
-		this.node.classList.remove( 'external' );
-		this.node.classList.add( ...classes );
 		this.node.dataset.instantdiffsLink = this.options.behavior;
+
+		if ( this.options.setClasses ) {
+			const classes = [ 'instantDiffs-link', `instantDiffs-link--${ this.article.get( 'type' ) }`, `is-${ this.options.insertMethod }` ];
+			if ( this.options.setClasses !== 'clear' ) {
+				classes.push( 'instantDiffs-link--styled' );
+				if ( this.article.isHidden ) {
+					classes.push( 'instantDiffs-link--error' );
+				}
+			}
+			if ( this.options.setClasses === 'clear' ) {
+				classes.push( 'instantDiffs-link--clear' );
+			}
+
+			this.node.classList.remove( 'external' );
+			this.node.classList.add( ...classes );
+		}
 
 		this.actions.action = new Button( {
 			node: this.node,
@@ -974,7 +989,6 @@ class Link {
 	renderPageAction() {
 		this.actions.page = this.renderAction( {
 			label: utils.getLabel( 'page' ),
-			//title: utils.msg( 'page-title' ),
 			title: this.article.get( 'titleTextSection' ) || this.article.get( 'titleText' ),
 			href: this.article.get( 'href' ),
 			modifiers: [ 'page' ],

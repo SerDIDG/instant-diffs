@@ -1,17 +1,6 @@
 /******* LINKS *******/
 
 .instantDiffs-link {
-	padding-inline: var(--instantDiffs-gap);
-	-webkit-box-decoration-break: clone;
-	box-decoration-break: clone;
-	background: var(--instantDiffs-background-link);
-	color: var(--instantDiffs-color-link);
-	text-decoration: none;
-
-	&:where(:not(.cdx-button)) {
-		border-radius: 1em;
-	}
-
 	&::before {
 		margin-inline-end: var(--instantDiffs-gap);
 	}
@@ -38,24 +27,41 @@
 		}
 	}
 
-	&:is(:hover, :focus-visible) {
-		background: var(--instantDiffs-background-link--hover);
-		color: var(--instantDiffs-color-link--hover);
-		text-decoration: none;
-	}
-
-	&:is(:active, :focus) {
-		background: var(--instantDiffs-background-link--active);
-		color: var(--instantDiffs-color-link--active);
-		text-decoration: none;
-	}
-
 	&--diff {
 		--instantDiffs-label: var(--instantDiffs-label-diff);
 	}
 
 	&--revision {
 		--instantDiffs-label: var(--instantDiffs-label-revision);
+	}
+
+	&--pending {
+		cursor: wait !important;
+	}
+
+	&--styled {
+		padding-inline: var(--instantDiffs-gap);
+		-webkit-box-decoration-break: clone;
+		box-decoration-break: clone;
+		background: var(--instantDiffs-background-link);
+		color: var(--instantDiffs-color-link);
+		text-decoration: none;
+
+		&:is(:hover, :focus-visible) {
+			background: var(--instantDiffs-background-link--hover);
+			color: var(--instantDiffs-color-link--hover);
+			text-decoration: none;
+		}
+
+		&:is(:active, :focus) {
+			background: var(--instantDiffs-background-link--active);
+			color: var(--instantDiffs-color-link--active);
+			text-decoration: none;
+		}
+
+		&:where(:not(.cdx-button)) {
+			border-radius: 1em;
+		}
 	}
 
 	&--error {
@@ -72,12 +78,7 @@
 			color: var(--instantDiffs-color-link-error--active);
 		}
 	}
-
-	&--pending {
-		cursor: wait !important;
-	}
 }
-
 
 /******* PANEL *******/
 
