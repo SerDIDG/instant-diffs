@@ -19,12 +19,8 @@ function renderLastMod( link, container ) {
 			link.href = url.href;
 		}
 
-		link.dataset.instantdiffsLink = 'basic';
-		link.dataset.instantdiffsOptions = JSON.stringify( {
-			showLink: false,
-			showPageLink: false,
-			showAltTitle: true,
-		} );
+		link.dataset.instantdiffsLink = 'event';
+		link.dataset.instantdiffsOptions = JSON.stringify( { setClasses: 'always' } );
 
 		mw.hook( `${ id.config.prefix }.process` ).fire( $( container ) );
 	} catch ( error ) {
