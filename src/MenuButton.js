@@ -71,6 +71,7 @@ class MenuButton extends OO.ui.ButtonWidget {
 
 			linkOptions: {
 				behavior: 'event',
+				useAltKey: false,
 				...options.linkOptions,
 			},
 		};

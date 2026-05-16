@@ -20,6 +20,7 @@ const { h, ht } = utils;
  * @property {boolean} [showLink=true] - Whether to show the link action
  * @property {boolean} [showPageLink=true] - Whether to show the page link action
  * @property {boolean} [showAltTitle=false] - Show an original title instead of processed
+ * @property {boolean} [useAltKey=true] - Use alt key to open the link normally
  * @property {boolean|'always'|'clear'} [setClasses=true] - Set classes on the existing link element
  * @property {import('./Link').default} [initiatorLink] - A Link instance that initiated this link
  * @property {import('./Page').default} [initiatorPage] - A Page instance that initiated this link
@@ -215,6 +216,7 @@ class Link {
 			showLink: settings.get( 'showLink' ),
 			showPageLink: settings.get( 'showPageLink' ),
 			showAltTitle: false,
+			useAltKey: true,
 			setClasses: true,
 			initiatorLink: null,
 			initiatorPage: null,
@@ -977,7 +979,7 @@ class Link {
 			handler: this.openDialog.bind( this ),
 			ariaHaspopup: true,
 			altTitle: title,
-			useAltKey: true,
+			useAltKey: this.options.useAltKey,
 		} );
 	}
 
