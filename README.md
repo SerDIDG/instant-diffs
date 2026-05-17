@@ -1,27 +1,9 @@
 # Instant Diffs ![lic](https://img.shields.io/github/license/SerDIDG/instant-diffs)
 <img align="right" width="128" alt="Logo" src="https://raw.githubusercontent.com/SerDIDG/instant-diffs/main/assets/Logo.svg" />
 
-**Instant Diffs** (**ID**) is a free [open-source](https://en.wikipedia.org/wiki/Open-source_software) JavaScript tool that enhances [MediaWiki](https://www.mediawiki.org) diff links with interactive functionality — dynamically loaded content via [AJAX](https://en.wikipedia.org/wiki/Ajax_(programming)) technology in dialog windows. It enables users to interact with diffs and revisions directly within the page, rather than being redirected to a separate page. These features are integrated not only into all core interface pages where revision diffs are linked, like local and global watchlists, user contributions, recent changes and new pages, but also into user-contributed content. The minimal required version of MediaWiki is [1.35](https://www.mediawiki.org/wiki/MediaWiki_1.35), but it is strongly recommended to upgrade to at least [1.43](https://www.mediawiki.org/wiki/MediaWiki_1.43) LTS.
+**Instant Diffs** (**ID**) is a free [open-source](https://en.wikipedia.org/wiki/Open-source_software) JavaScript tool that enhances [MediaWiki](https://www.mediawiki.org) diff and revision links with interactive previews. Instead of navigating to a separate page, users can view, compare, and interact with diffs directly in context, loaded on demand in the overlay dialog via [AJAX](https://en.wikipedia.org/wiki/Ajax_(programming)).
 
-## Features
-* Displays an action button (❖ for diffs or ✪ for revisions) after the link to open the Instant Diffs dialog. By default, the click action is added directly to the link, but you can still open the link in the current tab using `Alt+Click`.
-* Displays an action button (➔) after the link to navigate to the page and section where the edit was made. If the [Convenient Discussions](https://www.mediawiki.org/wiki/Convenient_Discussions) script is installed, the button will also try to navigate to the corresponding comment.
-* Allows quick switching between a revision view and its comparison (diff) with another revision.
-* Provides an Actions menu in the dialog, allowing you to copy links (including [internal wiki links](https://www.mediawiki.org/wiki/Help:Links#Internal_links)), navigate to the page, its history, or discussion, and add or remove the page from the watchlist.
-* Allows adding custom actions to the Actions menu through a flexible API. See the [Developer guide](https://www.mediawiki.org/wiki/Instant_Diffs/API#Custom_Actions).
-* Enables viewing diffs and revisions from foreign interwikis in the [GlobalContributions](https://www.mediawiki.org/wiki/Extension:GlobalContributions), [GlobalWatchlist](https://www.mediawiki.org/wiki/Extension:GlobalWatchlist) and in edits from [Wikidata](https://meta.wikimedia.org/wiki/Wikidata).
-* Supports keyboard shortcuts for navigation between diffs and between links on the page in the Instant Diffs dialog window.
-  * `Arrow Left` - previous diff or revision in the history;
-  * `Arrow Right` - next diff or revision in the history;
-  * `Ctrl+Arrow Left` - previous link on the page;
-  * `Ctrl+Arrow Right` - next link on the page;
-  * `Ctrl+Arrow Up` - switch between revision view and its comparison;
-  * `Ctrl+Arrow Down` - toggle visibility of the actions menu.
-* Allows sending thanks, patrolling, and rolling back (with confirmation prompts enabled) directly from the dialog.
-* Enables administrators to view hidden revisions directly in the dialog without any additional steps. The <code>suppressrevision</code> [user right](https://www.mediawiki.org/wiki/Help:RevisionDelete) is required to access hidden revision content.
-* Fully adapts to mobile devices, especially optimized for the [Minerva Neue](https://www.mediawiki.org/wiki/Skin:Minerva_Neue) skin.
-* Offers a wide range of customization settings that are saved globally across all [Wikimedia](https://meta.wikimedia.org/wiki/Wikimedia_movement) projects.
-* Provides flexible configuration for the deployment script locally. See available deployment configuration options [here](#development).
+The gadget works across all standard MediaWiki interface pages where diffs and revision links appear, including local and global watchlists, local and global user contributions, new pages, recent changes and logs, as well as in user-generated content such as talk pages and project pages.
 
 ## Development
 Install [Node.js](https://nodejs.org/en/download) and package dependencies:
