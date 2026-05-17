@@ -3,6 +3,7 @@ import * as utils from './utils';
 import { getModuleExport } from './utils-oojs';
 import { getHref, getHrefAbsolute } from './utils-article';
 import { getDate, isRegistered, isTemporary } from './utils-user';
+import { isEditableContentModel, isWbContentModel } from './utils-api';
 
 import Api from './Api';
 import Article from './Article';
@@ -70,6 +71,7 @@ export function renderDiffTableSide( data ) {
 		prefix: 'n',
 		title: null,
 		revid: null,
+		previd: null,
 		curRevid: null,
 		hostname: null,
 		timestamp: null,
@@ -93,22 +95,25 @@ export function renderDiffTableSide( data ) {
 	return hf(
 		h( 'div', { id: `${ prefix }1` },
 			h( 'strong',
-				!data.texthidden
-					? h( 'a', { href: getHref( article ) }, mw.msg( title, getDate( data.timestamp ) ) )
-					: h( 'span', { class: 'history-deleted' }, mw.msg( title, getDate( data.timestamp ) ) ),
+				data.texthidden
+					? h( 'span', { class: 'history-deleted' }, mw.msg( title, getDate( data.timestamp ) ) )
+					: hf(
+						h( 'a', { href: getHref( article ) }, mw.msg( title, getDate( data.timestamp ) ) ),
+						renderDiffEditLinks( article, data ),
+					),
 			),
 		),
 		h( 'div', { id: `${ prefix }2` },
-			!data.userhidden
-				? renderUserLink( article, data.user )
-				: h( 'span', { class: [ 'mw-userlink', 'history-deleted' ] }, mw.msg( 'rev-deleted-user' ) ),
+			data.userhidden
+				? h( 'span', { class: [ 'mw-userlink', 'history-deleted' ] }, mw.msg( 'rev-deleted-user' ) )
+				: renderUserLink( article, data.user ),
 		),
 		h( 'div', { id: `${ prefix }3` },
-			!data.commenthidden
-				? !utils.isEmpty( data.comment )
+			data.commenthidden
+				? h( 'span', { class: [ 'comment', 'history-deleted' ] }, mw.msg( 'rev-deleted-comment' ) )
+				: !utils.isEmpty( data.comment )
 					? h( 'span', { class: [ 'comment', 'comment--without-parentheses' ], innerHTML: data.comment } )
-					: h( 'span', { class: [ 'comment', 'mw-comment-none' ] }, mw.msg( 'changeslist-nocomment' ) )
-				: h( 'span', { class: [ 'comment', 'history-deleted' ] }, mw.msg( 'rev-deleted-comment' ) ),
+					: h( 'span', { class: [ 'comment', 'mw-comment-none' ] }, mw.msg( 'changeslist-nocomment' ) ),
 		),
 	);
 }
@@ -129,6 +134,62 @@ export function processRevisionDiffTable( $table ) {
 	} else {
 		$table.addClass( 'instantDiffs-hidden' );
 	}
+}
+
+/**
+ * Renders the diff table edit links.
+ * @param {import('./Article').default} article
+ * @param {Object} data
+ * @returns {DocumentFragment}
+ */
+export function renderDiffEditLinks( article, data ) {
+	const isEditableCm = isEditableContentModel( mw.config.get( 'wgPageContentModel' ) );
+	const isWbBCm = isWbContentModel( mw.config.get( 'wgPageContentModel' ) );
+	const isEditable = mw.config.get( 'wgIsProbablyEditable' );
+
+	const container = hf();
+
+	// Edit / View
+	if ( isEditableCm ) {
+		container.append(
+			ht( ' ' ),
+			h( 'span', { class: 'mw-diff-edit' },
+				h( 'a', {
+					href: getHref( article, { action: 'edit' } ),
+					title: article.get( 'title' ),
+				}, mw.msg( isEditable ? 'editold' : 'viewsourceold' ) ),
+			),
+		);
+	}
+
+	// Restore (Wikibase)
+	if ( isEditable && !isEditableCm && isWbBCm && data.revid !== data.curRevid ) {
+		container.append(
+			ht( ' ' ),
+			h( 'span', { class: 'mw-diff-edit' },
+				h( 'a', {
+					href: getHref( article, { action: 'edit', restore: data.revid } ),
+					title: article.get( 'title' ),
+				}, mw.msg( 'wikibase-restoreold' ) ),
+			),
+		);
+	}
+
+	// Undo
+	if ( isEditable && utils.isValidID( data.previd ) ) {
+		container.append(
+			ht( ' ' ),
+			h( 'span', { class: 'mw-diff-edit' },
+				h( 'a', {
+						href: getHref( article, { action: 'edit', undoafter: data.previd, undo: data.revid } ),
+						title: mw.msg( 'tooltip-undo' ),
+					}, mw.msg( 'editundo' ),
+				),
+			),
+		);
+	}
+
+	return container;
 }
 
 /**
@@ -212,7 +273,7 @@ export function renderUserInfoCardButton( user ) {
  * Renders mobile diff footer.
  * @returns {DocumentFragment}
  */
-export function renderMobileDiffFooter( data ) {
+export function renderDiffMobileFooter( data ) {
 	data = {
 		title: null,
 		revid: null,

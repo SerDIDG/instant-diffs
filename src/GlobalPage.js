@@ -165,6 +165,11 @@ class GlobalPage extends Page {
 			'rev-deleted-no-diff',
 			'rev-deleted-user',
 			'rev-deleted-comment',
+			'editold',
+			'viewsourceold',
+			'editundo',
+			'tooltip-undo',
+			'wikibase-restoreold',
 			'diff-empty',
 			'checkuser-userinfocard-toggle-button-aria-label',
 		];
@@ -177,6 +182,7 @@ class GlobalPage extends Page {
 		// Render warning about foreign diff limitations
 		this.renderForeignWarning();
 
+		// Call a parent method that wraps a process
 		await super.renderContent();
 	}
 
@@ -187,11 +193,54 @@ class GlobalPage extends Page {
 		// Set additional config variables
 		this.setConfigs();
 
-		// Render diff table
+		// Render and append diff table
 		await this.renderDiffTable();
 
-		// Request lazy-loaded dependencies
-		this.requestDependencies();
+		// Process revision
+		if ( this.article.get( 'type' ) === 'revision' ) {
+			await this.processRevision();
+		}
+
+		// Render and append diff mobile footer
+		this.renderMobileFooter();
+
+		// Convert relative links to the absolute including hashes
+		utils.addBaseToLinks( this.nodes.$body, this.article.get( 'href' ) );
+
+		// Call a parent method that wraps a process
+		await super.renderSuccessContent();
+	}
+
+	async renderErrorContent() {
+		// Render a custom error warning if a revision was hidden
+		if ( this.errorData?.code === 'missingcontent' ) {
+			await this.renderDeletedWarning();
+		} else {
+			await super.renderErrorContent();
+		}
+
+		// Try to parse an error message for a missing id
+		const values = this.article.getValues();
+		const revid = this.errorData?.code === 'missingcontent' ? this.errorData.info.replace( /\D/g, '' ) : null;
+		const ids = [ values.oldid, values.diff, revid ].filter( num => !isNaN( num ) && num > 0 );
+
+		// Get values for mw.config
+		this.configManager.setValues( {
+			wgDiffOldId: Math.min( ...ids ),
+			wgDiffNewId: Math.max( ...ids ),
+		} );
+
+		// Set additional config variables
+		this.setConfigs();
+
+		// Collect links that will be available in the navigation
+		if ( this.configManager.get( 'wgDiffOldId' ) !== this.configManager.get( 'wgDiffNewId' ) ) {
+			this.links.prev = utils.isValidID( this.configManager.get( 'wgDiffOldId' ) );
+			this.links.next = utils.isValidID( this.configManager.get( 'wgDiffNewId' ) );
+		}
+
+		// Set the previous page as the initiator to render the backlink
+		this.options.initiatorPage = view.getPreviousPage();
 	}
 
 	collectData() {
@@ -245,6 +294,35 @@ class GlobalPage extends Page {
 		this.links.next = this.data.next && this.data.next !== this.data.torevid;
 	}
 
+	renderForeignWarning() {
+		const $content = $( utils.msgDom(
+			`dialog-notice-foreign-${ this.article.get( 'type' ) }`,
+			`https://${ this.article.get( 'hostname' ) }`,
+			this.article.get( 'hostname' ),
+		) );
+
+		this.nodes.$foreignWarning = this.renderWarning( {
+			$content,
+			type: 'notice',
+		} );
+	}
+
+	async renderDeletedWarning() {
+		const message = await Api.parseWikitext( {
+			title: this.article.get( 'title' ),
+			text: mw.msg( 'rev-deleted-no-diff' ),
+		}, this.article );
+
+		const $content = $( message ).find( 'p' );
+
+		this.nodes.$deleteWarning = this.renderWarning( {
+			$content,
+			type: 'warning',
+			container: this.nodes.$foreignWarning,
+			insertMethod: 'insertAfter',
+		} );
+	}
+
 	async renderDiffTable() {
 		// Render table structure
 		this.nodes.table = utilsPage.renderDiffTable( this.data.body );
@@ -281,6 +359,7 @@ class GlobalPage extends Page {
 				prefix: 'n',
 				title: this.data.totitle,
 				revid: this.data.torevid,
+				previd: this.data.fromrevid,
 				curRevid: this.article.get( 'curRevid' ),
 				hostname: this.article.get( 'hostname' ),
 				timestamp: this.data.totimestamp,
@@ -298,85 +377,24 @@ class GlobalPage extends Page {
 
 		// Append diff content
 		this.nodes.$table = $( this.nodes.table.container ).appendTo( this.nodes.$body );
-		utils.addBaseToLinks( this.nodes.$table, `https://${ this.article.get( 'hostname' ) }` );
 
 		// Show or hide diff info table in the revision view
 		if ( this.article.get( 'type' ) === 'revision' ) {
 			utilsPage.processRevisionDiffTable( this.nodes.$table );
 		}
-
-		// Render and append mobile diff footer to the bottom
-		if ( this.data.toid ) {
-			const footer = utilsPage.renderMobileDiffFooter( {
-				title: this.data.totitle,
-				revid: this.data.torevid,
-				hostname: this.article.get( 'hostname' ),
-				user: this.data.touser,
-				userhidden: this.data.touserhidden,
-			} );
-			utils.embed( footer, this.nodes.$body, 'appendTo' );
-		}
 	}
 
-	async renderErrorContent() {
-		// Render a custom error warning if a revision was hidden
-		if ( this.errorData?.code === 'missingcontent' ) {
-			await this.renderDeletedWarning();
-		} else {
-			await super.renderErrorContent();
-		}
+	renderMobileFooter() {
+		if ( !this.data?.toid ) return;
 
-		// Try to parse an error message for a missing id
-		const values = this.article.getValues();
-		const revid = this.errorData?.code === 'missingcontent' ? this.errorData.info.replace( /\D/g, '' ) : null;
-		const ids = [ values.oldid, values.diff, revid ].filter( num => !isNaN( num ) && num > 0 );
-
-		// Get values for mw.config
-		this.configManager.setValues( {
-			wgDiffOldId: Math.min( ...ids ),
-			wgDiffNewId: Math.max( ...ids ),
+		this.nodes.diffMobileFooter = utilsPage.renderDiffMobileFooter( {
+			title: this.data.totitle,
+			revid: this.data.torevid,
+			hostname: this.article.get( 'hostname' ),
+			user: this.data.touser,
+			userhidden: this.data.touserhidden,
 		} );
-
-		// Set additional config variables
-		this.setConfigs();
-
-		// Collect links that will be available in the navigation
-		if ( this.configManager.get( 'wgDiffOldId' ) !== this.configManager.get( 'wgDiffNewId' ) ) {
-			this.links.prev = utils.isValidID( this.configManager.get( 'wgDiffOldId' ) );
-			this.links.next = utils.isValidID( this.configManager.get( 'wgDiffNewId' ) );
-		}
-
-		// Set the previous page as the initiator to render the backlink
-		this.options.initiatorPage = view.getPreviousPage();
-	}
-
-	renderForeignWarning() {
-		const $content = $( utils.msgDom(
-			`dialog-notice-foreign-${ this.article.get( 'type' ) }`,
-			`https://${ this.article.get( 'hostname' ) }`,
-			this.article.get( 'hostname' ),
-		) );
-
-		this.nodes.$foreignWarning = this.renderWarning( {
-			$content,
-			type: 'notice',
-		} );
-	}
-
-	async renderDeletedWarning() {
-		const message = await Api.parseWikitext( {
-			title: this.article.get( 'title' ),
-			text: mw.msg( 'rev-deleted-no-diff' ),
-		}, this.article );
-
-		const $content = $( message ).find( 'p' );
-
-		this.nodes.$deleteWarning = this.renderWarning( {
-			$content,
-			type: 'warning',
-			container: this.nodes.$foreignWarning,
-			insertMethod: 'insertAfter',
-		} );
+		this.nodes.$diffMobileFooter = $( this.nodes.diffMobileFooter ).appendTo( this.nodes.$body );
 	}
 
 	/******* REVISION *******/
@@ -469,32 +487,12 @@ class GlobalPage extends Page {
 		this.nodes.diffTitle = h( 'h2', { class: 'diff-currentversion-title' },
 			mw.msg( title, getDate( this.data.totimestamp ) ),
 		);
-		this.nodes.$diffTitle = $( this.nodes.diffTitle ).appendTo( this.nodes.$body );
-
-		// Append content and categories
-		this.nodes.$revision = $( this.parse.text ).appendTo( this.nodes.$body );
-		if ( !utils.isEmpty( this.parse.categorieshtml ) ) {
-			this.nodes.$categories = $( this.parse.categorieshtml ).appendTo( this.nodes.$body );
-		}
-
-		// Process content, warnings, etc.
-		await this.processRevision();
-
-		// Convert relative links to the absolute including hashes
-		utils.addBaseToLinks( this.nodes.$body, this.article.get( 'href' ) );
-
-		// Get page dependencies
-		this.requestDependencies( this.parse );
-
-		// Get page foreign dependencies
-		this.requestForeignDependencies();
 	}
 
 	async processRevision() {
-		// Hide unsupported or unnecessary element
-		this.nodes.$body
-			.find( '#ext-wikilambda-app, .ext-wikilambda-view-nojsfallback, .mw-diff-slot-header, .mw-slot-header' )
-			.addClass( 'instantDiffs-hidden' );
+		// Append content
+		this.nodes.$diffTitle = $( this.nodes.diffTitle ).appendTo( this.nodes.$body );
+		this.nodes.$revision = $( this.parse.text ).appendTo( this.nodes.$body );
 
 		// Render a notice about unsupported WikiLambda app
 		this.nodes.$wikiLambdaApp = this.nodes.$body.find( '#ext-wikilambda-app' );
@@ -508,8 +506,19 @@ class GlobalPage extends Page {
 			} );
 		}
 
-		// Restore functionally that not requires that elements are in the DOM
-		await this.restoreFunctionality();
+		// Append categories
+		this.processCategories();
+
+		// Hide unsupported or unnecessary element
+		this.nodes.$body
+			.find( '#ext-wikilambda-app, .ext-wikilambda-view-nojsfallback, .mw-diff-slot-header, .mw-slot-header' )
+			.addClass( 'instantDiffs-hidden' );
+
+		// Get page dependencies
+		this.requestDependencies( this.parse );
+
+		// Get page foreign dependencies
+		this.requestForeignDependencies();
 	}
 
 	requestForeignDependencies() {

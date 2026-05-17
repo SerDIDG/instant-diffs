@@ -177,23 +177,7 @@ class LocalPage extends Page {
 		this.setConfigs();
 
 		// Prepend content warnings
-		this.nodes.$data
-			.filter( '.cdx-message' )
-			.prependTo( this.nodes.$body );
-		this.nodes.$data
-			.find( '.cdx-message' )
-			.prependTo( this.nodes.$body );
-
-		// Render a warning when revision was not found
-		const $emptyMessage = this.nodes.$data.filter( 'p' );
-		if ( $emptyMessage.length > 0 ) {
-			this.renderWarning( {
-				$content: $emptyMessage,
-			} );
-		}
-
-		// Process mobile diff user card footer
-		this.processMobileFooter();
+		this.processWarnings();
 
 		// Process diff table
 		this.processDiffTable();
@@ -203,6 +187,9 @@ class LocalPage extends Page {
 		if ( this.article.get( 'type' ) === 'revision' ) {
 			this.processRevision();
 		}
+
+		// Process diff mobile footer
+		this.processMobileFooter();
 
 		// Call a parent method that wraps a process
 		await super.renderSuccessContent();
@@ -300,29 +287,20 @@ class LocalPage extends Page {
 		}
 	}
 
-	processMobileFooter() {
-		this.nodes.$diffMobileFooter = this.nodes.$data.filter( '.mw-diff-mobile-footer' );
-		if ( this.nodes.$diffMobileFooter.length === 0 ) return;
+	processWarnings() {
+		this.nodes.$data
+			.filter( '.cdx-message' )
+			.prependTo( this.nodes.$body );
+		this.nodes.$data
+			.find( '.cdx-message' )
+			.prependTo( this.nodes.$body );
 
-		// Append mobile diff footer to the bottom
-		this.nodes.$diffMobileFooter.appendTo( this.nodes.$body );
-
-		// @see {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/50449784d02a0a46297fdd040bdc02a3ca76688e/resources/src/mediawiki.diff/undoButtonToggle.js#8}
-		const buttonClasses = 'cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--action-default';
-
-		// Process button classes and visibility
-		const buttonSelectors = [
-			'.mw-diff-undo',
-			'.mw-rollback-link',
-		];
-
-		const $buttons = this.nodes.$diffMobileFooter.find( buttonSelectors.join( ',' ) );
-		if ( $buttons.length === 0 ) return;
-
-		if ( mw.user.isAnon() ) {
-			$buttons.hide();
-		} else {
-			$buttons.children( 'a' ).addClass( buttonClasses );
+		// Render a warning when revision was not found
+		const $emptyMessage = this.nodes.$data.filter( 'p' );
+		if ( $emptyMessage.length > 0 ) {
+			this.renderWarning( {
+				$content: $emptyMessage,
+			} );
 		}
 	}
 
@@ -421,13 +399,30 @@ class LocalPage extends Page {
 			.addClass( 'instantDiffs-hidden' );
 	}
 
-	processCategories() {
-		if ( utils.isEmpty( this.data ) || utils.isEmpty( this.parse ) ) return;
+	processMobileFooter() {
+		this.nodes.$diffMobileFooter = this.nodes.$data.filter( '.mw-diff-mobile-footer' );
+		if ( this.nodes.$diffMobileFooter.length === 0 ) return;
 
-		if ( !utils.isEmpty( this.parse.categorieshtml ) ) {
-			this.nodes.$categories = $( this.parse.categorieshtml ).appendTo( this.nodes.$body );
+		// Append diff mobile footer to the bottom
+		this.nodes.$diffMobileFooter.appendTo( this.nodes.$body );
+
+		// @see {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/50449784d02a0a46297fdd040bdc02a3ca76688e/resources/src/mediawiki.diff/undoButtonToggle.js#8}
+		const buttonClasses = 'cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--action-default';
+
+		// Process button classes and visibility
+		const buttonSelectors = [
+			'.mw-diff-undo',
+			'.mw-rollback-link',
+		];
+
+		const $buttons = this.nodes.$diffMobileFooter.find( buttonSelectors.join( ',' ) );
+		if ( $buttons.length === 0 ) return;
+
+		if ( mw.user.isAnon() ) {
+			$buttons.hide();
+		} else {
+			$buttons.children( 'a' ).addClass( buttonClasses );
 		}
-
 	}
 
 	/******* HELPERS *******/

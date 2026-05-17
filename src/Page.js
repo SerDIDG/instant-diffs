@@ -195,8 +195,8 @@ class Page {
 		const promises = this.getLoadPromises();
 
 		return Promise.allSettled( promises )
-			.then( this.onLoadResponse )
-			.then( this.loadProcessSecondary );
+			.then( this.loadProcessSecondary )
+			.then( this.onLoadResponse );
 	}
 
 	/**
@@ -649,6 +649,19 @@ class Page {
 
 	getScrollableOffsetTop() {
 		return this.getNavigation()?.getOuterHeight( true );
+	}
+
+	processCategories() {
+		if ( utils.isEmpty( this.data ) || utils.isEmpty( this.parse ) ) return;
+
+		if ( !utils.isEmpty( this.parse.categorieshtml ) ) {
+			this.nodes.$categories = $( this.parse.categorieshtml );
+			if ( this.nodes.$diffMobileFooter ) {
+				utils.embed( this.nodes.$categories, this.nodes.$diffMobileFooter, 'insertBefore' );
+			} else {
+				utils.embed( this.nodes.$categories, this.nodes.$body, 'appendTo' );
+			}
+		}
 	}
 
 	/******* ACTIONS *******/
