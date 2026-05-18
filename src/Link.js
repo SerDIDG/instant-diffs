@@ -1002,7 +1002,7 @@ class Link {
 	/**
 	 * Opens the View dialog to display the diff or revision.
 	 * Sets up the dialog, triggers callbacks, and loads content.
-	 * @returns {JQuery.Promise|undefined} Promise that resolves when dialog content loads
+	 * @returns {JQuery.Promise} Promise that resolves when dialog content loads
 	 */
 	openDialog() {
 		const options = {
@@ -1011,7 +1011,7 @@ class Link {
 			onClose: () => this.onDialogClose(),
 		};
 		const isReady = view.setup( this, options );
-		if ( !isReady ) return;
+		if ( !isReady ) return $.Deferred().resolve().promise();
 
 		this.onDialogRequest();
 		return $.when( view.load() )
@@ -1021,6 +1021,7 @@ class Link {
 	/**
 	 * Callback fired before the View dialog loads.
 	 * Shows loading cursor and triggers onRequest callback.
+	 * @private
 	 */
 	onDialogRequest() {
 		this.toggleLoader( true );
@@ -1033,6 +1034,7 @@ class Link {
 	/**
 	 * Callback fired after the View dialog loads.
 	 * Hides loading cursor and triggers onLoad callback.
+	 * @private
 	 */
 	onDialogLoad() {
 		this.toggleLoader( false );
@@ -1045,6 +1047,7 @@ class Link {
 	/**
 	 * Callback fired after the View dialog opens.
 	 * Highlights changelist line and triggers onOpen callback.
+	 * @private
 	 */
 	onDialogOpen() {
 		if ( this.mw.hasLine && settings.get( 'highlightLine' ) ) {
@@ -1063,6 +1066,7 @@ class Link {
 	/**
 	 * Callback fired after the View dialog closes.
 	 * Removes line highlighting, marks lines as seen, and triggers onClose callback.
+	 * @private
 	 */
 	onDialogClose() {
 		if ( this.mw.hasLine ) {

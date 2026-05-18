@@ -13,7 +13,7 @@ class ViewButton extends Button {
 	article;
 
 	/**
-	 * Create a dialog button.
+	 * Creates a view button instance.
 	 * @param {Object} [options] - Configuration options
 	 */
 	constructor( options ) {
@@ -28,7 +28,9 @@ class ViewButton extends Button {
 	}
 
 	/**
-	 * Open the View dialog.
+	 * Opens the View dialog to display the diff or revision.
+	 * Sets up the dialog, triggers callbacks, and loads content.
+	 * @returns {JQuery.Promise} Promise that resolves when dialog content loads
 	 */
 	openDialog() {
 		const options = {
@@ -37,7 +39,7 @@ class ViewButton extends Button {
 		};
 
 		const isReady = view.setup( this, options );
-		if ( !isReady ) return;
+		if ( !isReady ) return $.Deferred().resolve().promise();
 
 		this.onDialogRequest();
 		return $.when( view.load() )
@@ -45,7 +47,8 @@ class ViewButton extends Button {
 	}
 
 	/**
-	 * Event that emits before the View dialog loads.
+	 * Callback fired before the View dialog loads.
+	 * Shows loading cursor.
 	 * @private
 	 */
 	onDialogRequest() {
@@ -54,7 +57,8 @@ class ViewButton extends Button {
 	}
 
 	/**
-	 * Event that emits after the View dialog loads.
+	 * Callback fired after the View dialog loads.
+	 * Hides loading cursor.
 	 * @private
 	 */
 	onDialogLoad() {
@@ -63,7 +67,7 @@ class ViewButton extends Button {
 	}
 
 	/**
-	 * Event that emits after the View dialog opens.
+	 * Callback fired after the View dialog opens.
 	 * @private
 	 */
 	onDialogOpen() {
@@ -71,7 +75,7 @@ class ViewButton extends Button {
 	}
 
 	/**
-	 * Event that emits after the View dialog closes.
+	 * Callback fired after the View dialog closes.
 	 * @private
 	 */
 	onDialogClose() {
@@ -79,8 +83,8 @@ class ViewButton extends Button {
 	}
 
 	/**
-	 * Get the Article instance.
-	 * @returns {import('./Article').default}
+	 * Gets the associated Article instance.
+	 * @returns {import('./Article').default} Article instance
 	 */
 	getArticle() {
 		return this.article;
