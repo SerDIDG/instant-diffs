@@ -122,6 +122,31 @@ class Link {
 	article;
 
 	/**
+	 * @type {string}
+	 */
+	href;
+
+	/**
+	 * @type {URL}
+	 */
+	url;
+
+	/**
+	 * @type {Object|null}
+	 */
+	error;
+
+	/**
+	 * @type {Object}
+	 */
+	revision;
+
+	/**
+	 * @type {Object}
+	 */
+	compare;
+
+	/**
 	 * Container for rendered DOM nodes (container, inner, error, etc.).
 	 * @type {Object<string, HTMLElement>}
 	 */
@@ -472,9 +497,9 @@ class Link {
 	/**
 	 * Callback when a link enters the viewport (IntersectionObserver callback).
 	 * Triggers the API request to load link data.
-	 * @private
+	 * @internal
 	 */
-	onIntersect() {
+	intersect() {
 		if ( this.isLoading || this.isLoaded || !this.isObserved ) return;
 		this.unobserve();
 		this.request();
@@ -665,6 +690,12 @@ class Link {
 			.fail( this.onRequestDiffError );
 	}
 
+	/**
+	 * Error handler for diff comparison request failures.
+	 * @param {string} error - Error message
+	 * @param {Object} data - API error response data
+	 * @private
+	 */
 	onRequestDiffError = ( error, data ) => {
 		this.isLoading = false;
 
@@ -686,6 +717,12 @@ class Link {
 		this.renderError();
 	};
 
+	/**
+	 * Success handler for diff comparison request completion.
+	 * Validates response data and updates article with diff information.
+	 * @param {Object} data - API response data
+	 * @private
+	 */
 	onRequestDiffDone = ( data ) => {
 		this.isLoading = false;
 
@@ -736,6 +773,12 @@ class Link {
 			.fail( this.onRequestCompareError );
 	}
 
+	/**
+	 * Error handler for cross-page comparison request failures.
+	 * @param {string} error - Error message
+	 * @param {Object} data - API error response data
+	 * @private
+	 */
 	onRequestCompareError = ( error, data ) => {
 		this.isLoading = false;
 
@@ -757,6 +800,12 @@ class Link {
 		this.renderError();
 	};
 
+	/**
+	 * Success handler for cross-page comparison request completion.
+	 * Validates response data and updates article with diff information.
+	 * @param {Object} data - API response data
+	 * @private
+	 */
 	onRequestCompareDone = ( data ) => {
 		this.isLoading = false;
 

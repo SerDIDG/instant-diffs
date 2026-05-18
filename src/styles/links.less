@@ -63,6 +63,20 @@
 			border-radius: 1em;
 		}
 	}
+	
+	&--clear {
+		&.is-insertBefore {
+			&::before {
+				display: inline-block;
+			}
+		}
+
+		&.is-insertAfter {
+			&::after {
+				display: inline-block;
+			}
+		}
+	}
 
 	&--error {
 		background: var(--instantDiffs-background-link-error);

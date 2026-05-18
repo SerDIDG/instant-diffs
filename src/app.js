@@ -280,7 +280,7 @@ function getMessages() {
 			return self.indexOf( value ) === index && !id.i18n[ value ];
 		} )
 		.map( lang => {
-			const path = id.config.dependencies.messages.replace( '$lang', lang );
+			const path = (/** @type {string} */ id.config.dependencies.messages ).replace( '$lang', lang );
 			return mw.loader.getScript( utils.server( path ) );
 		} );
 }
@@ -478,7 +478,7 @@ function i18nBundle() {
  * Starts the preparation process once dependencies are loaded.
  */
 function load() {
-	mw.loader.load( utils.server( id.config.dependencies.styles ), 'text/css' );
+	mw.loader.load( utils.server( /** @type {string} */ id.config.dependencies.styles ), 'text/css' );
 	mw.loader.using( id.config.dependencies.main )
 		.then( prepare )
 		.then( () => $( ready ) )
@@ -614,7 +614,7 @@ function handleReplace() {
 		mw.hook( `${ id.config.prefix }.replace` ).fire( settingOptions, defaultOptions );
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -657,7 +657,7 @@ function observeInteractions( entries ) {
 
 		const link = Link.getLink( entry.target );
 		if ( link ) {
-			link.onIntersect();
+			link.intersect();
 		}
 	} );
 }
