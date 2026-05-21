@@ -69,7 +69,7 @@
 	"copy-wikilink-example-title": "Hoofdpagina",
 	"dialog-title-empty": "[Geen titel]",
 	"dialog-title-not-found": "[Niet gevonden]",
-	"dialog-notice-wikilambda": "De WikiLambda-app toont momenteel alleen de laatste versie. Bekijk een [[phab:T397902|ticket]] op Phabricator.",
+	"dialog-notice-wikilambda": "De WikiLambda-app laat momenteel alleen de laatste versie zien. Zie het [[phab:T397902|ticket]] op Phabricator.",
 	"dialog-notice-foreign-diff": "U bekijkt externe wijzigingen van [$1 $2]. Sommige functies kunnen beperkt zijn.",
 	"dialog-notice-foreign-revision": "U bekijkt een externe versie van [$1 $2]. Sommige functies kunnen beperkt zijn.",
 	"dialog-notice-foreign-wikilambda": "De WikiLambda-app wordt nog niet ondersteund in de externe versies.",

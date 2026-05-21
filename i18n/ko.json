@@ -3,6 +3,7 @@
 		"authors": [
 			"Bisang",
 			"Serhio Magpie",
+			"Tensama0415",
 			"YeBoy371",
 			"Ykhwong",
 			"解浪"
@@ -49,7 +50,7 @@
 	"goto-info": "정보 표시",
 	"goto-talkpage": "토론",
 	"goto-settings": "설정",
-	"goto-actions": "동작",
+	"goto-actions": "작업",
 	"hint-close": "Esc",
 	"hint-alt-click": "Alt+Click: 링크 열기",
 	"hint-snapshot-prev": "Ctrl+왼쪽 화살표",
