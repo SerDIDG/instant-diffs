@@ -11,6 +11,7 @@ import settings from './settings';
  * @property {boolean} [isSystem=false] - Button is system action
  * @property {MenuButton.Options['type']} [systemType='navigation'] - System button type
  * @property {string} [systemGroup='navigation'] - System button group
+ * @property {boolean} [pin=undefined] - Overrides user's pin settings if set
  * @property {boolean} [canPin=false] - Whether to render a pinned button
  * @property {boolean} [isPin=false] - Button is pinned action
  * @property {MenuButton.Options['type']} [pinType='pin'] - Pined button type
@@ -208,9 +209,10 @@ class Menu {
 			article: this.article,
 			name: null,
 			group: null,
-			canSystem:false,
+			canSystem: false,
 			systemType: 'pin',
 			systemGroup: 'navigation',
+			pin: undefined,
 			canPin: false,
 			pinType: 'pin',
 			pinGroup: 'pins',
@@ -221,7 +223,10 @@ class Menu {
 			...options,
 		};
 
-		if ( this.buttons[ options.name ] ) return;
+		if ( this.buttons[ options.name ] ) {
+			utils.logException( `${ this.constructor.name }:renderButton`, 'Button not added: button with the same name already exists.', options );
+			return;
+		}
 		const buttons = this.buttons[ options.name ] = [];
 
 		if ( options.canSystem ) {
@@ -234,17 +239,19 @@ class Menu {
 			buttons.push( button );
 		}
 
-		if (
-			options.canPin &&
-			utils.inArray( settings.get( 'pinnedActions' ), options.name )
-		) {
-			const button = this.renderButtonHelper( {
-				...options,
-				type: options.pinType,
-				group: options.pinGroup,
-				isPin: true,
-			} );
-			buttons.push( button );
+		if ( options.canPin ) {
+			const pin = utils.isBoolean( options.pin )
+				? options.pin
+				: utils.inArray( settings.get( 'pinnedActions' ), options.name );
+			if ( pin ) {
+				const button = this.renderButtonHelper( {
+					...options,
+					type: options.pinType,
+					group: options.pinGroup,
+					isPin: true,
+				} );
+				buttons.push( button );
+			}
 		}
 
 		if ( options.canMenu ) {

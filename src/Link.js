@@ -17,7 +17,7 @@ const { h, ht } = utils;
  * @typedef {Object} Link.Options
  * @property {'basic'|'request'|'event'|'none'} [behavior='basic'] - A Link behavior type
  * @property {'insertAfter'|'insertBefore'} [insertMethod='insertAfter'] - Define where to embed actions panel
- * @property {boolean} [showLink=true] - Whether to show the link action
+ * @property {boolean} [showLink=false] - Whether to show the link action
  * @property {boolean} [showPageLink=true] - Whether to show the page link action
  * @property {boolean} [showAltTitle=false] - Show an original title instead of processed
  * @property {boolean} [useAltKey=true] - Use alt key to open the link normally

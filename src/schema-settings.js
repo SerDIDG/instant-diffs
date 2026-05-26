@@ -352,6 +352,7 @@ function getPinnedActionsOptions() {
 			action.name,
 			{
 				label: action.label,
+				disabled: utils.isBoolean( action.pin ),
 			},
 		];
 	} );

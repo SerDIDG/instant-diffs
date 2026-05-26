@@ -1062,7 +1062,10 @@ class Navigation {
 		};
 
 		// Validate name
-		if ( utils.isEmpty( options.name ) ) return;
+		if ( utils.isEmpty( options.name ) ) {
+			utils.logException( `${ this.constructor.name }:addCustomAction`, 'Button not added: empty "name" option.', options );
+			return;
+		}
 		options.name = `custom-${ options.name }`;
 
 		// Render menu button
