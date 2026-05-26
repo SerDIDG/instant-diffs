@@ -224,7 +224,7 @@ class Menu {
 		};
 
 		if ( this.buttons[ options.name ] ) {
-			utils.logException( `${ this.constructor.name }:renderButton`, 'Button not added: button with the same name already exists.', options );
+			utils.logException( 'Menu:renderButton', 'Button not added: button with the same name already exists.', options );
 			return;
 		}
 		const buttons = this.buttons[ options.name ] = [];
