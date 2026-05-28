@@ -19,6 +19,10 @@ import Watch from './Watch';
 import view from './view';
 import settings from './settings';
 
+import { process as processChangeListsPage } from './extensions/Page-ChangeLists';
+import { process as processContributionsPage } from './extensions/Page-Contributions';
+import { process as processHistoryPage } from './extensions/Page-History';
+
 import './styles/skins.less';
 
 /******* PAGE SPECIFIC ADJUSTMENTS *******/
@@ -36,8 +40,11 @@ function applyPageAdjustments() {
 	document.body.classList.add( 'instantDiffs-enabled' );
 
 	// Change Lists
-	if ( id.config.changeLists.includes( id.local.mwCanonicalSpecialPageName ) ) {
-		return processChangelistPage();
+	if (
+		id.config.changeLists.includes( id.local.mwCanonicalSpecialPageName ) ||
+		id.local.mwCanonicalSpecialPageName === 'GlobalWatchlist'
+	) {
+		return processChangeListsPage();
 	}
 
 	// User Contributions
@@ -45,125 +52,10 @@ function applyPageAdjustments() {
 		return processContributionsPage();
 	}
 
-	// GlobalWatchlist Extension
-	if ( id.local.mwCanonicalSpecialPageName === 'GlobalWatchlist' ) {
-		return processGlobalWatchlistPage();
-	}
-
 	// History
 	if ( id.local.mwAction === 'history' ) {
 		return processHistoryPage();
 	}
-}
-
-/**
- * Process changelists (RecentChanges, Watchlist, etc.).
- * Adds styling classes to changelist lines.
- */
-function processChangelistPage() {
-	// Add an instantDiffs-line CSS class
-	$( '.mw-changeslist-line' ).addClass( 'instantDiffs-line' );
-}
-
-/**
- * Process user contribution pages.
- * Fills empty diff links with placeholders and handles GlobalContributions.
- */
-function processContributionsPage() {
-	// Fill empty links
-	const $contributionsLines = $( '.mw-contributions-list .mw-changeslist-links:not(.mw-pager-tools) > span:first-child' );
-	$contributionsLines.each( ( i, node ) => {
-		const $node = $( node );
-		if ( $node.find( 'a' ).length === 0 ) {
-			$node.wrapInner( utils.renderPlaceholder() );
-		}
-	} );
-
-	// GlobalContributions Extension
-	if ( id.local.mwCanonicalSpecialPageName === 'GlobalContributions' ) {
-		processGlobalContributionsPage();
-	}
-}
-
-/**
- * Process GlobalContributions extension pages.
- * Fixes relative links in edit summaries by adding base URLs.
- * @see {@link https://phabricator.wikimedia.org/T398108}
- */
-function processGlobalContributionsPage() {
-	// Fix relative links in the edit comments
-	// The bug was particularly fixed in MediaWiki 1.45.0 (T398108)
-	// ToDo: deprecate after the fix for links in the Wikidata edit summaries
-	const $contributionsLines = $( '.mw-contributions-list li' );
-	$contributionsLines.each( ( i, node ) => {
-		const $node = $( node );
-		const $link = $node.find( 'a.mw-changeslist-date, a.mw-changeslist-history' );
-		if ( $link.length === 0 ) return;
-
-		try {
-			const url = new URL( $link.prop( 'href' ) );
-			utils.addBaseToLinks( $node, url.origin );
-		} catch {}
-	} );
-}
-
-/**
- * Process GlobalWatchlist extension pages.
- * Sets up mutation observer to detect dynamic content changes.
- * @see {@link https://phabricator.wikimedia.org/T275159}
- */
-function processGlobalWatchlistPage() {
-	// ToDo: remove mutation observer after hooks are implemented (T275159)
-	const container = document.getElementById( 'ext-globalwatchlist-watchlistsfeed' );
-	id.local.mutationObserver.observe( container, {
-		childList: true,
-	} );
-}
-
-/**
- * Process page history pages.
- * Adds styling, fills empty diff links, and creates compare buttons.
- */
-function processHistoryPage() {
-	// Add an instantDiffs-line CSS class that adds spaces between selector checkboxes
-	const $revisionLines = $( '#pagehistory > li, #pagehistory .mw-contributions-list > li' )
-		.addClass( 'instantDiffs-line--history' );
-
-	// Add a compare button only if the number of lines is greater than 1
-	if ( $revisionLines.length <= 1 ) return;
-
-	// Fill empty links
-	$revisionLines.each( ( i, node ) => {
-		const $container = $( node );
-		const $cur = $container.find( '.mw-history-histlinks > span:first-child' );
-		const $prev = $container.find( '.mw-history-histlinks > span:last-child' );
-		if ( $cur.find( 'a' ).length === 0 ) {
-			$cur.wrapInner( utils.renderPlaceholder() );
-		}
-		if ( $prev.find( 'a' ).length === 0 ) {
-			$prev.wrapInner( utils.renderPlaceholder() );
-		}
-	} );
-
-	// Dynamic revision selector
-	const $revisionSelector = $( '.mw-history-compareselectedversions' );
-	$revisionSelector.each( ( i, node ) => {
-		const $container = $( node );
-		const $button = $container.find( '.mw-history-compareselectedversions-button' );
-
-		new HistoryCompareButton( {
-			label: utils.msg( 'compare-label', id.config.labels.diff ),
-			title: utils.msg( 'compare-title', utils.msg( 'script-name' ) ),
-			classes: [ 'mw-ui-button', 'cdx-button', 'instantDiffs-button--compare' ],
-			insertMethod: 'insertAfter',
-			container: $button,
-		} );
-
-		$( '<span>' )
-			.text( ' ' )
-			.addClass( 'instantDiffs-spacer' )
-			.insertAfter( $button );
-	} );
 }
 
 /******* PREPARE ******/
