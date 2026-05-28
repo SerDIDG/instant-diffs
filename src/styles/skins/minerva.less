@@ -4,6 +4,7 @@
  */
 
 @import ( reference ) '@wikimedia/codex-design-tokens/theme-wikimedia-ui.less';
+@import ( reference ) '../mixins.less';
 
 /******* VARIABLES *******/
 
@@ -56,6 +57,7 @@
 			margin: 1em -16px -16px;
 			position: sticky;
 			inset: auto auto 0;
+			#style-background-glass();
 
 			&__header {
 				display: flex;
@@ -65,15 +67,20 @@
 				line-height: var(--line-height-small, 1.375rem);
 				font-size: var(--font-size-medium, 1rem);
 
-				.ext-checkuser-userinfocard-button {
-					position: static;
-				}
-
 				.mw-userlink {
 					max-width: 80%;
 					overflow: hidden;
 					text-overflow: ellipsis;
 					white-space: nowrap;
+				}
+			}
+
+			.ext-checkuser-userinfocard-button {
+				display: inline-block;
+				position: static;
+
+				&__icon {
+					vertical-align: text-bottom;
 				}
 			}
 
@@ -176,9 +183,22 @@
 
 	.fix-ext-checkuser--float {
 		.ext-checkuser-userinfocard-button {
+			display: inline-block;
 			float: left;
 			clear: left;
 			padding-top: 0;
+
+			&-wrapper {
+				& + .mw-usertoollinks {
+					float: left;
+					clear: right;
+					padding-top: 0;
+				}
+			}
+
+			&__icon {
+				vertical-align: text-bottom;
+			}
 
 			& + .mw-userlink {
 				float: left;
