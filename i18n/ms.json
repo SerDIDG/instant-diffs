@@ -41,5 +41,22 @@
 	"goto-comment": "Pergi ke mesej",
 	"goto-edit": "Sunting",
 	"goto-source": "Lihat sumber",
-	"goto-history": "Lihat sejarah"
+	"goto-history": "Lihat sejarah",
+	"goto-info": "Lihat maklumat",
+	"goto-talkpage": "Perbincangan",
+	"goto-settings": "Tetapan",
+	"goto-actions": "Tindakan",
+	"hint-close": "Esc",
+	"hint-alt-click": "Alt+Klik: buka pautan",
+	"hint-snapshot-prev": "Ctrl+Panah Kiri",
+	"hint-snapshot-next": "Ctrl+Panah Kanan",
+	"hint-prev": "Panah Kiri",
+	"hint-next": "Panah Kanan",
+	"hint-switch": "Ctrl+Panah Atas",
+	"hint-unpatrolled": "Ctrl+P",
+	"hint-back": "Ctrl+Z",
+	"hint-actions": "Ctrl+Panah Bawah",
+	"copy-link": "Salin pautan",
+	"copy-link-copied": "Pautan telah disalin ke papan keratan.",
+	"copy-link-error": "Tidak dapat menyalin pautan."
 }
