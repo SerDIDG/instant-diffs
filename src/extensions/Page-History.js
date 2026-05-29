@@ -7,7 +7,7 @@ import HistoryCompareButton from '../HistoryCompareButton';
  * Process page history pages.
  * Adds styling, fills empty diff links, and creates compare buttons.
  */
-export function process() {
+function process() {
 	// Add an instantDiffs-line CSS class that adds spaces between selector checkboxes
 	const $revisionLines = $( '#pagehistory > li, #pagehistory .mw-contributions-list > li' )
 		.addClass( 'instantDiffs-line--history' );
@@ -48,3 +48,10 @@ export function process() {
 			.insertAfter( $button );
 	} );
 }
+
+mw.hook( `${ id.config.prefix }.applyPageAdjustments` ).add( ( id ) => {
+	// Process local history pages
+	if ( id.local.mwAction === 'history' ) {
+		return process();
+	}
+} );

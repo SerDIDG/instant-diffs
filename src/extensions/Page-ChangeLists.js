@@ -4,15 +4,10 @@ import id from '../id';
  * Process changelists (RecentChanges, Watchlist, etc.).
  * Adds styling classes to changelist lines.
  */
-export function process() {
+function process() {
 	// Mark changelist lines with Instant Diffs CSS class
 	if ( id.config.changeLists.includes( id.local.mwCanonicalSpecialPageName ) ) {
 		$( '.mw-changeslist-line' ).addClass( 'instantDiffs-line' );
-	}
-
-	// Process GlobalWatchlist extension
-	if ( id.local.mwCanonicalSpecialPageName === 'GlobalWatchlist' ) {
-		return processGlobalWatchlist();
 	}
 }
 
@@ -28,3 +23,15 @@ function processGlobalWatchlist() {
 		childList: true,
 	} );
 }
+
+mw.hook( `${ id.config.prefix }.applyPageAdjustments` ).add( ( id ) => {
+	// Process local changelists
+	if ( id.config.changeLists.includes( id.local.mwCanonicalSpecialPageName ) ) {
+		process();
+	}
+
+	// Process GlobalWatchlist extension
+	if ( id.local.mwCanonicalSpecialPageName === 'GlobalWatchlist' ) {
+		processGlobalWatchlist();
+	}
+} );

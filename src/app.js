@@ -19,44 +19,7 @@ import Watch from './Watch';
 import view from './view';
 import settings from './settings';
 
-import { process as processChangeListsPage } from './extensions/Page-ChangeLists';
-import { process as processContributionsPage } from './extensions/Page-Contributions';
-import { process as processHistoryPage } from './extensions/Page-History';
-
 import './styles/skins.less';
-
-/******* PAGE SPECIFIC ADJUSTMENTS *******/
-
-/**
- * Apply page-specific adjustments based on the current MediaWiki page type.
- * Adds CSS classes and initializes page-specific processing.
- */
-function applyPageAdjustments() {
-	if ( id.isPageAdjustmentsApplied || !utils.isAllowed() ) return;
-
-	id.isPageAdjustmentsApplied = true;
-
-	// Add a status to the body tag
-	document.body.classList.add( 'instantDiffs-enabled' );
-
-	// Change Lists
-	if (
-		id.config.changeLists.includes( id.local.mwCanonicalSpecialPageName ) ||
-		id.local.mwCanonicalSpecialPageName === 'GlobalWatchlist'
-	) {
-		return processChangeListsPage();
-	}
-
-	// User Contributions
-	if ( id.config.contributionLists.includes( id.local.mwCanonicalSpecialPageName ) ) {
-		return processContributionsPage();
-	}
-
-	// History
-	if ( id.local.mwAction === 'history' ) {
-		return processHistoryPage();
-	}
-}
 
 /******* PREPARE ******/
 
@@ -252,6 +215,22 @@ function assembleLinkSelector() {
 
 	// Join a link selector assembled results
 	id.local.linkSelector = linkSelector.join( ',' );
+}
+
+/**
+ * Apply page-specific adjustments based on the current MediaWiki page type.
+ * Adds CSS classes and initializes page-specific processing.
+ */
+function applyPageAdjustments() {
+	if ( id.isPageAdjustmentsApplied || !utils.isAllowed() ) return;
+
+	id.isPageAdjustmentsApplied = true;
+
+	// Add a status to the body tag
+	document.body.classList.add( 'instantDiffs-enabled' );
+
+	// Fire the internal page adjustments hook
+	mw.hook( `${ id.config.prefix }.applyPageAdjustments` ).fire( id );
 }
 
 /******* BOOTSTRAP *******/

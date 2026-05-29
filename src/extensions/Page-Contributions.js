@@ -5,7 +5,7 @@ import * as utils from '../utils';
  * Process user contribution pages.
  * Fills empty diff links with placeholders and handles GlobalContributions.
  */
-export function process() {
+function process() {
 	// Fill empty links
 	const $contributionsLines = $( '.mw-contributions-list .mw-changeslist-links:not(.mw-pager-tools) > span:first-child' );
 	$contributionsLines.each( ( i, node ) => {
@@ -14,11 +14,6 @@ export function process() {
 			$node.wrapInner( utils.renderPlaceholder() );
 		}
 	} );
-
-	// Process GlobalContributions extension
-	if ( id.local.mwCanonicalSpecialPageName === 'GlobalContributions' ) {
-		processGlobal();
-	}
 }
 
 /**
@@ -42,3 +37,15 @@ function processGlobal() {
 		} catch {}
 	} );
 }
+
+mw.hook( `${ id.config.prefix }.applyPageAdjustments` ).add( ( id ) => {
+	// Process local user contributions
+	if ( id.config.contributionLists.includes( id.local.mwCanonicalSpecialPageName ) ) {
+		process();
+	}
+
+	// Process GlobalContributions extension
+	if ( id.local.mwCanonicalSpecialPageName === 'GlobalContributions' ) {
+		processGlobal();
+	}
+} );
