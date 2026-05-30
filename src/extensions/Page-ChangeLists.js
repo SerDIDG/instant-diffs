@@ -1,17 +1,6 @@
 import id from '../id';
 
 /**
- * Process changelists (RecentChanges, Watchlist, etc.).
- * Adds styling classes to changelist lines.
- */
-function process() {
-	// Mark changelist lines with Instant Diffs CSS class
-	if ( id.config.changeLists.includes( id.local.mwCanonicalSpecialPageName ) ) {
-		$( '.mw-changeslist-line' ).addClass( 'instantDiffs-line' );
-	}
-}
-
-/**
  * Process GlobalWatchlist extension pages.
  * Sets up mutation observer to detect dynamic content changes.
  * @see {@link https://phabricator.wikimedia.org/T275159}
@@ -25,11 +14,6 @@ function processGlobalWatchlist() {
 }
 
 mw.hook( `${ id.config.prefix }.applyPageAdjustments` ).add( ( id ) => {
-	// Process local changelists
-	if ( id.config.changeLists.includes( id.local.mwCanonicalSpecialPageName ) ) {
-		process();
-	}
-
 	// Process GlobalWatchlist extension
 	if ( id.local.mwCanonicalSpecialPageName === 'GlobalWatchlist' ) {
 		processGlobalWatchlist();

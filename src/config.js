@@ -281,6 +281,7 @@ export const config = {
 
 	mwLine: {
 		selector: [
+			'[data-instantdiffs-line]',
 			'.mw-changeslist-line',                                     // Changelists
 			'.mw-contributions-list li',                                // Contributions
 			'.mw-fr-pending-changes-table tr',                          // [[Special:PendingChanges]]
@@ -324,6 +325,7 @@ export const config = {
 			'mw-newpages-time',                                         // [[Special:NewPages]]
 		],
 		closestTo: [
+			'[data-instantdiffs-line]',
 			'.mw-changeslist-line',                                     // Changelists
 			'.mw-contributions-list',                                   // Contributions
 			'.mw-history-histlinks',                                    // Page History
@@ -356,9 +358,6 @@ export const config = {
 			'differences-prevlink',                                     // [[Special:Diff]]: Previous edit
 			'differences-nextlink',                                     // [[Special:Diff]]: Next edit
 		],
-		closestTo: [
-			'#mw-revision-nav',                                         // [[Special:PermanentLink]] / Revision
-		],
 	},
 	mwLinkPrepend: {
 		id: [
@@ -366,6 +365,10 @@ export const config = {
 		],
 		hasClass: [
 			'mw-diff-revision-history-link-next',                       // [[Special:Diff]]: MobileDiff next edit
+		],
+		endsWith: [
+			'→',
+			'←',
 		],
 	},
 	mwLinkAltTitle: {

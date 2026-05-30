@@ -42,6 +42,7 @@ export function getSplitSpecialUrl( title ) {
  * @param {Object} [preset]
  * @param {Array} [preset.id]
  * @param {Array} [preset.hasClass]
+ * @param {Array} [preset.endsWith]
  * @param {Array} [preset.hasChild]
  * @param {Array} [preset.closestTo]
  * @returns {boolean}
@@ -54,13 +55,20 @@ export function isMWLink( node, preset ) {
 
 	// Check if a node id matches
 	if ( preset.id ) {
-		isConfirmed = preset.id.some( entry => ( node.id === entry ) );
+		isConfirmed = preset.id.includes( node.id );
 		if ( isConfirmed ) return isConfirmed;
 	}
 
 	// Check if a node contains a className
 	if ( preset.hasClass ) {
 		isConfirmed = preset.hasClass.some( entry => node.classList.contains( entry ) );
+		if ( isConfirmed ) return isConfirmed;
+	}
+
+	// Check if a node text content ends with a character
+	if ( preset.endsWith ) {
+		const text = node.textContent.trim();
+		isConfirmed = preset.endsWith.some( entry => text.endsWith( entry ) );
 		if ( isConfirmed ) return isConfirmed;
 	}
 
@@ -82,7 +90,7 @@ export function getMWLine( node ) {
 }
 
 export function getMWLineTitle( container ) {
-	// Get title from the data attribute, if the container has one.
+	// Get title from the data attribute if container has one.
 	const title = container.dataset.title;
 	if ( !utils.isEmpty( title ) ) {
 		return decodeURIComponent( title );

@@ -69,19 +69,22 @@
  * li - contributions, page history
  * tr - watchlist, pending changes
  * table - watchlist with groups
+ * [data-instantdiffs-line] - marked manually
  */
 
 .instantDiffs-line {
 	li&,
 	tr& td,
-	table& td {
+	table& td,
+	&[data-instantdiffs-line] {
 		transition: background-color 1000ms ease-in-out;
 	}
 
 	&--highlight {
 		li&,
 		tr& td,
-		table& td {
+		table& td,
+		&[data-instantdiffs-line] {
 			transition-duration: 250ms;
 			background-color: var(--instantDiffs-background-line) !important;
 		}
