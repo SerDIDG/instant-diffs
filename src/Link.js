@@ -281,13 +281,10 @@ class Link {
 		this.href = this.node.href;
 		if ( utils.isEmpty( this.href ) ) return;
 
-		// Validate url
+		// Validate link url
 		const urlParts = {};
 		try {
 			this.url = new URL( this.href );
-			urlParts.title = this.url.searchParams.get( 'title' );
-			urlParts.pathname = decodeURIComponent( this.url.pathname );
-			urlParts.pathnameNormalized = urlParts.pathname.replace( new RegExp( id.local.mwArticlePath ), '' );
 		} catch {
 			return;
 		}
@@ -298,18 +295,33 @@ class Link {
 		// Exclude links with specific selectors
 		if ( utilsLink.isMWLink( this.node, id.config.mwLinkExclude ) ) return;
 
+		// Get page title from the ulr pathname
+		try {
+			const pathname = decodeURIComponent( this.url.pathname );
+			if ( id.local.articlePathRegExp.test( pathname ) ) {
+				const title = pathname.replace( new RegExp( id.local.mwArticlePath ), '' );
+				urlParts.pathname = new mw.Title( title ).getPrefixedDb();
+			}
+		} catch {}
+
+		// Get page title from the url title parameter
+		try {
+			const title = mw.util.getParamValue( 'title', this.href );
+			urlParts.title = new mw.Title( title ).getPrefixedDb();
+		} catch {}
+
 		// Get article values
 		let articleValues = {
 			hostname: this.url.hostname,
 			hash: this.url.hash,
 		};
 
-		if ( id.local.specialPagesLinksSearchRegExp.test( urlParts.title ) ) {
+		if ( id.local.specialPagesLinksRegExp.test( urlParts.title ) ) {
 			// Get components from splitting url title
 			articleValues = { ...articleValues, ...utilsLink.getSplitSpecialUrl( urlParts.title ) };
-		} else if ( id.local.specialPagesLinksPathRegExp.test( urlParts.pathname ) ) {
+		} else if ( id.local.specialPagesLinksRegExp.test( urlParts.pathname ) ) {
 			// Get components from splitting url pathname
-			articleValues = { ...articleValues, ...utilsLink.getSplitSpecialUrl( urlParts.pathnameNormalized ) };
+			articleValues = { ...articleValues, ...utilsLink.getSplitSpecialUrl( urlParts.pathname ) };
 		} else {
 			// Get components from url search parameters
 			[ 'title', 'curid', 'oldid', 'diff', 'direction', 'page1', 'rev1', 'page2', 'rev2' ].forEach( name => {
@@ -317,8 +329,8 @@ class Link {
 			} );
 
 			// As a last resort, get the page title from url pathname
-			if ( utils.isEmpty( articleValues.title ) && id.local.articlePathRegExp.test( urlParts.pathname ) ) {
-				articleValues.title = urlParts.pathnameNormalized;
+			if ( utils.isEmpty( articleValues.title ) && !utils.isEmpty( urlParts.pathname ) ) {
+				articleValues.title = urlParts.pathname;
 			}
 		}
 
@@ -962,7 +974,7 @@ class Link {
 			return this.node.title;
 		}
 
-		// Indicate about hidden revisions
+		// Indicate it about hidden revisions
 		if ( this.article.isHidden ) {
 			title = `${ title }-hidden`;
 		}

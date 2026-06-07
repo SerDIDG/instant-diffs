@@ -243,8 +243,7 @@ export const config = {
 		'Special:MobileDiff',
 		'Special:Redirect',
 	],
-	specialPagesLinksSearchRegExp: '^($1)',                             // $1 - joined specialPages
-	specialPagesLinksPathRegExp: '$1($2)',                              // $1 - article path, $2 - joined specialPages
+	specialPagesLinksRegExp: '^($1)',                                   // $1 - joined specialPages
 	specialPagesLinksSelector: 'a[title^="$1"]',                        // $1 - each of the specialPages
 
 	articlePathRegExp: '^($1)',                                         // $1 - article path
@@ -522,12 +521,7 @@ export const local = {
 	/**
 	 * @type {RegExp}
 	 */
-	specialPagesLinksPathRegExp: null,
-
-	/**
-	 * @type {RegExp}
-	 */
-	specialPagesLinksSearchRegExp: null,
+	specialPagesLinksRegExp: null,
 
 	/**
 	 * @type {RegExp}

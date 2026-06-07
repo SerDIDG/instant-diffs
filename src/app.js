@@ -177,9 +177,15 @@ function assembleSpecialPages() {
  */
 function assembleLinkSelector() {
 	// Assemble RegExp for testing for mwArticlePath
-	id.local.articlePathRegExp = new RegExp(
-		id.config.articlePathRegExp.replaceAll( '$1', id.local.mwArticlePath ),
-	);
+	const articlePathRuleset = id.config.articlePathRegExp
+		.replaceAll( '$1', id.local.mwArticlePath );
+	id.local.articlePathRegExp = new RegExp( articlePathRuleset );
+
+	// Assemble RegExp for testing special page titles in the links
+	const specialPagesJoined = id.local.specialPagesLinksAliasesPrefixedFlat.join( '|' );
+	const specialPagesLinksRuleset = id.config.specialPagesLinksRegExp
+		.replaceAll( '$1', specialPagesJoined );
+	id.local.specialPagesLinksRegExp = new RegExp( specialPagesLinksRuleset, 'i' );
 
 	// Start assemble links selector
 	const linkSelector = [];
@@ -201,17 +207,6 @@ function assembleLinkSelector() {
 			id.config.specialPagesLinksSelector.replaceAll( '$1', title ),
 		);
 	} );
-
-	// Assemble RegExp for testing special page titles in the links
-	const specialPagesJoined = id.local.specialPagesLinksAliasesPrefixedFlat.join( '|' );
-	id.local.specialPagesLinksPathRegExp = new RegExp(
-		id.config.specialPagesLinksPathRegExp
-			.replaceAll( '$1', id.local.mwArticlePath )
-			.replaceAll( '$2', specialPagesJoined ),
-	);
-	id.local.specialPagesLinksSearchRegExp = new RegExp(
-		id.config.specialPagesLinksSearchRegExp.replaceAll( '$1', specialPagesJoined ),
-	);
 
 	// Join a link selector assembled results
 	id.local.linkSelector = linkSelector.join( ',' );
