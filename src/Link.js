@@ -295,7 +295,7 @@ class Link {
 		// Exclude links with specific selectors
 		if ( utilsLink.isMWLink( this.node, id.config.mwLinkExclude ) ) return;
 
-		// Get page title from the ulr pathname
+		// Get page title from the url pathname
 		try {
 			const pathname = decodeURIComponent( this.url.pathname );
 			if ( id.local.articlePathRegExp.test( pathname ) ) {
