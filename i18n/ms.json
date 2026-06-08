@@ -58,5 +58,15 @@
 	"hint-actions": "Ctrl+Panah Bawah",
 	"copy-link": "Salin pautan",
 	"copy-link-copied": "Pautan telah disalin ke papan keratan.",
-	"copy-link-error": "Tidak dapat menyalin pautan."
+	"copy-link-error": "Tidak dapat menyalin pautan.",
+	"copy-wikilink": "Salin pautan wiki",
+	"copy-wikilink-page": "laman",
+	"copy-wikilink-diff": "beza",
+	"copy-wikilink-revision": "semakan",
+	"copy-wikilink-example-title": "Laman Utama",
+	"dialog-title-empty": "[Tiada tajuk]",
+	"dialog-title-not-found": "[Tidak dijumpai]",
+	"dialog-notice-wikilambda": "Aplikasi WikiLambda pada masa ini hanya memaparkan semakan terkini. Lihat [[phab:T397902|tiket]] di Phabricator.",
+	"dialog-notice-foreign-diff": "Anda sedang melihat perbezaan asing daripada [$1 $2]. Sesetengah ciri mungkin terhad.",
+	"dialog-notice-foreign-revision": "Anda sedang melihat semakan asing daripada [$1 $2]. Sesetengah ciri mungkin terhad."
 }
