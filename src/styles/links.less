@@ -20,7 +20,7 @@
 			content: var(--instantDiffs-label);
 		}
 
-		&[rel~="mw:ExtLink"]:empty::after {
+		&[rel~="mw:ExtLink"].autonumber:empty::after {
 			margin-inline: 0;
 			content: '[' counter(mw-numbered-ext-link) '] ' var(--instantDiffs-label);
 			counter-increment: mw-numbered-ext-link;
