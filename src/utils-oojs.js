@@ -70,6 +70,7 @@ export function fixFloatedElementsIsolation() {
 		'#mw-notification-area',
 		'.mw-notification-area-overlay',
 		'.ext-checkuser-userinfocard-popover',
+		'.translatorBuddy-popup',
 	] )
 		.each( ( i, node ) => {
 			$( node )
