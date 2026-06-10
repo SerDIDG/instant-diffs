@@ -134,24 +134,26 @@ class Navigation {
 	 * Map of the main menu groups.
 	 * @type {{left: [string], center: [string], right: string[]}}
 	 */
-	groupsMap = {
+	GROUPS = {
 		left: [ 'snapshot' ],
 		center: [ 'navigation' ],
 		right: [ 'pins-custom', 'pins' ],
 	};
 
 	/**
+	 * Collection of the main menu groups.
 	 * @type {string[]}
 	 */
 	groups = [];
 
 	/**
-	 * Map of the actions menu groups.
+	 * Map of the action menu groups.
 	 * @type {string[]}
 	 */
-	actionGroupsMap = [ 'mobile', 'menu-custom', 'menu', 'footer' ];
+	ACTION_GROUPS = [ 'mobile', 'menu-custom', 'menu', 'footer' ];
 
 	/**
+	 * Collection of the action menu groups.
 	 * @type {string[]}
 	 */
 	actionGroups = [];
@@ -165,7 +167,7 @@ class Navigation {
 		this.menu = new Menu( this.article );
 
 		// Render main menu groups
-		for ( const [ group, names ] of Object.entries( this.groupsMap ) ) {
+		for ( const [ group, names ] of Object.entries( this.GROUPS ) ) {
 			names.forEach( name => {
 				this.groups.push( name );
 				this.menu.renderGroup( {
@@ -178,7 +180,7 @@ class Navigation {
 		}
 
 		// Render actions menu groups
-		this.actionGroupsMap.forEach( name => {
+		this.ACTION_GROUPS.forEach( name => {
 			this.actionGroups.push( name );
 			this.menu.renderGroup( {
 				name,
@@ -876,7 +878,7 @@ class Navigation {
 	 * @private
 	 * @type {Record<string, string>}
 	 */
-	actionCounterparts = {
+	ACTION_COUNTERPARTS = {
 		'unpatrolled': 'back',
 		'back-unpatrolled': 'unpatrolled',
 	};
@@ -886,7 +888,7 @@ class Navigation {
 	 * @private
 	 * @type {Record<string, string>}
 	 */
-	disabledActionCounterparts = {
+	ACTION_DISABLED_COUNTERPARTS = {
 		'next': 'prev',
 		'prev': 'next',
 		'snapshotNext': 'snapshotPrev',
@@ -944,14 +946,14 @@ class Navigation {
 	 */
 	focusActionByName( name ) {
 		// Apply action counterpart transformation
-		name = this.actionCounterparts[ name ] || name;
+		name = this.ACTION_COUNTERPARTS[ name ] || name;
 
 		// Try to focus on the primary action
 		const focused = this.menu.focusButton( name, this.groups );
 		if ( focused ) return true;
 
 		// If the primary action was disabled, try the counterpart
-		name = this.disabledActionCounterparts[ name ];
+		name = this.ACTION_DISABLED_COUNTERPARTS[ name ];
 		if ( !name ) return false;
 
 		return this.menu.focusButton( name, this.groups );
@@ -1137,7 +1139,7 @@ class Navigation {
 	 * @private
 	 * @type {Record<string, Record<string, string>>}
 	 */
-	actionHotkeyMap = {
+	ACTION_HOTKEYS = {
 		none: {
 			ArrowLeft: 'prev',
 			ArrowRight: 'next',
@@ -1160,7 +1162,7 @@ class Navigation {
 	 * @private
 	 * @type {Record<string, Record<string, string>>}
 	 */
-	actionHotkeyMapRTL = {
+	ACTION_HOTKEYS_RTL = {
 		none: {
 			ArrowRight: 'prev',
 			ArrowLeft: 'next',
@@ -1178,8 +1180,8 @@ class Navigation {
 	 */
 	getActionHotkeyMap() {
 		return document.dir === 'rtl'
-			? utils.optionsMerge( this.actionHotkeyMap, this.actionHotkeyMapRTL )
-			: this.actionHotkeyMap;
+			? utils.optionsMerge( this.ACTION_HOTKEYS, this.ACTION_HOTKEYS_RTL )
+			: this.ACTION_HOTKEYS;
 	}
 
 	/**

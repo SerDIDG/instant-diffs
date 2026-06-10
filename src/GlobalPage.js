@@ -106,7 +106,7 @@ class GlobalPage extends Page {
 			params.torelative = 'cur';
 		}
 
-		return this.requestManager.get( params, this.article );
+		return this.requestManager.get( params );
 	}
 
 	/**
@@ -149,31 +149,37 @@ class GlobalPage extends Page {
 	}
 
 	/**
+	 * Map of messages to request.
+	 * @private
+	 * @type {Array<string>}
+	 */
+	MESSAGES = [
+		'revisionasof',
+		'currentrev-asof',
+		'word-separator',
+		'pipe-separator',
+		'parentheses',
+		'talkpagelinktext',
+		'contribslink',
+		'changeslist-nocomment',
+		'rev-deleted-no-diff',
+		'rev-deleted-user',
+		'rev-deleted-comment',
+		'editold',
+		'viewsourceold',
+		'editundo',
+		'tooltip-undo',
+		'wikibase-restoreold',
+		'diff-empty',
+		'checkuser-userinfocard-toggle-button-aria-label',
+	];
+
+	/**
 	 * Request missing MediaWiki interface messages.
 	 * @returns {Promise}
 	 */
 	async requestMessages() {
-		const messages = [
-			'revisionasof',
-			'currentrev-asof',
-			'word-separator',
-			'pipe-separator',
-			'parentheses',
-			'talkpagelinktext',
-			'contribslink',
-			'changeslist-nocomment',
-			'rev-deleted-no-diff',
-			'rev-deleted-user',
-			'rev-deleted-comment',
-			'editold',
-			'viewsourceold',
-			'editundo',
-			'tooltip-undo',
-			'wikibase-restoreold',
-			'diff-empty',
-			'checkuser-userinfocard-toggle-button-aria-label',
-		];
-		await Api.loadMessage( messages );
+		await Api.loadMessage( this.MESSAGES );
 	}
 
 	/******* RENDER *******/
@@ -425,7 +431,7 @@ class GlobalPage extends Page {
 		}
 
 		return this.requestManager
-			.get( params, this.article )
+			.get( params )
 			.then( ( data ) => this.onRequestRevisionDone( data, params ) )
 			.fail( ( message, data ) => this.onRequestRevisionError( message, data, params ) );
 	}

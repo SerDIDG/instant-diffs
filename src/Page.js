@@ -155,7 +155,7 @@ class Page {
 
 		this.userOptionsManager = new ConfigManager( {}, mw.user.options );
 
-		this.requestManager = new RequestManager();
+		this.requestManager = new RequestManager( this.article );
 
 		// Mixin constructor
 		OO.EventEmitter.call( this );
@@ -331,7 +331,7 @@ class Page {
 		};
 
 		return this.requestManager
-			.get( params, values.hostname )
+			.get( params )
 			.then( this.onRequestCompareDone )
 			.fail( this.onRequestCompareError );
 	}

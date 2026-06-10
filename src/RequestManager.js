@@ -5,9 +5,22 @@ import Api from './Api';
  */
 class RequestManager {
 	/**
+	 * @type {import('./Article').default}
+	 */
+	article;
+
+	/**
 	 * @type {Map<JQuery.jqXHR|mw.Api.AbortablePromise, JQuery.Promise|mw.Api.AbortablePromise>}
 	 */
 	items = new Map();
+
+	/**
+	 * Create a Request Manager instance.
+	 * @param {import('./Article').default} article - An Article instance
+	 */
+	constructor( article ) {
+		this.article = article;
+	}
 
 	/**
 	 * mw.Api.get wrapper.
@@ -16,6 +29,7 @@ class RequestManager {
 	 * @returns {JQuery.Promise}
 	 */
 	get( params, articleOrHostname ) {
+		articleOrHostname ||= this.article;
 		const request = Api.get( params, articleOrHostname );
 		this.add( request );
 		return request;

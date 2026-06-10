@@ -138,7 +138,7 @@ class LocalPage extends Page {
 	/******* REQUESTS *******/
 
 	/**
-	 * Request process to get diff html content.
+	 * Request process to get diff HTML content.
 	 * @returns {JQuery.jqXHR}
 	 */
 	requestProcess() {
