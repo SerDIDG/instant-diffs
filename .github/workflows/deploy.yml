@@ -1,0 +1,57 @@
+name: Deploy
+
+on:
+  # Automatic deploy: only when a full release is published (prereleases are skipped).
+  release:
+    types: [ released ]
+
+  # Manual deploy: choose the project config and the deploy mode.
+  workflow_dispatch:
+    inputs:
+      project:
+        description: Project config key from env.json (PROJECT), e.g. mediawiki or testwiki
+        type: string
+        required: true
+        default: mediawiki
+      mode:
+        description: Deploy mode
+        type: choice
+        required: true
+        default: prod
+        options:
+          - prod  # full production deploy
+          - dev   # quick development deploy (enables debugging, skips external i18n)
+
+# Prevent overlapping deploys.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Create env.json
+        run: printf '%s' "$ENV_JSON" > env.json
+        env:
+          ENV_JSON: ${{ secrets.ENV_JSON }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      # On release: always a full production deploy to mediawiki.
+      # On manual: deploy the chosen project (PROJECT) in the chosen mode.
+      - name: Deploy
+        run: npm run "$SCRIPT"
+        env:
+          PROJECT: ${{ github.event_name == 'release' && 'mediawiki' || inputs.project }}
+          SCRIPT: ${{ github.event_name == 'release' && 'deploy' || (inputs.mode == 'dev' && 'deploy-dev' || 'deploy') }}

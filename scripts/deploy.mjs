@@ -9,9 +9,14 @@ import { Mwn } from 'mwn';
 import { execSync } from 'child_process';
 import prompts from 'prompts';
 import chalk from 'chalk';
+import minimist from 'minimist';
 import { isEmpty, getProject } from './utils.mjs';
 
+const args = minimist( process.argv.slice( 2 ) );
 const warning = ( text ) => console.log( chalk.yellowBright( text ) );
+
+// Skip interactive prompts when running in CI or when passing --yes.
+const isNonInteractive = process.env.CI === 'true' || !!args.yes;
 
 // Project config
 const project = getProject( process.env.PROJECT );
@@ -50,6 +55,10 @@ class Deploy {
 
 	async getCredentials() {
 		this.credentials = { ...project.credentials };
+
+		if ( !isEmpty( this.credentials.userAgent ) ) {
+			this.credentials.userAgent = this.credentials.userAgent.replaceAll( '{version}', project.version );
+		}
 
 		if ( isEmpty( this.credentials.apiUrl ) && !isEmpty( project.server ) ) {
 			this.credentials.apiUrl = `${ project.server }${ project.scriptPath }/api.php`;
@@ -137,11 +146,13 @@ class Deploy {
 	}
 
 	async savePages() {
-		const action = await input( `> Press [Enter] to start deploying to ${ this.siteName } or [ctrl + C] to cancel` );
+		if ( !isNonInteractive ) {
+			const action = await input( `> Press [Enter] to start deploying to ${ this.siteName } or [ctrl + C] to cancel` );
 
-		if ( action === undefined ) {
-			log( 'yellow', '--- Terminated ---' );
-			return;
+			if ( action === undefined ) {
+				log( 'yellow', '--- Terminated ---' );
+				return;
+			}
 		}
 
 		log( 'yellow', '--- Starting deployment ---' );

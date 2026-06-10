@@ -3,7 +3,7 @@
 
 **Instant Diffs** (**ID**) is a free [open-source](https://en.wikipedia.org/wiki/Open-source_software) JavaScript tool that enhances [MediaWiki](https://www.mediawiki.org) diff and revision links with interactive previews. Instead of navigating to a separate page, users can view, compare, and interact with diffs directly in context, loaded on demand in the overlay dialog via [AJAX](https://en.wikipedia.org/wiki/Ajax_(programming)).
 
-The gadget works across all standard MediaWiki interface pages where diffs and revision links appear, including local and global watchlists, local and global user contributions, new pages, recent changes and logs, as well as in user-generated content such as talk pages and project pages.
+The gadget works across all standard MediaWiki interface pages where diffs and revision links appear, including local and global watchlists, local and global user contributions, recent changes, logs, new pages and page history, as well as in user-generated content such as talk pages and project pages.
 
 ## Development
 Install [Node.js](https://nodejs.org/en/download) and package dependencies:
@@ -57,6 +57,20 @@ To deploy to a wiki, specify the project configuration name (e.g., `mediawiki`):
 ```
 cross-env PROJECT=mediawiki npm run deploy
 ```
+
+### Automated Deployment (GitHub Actions)
+The [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) workflow builds and deploys the gadget from CI.
+
+Because `env.json` is not committed, its contents must be provided as a repository secret named `ENV_JSON`. Add it under **Settings → Secrets and variables → Actions → New repository secret** and paste the full contents of your local `env.json`. The workflow writes this secret to `env.json` before building.
+
+The workflow runs in two ways:
+
+* **Automatically** when a GitHub **release is published** — performs a full production deploy to the `mediawiki` project (`npm run deploy`). Only full releases trigger it; prereleases are skipped.
+* **Manually** via **Actions → Deploy → Run workflow**, with two inputs:
+  * `project` — the configuration key from `env.json` to deploy (e.g. `mediawiki`, `testwiki`). Defaults to `mediawiki`.
+  * `mode` — the deploy mode (defaults to `prod`):
+    * `prod` — a full production deploy (`npm run deploy`)
+    * `dev` — a quick development deploy that enables debugging and skips external i18n (`npm run deploy-dev`)
 
 ## Define a gadget
 If you deploy the script as a gadget, remember to define the gadget in your wiki's `MediaWiki:Gadgets-definition` page with a configuration like this:
