@@ -15,8 +15,11 @@ import { isEmpty, getProject } from './utils.mjs';
 const args = minimist( process.argv.slice( 2 ) );
 const warning = ( text ) => console.log( chalk.yellowBright( text ) );
 
-// Skip interactive prompts when running in CI or when passing --yes.
-const isNonInteractive = process.env.CI === 'true' || !!args.yes;
+// Skip interactive prompts when running in CI or when passing --non-interactive.
+const isNonInteractive = process.env.CI === 'true' || !!args[ 'non-interactive' ];
+
+// Deploy only the i18n files when passing --i18n (still gated by the project's i18nDeploy setting).
+const i18nOnly = !!args.i18n;
 
 // Project config
 const project = getProject( process.env.PROJECT );
@@ -57,7 +60,7 @@ class Deploy {
 		this.credentials = { ...project.credentials };
 
 		if ( !isEmpty( this.credentials.userAgent ) ) {
-			this.credentials.userAgent = this.credentials.userAgent.replaceAll( '{version}', project.version );
+			this.credentials.userAgent = this.credentials.userAgent.replace( '$version', project.version );
 		}
 
 		if ( isEmpty( this.credentials.apiUrl ) && !isEmpty( project.server ) ) {
@@ -66,12 +69,15 @@ class Deploy {
 	}
 
 	async getDeployTargets() {
-		let files = [ ...deploy.main ];
+		let files = [];
+		if ( !i18nOnly ) {
+			files = [ ...deploy.main ];
+			if ( project.legalDeploy ) {
+				files = [ ...files, ...deploy.legal ];
+			}
+		}
 		if ( project.i18nDeploy ) {
 			files = [ ...files, ...deploy.i18n ];
-		}
-		if ( project.legalDeploy ) {
-			files = [ ...files, ...deploy.legal ];
 		}
 
 		// Push files to the deployment targets

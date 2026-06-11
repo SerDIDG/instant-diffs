@@ -59,11 +59,12 @@ cross-env PROJECT=mediawiki npm run deploy
 ```
 
 ### Automated Deployment (GitHub Actions)
-The [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) workflow builds and deploys the gadget from CI.
+Two workflows build and deploy the gadget from CI.
 
-Because `env.json` is not committed, its contents must be provided as a repository secret named `ENV_JSON`. Add it under **Settings → Secrets and variables → Actions → New repository secret** and paste the full contents of your local `env.json`. The workflow writes this secret to `env.json` before building.
+Because `env.json` is not committed, its contents must be provided as a repository secret named `ENV_JSON`. Add it under **Settings → Secrets and variables → Actions → New repository secret** and paste the full contents of your local `env.json`. Both workflows write this secret to `env.json` before building.
 
-The workflow runs in two ways:
+#### Deploy
+The [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) workflow runs in two ways:
 
 * **Automatically** when a GitHub **release is published** — performs a full production deploy to the `mediawiki` project (`npm run deploy`). Only full releases trigger it; prereleases are skipped.
 * **Manually** via **Actions → Deploy → Run workflow**, with two inputs:
@@ -71,6 +72,14 @@ The workflow runs in two ways:
   * `mode` — the deploy mode (defaults to `prod`):
     * `prod` — a full production deploy (`npm run deploy`)
     * `dev` — a quick development deploy that enables debugging and skips external i18n (`npm run deploy-dev`)
+
+#### Deploy i18n
+The [`.github/workflows/deploy-i18n.yml`](.github/workflows/deploy-i18n.yml) workflow deploys only the internationalization files (`npm run deploy-i18n`). It runs in two ways:
+
+* **Automatically** when localisation updates from [translatewiki.net](https://translatewiki.net/wiki/Translating:Instant_Diffs) are pushed to `i18n/` on the `main` branch — deploys i18n to the `mediawiki` project.
+* **Manually** via **Actions → Deploy i18n → Run workflow**, with a `project` input (the `env.json` configuration key, defaults to `mediawiki`).
+
+i18n deployment still honors each project's `i18nDeploy` setting — if a project has it disabled, nothing is deployed for it.
 
 ## Define a gadget
 If you deploy the script as a gadget, remember to define the gadget in your wiki's `MediaWiki:Gadgets-definition` page with a configuration like this:

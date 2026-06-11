@@ -48,7 +48,11 @@
 
 		"deploy": "npm run build && node scripts/deploy.mjs",
 		"deploy:testwiki": "cross-env PROJECT=testwiki npm run deploy",
-		"deploy:mediawiki": "cross-env PROJECT=mediawiki npm run deploy"
+		"deploy:mediawiki": "cross-env PROJECT=mediawiki npm run deploy",
+
+		"deploy-i18n": "npm run buildI18n && node scripts/deploy.mjs --i18n",
+		"deploy-i18n:testwiki": "cross-env PROJECT=testwiki npm run deploy-i18n",
+		"deploy-i18n:mediawiki": "cross-env PROJECT=mediawiki npm run deploy-i18n"
 	},
 	"engines": {
 		"node": ">=21.2.0"
