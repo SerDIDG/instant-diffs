@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Nike",
-			"Serhio Magpie"
+			"Serhio Magpie",
+			"Stjn"
 		]
 	},
 	"script-name": "Script name. It's preferred not be translated, unless there is a well-established or natural-sounding equivalent.\n\nIf you translated this message, please make sure the same name is used for all other messages. To search for them, type <code>Instant Diffs</code> in the search box in the tab of all translations.",
@@ -22,7 +23,7 @@
 	"action-close": "Label for the button that closes the dialog.\n\n{{identical|Close}}",
 	"action-reload": "Label for the button that reloads the page after saving settings in the dialog.\n\n{{identical|Reload}}",
 	"action-watch": "Label for the button that adds page to the watchlist.\n\n{{identical|Watch}}",
-	"action-unwatch": "Label for the button that removes page from the watchlist.",
+	"action-unwatch": "Label for the button that removes page from the watchlist. Should be identical to {{msg-mw|unwatch}}.",
 	"goto-snapshot-prev": "Label for the button that navigates to the previous link on the page.\n\nDisplayed in the Instant Diffs dialog navigation.",
 	"goto-snapshot-next": "Label for the button that navigates to the next link on the page.\n\nDisplayed in the Instant Diffs dialog navigation.",
 	"goto-view-diff": "Label for the button that switches view to the diff.\n\nDisplayed in the Instant Diffs dialog navigation.",
@@ -52,11 +53,11 @@
 	"hint-snapshot-prev": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-snapshot-next}}.",
 	"hint-snapshot-next": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-snapshot-prev}}.",
 	"hint-prev": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-prev-diff}} and {{msg-wm|Instant-diffs-goto-prev-revision}}.",
-	"hint-next": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-prev-next}} and {{msg-wm|Instant-diffs-goto-prev-next}}.",
+	"hint-next": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-next-diff}} and {{msg-wm|Instant-diffs-goto-next-revision}}.",
 	"hint-switch": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-view-diff}} and {{msg-wm|Instant-diffs-goto-view-revision}}.",
 	"hint-unpatrolled": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-view-unpatrolled}}.",
 	"hint-back": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-back-diff}} and {{msg-wm|Instant-diffs-goto-back-revision}}.",
-	"hint-actions": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-menu}}.",
+	"hint-actions": "Title hint shown in the tooltip for {{msg-wm|Instant-diffs-goto-actions}}.",
 	"copy-link": "Label for the button that copies link to the clipboard.\n\nDisplayed in the Instant Diffs dialog context menu.",
 	"copy-link-copied": "Message shown when the link is successfully copied to the clipboard.\n\nDisplayed in the notification popup.",
 	"copy-link-error": "Message shown when the link fails to copy to the clipboard.\n\nDisplayed in the notification popup.",
