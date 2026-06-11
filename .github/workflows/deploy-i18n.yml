@@ -5,7 +5,8 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'i18n/**'
+      - 'i18n/*'
+      - '!i18n/qqq.json'
 
   # Manual i18n deploy: choose the project config.
   workflow_dispatch:
