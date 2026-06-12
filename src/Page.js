@@ -397,9 +397,7 @@ class Page {
 		}
 
 		const { page, error } = this.pageInfo = await Api.getPageInfo( params, this.article, this.requestManager );
-		if ( error ) {
-			return;
-		}
+		if ( error ) return;
 
 		if ( page ) {
 			const props = page.pageprops || {};
