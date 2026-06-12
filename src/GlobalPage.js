@@ -22,14 +22,10 @@ class GlobalPage extends Page {
 	type = 'foreign';
 
 	/**
+	 * Response of the action=parse request
 	 * @type {Object}
 	 */
-	compare;
-
-	/**
-	 * @type {Object}
-	 */
-	parse;
+	pageParse;
 
 	/**
 	 * @type {Array<HTMLLinkElement>}
@@ -462,8 +458,8 @@ class GlobalPage extends Page {
 	 */
 	onRequestRevisionDone = async ( data, params ) => {
 		// Render error if the parse request is completely failed
-		this.parse = data?.parse;
-		if ( !this.parse ) {
+		this.pageParse = data?.parse;
+		if ( !this.pageParse ) {
 			return this.onRequestRevisionError( null, data, params );
 		}
 
@@ -473,9 +469,9 @@ class GlobalPage extends Page {
 	async renderRevision() {
 		// Get values for mw.config
 		this.configManager.setValues( {
-			wgArticleId: this.parse.pageid,
-			wgRevisionId: Math.max( this.article.get( 'revid' ), this.parse.revid ),
-			...this.parse.jsconfigvars,
+			wgArticleId: this.pageParse.pageid,
+			wgRevisionId: Math.max( this.article.get( 'revid' ), this.pageParse.revid ),
+			...this.pageParse.jsconfigvars,
 		} );
 
 		// Set article values
@@ -498,7 +494,7 @@ class GlobalPage extends Page {
 	async processRevision() {
 		// Append content
 		this.nodes.$diffTitle = $( this.nodes.diffTitle ).appendTo( this.nodes.$body );
-		this.nodes.$revision = $( this.parse.text ).appendTo( this.nodes.$body );
+		this.nodes.$revision = $( this.pageParse.text ).appendTo( this.nodes.$body );
 
 		// Render a notice about unsupported WikiLambda app
 		this.nodes.$wikiLambdaApp = this.nodes.$body.find( '#ext-wikilambda-app' );
@@ -521,7 +517,7 @@ class GlobalPage extends Page {
 			.addClass( 'instantDiffs-hidden' );
 
 		// Get page dependencies
-		this.requestDependencies( this.parse );
+		this.requestDependencies( this.pageParse );
 
 		// Get page foreign dependencies
 		this.requestForeignDependencies();

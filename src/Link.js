@@ -1,6 +1,7 @@
 import id from './id';
 import * as utils from './utils';
 import * as utilsLink from './utils-link';
+import { getQueryRevisionError } from './utils-api';
 
 import Api from './Api';
 import Article from './Article';
@@ -641,21 +642,9 @@ class Link {
 		const page = query.pages?.[ 0 ];
 		const revision = page?.revisions?.[ 0 ];
 
-		// Check for a specific error code
-		const error = { type: 'revision' };
-		if ( query.badrevids ) {
-			error.code = 'badrevids';
-		} else if ( query.badpageids ) {
-			error.code = 'badpageids';
-		} else if ( !page || page.missing || !revision ) {
-			error.code = 'missing';
-		} else if ( page.invalid ) {
-			error.code = 'invalid';
-			error.info = page.invalidreason;
-		}
-
-		// Render error if exist
-		if ( error.code ) {
+		// Check for a specific error code and error if exist
+		const error = getQueryRevisionError( query );
+		if ( error ) {
 			this.error = error;
 			return this.renderError();
 		}

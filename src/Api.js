@@ -205,8 +205,10 @@ class Api {
 		const api = requestManager ? requestManager : this;
 
 		try {
-			const data = await api.get( params, articleOrHostname );
-			return data.query.pages[ 0 ];
+			const { query } = await api.get( params, articleOrHostname );
+			const page = query.pages?.[ 0 ];
+			const error = utilsApi.getQueryPageError( query );
+			return { page, error };
 		} catch ( error ) {
 			this.notifyError( error );
 		}

@@ -43,6 +43,18 @@ class Page {
 	articleParams = {};
 
 	/**
+	 * Response to the main request
+	 * @type {Object|string}
+	 */
+	data;
+
+	/**
+	 * Response of the Api.getPageInfo request
+	 * @type {Object}
+	 */
+	pageInfo;
+
+	/**
 	 * @type {Object}
 	 */
 	error;
@@ -384,40 +396,44 @@ class Page {
 			params.titles = title;
 		}
 
-		const data = await Api.getPageInfo( params, this.article, this.requestManager );
-		if ( data ) {
-			const props = data.pageprops || {};
-			const entity = data.entityterms || {};
+		const { page, error } = this.pageInfo = await Api.getPageInfo( params, this.article, this.requestManager );
+		if ( error ) {
+			return;
+		}
+
+		if ( page ) {
+			const props = page.pageprops || {};
+			const entity = page.entityterms || {};
 
 			// Set values for mw.config
 			this.configManager.setValues( {
-				wgArticleId: data.pageid,
-				wgRelevantArticleId: data.pageid,
-				wgCurRevisionId: data.lastrevid,
-				wgContentLanguage: data.pagelanguage,
-				wgContentLanguageDir: data.pagelanguagedir,
-				wgPageContentModel: data.contentmodel,
-				wgIsProbablyEditable: data.actions?.edit,
-				wgRelevantPageIsProbablyEditable: data.actions?.edit,
+				wgArticleId: page.pageid,
+				wgRelevantArticleId: page.pageid,
+				wgCurRevisionId: page.lastrevid,
+				wgContentLanguage: page.pagelanguage,
+				wgContentLanguageDir: page.pagelanguagedir,
+				wgPageContentModel: page.contentmodel,
+				wgIsProbablyEditable: page.actions?.edit,
+				wgRelevantPageIsProbablyEditable: page.actions?.edit,
 				wbEntityId:
 					props[ 'wikibase_item' ] ||
-					( isWbContentModel( data.contentmodel ) && data.title ) ||
+					( isWbContentModel( page.contentmodel ) && page.title ) ||
 					this.configManager.get( 'wbEntityId' ),
 			} );
 
 			// Set article values
 			this.article.setValues( {
-				title: data.title,
-				curid: data.pageid,
-				curRevid: data.lastrevid,
-				watched: data.watched,
-				expiry: data.watchlistexpiry,
-				notificationtimestamp: data.notificationtimestamp,
-				new: data.new,
+				title: page.title,
+				curid: page.pageid,
+				curRevid: page.lastrevid,
+				watched: page.watched,
+				expiry: page.watchlistexpiry,
+				notificationtimestamp: page.notificationtimestamp,
+				new: page.new,
 				label:
-					( isWbContentModel( data.contentmodel ) && entity.label?.[ 0 ] ) ||
-					( data.contentmodel === 'EntitySchema' && getEntitySchemaLabel( props[ 'displaytitle' ] ) ) ||
-					( data.contentmodel === 'zobject' && getWikilambdaLabel( props ) ) ||
+					( isWbContentModel( page.contentmodel ) && entity.label?.[ 0 ] ) ||
+					( page.contentmodel === 'EntitySchema' && getEntitySchemaLabel( props[ 'displaytitle' ] ) ) ||
+					( page.contentmodel === 'zobject' && getWikilambdaLabel( props ) ) ||
 					this.article.get( 'label' ),
 			} );
 
@@ -522,6 +538,7 @@ class Page {
 			statusText: this.error?.statusText,
 			message: this.errorData?.info || utils.getErrorStatusText( this.error?.status ),
 			article: this.article,
+			silent: true,
 		};
 
 		// Show a critical notification popup

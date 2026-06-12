@@ -79,8 +79,18 @@ export const config = {
 			14: [                                                       // Category:
 				'mediawiki.page.gallery.styles',
 			],
+			102: [                                                      // TimedText:
+				'ext.tmh.player',
+				'ext.tmh.timedtextpage.styles',
+			],
 			146: [                                                      // Lexeme:
 				'wikibase.lexeme.styles',
+			],
+			460: [                                                      // Campaign:
+				'mediawiki.page.gallery.styles',
+			],
+			486: [                                                      // Data:
+				'ext.jsonConfig',
 			],
 		},
 		skins: {

@@ -90,3 +90,44 @@ export function getWikilambdaLabel( props ) {
 		props[ 'wikilambda-label-en' ]
 	);
 }
+
+export function getQueryPageError( query ) {
+	const page = query.pages?.[ 0 ];
+
+	// Check for a specific error code
+	const error = { type: 'revision' };
+	if ( query.badrevids ) {
+		error.code = 'badrevids';
+	} else if ( query.badpageids ) {
+		error.code = 'badpageids';
+	} else if ( !page || page.missing ) {
+		error.code = 'missing';
+	} else if ( page.invalid ) {
+		error.code = 'invalid';
+		error.info = page.invalidreason;
+	}
+
+	if ( !error.code ) return;
+	return error;
+}
+
+export function getQueryRevisionError( query ) {
+	const page = query.pages?.[ 0 ];
+	const revision = page?.revisions?.[ 0 ];
+
+	// Check for a specific error code
+	const error = { type: 'revision' };
+	if ( query.badrevids ) {
+		error.code = 'badrevids';
+	} else if ( query.badpageids ) {
+		error.code = 'badpageids';
+	} else if ( !page || page.missing || !revision ) {
+		error.code = 'missing';
+	} else if ( page.invalid ) {
+		error.code = 'invalid';
+		error.info = page.invalidreason;
+	}
+
+	if ( !error.code ) return;
+	return error;
+}

@@ -17,6 +17,12 @@ class LocalPage extends Page {
 	type = 'local';
 
 	/**
+	 * Response of the action=parse request
+	 * @type {Object}
+	 */
+	pageParse;
+
+	/**
 	 * @type {boolean}
 	 */
 	isDependenciesLoaded = false;
@@ -107,16 +113,16 @@ class LocalPage extends Page {
 		this.isDependenciesLoaded = true;
 
 		// Render error if the parse request is completely failed
-		this.parse = data?.parse;
-		if ( !this.parse ) {
+		this.pageParse = data?.parse;
+		if ( !this.pageParse ) {
 			return this.onRequestPageError( null, data, params );
 		}
 
 		// Get values for mw.config
 		this.configManager.setValues( {
-			wgArticleId: this.parse.pageid,
-			wgRevisionId: Math.max( this.article.get( 'revid' ), this.parse.revid ),
-			...this.parse.jsconfigvars,
+			wgArticleId: this.pageParse.pageid,
+			wgRevisionId: Math.max( this.article.get( 'revid' ), this.pageParse.revid ),
+			...this.pageParse.jsconfigvars,
 		} );
 
 		// Set article values
@@ -132,7 +138,7 @@ class LocalPage extends Page {
 		this.processCategories();
 
 		// Get page dependencies
-		this.requestDependencies( this.parse );
+		this.requestDependencies( this.pageParse );
 	};
 
 	/******* REQUESTS *******/
@@ -296,11 +302,13 @@ class LocalPage extends Page {
 			.prependTo( this.nodes.$body );
 
 		// Render a warning when revision was not found
-		const $emptyMessage = this.nodes.$data.filter( 'p' );
-		if ( $emptyMessage.length > 0 ) {
-			this.renderWarning( {
-				$content: $emptyMessage,
-			} );
+		if ( this.pageInfo?.error ) {
+			const $emptyMessage = this.nodes.$data.filter( 'p' );
+			if ( $emptyMessage.length > 0 ) {
+				this.renderWarning( {
+					$content: $emptyMessage,
+				} );
+			}
 		}
 	}
 
