@@ -22,12 +22,6 @@ class GlobalPage extends Page {
 	type = 'foreign';
 
 	/**
-	 * Response of the action=parse request
-	 * @type {Object}
-	 */
-	pageParse;
-
-	/**
 	 * @type {Array<HTMLLinkElement>}
 	 */
 	linkTags = [];

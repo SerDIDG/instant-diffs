@@ -55,6 +55,12 @@ class Page {
 	pageInfo;
 
 	/**
+	 * Response of the action=parse request
+	 * @type {Object}
+	 */
+	pageParse;
+
+	/**
 	 * @type {Object}
 	 */
 	error;
@@ -667,10 +673,10 @@ class Page {
 	}
 
 	processCategories() {
-		if ( utils.isEmpty( this.data ) || utils.isEmpty( this.parse ) ) return;
+		if ( utils.isEmpty( this.data ) || utils.isEmpty( this.pageParse ) ) return;
 
-		if ( !utils.isEmpty( this.parse.categorieshtml ) ) {
-			this.nodes.$categories = $( this.parse.categorieshtml );
+		if ( !utils.isEmpty( this.pageParse.categorieshtml ) ) {
+			this.nodes.$categories = $( this.pageParse.categorieshtml );
 			if ( this.nodes.$diffMobileFooter ) {
 				utils.embed( this.nodes.$categories, this.nodes.$diffMobileFooter, 'insertBefore' );
 			} else {

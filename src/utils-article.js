@@ -96,7 +96,7 @@ function getNamespaceDependencies( article, data ) {
 }
 
 /**
- * Gets a foreign article dependencies.
+ * Gets the foreign article dependencies.
  * @param {import('./Article').default} article
  * @returns {Object<string, Array<string>>}
  */

@@ -17,12 +17,6 @@ class LocalPage extends Page {
 	type = 'local';
 
 	/**
-	 * Response of the action=parse request
-	 * @type {Object}
-	 */
-	pageParse;
-
-	/**
 	 * @type {boolean}
 	 */
 	isDependenciesLoaded = false;
