@@ -185,7 +185,7 @@ class Deploy {
 		};
 
 		const delay = project.rateLimit ? Math.ceil( ( 1000 * 60 ) / project.rateLimit ) : 0;
-		await this.api.seriesBatchOperation(
+		const { failures } = await this.api.seriesBatchOperation(
 			this.deployTargets,
 			worker,
 			delay,
@@ -193,6 +193,13 @@ class Deploy {
 		);
 
 		log( 'yellow', '--- End of deployment ---' );
+
+		if ( Object.keys( failures ).length ) {
+			log( 'red', `✘ Deploy failed.` );
+			process.exit( 1 );
+		} else {
+			log( 'green', `✔ Deploy succeeded.` );
+		}
 	}
 }
 
