@@ -157,7 +157,7 @@ class Deploy {
 
 			if ( action === undefined ) {
 				log( 'yellow', '--- Terminated ---' );
-				return;
+				process.exit( 1 );
 			}
 		}
 

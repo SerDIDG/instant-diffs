@@ -167,6 +167,10 @@ class ViewDialog extends OO.ui.MessageDialog {
 		return this;
 	}
 
+	getOverlay() {
+		return this.$overlay;
+	}
+
 	/**
 	 * Scroll element offset top relative to the dialog content.
 	 * @param {HTMLElement|JQuery<HTMLElement>} element

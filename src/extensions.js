@@ -7,6 +7,7 @@ import './extensions/Page-History';
 import './extensions/Skin-Citizen';
 
 // Extensions and gadgets extensions
+import './extensions/Extension-IPInfo';
 import './extensions/Extension-Translate';
 import './extensions/Gadget-ConvenientDiscussions';
 import './extensions/Gadget-Twinkle';
