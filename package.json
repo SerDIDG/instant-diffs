@@ -76,5 +76,8 @@
 		"mwn": "^3.0.2",
 		"prompts": "^2.4.2",
 		"types-mediawiki": "^2.0.0"
+	},
+	"allowScripts": {
+		"esbuild@0.28.1": true
 	}
 }
