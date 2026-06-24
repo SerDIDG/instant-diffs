@@ -24,10 +24,10 @@ function attachPopups( page ) {
 
 	const $buttons = page.getContainer()?.find( '.ext-ipinfo-button .oo-ui-buttonElement-button' );
 	$buttons.each( ( i, node ) => {
-		const id = node.getAttribute( 'aria-owns' );
-		if ( utils.isEmpty( id ) ) return;
+		const ariaOwns = node.getAttribute( 'aria-owns' );
+		if ( utils.isEmpty( ariaOwns ) ) return;
 
-		const $popup = $defaultOverlay.find( `#${ id }` );
+		const $popup = $defaultOverlay.find( `#${ ariaOwns }` );
 		if ( $popup.length > 0 ) {
 			$popup.appendTo( $viewOverlay );
 			$ATTACHED_POPUPS.push( $popup );
@@ -41,6 +41,7 @@ function attachPopups( page ) {
  */
 function detachPopups( page ) {
 	$ATTACHED_POPUPS.forEach( $popup => $popup.detach() );
+	$ATTACHED_POPUPS.length = 0;
 }
 
 mw.hook( `${ id.config.prefix }.page.complete` ).add( attachPopups );
