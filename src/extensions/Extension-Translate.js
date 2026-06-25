@@ -1,5 +1,7 @@
 /**
  * EXTENSION: TRANSLATE
+ *
+ * Adds support for links in the changes block of the translation editor.
  * @see {@link https://www.mediawiki.org/wiki/Extension:Translate}
  */
 

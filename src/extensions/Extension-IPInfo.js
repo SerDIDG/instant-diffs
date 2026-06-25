@@ -1,5 +1,8 @@
 /**
- * EXTENSION: IPInfo
+ * EXTENSION: IPINFO
+ *
+ * Fixes inaccessible IP info popups in the Instant Diffs View dialog
+ * by attaching them from the default overlay (@since 1.47) to the View dialog overlay.
  * @see {@link https://www.mediawiki.org/wiki/Extension:IPInfo}
  */
 
@@ -19,10 +22,12 @@ const $ATTACHED_POPUPS = [];
  * @param {import('../Page').default} page
  */
 function attachPopups( page ) {
+	if ( !page ) return;
+
 	const $defaultOverlay = OO.ui.getDefaultOverlay();
 	const $viewOverlay = view.getDialog().getOverlay();
 
-	const $buttons = page.getContainer()?.find( '.ext-ipinfo-button .oo-ui-buttonElement-button' );
+	const $buttons = page.getContainer().find( '.ext-ipinfo-button .oo-ui-buttonElement-button' );
 	$buttons.each( ( i, node ) => {
 		const ariaOwns = node.getAttribute( 'aria-owns' );
 		if ( utils.isEmpty( ariaOwns ) ) return;
@@ -40,6 +45,8 @@ function attachPopups( page ) {
  * @param {import('../Page').default} page
  */
 function detachPopups( page ) {
+	if ( !page ) return;
+
 	$ATTACHED_POPUPS.forEach( $popup => $popup.detach() );
 	$ATTACHED_POPUPS.length = 0;
 }

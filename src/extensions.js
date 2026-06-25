@@ -1,14 +1,17 @@
-// Page adjustments extensions
+// Page adjustments
 import './extensions/Page-ChangeLists';
 import './extensions/Page-Contributions';
 import './extensions/Page-History';
 
-// Skin extensions
+// Skins
 import './extensions/Skin-Citizen';
 
-// Extensions and gadgets extensions
+// Extensions
 import './extensions/Extension-IPInfo';
 import './extensions/Extension-Translate';
+import './extensions/Extension-WikiLambda';
+
+// Gadgets
 import './extensions/Gadget-ConvenientDiscussions';
 import './extensions/Gadget-Twinkle';
 import './extensions/Gadget-WikEdDiff';

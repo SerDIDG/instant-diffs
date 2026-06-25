@@ -1,3 +1,13 @@
+/**
+ * PAGE: CONTRIBUTIONS
+ *
+ * Adds enhancements to user contribution pages:
+ * - fills empty diff links with placeholders
+ * - fixes relative links in edit summaries by adding base URLs in GlobalContributions
+ * @see {@link https://www.mediawiki.org/wiki/Help:User_contributions}
+ * @see {@link https://www.mediawiki.org/wiki/Extension:GlobalContributions}
+ */
+
 import id from '../id';
 import * as utils from '../utils';
 

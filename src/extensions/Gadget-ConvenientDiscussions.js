@@ -1,5 +1,8 @@
 /**
  * GADGET: CONVENIENT DISCUSSIONS
+ *
+ * Replaces the "Go to page" link with a "Go to message" link after the diff or revision link
+ * within user-written content, such as on project or talk pages".
  * @see {@link https://commons.wikimedia.org/wiki/User:Jack_who_built_the_house/Convenient_Discussions}
  */
 

@@ -1,5 +1,7 @@
 /**
  * SKIN: CITIZEN
+ *
+ * Add support for the "Last modified" link in the sidebar.
  * @see {@link https://www.mediawiki.org/wiki/Skin:Citizen}
  */
 

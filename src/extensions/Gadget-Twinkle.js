@@ -1,5 +1,7 @@
 /**
  * GADGET: TWINKLE
+ *
+ * Adds the ability to close the View dialog when reverting a revision using Twinkle.
  * @see {@link https://en.wikipedia.org/wiki/Wikipedia:Twinkle}
  * @see {@link https://meta.wikimedia.org/wiki/User:Xiplus/TwinkleGlobal}
  */

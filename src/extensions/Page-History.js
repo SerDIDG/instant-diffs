@@ -1,3 +1,13 @@
+/**
+ * PAGE: HISTORY
+ *
+ * Adds enhancements to page history pages:
+ * - adds instantDiffs-line CSS class that adds spacing between selector checkboxes
+ * - fills empty diff links with placeholders
+ * - adds a compare button to the revision selector
+ * @see {@link https://www.mediawiki.org/wiki/Help:History}
+ */
+
 import id from '../id';
 import * as utils from '../utils';
 

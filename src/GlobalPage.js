@@ -490,24 +490,12 @@ class GlobalPage extends Page {
 		this.nodes.$diffTitle = $( this.nodes.diffTitle ).appendTo( this.nodes.$body );
 		this.nodes.$revision = $( this.pageParse.text ).appendTo( this.nodes.$body );
 
-		// Render a notice about unsupported WikiLambda app
-		this.nodes.$wikiLambdaApp = this.nodes.$body.find( '#ext-wikilambda-app' );
-		if ( this.nodes.$wikiLambdaApp.length > 0 ) {
-			const $content = $( `<p>${ utils.msg( 'dialog-notice-foreign-wikilambda' ) }</p>` );
-			this.renderWarning( {
-				$content,
-				type: 'notice',
-				container: this.nodes.$wikiLambdaApp,
-				insertMethod: 'insertBefore',
-			} );
-		}
-
 		// Append categories
 		this.processCategories();
 
 		// Hide unsupported or unnecessary element
 		this.nodes.$body
-			.find( '#ext-wikilambda-app, .ext-wikilambda-view-nojsfallback, .mw-diff-slot-header, .mw-slot-header' )
+			.find( '.mw-diff-slot-header, .mw-slot-header' )
 			.addClass( 'instantDiffs-hidden' );
 
 		// Get page dependencies

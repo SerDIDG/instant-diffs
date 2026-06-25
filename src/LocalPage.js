@@ -454,27 +454,6 @@ class LocalPage extends Page {
 			const hasVisibleChild = this.nodes.$diffTablePrefix.children( ':visible' ).length > 0;
 			this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', ( !hasVisibleChild || diffTablePrefixTools.length === 0 ) );
 		}
-
-		// Render warning about WikiLambda app limitations
-		this.nodes.$wikiLambdaApp = this.nodes.$body.find( '#ext-wikilambda-app' );
-		if ( this.nodes.$wikiLambdaApp.length > 0 ) {
-			const $content = $( utils.msgDom( 'dialog-notice-wikilambda' ) );
-			this.renderWarning( {
-				$content,
-				type: 'notice',
-				container: this.nodes.$wikiLambdaApp,
-				insertMethod: 'insertBefore',
-			} );
-		}
-	}
-
-	restoreFunctionalityWithDependencies() {
-		if ( this.error ) return;
-
-		// Restore WikiLambda app
-		if ( this.nodes.$wikiLambdaApp.length > 0 ) {
-			utilsPage.restoreWikiLambda( this.nodes.$wikiLambdaApp );
-		}
 	}
 
 	/******* ACTIONS *******/
@@ -490,9 +469,6 @@ class LocalPage extends Page {
 		if ( this.article.get( 'type' ) === 'revision' && !this.isDependenciesLoaded ) {
 			await this.requestPage();
 		}
-
-		// Restore functionally that requires page dependencies
-		this.restoreFunctionalityWithDependencies();
 
 		// Fire parent hooks and events
 		await super.fire();

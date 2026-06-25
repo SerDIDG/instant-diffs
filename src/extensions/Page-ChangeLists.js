@@ -1,3 +1,13 @@
+/**
+ * PAGE: CHANGELISTS
+ *
+ * Adds enhancements to watchlist pages:
+ * - sets up mutation observer to detect dynamic content changes in GlobalWatchlist
+ * @see {@link https://www.mediawiki.org/wiki/Help:Watchlist}
+ * @see {@link https://www.mediawiki.org/wiki/Manual:Watchlist}
+ * @see {@link https://www.mediawiki.org/wiki/Extension:GlobalWatchlist}
+ */
+
 import id from '../id';
 
 /**
