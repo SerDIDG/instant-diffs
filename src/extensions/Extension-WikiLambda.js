@@ -8,7 +8,6 @@
 
 import id from '../id';
 import * as utils from '../utils';
-import { restoreWikiLambda } from '../utils-page';
 
 /**
  * Process local WikiLambda extension.
@@ -27,7 +26,37 @@ function process() {
 	} );
 
 	// Restore WikiLambda app
-	restoreWikiLambda( this.nodes.$wikiLambdaApp );
+	renderApp( this.nodes.$wikiLambdaApp );
+}
+
+/**
+ * Renders the WikiLambda app.
+ * Partially copied from the WikiLambda extension code:
+ * @see {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/extensions/WikiLambda/+/refs/heads/master/resources/ext.wikilambda.app/index.js}
+ * @param {JQuery} $container
+ */
+function renderApp( $container ) {
+	if ( !$container || $container.length === 0 ) return;
+
+	mw.loader.using( [ '@wikimedia/codex', 'ext.wikilambda.app' ] ).then( require => {
+		const { createMwApp } = require( 'vue' );
+		const { createPinia } = require( 'pinia' );
+		const { useMainStore, App } = require( 'ext.wikilambda.app' );
+
+		// Conditionally mount App.vue:
+		// If wgWikilambda config variable is available, we want to mount WikiLambda App.
+		if ( mw.config.get( 'wgWikiLambda' ) ) {
+			const pinia = createPinia();
+			const store = useMainStore( pinia );
+			window.vueInstance = createMwApp( Object.assign( {
+				provide: () => ( {
+					viewmode: store.getViewMode,
+				} ),
+			}, App ) )
+				.use( pinia )
+				.mount( $container.get( 0 ) );
+		}
+	} );
 }
 
 /**

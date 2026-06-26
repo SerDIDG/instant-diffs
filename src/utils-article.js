@@ -366,8 +366,9 @@ function processHref( article, articleParams, options ) {
 	}
 
 	// Add hash
-	if ( options.hash && !utils.isEmpty( article.get( 'section' ) ) ) {
-		const hashEncoded = mw.util.escapeIdForLink( article.get( 'section' ) );
+	if ( options.hash ) {
+		const hash = options.hash === 'hash' ? article.get( 'hash' ) : article.get( 'section' );
+		const hashEncoded = !utils.isEmpty( hash ) && mw.util.escapeIdForLink( hash );
 		if ( hashEncoded ) {
 			url.hash = `#${ hashEncoded }`;
 		}

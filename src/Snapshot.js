@@ -1,6 +1,8 @@
+import id from './id';
 import * as utils from './utils';
 
 import Link from './Link';
+import settings from './settings';
 
 /**
  * Class meant to collect current links on the page to navigate between them in the View dialog.
@@ -48,7 +50,16 @@ class Snapshot {
 			...options,
 		};
 
+		// Get all link nodes in the document that matched the selectors
+		id.timers.findLinksStart = mw.now();
 		this.links = Array.from( Link.findLinks() );
+		id.timers.findLinksEnd = mw.now();
+
+		// Log timers
+		if ( settings.get( 'logTimers' ) && this.links.length > 0 ) {
+			utils.log( 'info', `snapshot links found: ${ this.links.length }` );
+			utils.logTimer( 'snapshot links selector time', id.timers.findLinksStart, id.timers.findLinksEnd );
+		}
 	}
 
 	/**

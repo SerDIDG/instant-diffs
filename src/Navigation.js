@@ -500,7 +500,10 @@ class Navigation {
 	 */
 	renderSwitchLink( options ) {
 		const type = this.article.get( 'type' ) === 'diff' ? 'revision' : 'diff';
-		const hrefOptions = { type };
+		const hrefOptions = {
+			type,
+			hash: !utils.isEmpty( this.article.get( 'hash' ) ) ? 'hash' : false,
+		};
 
 		options = {
 			name: 'switch',
@@ -552,13 +555,17 @@ class Navigation {
 	renderBackLink( options ) {
 		const initiator = this.page.getInitiatorPage();
 		const article = initiator.getArticle();
+		const type = article.get( 'type' );
+		const hrefOptions = {
+			hash: !utils.isEmpty( article.get( 'hash' ) ) ? 'hash' : false,
+		};
 
 		options = {
 			name: 'back',
-			label: utils.msg( `goto-back-${ article.get( 'type' ) }` ),
-			title: utils.msgHint( `goto-back-${ article.get( 'type' ) }`, 'back', settings.get( 'enableHotkeys' ) ),
+			label: utils.msg( `goto-back-${ type }` ),
+			title: utils.msgHint( `goto-back-${ type }`, 'back', settings.get( 'enableHotkeys' ) ),
 			icon: 'newline',
-			href: getHref( article, initiator.getArticleParams() ),
+			href: getHref( article, initiator.getArticleParams(), hrefOptions ),
 			classes: [ 'instantDiffs-button--back' ],
 			setLink: true,
 			linkOptions: {
