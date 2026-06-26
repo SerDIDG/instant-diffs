@@ -233,9 +233,10 @@ class GlobalPage extends Page {
 		this.setConfigs();
 
 		// Collect links that will be available in the navigation
-		if ( this.configManager.get( 'wgDiffOldId' ) !== this.configManager.get( 'wgDiffNewId' ) ) {
-			this.links.prev = utils.isValidID( this.configManager.get( 'wgDiffOldId' ) );
-			this.links.next = utils.isValidID( this.configManager.get( 'wgDiffNewId' ) );
+		const { wgDiffOldId, wgDiffNewId } = this.configManager.getValues();
+		if ( wgDiffOldId !== wgDiffNewId ) {
+			this.links.prev = utils.isValidID( wgDiffOldId );
+			this.links.next = utils.isValidID( wgDiffNewId );
 		}
 
 		// Set the previous page as the initiator to render the backlink
@@ -283,13 +284,8 @@ class GlobalPage extends Page {
 		// Save the title values to the mw.config
 		this.configManager.setTitle( this.article.getMW( 'title' ) );
 
-		// Collect links that will be available in the navigation:
-		// * For a revision, add the ability to navigate to the very first revision of the article;
-		// * For a diff, we show only a comparison between two revisions,
-		//   so there will be no link to navigate to a comparison between nothing and revision.
-		this.links.prev = this.article.get( 'type' ) === 'revision'
-			? utils.isValidID( this.data.fromrevid )
-			: this.data.prev && this.data.prev !== this.data.fromrevid;
+		// Collect links that will be available in the navigation
+		this.links.prev = utils.isValidID( this.data.fromrevid );
 		this.links.next = this.data.next && this.data.next !== this.data.torevid;
 	}
 

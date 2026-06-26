@@ -1138,3 +1138,29 @@ export function renderMessageBox( params ) {
 		h( 'div.cdx-message__content', ...nodes ),
 	);
 }
+
+/**
+ * Wraps the diff link in the first page edit.
+ * @param {JQuery<HTMLElement>} $line - `mw-contributions-list` line
+ * @param {JQuery<HTMLElement>} $span - `.mw-changeslist-links span` holder
+ */
+export function wrapContributionsDiffLink( $line, $span ) {
+	let $wrapper = renderPlaceholder();
+
+	// Clone revision link and convert it to diff link
+	const $revLink = $line.find( 'a.mw-changeslist-date' );
+	if ( $revLink.length > 0 ) {
+		try {
+			$wrapper = $revLink
+				.clone()
+				.removeClass( 'mw-changeslist-date' )
+				.text( '' );
+
+			const url = new URL( $revLink.prop( 'href' ) );
+			url.searchParams.set( 'diff', 'prev' );
+			$wrapper.prop( 'href', url.href );
+		} catch {}
+	}
+
+	$span.wrapInner( $wrapper );
+}

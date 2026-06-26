@@ -339,13 +339,8 @@ class LocalPage extends Page {
 			.filter( '.mw-revslider-container, .mw-diff-revision-history-links,  #mw-oldid' )
 			.addClass( 'instantDiffs-hidden' );
 
-		// Collect links that will be available in the navigation:
-		// * For a revision, add the ability to navigate to the very first revision of the article;
-		// * For a diff, we show only a comparison between two revisions,
-		//   so there will be no link to navigate to a comparison between nothing and revision.
-		this.links.prev = this.article.get( 'type' ) === 'revision'
-			? utils.isValidID( this.configManager.get( 'wgDiffOldId' ) )
-			: this.nodes.$prev.attr( 'href' );
+		// Collect links that will be available in the navigation
+		this.links.prev = utils.isValidID( this.configManager.get( 'wgDiffOldId' ) );
 		this.links.next = this.nodes.$next.attr( 'href' );
 	}
 
