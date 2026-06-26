@@ -61,7 +61,6 @@
 	"copy-wikilink-example-title": "Haaptsäit",
 	"dialog-title-empty": "[Keen Titel]",
 	"dialog-title-not-found": "[Net fonnt]",
-	"dialog-notice-wikilambda": "D'WikiLambda-App weist momentan nëmmen déi aktuell Versioun. Kuckt en [[phab:T397902|Ticket]] op Phabricator.",
 	"dialog-notice-foreign-diff": "Dir kuckt Iech e friemen Ënnerscheed u vun [$1 $2]. Verschidde Funktioune kënnen ageschränkt sinn.",
 	"dialog-notice-foreign-revision": "Dir kuckt Iech eng friem Versioun u vun [$1 $2]. Verschidde Funktioune kënnen ageschränkt sinn.",
 	"dialog-notice-foreign-wikilambda": "D'WikiLambda-App gëtt bei de frieme Versioune momentan net ënnerstëtzt.",

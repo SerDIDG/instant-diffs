@@ -69,7 +69,6 @@
 	"copy-wikilink-example-title": "मुखपृष्ठ",
 	"dialog-title-empty": "[कोई शीर्षक नहीं]",
 	"dialog-title-not-found": "[नहीं मिला]",
-	"dialog-notice-wikilambda": "विकिलैम्डा ऐप इस समय सिर्फ नवीनतम अवतरण दर्शाता है। Phabricator पर एक [[phab:T397902|टिकट]] देखें।",
 	"dialog-notice-foreign-diff": "आप [$1 $2] से एक बाहरी अंतर देख रहे हैं। कुछ सुविधाएँ सीमित हो सकती हैं।",
 	"dialog-notice-foreign-revision": "आप [$1 $2] से एक बाहरी अवतरण देख रहे हैं। कुछ सुविधाएँ सीमित हो सकती हैं।",
 	"dialog-notice-foreign-wikilambda": "विकिलैम्डा ऐप इस समय बाहरी अवतरणों में समर्थित नहीं है।",

@@ -16,15 +16,6 @@ function process() {
 	this.nodes.$wikiLambdaApp = this.nodes.$body.find( '#ext-wikilambda-app' );
 	if ( this.nodes.$wikiLambdaApp.length === 0 ) return;
 
-	// Render warning about WikiLambda app limitations
-	const $content = $( utils.msgDom( 'dialog-notice-wikilambda' ) );
-	this.renderWarning( {
-		$content,
-		type: 'notice',
-		container: this.nodes.$wikiLambdaApp,
-		insertMethod: 'insertBefore',
-	} );
-
 	// Restore WikiLambda app
 	renderApp( this.nodes.$wikiLambdaApp );
 }

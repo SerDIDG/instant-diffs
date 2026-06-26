@@ -66,7 +66,6 @@
 	"copy-wikilink-example-title": "首页",
 	"dialog-title-empty": "[无标题]",
 	"dialog-title-not-found": "[未找到]",
-	"dialog-notice-wikilambda": "WikiLambda应用程序目前仅显示最新版本。请参阅Phabricator上的[[phab:T397902|工单]]。",
 	"dialog-notice-foreign-diff": "您正在查看[$1 $2]的外语差异。部分功能可能受限。",
 	"dialog-notice-foreign-revision": "您正在查看[$1 $2]的外语修订。部分功能可能受限。",
 	"dialog-notice-foreign-wikilambda": "WikiLambda应用程序目前不受外语修订支持。",

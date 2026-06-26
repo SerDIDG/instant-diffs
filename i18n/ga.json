@@ -66,7 +66,6 @@
 	"copy-wikilink-example-title": "Príomhleathanach",
 	"dialog-title-empty": "[Gan teideal]",
 	"dialog-title-not-found": "[Ní bhfuarthas]",
-	"dialog-notice-wikilambda": "Ní thaispeánann aip WikiLambda ach an t-athbhreithniú is déanaí faoi láthair. Féach [[phab:T397902|ticéad]] ar Phabricator.",
 	"dialog-notice-foreign-diff": "Tá difríocht eachtrach ó [$1 $2] á fheiceáil agat. D’fhéadfadh roinnt gnéithe a bheith teoranta.",
 	"dialog-notice-foreign-revision": "Tá athbhreithniú eachtrach ó [$1 $2] á fheiceáil agat. D’fhéadfadh roinnt gnéithe a bheith teoranta.",
 	"dialog-notice-foreign-wikilambda": "Ní thacaítear leis an aip WikiLambda faoi láthair sna hathbhreithnithe eachtracha.",

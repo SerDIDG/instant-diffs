@@ -2,7 +2,7 @@ import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
 import { getDependencies } from './utils-article';
-import { getEntitySchemaLabel, getWikilambdaLabel, isWbContentModel } from './utils-api';
+import { getAbstractWikiLabel, getEntitySchemaLabel, getWikilambdaLabel, isWbContentModel } from './utils-api';
 
 import Api from './Api';
 import ConfigManager from './ConfigManager';
@@ -318,7 +318,7 @@ class Page {
 	};
 
 	/**
-	 * Request compare pages.
+	 * Request the compare pages.
 	 * @returns {Promise}
 	 */
 	requestCompare() {
@@ -408,6 +408,7 @@ class Page {
 		if ( page ) {
 			const props = page.pageprops || {};
 			const entity = page.entityterms || {};
+			const terms = page.terms || {};
 
 			// Set values for mw.config
 			this.configManager.setValues( {
@@ -438,6 +439,7 @@ class Page {
 					( isWbContentModel( page.contentmodel ) && entity.label?.[ 0 ] ) ||
 					( page.contentmodel === 'EntitySchema' && getEntitySchemaLabel( props[ 'displaytitle' ] ) ) ||
 					( page.contentmodel === 'zobject' && getWikilambdaLabel( props ) ) ||
+					( page.contentmodel === 'abstractwiki' && getAbstractWikiLabel( terms ) ) ||
 					this.article.get( 'label' ),
 			} );
 

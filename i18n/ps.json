@@ -67,7 +67,6 @@
 	"copy-wikilink-example-title": "لومړی مخ",
 	"dialog-title-empty": "[بې سرليک]",
 	"dialog-title-not-found": "[ونه موندل شو]",
-	"dialog-notice-wikilambda": "ويکي‌لامبدا کاريال اوسمهال يوازې وروستۍ بياکتنې ښيي. په فابريکيټر [[phab:T397902|ټيکېټ]] کې يې وگورئ.",
 	"dialog-notice-foreign-diff": "تاسو د [$1 $2] څخه يو بهرنی توپير گورئ. ځينې ځانگړنې محدودېدای شي.",
 	"dialog-notice-foreign-revision": "تاسو د [$1 $2] بهرنۍ بلبڼه گورئ. ځينې ځانگړنې محدودېدای شي.",
 	"dialog-notice-foreign-wikilambda": "ويکي‌لامبدا کاريال وسمهال په باندنيو بياکتنو کې نه ملاتړ کېږي.",

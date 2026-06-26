@@ -118,15 +118,15 @@ class GlobalPage extends Page {
 		if ( !utils.isEmptyObject( data ) ) {
 			const general = data.general;
 			if ( !utils.isEmptyObject( general ) ) {
-				// Set the article hostname to revalidate server names
-				this.article.set( { hostname: general.servername } );
-
 				this.configManager.setValues( {
 					wgServer: general.server,
 					wgServerName: general.servername,
 					wgMobileServer: general.mobileserver,
 					wgMobileServerName: general.mobileservername,
 				} );
+
+				// Set the article hostname to update server names
+				this.article.set( { hostname: general.servername } );
 			}
 
 			// Process a namespace list into the mw.config format
@@ -135,6 +135,9 @@ class GlobalPage extends Page {
 
 			// Set additional config variables
 			this.setConfigs();
+
+			// Update article title after namespace config was set
+			this.article.processTitle();
 		}
 	}
 

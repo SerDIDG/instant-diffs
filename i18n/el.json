@@ -69,7 +69,6 @@
 	"copy-wikilink-example-title": "Αρχική σελίδα",
 	"dialog-title-empty": "[Χωρίς τίτλο]",
 	"dialog-title-not-found": "[Δεν βρέθηκε]",
-	"dialog-notice-wikilambda": "Η εφαρμογή WikiLambda προς το παρόν εμφανίζει μόνο την πιο πρόσφατη έκδοση. Δείτε ένα [[phab:T397902|ticket]] στο Phabricator.",
 	"dialog-notice-foreign-diff": "Βλέπετε μια ξένη διαφορά από [ $1 $2 ]. Ορισμένες λειτουργίες ενδέχεται να είναι περιορισμένες.",
 	"dialog-notice-foreign-revision": "Βλέπετε μια ξένη αναθεώρηση από [ $1 $2 ]. Ορισμένες λειτουργίες ενδέχεται να είναι περιορισμένες.",
 	"dialog-notice-foreign-wikilambda": "Η εφαρμογή WikiLambda δεν υποστηρίζεται προς το παρόν στις ξένες εκδόσεις.",

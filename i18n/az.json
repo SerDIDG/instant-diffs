@@ -66,7 +66,6 @@
 	"copy-wikilink-example-title": "Ana səhifə",
 	"dialog-title-empty": "[Başlıq yoxdur]",
 	"dialog-title-not-found": "[Tapıla bilmədi]",
-	"dialog-notice-wikilambda": "WikiLambda proqramı hal-hazırda yalnız ən son versiyanı göstərir. Phabricator-dakı [[phab:T397902|müzakirəyə]] baxın.",
 	"dialog-notice-foreign-diff": "Siz [$1 $2] vikisindəki fərqə baxırsınız. Bəzi xüsusiyyətlər məhdudlaşdırıla bilər.",
 	"dialog-notice-foreign-revision": "Siz [$1 $2] vikisindəki versiyaya baxırsınız. Bəzi xüsusiyyətlər məhdudlaşdırıla bilər.",
 	"dialog-notice-foreign-wikilambda": "WikiLambda tətbiqi hazırda xarici versiyalarda dəstəklənmir.",

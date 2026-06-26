@@ -68,7 +68,6 @@
 	"copy-wikilink-example-title": "Halaman Utama",
 	"dialog-title-empty": "[Tiada judul]",
 	"dialog-title-not-found": "[Tak ditemukan]",
-	"dialog-notice-wikilambda": "Aplikasi WikiLambda saat ini hanya menampilkan revisi terbaru. Lihat [[phab:T397902|tiket]] di Phabricator.",
 	"dialog-notice-foreign-diff": "Anda sedang melihat perbedaan asing dari [$1 $2]. Beberapa fitur mungkin terbatas.",
 	"dialog-notice-foreign-revision": "Anda sedang melihat revisi asing dari [$1 $2]. Beberapa fitur mungkin terbatas.",
 	"dialog-notice-foreign-wikilambda": "Aplikasi WikiLambda saat ini tidak didukung dalam revisi asing.",

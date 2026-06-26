@@ -255,24 +255,24 @@ class Article {
 
 		// Set hostname
 		if ( !utils.isEmpty( this.values.hostname ) ) {
-			this.setHostname();
+			this.processHostname();
 		}
 
 		// Set title
 		if ( !utils.isEmpty( this.values.title ) ) {
-			this.setTitle();
+			this.processTitle();
 		}
 
 		// Set compare pages titles
 		if ( !utils.isEmpty( this.values.page1 ) || !utils.isEmpty( this.values.page2 ) ) {
-			this.setComparePages();
+			this.processComparePages();
 		}
 	}
 
 	/**
-	 * @private
+	 * Process hostname and set mw serverName, mw endPoint, and isForeign properties.
 	 */
-	setHostname() {
+	processHostname() {
 		// Set server names
 		const { general } = Api.siteInfoAliases[ this.values.hostname ] || {};
 		if ( !utils.isEmptyObject( general ) ) {
@@ -293,9 +293,9 @@ class Article {
 	}
 
 	/**
-	 * @private
+	 * Process title and set mw title properties.
 	 */
-	setTitle() {
+	processTitle() {
 		/**
 		 * Save original title parameter, that will be used in the Global Watchlist.
 		 * FixMe: add ability to format title with local prefixes.
@@ -323,9 +323,9 @@ class Article {
 	}
 
 	/**
-	 * @private
+	 * Process the compare pages titles and set mw page properties.
 	 */
-	setComparePages() {
+	processComparePages() {
 		try {
 			this.mw.page1 = new mw.Title( this.values.page1 );
 			this.values.page1 = this.mw.page1.getPrefixedDb();

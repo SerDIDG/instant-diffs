@@ -192,10 +192,12 @@ class Api {
 		const language = id.local.userLanguage;
 		params = {
 			action: 'query',
-			prop: [ 'info', 'pageprops', 'entityterms' ],
+			prop: [ 'info', 'pageprops', 'pageterms', 'entityterms' ],
 			inprop: [ 'watched', 'notificationtimestamp' ],
 			wbetterms: [ 'label' ],
 			wbetlanguage: language,
+			wbptterms: [ 'label' ],
+			wbptlanguage: language,
 			intestactions: [ 'edit' ],
 			format: 'json',
 			formatversion: 2,

@@ -67,7 +67,6 @@
 	"copy-wikilink-example-title": "Главна страница",
 	"dialog-title-empty": "[Без наслов]",
 	"dialog-title-not-found": "[Не е најдено]",
-	"dialog-notice-wikilambda": "Прилогот WikiLambda моментално ја прикажува само најновата преработка. Погледајте [[phab:T397902|билет]] на Фабрикатор.",
 	"dialog-notice-foreign-diff": "Гледате надворешна разлика од [$1 $2]. Некои можности може да бидат ограничени.",
 	"dialog-notice-foreign-revision": "Гледате надворешна преработка од [$1 $2]. Некои можности може да бидат ограничени.",
 	"dialog-notice-foreign-wikilambda": "Прилогот WikiLambda засега не е поддржан во надворешни преработки.",

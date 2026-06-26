@@ -66,7 +66,6 @@
 	"copy-wikilink-example-title": "Hlavná stránka",
 	"dialog-title-empty": "[Bez názvu]",
 	"dialog-title-not-found": "[Nenájdené]",
-	"dialog-notice-wikilambda": "Aplikácia WikiLambda momentálne zobrazuje len najnovšiu revíziu. Pozrite si [[phab:T397902|tiket]] na Phabricatore.",
 	"dialog-notice-foreign-diff": "Prezeráte si cudzí rozdiel z [$1 $2]. Niektoré funkcie môžu byť obmedzené.",
 	"dialog-notice-foreign-revision": "Prezeráte si cudziu revíziu z [$1 $2]. Niektoré funkcie môžu byť obmedzené.",
 	"dialog-notice-foreign-wikilambda": "Aplikácia WikiLambda momentálne nie je podporovaná v cudzích revíziách.",

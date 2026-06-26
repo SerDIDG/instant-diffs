@@ -67,7 +67,6 @@
 	"copy-wikilink-example-title": "Pagina principale",
 	"dialog-title-empty": "[Nessun titolo]",
 	"dialog-title-not-found": "[Non trovato]",
-	"dialog-notice-wikilambda": "L'app WikiLambda mostra attualmente solo la revisione più recente. Vedi un [[phab:T397902|ticket]] su Phabricator.",
 	"dialog-notice-foreign-diff": "Stai visualizzando un diff esterno da [$1 $2]. Alcune funzionalità potrebbero essere limitate.",
 	"dialog-notice-foreign-revision": "Stai visualizzando una revisione esterna da [$1 $2]. Alcune funzionalità potrebbero essere limitate.",
 	"settings-title": "Impostazioni di Instant Diffs",

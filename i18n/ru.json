@@ -68,7 +68,6 @@
 	"copy-wikilink-example-title": "Заглавная страница",
 	"dialog-title-empty": "[Без названия]",
 	"dialog-title-not-found": "[Не найдено]",
-	"dialog-notice-wikilambda": "Приложение WikiLambda в настоящее время показывает только последнюю версию. См. [[phab:T397902|тикет]] на Phabricator.",
 	"dialog-notice-foreign-diff": "Вы просматриваете внешнюю разницу версий из [$1 $2]. Некоторые функции могут быть ограничены.",
 	"dialog-notice-foreign-revision": "Вы просматриваете внешнюю версию из [$1 $2]. Некоторые функции могут быть ограничены.",
 	"dialog-notice-foreign-wikilambda": "Приложение WikiLambda в настоящее время не поддерживается в зарубежных версиях.",

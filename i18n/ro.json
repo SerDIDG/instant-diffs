@@ -67,7 +67,6 @@
 	"copy-wikilink-example-title": "Pagina principală",
 	"dialog-title-empty": "[Fără titlu]",
 	"dialog-title-not-found": "[Nu s-a găsit]",
-	"dialog-notice-wikilambda": "Aplicația WikiLambda afișează în prezent numai cea mai recentă versiune. A se vedea un [[phab:T397902|tichet]] de pe Phabricator.",
 	"settings-title": "Setări pentru Instant Diffs",
 	"settings-saved": "Setările au fost salvate cu succes. \nReîncărcați pagina pentru a le aplica.",
 	"settings-saved-icon": "Pictogramă bifă",

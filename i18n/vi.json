@@ -67,7 +67,6 @@
 	"copy-wikilink-example-title": "Trang Chính",
 	"dialog-title-empty": "[Không có tiêu đề]",
 	"dialog-title-not-found": "[Không tìm thấy]",
-	"dialog-notice-wikilambda": "Ứng dụng WikiLambda hiện chỉ hiển thị phiên bản mới nhất. Xem [[phab:T397902|nhiệm vụ này]] trên Phabricator.",
 	"dialog-notice-foreign-diff": "Bạn đang xem khác biệt từ wiki ngoài [$1 $2]. Một số tính năng có thể bị hạn chế.",
 	"dialog-notice-foreign-revision": "Bạn đang xem phiên bản từ wiki ngoài [$1 $2]. Một số tính năng có thể bị hạn chế.",
 	"dialog-notice-foreign-wikilambda": "Ứng dụng WikiLambda hiện không được hỗ trợ trong các phiên bản nước ngoài.",

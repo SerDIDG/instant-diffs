@@ -65,7 +65,6 @@
 	"copy-wikilink-example-title": "Página principal",
 	"dialog-title-empty": "[Sem título]",
 	"dialog-title-not-found": "[Não encontrado]",
-	"dialog-notice-wikilambda": "O aplicativo WikiLambda atualmente mostra apenas a revisão mais recente. Veja um [[phab:T397902|ticket]] no Phabricator.",
 	"dialog-notice-foreign-diff": "Você está visualizando uma diferença estrangeira de [$1 $2]. Alguns recursos podem ser limitados.",
 	"dialog-notice-foreign-revision": "Você está visualizando uma revisão estrangeira de [$1 $2]. Alguns recursos podem ser limitados.",
 	"dialog-notice-foreign-wikilambda": "O aplicativo WikiLambda não é atualmente compatível com as revisões estrangeiras.",

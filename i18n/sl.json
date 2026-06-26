@@ -55,6 +55,5 @@
 	"copy-wikilink-revision": "redakcija",
 	"copy-wikilink-example-title": "Glavna stran",
 	"dialog-title-empty": "[Ni naslova]",
-	"dialog-title-not-found": "[Ni najdeno]",
-	"dialog-notice-wikilambda": "Aplikacija WikiLambda trenutno prikazuje samo najnovejšo redakcijo. Glejte [[phab:T397902|zahtevek]] na Phabricatorju."
+	"dialog-title-not-found": "[Ni najdeno]"
 }

@@ -69,7 +69,6 @@
 	"copy-wikilink-example-title": "עמוד ראשי",
 	"dialog-title-empty": "[ללא כותרת]",
 	"dialog-title-not-found": "[לא נמצא]",
-	"dialog-notice-wikilambda": "אפליקציית WikiLambda מציגה כעת רק את הגרסה האחרונה. ראו [[phab:T397902|כרטיס]] ב-Phabricator.",
 	"dialog-notice-foreign-diff": "אתה צופה בהבדל חיצוני מ־[$1 $2]. ייתכן שחלק מהתכונות מוגבלות.",
 	"dialog-notice-foreign-revision": "אתה צופה בגרסה חיצונית מ־[$1 $2]. ייתכן שחלק מהתכונות מוגבלות.",
 	"dialog-notice-foreign-wikilambda": "יישום WikiLambda אינו נתמך כרגע בגרסאות זרות.",

@@ -91,6 +91,15 @@ export function getWikilambdaLabel( props ) {
 	);
 }
 
+/**
+ * Gets a label for the AbstractWiki entity from the page terms.
+ * @param {Object} terms
+ * @return {string|*}
+ */
+export function getAbstractWikiLabel( terms ) {
+	return !isEmptyObject( terms ) && terms.label?.[ 0 ];
+}
+
 export function getQueryPageError( query ) {
 	const page = query.pages?.[ 0 ];
 
