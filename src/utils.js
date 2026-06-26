@@ -1143,8 +1143,9 @@ export function renderMessageBox( params ) {
  * Wraps the diff link in the first page edit.
  * @param {JQuery<HTMLElement>} $line - `mw-contributions-list` line
  * @param {JQuery<HTMLElement>} $span - `.mw-changeslist-links span` holder
+ * @param {string[]} [addClasses] - classes to add to the diff link
  */
-export function wrapContributionsDiffLink( $line, $span ) {
+export function wrapContributionsDiffLink( $line, $span, addClasses ) {
 	let $wrapper = renderPlaceholder();
 
 	// Clone revision link and convert it to diff link
@@ -1154,6 +1155,7 @@ export function wrapContributionsDiffLink( $line, $span ) {
 			$wrapper = $revLink
 				.clone()
 				.removeClass( 'mw-changeslist-date' )
+				.addClass( addClasses )
 				.text( '' );
 
 			const url = new URL( $revLink.prop( 'href' ) );

@@ -23,7 +23,7 @@ function process() {
 		const $line = $( node );
 		const $span = $line.find( '.mw-changeslist-links:not(.mw-pager-tools, .mw-usertoollinks) > span:first-child' );
 		if ( $span.find( 'a' ).length === 0 ) {
-			utils.wrapContributionsDiffLink( $line, $span );
+			utils.wrapContributionsDiffLink( $line, $span, [ 'mw-changeslist-diff' ] );
 		}
 	} );
 }

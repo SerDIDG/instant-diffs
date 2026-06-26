@@ -34,7 +34,7 @@ function process() {
 			$cur.wrapInner( utils.renderPlaceholder() );
 		}
 		if ( $prev.find( 'a' ).length === 0 ) {
-			utils.wrapContributionsDiffLink( $line, $prev );
+			utils.wrapContributionsDiffLink( $line, $prev, [ 'mw-history-histlinks-previous' ] );
 		}
 	} );
 
