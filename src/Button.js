@@ -112,7 +112,7 @@ class Button {
 	}
 
 	/**
-	 * Toggle a buttons pending state that shows a loading cursor.
+	 * Toggle a button pending state that shows a loading cursor.
 	 * @param {boolean} value
 	 */
 	pending( value ) {
@@ -124,6 +124,14 @@ class Button {
 	 * @returns {HTMLElement}
 	 */
 	getContainer() {
+		return this.node;
+	}
+
+	/**
+	 * Get a button node.
+	 * @returns {HTMLElement}
+	 */
+	getNode() {
 		return this.node;
 	}
 }
