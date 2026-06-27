@@ -158,7 +158,7 @@ class View {
 			// Get a new snapshot of the links to properly calculate indexes for navigation between them
 			const options = {};
 
-			// Add filter by article type when a link generated my MediaWiki in the changes lists
+			// Add filter by article type when a link generated my MediaWiki in the change lists
 			if ( this.opener.link.getMW?.().hasLine ) {
 				options.filterType = this.opener.link.getArticle().get( 'type' );
 				options.filterMWLine = true;
@@ -185,7 +185,7 @@ class View {
 	/******* DEPENDENCIES *******/
 
 	/**
-	 * Request a View dialog dependencies.
+	 * Request the View dialog dependencies.
 	 * @returns {Promise|boolean}
 	 */
 	load() {
@@ -277,7 +277,7 @@ class View {
 		if ( !this.isOpen ) {
 			// Save a document scroll top position before the dialog opens.
 			this.document.scrollableRoot = OO.ui.Element.static.getRootScrollableElement( document.body );
-			this.document.scrollTop = this.document.scrollableRoot.scrollTop;
+			this.document.scrollTop = this.document.scrollableRoot?.scrollTop || 0;
 
 			// Initial dialog options
 			const article = this.link.getArticle();
@@ -370,7 +370,9 @@ class View {
 		// Restore the document scroll top position after the dialog closes.
 		// In the revision view, some module dependencies cause the page
 		// to scroll to the top after loading, for some reason.
-		this.document.scrollableRoot.scrollTop = this.document.scrollTop;
+		if ( this.document.scrollableRoot ) {
+			this.document.scrollableRoot.scrollTop = this.document.scrollTop;
+		}
 
 		this.emit( 'closed' );
 	}
