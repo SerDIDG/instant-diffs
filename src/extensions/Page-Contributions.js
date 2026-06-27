@@ -50,7 +50,7 @@ function processGlobal() {
 	} );
 }
 
-mw.hook( `${ id.config.prefix }.applyPageAdjustments` ).add( ( id ) => {
+mw.hook( `${ id.config.prefix }.pageAdjustments` ).add( ( id ) => {
 	// Process local user contributions
 	if ( id.config.contributionLists.includes( id.local.mwCanonicalSpecialPageName ) ) {
 		process();

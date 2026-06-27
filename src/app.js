@@ -221,11 +221,21 @@ function applyPageAdjustments() {
 
 	id.isPageAdjustmentsApplied = true;
 
+	// Track the page adjustments start time
+	id.timers.pageAdjustmentsStart = mw.now();
+
 	// Add a status to the body tag
 	document.body.classList.add( 'instantDiffs-enabled' );
 
 	// Fire the internal page adjustments hook
-	mw.hook( `${ id.config.prefix }.applyPageAdjustments` ).fire( id );
+	mw.hook( `${ id.config.prefix }.pageAdjustments` ).fire( id );
+
+	// Track the page adjustments end time
+	id.timers.pageAdjustmentsEnd = mw.now();
+
+	if ( settings.get( 'logTimers' ) ) {
+		utils.logTimer( 'page adjustments time', id.timers.pageAdjustmentsStart, id.timers.pageAdjustmentsEnd );
+	}
 }
 
 /******* BOOTSTRAP *******/

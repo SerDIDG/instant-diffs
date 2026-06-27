@@ -62,7 +62,7 @@ function process() {
 	} );
 }
 
-mw.hook( `${ id.config.prefix }.applyPageAdjustments` ).add( ( id ) => {
+mw.hook( `${ id.config.prefix }.pageAdjustments` ).add( ( id ) => {
 	// Process local history pages
 	if ( id.local.mwAction === 'history' ) {
 		return process();

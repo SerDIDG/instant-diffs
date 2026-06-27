@@ -207,6 +207,20 @@ class View {
 	};
 
 	/**
+	 * Refresh the View contents.
+	 * @returns {Promise|boolean}
+	 */
+	refresh() {
+		if ( this.isRequesting || this.isProcessing ) return false;
+
+		// Track on dialog process start time
+		id.timers.dialogProcesStart = mw.now();
+
+		// Start the loading process
+		return this.load();
+	}
+
+	/**
 	 * Join dialog dependencies with content dependencies.
 	 * @returns {Array}
 	 */
@@ -319,6 +333,13 @@ class View {
 	}
 
 	/**
+	 * Close the View dialog.
+	 */
+	close() {
+		this.dialog.close();
+	}
+
+	/**
 	 * Event that emits after the View dialog starts closing.
 	 */
 	onClosing() {
@@ -378,6 +399,19 @@ class View {
 	}
 
 	/**
+	 * Update the View dialog contents.
+	 */
+	update() {
+		const options = {
+			title: this.page.getArticleTitleText(),
+			message: this.page.getContainer(),
+			scrollTop: this.getContentOffset.bind( this ),
+		};
+		this.dialog.update( options )
+			.then( this.onUpdate.bind( this ) );
+	}
+
+	/**
 	 * Event that emits after the View dialog updates.
 	 */
 	onUpdate() {
@@ -399,6 +433,13 @@ class View {
 		}
 
 		this.emit( 'updated' );
+	}
+
+	/**
+	 * Set focus on the View dialog.
+	 */
+	focus() {
+		this.dialog.focus();
 	}
 
 	/******* PAGE *******/
@@ -453,29 +494,7 @@ class View {
 		if ( !this.page || this.page.isDetached ) return;
 
 		// Embed the Page's content to the dialog
-		const options = {
-			title: this.page.getArticleTitleText(),
-			message: this.page.getContainer(),
-			scrollTop: this.getContentOffset.bind( this ),
-		};
-		this.dialog.update( options )
-			.then( this.onUpdate.bind( this ) );
-	}
-
-	/******* ACTIONS *******/
-
-	/**
-	 * Refresh view contents.
-	 * @returns {Promise|boolean}
-	 */
-	refresh() {
-		if ( this.isRequesting || this.isProcessing ) return false;
-
-		// Track on dialog process start time
-		id.timers.dialogProcesStart = mw.now();
-
-		// Start the loading process
-		return this.load();
+		this.update();
 	}
 
 	/**
@@ -506,20 +525,6 @@ class View {
 			} );
 	}
 
-	/**
-	 * Set focus on the dialog.
-	 */
-	focus() {
-		this.dialog.focus();
-	}
-
-	/**
-	 * Close the dialog.
-	 */
-	close() {
-		this.dialog.close();
-	}
-
 	getContentOffset() {
 		const section = this.page.getScrollableSection();
 		const offset = this.page.getScrollableOffsetTop();
@@ -535,6 +540,8 @@ class View {
 			this.dialog.scrollContentTop( this.getContentOffset() );
 		}
 	}
+
+	/******* ACTIONS *******/
 
 	/**
 	 * Get the Link instance.

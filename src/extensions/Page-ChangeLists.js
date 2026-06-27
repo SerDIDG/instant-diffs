@@ -23,7 +23,7 @@ function processGlobalWatchlist() {
 	} );
 }
 
-mw.hook( `${ id.config.prefix }.applyPageAdjustments` ).add( ( id ) => {
+mw.hook( `${ id.config.prefix }.pageAdjustments` ).add( ( id ) => {
 	// Process GlobalWatchlist extension
 	if ( id.local.mwCanonicalSpecialPageName === 'GlobalWatchlist' ) {
 		processGlobalWatchlist();
