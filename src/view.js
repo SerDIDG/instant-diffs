@@ -393,6 +393,7 @@ class View {
 		// to scroll to the top after loading, for some reason.
 		if ( this.document.scrollableRoot ) {
 			this.document.scrollableRoot.scrollTop = this.document.scrollTop;
+			this.document = {};
 		}
 
 		this.emit( 'closed' );
