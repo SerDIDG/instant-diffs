@@ -165,7 +165,7 @@ class LocalPage extends Page {
 
 	/******* RENDER *******/
 
-	async renderSuccessContent() {
+	async renderContentSuccess() {
 		// Parse and append all data coming from the endpoint
 		this.nodes.data = $.parseHTML( this.data );
 		this.nodes.$data = $( this.nodes.data ).appendTo( this.nodes.$body );
@@ -192,7 +192,7 @@ class LocalPage extends Page {
 		this.processMobileFooter();
 
 		// Call a parent method that wraps a process
-		await super.renderSuccessContent();
+		await super.renderContentSuccess();
 	}
 
 	collectData() {

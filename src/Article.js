@@ -84,7 +84,7 @@ class Article {
 	}
 
 	/**
-	 * Add a key-value pair to the values record.
+	 * Add a key-value pair to the value record.
 	 * @param {string} name
 	 * @param {*} value
 	 */
@@ -93,7 +93,7 @@ class Article {
 	}
 
 	/**
-	 * Add key-value pairs to the values record.
+	 * Add key-value pairs to the value record.
 	 * @param {Record<string, *>} values - A key-value pairs object
 	 */
 	setValues( values ) {
@@ -103,7 +103,7 @@ class Article {
 	}
 
 	/**
-	 * Get value from the values record.
+	 * Get value from the value record.
 	 * @param {string} name
 	 * @returns {*}
 	 */
@@ -112,7 +112,7 @@ class Article {
 	}
 
 	/**
-	 * Get all values from the values record.
+	 * Get all values from the value record.
 	 * @returns {Record<string, *>} A key-value pairs object
 	 */
 	getValues() {

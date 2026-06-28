@@ -185,7 +185,7 @@ class GlobalPage extends Page {
 		await super.renderContent();
 	}
 
-	async renderSuccessContent() {
+	async renderContentSuccess() {
 		// Collect missing data from the response
 		this.collectData();
 
@@ -207,15 +207,15 @@ class GlobalPage extends Page {
 		utils.addBaseToLinks( this.nodes.$body, this.article.get( 'href' ) );
 
 		// Call a parent method that wraps a process
-		await super.renderSuccessContent();
+		await super.renderContentSuccess();
 	}
 
-	async renderErrorContent() {
+	async renderContentError() {
 		// Render a custom error warning if a revision was hidden
 		if ( this.errorData?.code === 'missingcontent' ) {
 			await this.renderDeletedWarning();
 		} else {
-			await super.renderErrorContent();
+			await super.renderContentError();
 		}
 
 		// Try to parse an error message for a missing id
@@ -296,7 +296,7 @@ class GlobalPage extends Page {
 			this.article.get( 'hostname' ),
 		) );
 
-		this.nodes.$foreignWarning = this.renderWarning( {
+		this.nodes.foreignWarning = this.renderWarning( {
 			$content,
 			type: 'notice',
 		} );
@@ -310,10 +310,10 @@ class GlobalPage extends Page {
 
 		const $content = $( message ).find( 'p' );
 
-		this.nodes.$deleteWarning = this.renderWarning( {
+		this.nodes.deleteWarning = this.renderWarning( {
 			$content,
 			type: 'warning',
-			container: this.nodes.$foreignWarning,
+			container: this.nodes.foreignWarning,
 			insertMethod: 'insertAfter',
 		} );
 	}

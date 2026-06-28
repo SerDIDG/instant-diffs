@@ -158,7 +158,7 @@ class View {
 			// Get a new snapshot of the links to properly calculate indexes for navigation between them
 			const options = {};
 
-			// Add filter by article type when a link generated my MediaWiki in the change lists
+			// Add filter by article type when link is a child of list line
 			if ( this.opener.link.getMW?.().hasLine ) {
 				options.filterType = this.opener.link.getArticle().get( 'type' );
 				options.filterMWLine = true;
@@ -186,7 +186,7 @@ class View {
 
 	/**
 	 * Request the View dialog dependencies.
-	 * @returns {Promise|boolean}
+	 * @returns {Promise|boolean} a promise or a ready state
 	 */
 	load() {
 		if ( this.isLoading ) return this.loadPromise;

@@ -546,8 +546,6 @@ class Page {
 			article: this.article,
 			silent: true,
 		};
-
-		// Show a critical notification popup
 		utils.notifyError( `error-${ this.error.type }-${ this.error.code }`, this.error );
 
 		await this.render();
@@ -593,30 +591,24 @@ class Page {
 
 	async renderContent() {
 		if ( this.error ) {
-			await this.renderErrorContent();
+			await this.renderContentError();
 		} else {
-			await this.renderSuccessContent();
+			await this.renderContentSuccess();
 		}
 	}
 
-	async renderErrorContent() {
-		const message = utils.getErrorMessage( `error-${ this.error.type }-${ this.error.code }`, this.error, this.article );
-		const $content = $( `<p>${ message }</p>` );
-		this.renderWarning( { $content } );
-	}
-
-	renderWarning( { $content, type = 'warning', container = this.nodes.$body, insertMethod = 'prependTo' } ) {
-		const $box = utils.renderMessageBox( { $content, type } );
-		utils.embed( $box, container, insertMethod );
-		return $box;
-	}
-
-	async renderSuccessContent() {
+	async renderContentSuccess() {
 		// Restore functionally that not requires that elements are in the DOM
 		await this.restoreFunctionality();
 
 		// Request lazy-loaded dependencies
 		this.requestDependencies();
+	}
+
+	async renderContentError() {
+		const message = utils.getErrorMessage( `error-${ this.error.type }-${ this.error.code }`, this.error, this.article );
+		const $content = $( `<p>${ message }</p>` );
+		this.renderWarning( { $content } );
 	}
 
 	async renderNavigation() {
@@ -625,6 +617,26 @@ class Page {
 			links: this.links,
 		} );
 		this.navigation.embed( this.nodes.$container, 'prependTo' );
+	}
+
+	/**
+	 * Render a warning message box.
+	 * @param {Object} options
+	 * @param {JQuery<HTMLElement>} options.$content
+	 * @param {string} [options.type='warning']
+	 * @param {JQuery<HTMLElement>|HTMLElement} [options.container=this.nodes.$body]
+	 * @param {string} [options.insertMethod='prependTo']
+	 * @returns {HTMLElement}
+	 */
+	renderWarning( {
+		$content,
+		type = 'warning',
+		container = this.nodes.$body,
+		insertMethod = 'prependTo',
+	} ) {
+		const box = utils.renderMessageBox( { $content, type } );
+		utils.embed( box, container, insertMethod );
+		return box;
 	}
 
 	/**

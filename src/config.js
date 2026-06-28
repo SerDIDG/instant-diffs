@@ -338,8 +338,8 @@ export const config = {
 			'.mw-changeslist-line',                                     // Changelists
 			'.mw-contributions-list',                                   // Contributions
 			'.mw-history-histlinks',                                    // Page History
-			'.mw-pager-navigation-bar + ul',
-			'.mw-fr-hist-difflink',
+			'.mw-pager-navigation-bar + ul',                            // Legacy lists without specific identifiers
+			'.mw-fr-hist-difflink',                                     // [[Extension:FlaggedRevs]] page history
 			'#mw-fr-reviewnotice',
 			'#mw-fr-revisiontag',
 			'#mw-fr-revisiontag-edit',
@@ -362,12 +362,8 @@ export const config = {
 			'mw-contributions-title'                                    // [[Special:GlobalWatchlist]]
 		],
 	},
-	mwLinkDiffOnly: {
-		id: [
-			'differences-prevlink',                                     // [[Special:Diff]]: Previous edit
-			'differences-nextlink',                                     // [[Special:Diff]]: Next edit
-		],
-	},
+	mwLinkDiffOnly: {},
+	mwLinkRevisionOnly: {},
 	mwLinkPrepend: {
 		id: [
 			'differences-nextlink',                                     // [[Special:Diff]]: Next edit
