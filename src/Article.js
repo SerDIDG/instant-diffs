@@ -156,7 +156,7 @@ class Article {
 
 		// Validate section
 		if ( !utils.isEmpty( values.hash ) ) {
-			values.hash = mw.util.percentDecodeFragment( values.hash );
+			values.hash = mw.util.percentDecodeFragment?.( values.hash );
 			if ( values.hash ) {
 				values.hash = values.hash.replace( /^#/, '' );
 			}

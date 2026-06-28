@@ -784,7 +784,7 @@ export function getTargetFromFragment( hash, container ) {
 	if ( target ) return target;
 
 	// Try with decoded hash
-	const decodedHash = mw.util.percentDecodeFragment( hash );
+	const decodedHash = mw.util.percentDecodeFragment?.( hash );
 	if ( !decodedHash ) return null;
 
 	return element.querySelector( `#${ CSS.escape( decodedHash ) }` );
