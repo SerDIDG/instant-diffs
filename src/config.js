@@ -260,7 +260,8 @@ export const config = {
 	sectionRegExp: /^\/\*\s*(.*?)\s*\*\/.*$/,
 
 	linkSelector: [                                                     // $1 - server
-		'a[data-instantdiffs-link]',                                    // Manually marked links
+		'[data-instantdiffs-line="all"] a',                             // Manually marked links in link line
+		'a[data-instantdiffs-link]',                                    // Manually marked link
 		'a.external[href^="$1"]',                                       // External links that lead to the same wiki
 		'a.mw-changeslist-date',                                        // Changelists (revision)
 		'a.mw-changeslist-diff',                                        // Changelists (diff)
@@ -279,7 +280,6 @@ export const config = {
 		'.mw-diff-revision-history-links a',                            // [[Special:Diff]]: MobileDiff navigation links
 		'.mw-logevent-loglines a',                                      // [[Special:Logs]]
 		'[data-afl-log-id] a',                                          // [[Special:AbuseLog]]
-		'li[class^="mw-tag"] a',                                        // [[Special:EditTags]]
 		'a.ext-globalwatchlist-diff',                                   // [[Special:GlobalWatchlist]]
 		'.wikibase-statementview-references a',                         // Wikibase statements references
 		'a.edit-summary-time',                                          // [[Extension:Translate]]
@@ -290,13 +290,12 @@ export const config = {
 
 	mwLine: {
 		selector: [
-			'[data-instantdiffs-line]',
+			'[data-instantdiffs-line]',                                 // Manually marked list line
 			'.mw-changeslist-line',                                     // Changelists
 			'.mw-contributions-list li',                                // Contributions
 			'.mw-fr-pending-changes-table tr',                          // [[Special:PendingChanges]]
 			'.mw-logevent-loglines li',                                 // [[Special:Logs]]
 			'.mw-special-AbuseLog [data-afl-log-id]',                   // [[Special:AbuseLog]]
-			'.mw-special-EditTags li[class^="mw-tag"]',                 // [[Special:EditTags]]
 			'.ext-globalwatchlist-site li',                             // [[Special:GlobalWatchlist]]
 			//'.mw-undelete-revlist li',                                // [[Special:Undelete]]
 		],
@@ -349,7 +348,6 @@ export const config = {
 			'.mw-fr-pending-changes-table',                             // [[Special:PendingChanges]]
 			'.mw-logevent-loglines',                                    // [[Special:Logs]]
 			'.mw-special-AbuseLog li[data-afl-log-id]',                 // [[Special:AbuseLog]]
-			'.mw-special-EditTags li[class^="mw-tag"]',                 // [[Special:EditTags]]
 			'.wikibase-statementview-references',                       // Wikibase statement references
 			'.ext-globalwatchlist-site',                                // [[Special:GlobalWatchlist]]
 			'.tux-message-editor',                                      // [[Extension:Translate]]

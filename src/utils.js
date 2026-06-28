@@ -687,6 +687,14 @@ export function getBodyContentNode() {
 	return $content;
 }
 
+export function getContentNode() {
+	let $content = $( id.config.contentSelector );
+	if ( !$content || $content.length === 0 ) {
+		$content = $( document.body );
+	}
+	return $content;
+}
+
 export function getSpecialPageAliases( data, name ) {
 	const namespace = 'Special';
 	const localNamespace = mw.config.get( 'wgFormattedNamespaces' )[ '-1' ];

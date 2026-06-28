@@ -1,6 +1,7 @@
 // Page adjustments
 import './extensions/Page-ChangeLists';
 import './extensions/Page-Contributions';
+import './extensions/Page-EditTags';
 import './extensions/Page-History';
 
 // Skins
