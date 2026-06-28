@@ -422,9 +422,10 @@ class LocalPage extends Page {
 		}
 	}
 
-	/******* HELPERS *******/
-
-	restoreFunctionalityEmbed() {
+	/**
+	 * Restores functionally of extensions and scripts.
+	 */
+	restoreFunctionality() {
 		if ( this.error ) return;
 
 		// Restore rollback and patrol links scripts
@@ -457,8 +458,8 @@ class LocalPage extends Page {
 	 * Fire hooks and events.
 	 */
 	async fire() {
-		// Restore functionally that requires elements appended in the DOM
-		this.restoreFunctionalityEmbed();
+		// Restore functionally of extensions and scripts
+		this.restoreFunctionality();
 
 		// Request page dependencies lazily, so visually it appears faster than actually
 		if ( this.article.get( 'type' ) === 'revision' && !this.isDependenciesLoaded ) {

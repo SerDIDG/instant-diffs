@@ -598,9 +598,6 @@ class Page {
 	}
 
 	async renderContentSuccess() {
-		// Restore functionally that not requires that elements are in the DOM
-		await this.restoreFunctionality();
-
 		// Request lazy-loaded dependencies
 		this.requestDependencies();
 	}
@@ -661,19 +658,6 @@ class Page {
 	}
 
 	/******* HELPERS *******/
-
-	async restoreFunctionality() {
-		if ( this.error ) return;
-
-		// Restore file media info
-		this.nodes.$mediaInfoView = this.nodes.$body.find( 'mediainfoview' );
-		if ( this.article.get( 'type' ) === 'revision' && this.nodes.$mediaInfoView.length > 0 ) {
-			const content = await utilsPage.restoreFileMediaInfo( this.nodes.$mediaInfoView );
-			if ( content ) {
-				utils.embed( content, this.nodes.$diffTitle, 'insertAfter' );
-			}
-		}
-	}
 
 	getScrollableSection() {
 		const name = this.article.get( 'hash' );
