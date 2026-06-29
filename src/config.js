@@ -16,7 +16,7 @@ export const config = {
 
 	dependencies: {
 		styles: '__styles__',
-		messages: '__messages__',
+		i18n: '__i18n__',
 		main: [
 			'oojs',
 			'mediawiki.api',
@@ -101,6 +101,12 @@ export const config = {
 				],
 			},
 		},
+		messages: {
+			6: [                                                        // File:
+				'wikibasemediainfo-filepage-fileinfo-heading',
+				'wikibasemediainfo-filepage-structured-data-heading',
+			],
+		},
 	},
 
 	foreignDependencies: {
@@ -115,13 +121,11 @@ export const config = {
 					'wikibase.lexeme.styles',
 				],
 			},
-
 			links: {
 				6: [                                                    // File:
 					'MediaWiki:Filepage.css',
 				],
 			},
-
 			wikibase: {
 				styles: {
 					all: [
@@ -137,6 +141,28 @@ export const config = {
 					],
 				},
 			},
+		},
+		messages: {
+			'*': [
+				'revisionasof',
+				'currentrev-asof',
+				'word-separator',
+				'pipe-separator',
+				'parentheses',
+				'talkpagelinktext',
+				'contribslink',
+				'changeslist-nocomment',
+				'rev-deleted-no-diff',
+				'rev-deleted-user',
+				'rev-deleted-comment',
+				'editold',
+				'viewsourceold',
+				'editundo',
+				'tooltip-undo',
+				'wikibase-restoreold',
+				'diff-empty',
+				'checkuser-userinfocard-toggle-button-aria-label',
+			],
 		},
 	},
 

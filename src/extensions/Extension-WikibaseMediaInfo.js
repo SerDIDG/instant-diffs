@@ -8,38 +8,20 @@
 import id from '../id';
 import * as utils from '../utils';
 
-import Api from '../Api';
-
 const { h } = utils;
 
 /**
  * Restores file media info.
- * @param {import('../Page').default} page
  */
-async function process( page ) {
+function process() {
 	// Restore file media info
 	this.nodes.$mediaInfoView = this.nodes.$body.find( 'mediainfoview' );
 	if ( this.nodes.$mediaInfoView.length === 0 ) return;
 
-	const content = await request( this.nodes.$mediaInfoView );
+	const content = render( this.nodes.$mediaInfoView );
 	if ( content ) {
 		utils.embed( content, this.nodes.$diffTitle, 'insertAfter' );
 	}
-}
-
-/**
- * Requests language strings.
- * @param {JQuery<HTMLElement>} $content
- * @returns {HTMLElement}
- */
-async function request( $content ) {
-	const messages = [
-		'wikibasemediainfo-filepage-fileinfo-heading',
-		'wikibasemediainfo-filepage-structured-data-heading',
-	];
-	await Api.loadMessage( messages );
-
-	return render( $content );
 }
 
 /**

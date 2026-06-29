@@ -135,7 +135,7 @@ function getMessages() {
 			return self.indexOf( value ) === index && !id.i18n[ value ];
 		} )
 		.map( lang => {
-			const path = (/** @type {string} */ id.config.dependencies.messages ).replace( '$lang', lang );
+			const path = (/** @type {string} */ id.config.dependencies.i18n ).replace( '$lang', lang );
 			return mw.loader.getScript( utils.server( path ) );
 		} );
 }

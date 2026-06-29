@@ -42,6 +42,24 @@ export function getRevID( article ) {
 
 /******* DEPENDENCIES *******/
 
+export function getNamespaceDependencies( article, data ) {
+	let dependencies = [];
+	if ( utils.isEmpty( data ) ) return dependencies;
+
+	// Set common dependencies
+	if ( utils.isArray( data[ '*' ] ) ) {
+		dependencies = dependencies.concat( data[ '*' ] );
+	}
+
+	// Set namespace-specific dependencies
+	const namespace = article.getMW( 'title' )?.getNamespaceId();
+	if ( utils.isArray( data[ namespace ] ) ) {
+		dependencies = dependencies.concat( data[ namespace ] );
+	}
+
+	return dependencies;
+}
+
 /**
  * Gets the article dependencies.
  * @param {import('./Article').default} article
@@ -77,19 +95,25 @@ export function getDependencies( article ) {
 	return dependencies;
 }
 
-function getNamespaceDependencies( article, data ) {
+export function getMessageDependencies( article ) {
 	let dependencies = [];
-	if ( utils.isEmpty( data ) ) return dependencies;
 
-	// Set common dependencies
-	if ( utils.isArray( data[ '*' ] ) ) {
-		dependencies = dependencies.concat( data[ '*' ] );
+	// Local article messages
+	const localDependencies = id.config.dependencies.messages;
+	if ( localDependencies ) {
+		dependencies = dependencies.concat(
+			getNamespaceDependencies( article, localDependencies ),
+		);
 	}
 
-	// Set namespace-specific dependencies
-	const namespace = article.getMW( 'title' )?.getNamespaceId();
-	if ( utils.isArray( data[ namespace ] ) ) {
-		dependencies = dependencies.concat( data[ namespace ] );
+	// Foreign article messages
+	if ( article.isForeign ) {
+		const foreignDependencies = id.config.foreignDependencies.messages;
+		if ( foreignDependencies ) {
+			dependencies = dependencies.concat(
+				getNamespaceDependencies( article, foreignDependencies ),
+			);
+		}
 	}
 
 	return dependencies;

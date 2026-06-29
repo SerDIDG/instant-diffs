@@ -24,13 +24,13 @@ const strings = {
 	__origin__: 'https://www.mediawiki.org',
 	__server__: project.server,
 	__styles__: `${ project.scriptPath }/index.php?title=${ project.target }.css&action=raw&ctype=text/css`,
-	__messages__: `${ project.scriptPath }/index.php?title=${ project.i18n }$lang.js&action=raw&ctype=text/javascript`,
+	__i18n__: `${ project.scriptPath }/index.php?title=${ project.i18n }$lang.js&action=raw&ctype=text/javascript`,
 	__debug__: process.argv.includes( '--start' ),
 };
 
 if ( args.start ) {
 	strings.__styles__ = `${ project.target }.css`;
-	strings.__messages__ = `${ project.i18n }$lang.js`;
+	strings.__i18n__ = `${ project.i18n }$lang.js`;
 }
 
 // Prepend a banner and a footer

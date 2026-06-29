@@ -247,7 +247,7 @@ class Article {
 	}
 
 	/**
-	 * @private
+	 * Process article values.
 	 */
 	process() {
 		// Get revision id if possible from the provided diff and oldid
@@ -286,7 +286,11 @@ class Article {
 
 		// Set index and api endpoints
 		this.mw.endPoint = `https://${ this.values.hostname }${ mw.util.wikiScript( 'index' ) }`;
-		this.mw.endPointUrl = new URL( this.mw.endPoint );
+		try {
+			this.mw.endPointUrl = new URL( this.mw.endPoint );
+		} catch ( error ) {
+			utils.logException( 'Article:processHostname', 'Unable construct endPointUrl', error );
+		}
 
 		// Check if the article is from foreign interwiki
 		this.isForeign = utils.isForeign( this.values.hostname );

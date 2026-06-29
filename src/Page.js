@@ -1,7 +1,7 @@
 import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
-import { getDependencies } from './utils-article';
+import { getDependencies, getMessageDependencies } from './utils-article';
 import { getAbstractWikiLabel, getEntitySchemaLabel, getWikilambdaLabel, isWbContentModel } from './utils-api';
 
 import Api from './Api';
@@ -256,6 +256,7 @@ class Page {
 	getLoadSecondaryPromises() {
 		return [
 			this.requestWBLabel(),
+			this.requestMessages(),
 		];
 	}
 
@@ -474,6 +475,16 @@ class Page {
 			// Set additional config variables
 			this.setConfigs();
 		}
+	}
+
+	/**
+	 * Request missing MediaWiki interface messages.
+	 * @returns {Promise}
+	 */
+	async requestMessages() {
+		const messages = getMessageDependencies( this.article );
+		if ( utils.isEmpty( messages ) ) return $.Deferred().resolve().promise();
+		await Api.loadMessage( messages );
 	}
 
 	/**
@@ -726,6 +737,9 @@ class Page {
 		this.isConfigsChanged = true;
 		this.configManager.apply();
 		this.userOptionsManager.apply();
+
+		// Process article values after config was set
+		this.article.process();
 	}
 
 	restoreConfigs() {

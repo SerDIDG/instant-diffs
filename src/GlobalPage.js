@@ -44,7 +44,6 @@ class GlobalPage extends Page {
 	 */
 	getLoadPromises() {
 		return [
-			this.requestMessages(),
 			this.requestSiteInfo(),
 			...super.getLoadPromises(),
 		];
@@ -135,44 +134,7 @@ class GlobalPage extends Page {
 
 			// Set additional config variables
 			this.setConfigs();
-
-			// Update article title after namespace config was set
-			this.article.processTitle();
 		}
-	}
-
-	/**
-	 * Map of messages to request.
-	 * @private
-	 * @type {Array<string>}
-	 */
-	MESSAGES = [
-		'revisionasof',
-		'currentrev-asof',
-		'word-separator',
-		'pipe-separator',
-		'parentheses',
-		'talkpagelinktext',
-		'contribslink',
-		'changeslist-nocomment',
-		'rev-deleted-no-diff',
-		'rev-deleted-user',
-		'rev-deleted-comment',
-		'editold',
-		'viewsourceold',
-		'editundo',
-		'tooltip-undo',
-		'wikibase-restoreold',
-		'diff-empty',
-		'checkuser-userinfocard-toggle-button-aria-label',
-	];
-
-	/**
-	 * Request missing MediaWiki interface messages.
-	 * @returns {Promise}
-	 */
-	async requestMessages() {
-		await Api.loadMessage( this.MESSAGES );
 	}
 
 	/******* RENDER *******/
