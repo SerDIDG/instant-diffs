@@ -790,6 +790,10 @@ class Page {
 		return this.nodes.$container;
 	}
 
+	getBody() {
+		return this.nodes.$body;
+	}
+
 	getDiffTable() {
 		return this.nodes.$table;
 	}

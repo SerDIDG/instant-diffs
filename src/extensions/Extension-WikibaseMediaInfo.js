@@ -12,15 +12,17 @@ const { h } = utils;
 
 /**
  * Restores file media info.
+ * @param {import('../Page').default} page
  */
-function process() {
-	// Restore file media info
-	this.nodes.$mediaInfoView = this.nodes.$body.find( 'mediainfoview' );
-	if ( this.nodes.$mediaInfoView.length === 0 ) return;
+function process( page ) {
+	if ( !page || page.error || page.article.get( 'type' ) !== 'revision' ) return;
 
-	const content = render( this.nodes.$mediaInfoView );
+	page.nodes.$mediaInfoView = page.getBody().find( 'mediainfoview' );
+	if ( page.nodes.$mediaInfoView.length === 0 ) return;
+
+	const content = render( page.nodes.$mediaInfoView );
 	if ( content ) {
-		utils.embed( content, this.nodes.$diffTitle, 'insertAfter' );
+		utils.embed( content, page.nodes.$diffTitle, 'insertAfter' );
 	}
 }
 
@@ -58,13 +60,4 @@ function render( $content ) {
 	return h( 'div', { class: 'instantDiffs-extension-wikibaseMediaInfo' }, panel.$element.get( 0 ) );
 }
 
-mw.hook( `${ id.config.prefix }.page.renderSuccess` ).add(
-	/**
-	 * @param {import('../Page').default} page
-	 */
-	( page ) => {
-		if ( !page || page.error || page.article.get( 'type' ) !== 'revision' ) return;
-
-		process.call( page );
-	},
-);
+mw.hook( `${ id.config.prefix }.page.renderSuccess` ).add( process );

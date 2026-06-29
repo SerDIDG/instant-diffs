@@ -8,16 +8,17 @@
 
 import id from '../id';
 
-mw.hook( `${ id.config.prefix }.page.complete` ).add(
-	/**
-	 * @param {import('../Page').default} page
-	 */
-	( page ) => {
-		if ( !page ) return;
+/**
+ * Process Twinkle gadget.
+ * @param {import('../Page').default} page
+ */
+function process( page ) {
+	if ( !page || page.error ) return;
 
-		const $links = page.getContainer()?.find( '[id^="tw-revert"] a' );
-		$links.each( ( i, node ) => {
-			node.addEventListener( 'click', () => page.close() );
-		} );
-	},
-);
+	const $links = page.getContainer()?.find( '[id^="tw-revert"] a' );
+	$links.each( ( i, node ) => {
+		node.addEventListener( 'click', () => page.close() );
+	} );
+}
+
+mw.hook( `${ id.config.prefix }.page.complete` ).add( process );

@@ -89,5 +89,5 @@ mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
 	}
 
 	// Add hook listener to process newly added links
-	mw.hook( `${ id.config.prefix }.link.renderSuccess` ).add( ( link ) => renderLink( link ) );
+	mw.hook( `${ id.config.prefix }.link.renderSuccess` ).add( renderLink );
 } );

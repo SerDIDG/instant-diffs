@@ -8,14 +8,15 @@
 import id from '../id';
 import * as utils from '../utils';
 
-mw.hook( 'mw.translate.editor.showTranslationHelpers' ).add(
-	/**
-	 * @param {Object} helpers
-	 * @param {JQuery<HTMLElement>} $context
-	 */
-	( helpers, $context ) => {
-		if ( !$context || !utils.isAllowed() ) return;
+/**
+ * Process Translation extension.
+ * @param {Object} helpers
+ * @param {JQuery<HTMLElement>} $context
+ */
+function process( helpers, $context ) {
+	if ( !$context || !utils.isAllowed() ) return;
 
-		mw.hook( `${ id.config.prefix }.process` ).fire( $context );
-	},
-);
+	mw.hook( `${ id.config.prefix }.process` ).fire( $context );
+}
+
+mw.hook( 'mw.translate.editor.showTranslationHelpers' ).add( process );

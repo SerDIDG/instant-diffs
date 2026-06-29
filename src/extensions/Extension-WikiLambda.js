@@ -10,14 +10,33 @@ import id from '../id';
 import * as utils from '../utils';
 
 /**
- * Process local WikiLambda extension.
+ * Restores WikiLambda extension.
+ * @param {import('../Page').default} page
  */
-function process() {
-	this.nodes.$wikiLambdaApp = this.nodes.$body.find( '#ext-wikilambda-app' );
-	if ( this.nodes.$wikiLambdaApp.length === 0 ) return;
+function process( page ) {
+	if ( !page || page.error || page.article.get( 'type' ) !== 'revision' ) return;
+
+	switch ( page.type ) {
+		case 'local':
+			processLocal( page );
+			break;
+		case 'global':
+		case 'foreign':
+			processForeign( page );
+			break;
+	}
+}
+
+/**
+ * Restores local WikiLambda extension.
+ * @param {import('../Page').default} page
+ */
+function processLocal( page ) {
+	page.nodes.$wikiLambdaApp = page.getBody().find( '#ext-wikilambda-app' );
+	if ( page.nodes.$wikiLambdaApp.length === 0 ) return;
 
 	// Restore WikiLambda app
-	renderApp( this.nodes.$wikiLambdaApp );
+	renderApp( page.nodes.$wikiLambdaApp );
 }
 
 /**
@@ -51,43 +70,27 @@ function renderApp( $container ) {
 }
 
 /**
- * Process foreign WikiLambda extension.
+ * Restores foreign WikiLambda extension.
+ * @param {import('../Page').default} page
  */
-function processForeign() {
-	this.nodes.$wikiLambdaApp = this.nodes.$body.find( '#ext-wikilambda-app' );
-	if ( this.nodes.$wikiLambdaApp.length === 0 ) return;
+function processForeign( page ) {
+	page.nodes.$wikiLambdaApp = page.getBody().find( '#ext-wikilambda-app' );
+	if ( page.nodes.$wikiLambdaApp.length === 0 ) return;
 
 	// Render a notice about unsupported WikiLambda app
 	const $content = $( utils.msgDom( 'dialog-notice-foreign-wikilambda' ) );
-	this.renderWarning( {
+	page.renderWarning( {
 		$content,
 		type: 'notice',
-		container: this.nodes.$wikiLambdaApp,
+		container: page.nodes.$wikiLambdaApp,
 		insertMethod: 'insertBefore',
 	} );
 
 	// Hide unsupported or unnecessary elements
-	this.nodes.$body
+	page.getBody()
 		.find( '#ext-wikilambda-app, .ext-wikilambda-view-nojsfallback' )
 		.addClass( 'instantDiffs-hidden' );
 
 }
 
-mw.hook( `${ id.config.prefix }.page.ready` ).add(
-	/**
-	 * @param {import('../Page').default} page
-	 */
-	( page ) => {
-		if ( !page || page.error || page.article.get( 'type' ) !== 'revision' ) return;
-
-		switch ( page.type ) {
-			case 'local':
-				process.call( page );
-				break;
-			case 'global':
-			case 'foreign':
-				processForeign.call( page );
-				break;
-		}
-	},
-);
+mw.hook( `${ id.config.prefix }.page.ready` ).add( process );
