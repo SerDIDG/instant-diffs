@@ -67,5 +67,15 @@
 	"dialog-title-empty": "[Tiada tajuk]",
 	"dialog-title-not-found": "[Tidak dijumpai]",
 	"dialog-notice-foreign-diff": "Anda sedang melihat perbezaan asing daripada [$1 $2]. Sesetengah ciri mungkin terhad.",
-	"dialog-notice-foreign-revision": "Anda sedang melihat semakan asing daripada [$1 $2]. Sesetengah ciri mungkin terhad."
+	"dialog-notice-foreign-revision": "Anda sedang melihat semakan asing daripada [$1 $2]. Sesetengah ciri mungkin terhad.",
+	"dialog-notice-foreign-wikilambda": "Aplikasi WikiLambda buat masa ini tidak menyokong semakan asing.",
+	"settings-title": "Tetapan Beza Segera",
+	"settings-saved": "Tetapan telah berjaya disimpan.\nMuatkan semula laman untuk menggunakannya.",
+	"settings-saved-icon": "Ikon tanda semak",
+	"settings-empty": "Alamak, nampaknya penyelia sebelum ini telah lumpuhkan semua tetapan.\nSudah tiba masa untuk berehat dan minum kopi!",
+	"settings-empty-icon": "Ikon cawan kopi",
+	"settings-fieldset-links": "Pautan",
+	"settings-show-link": "Pautan tunjuk tindakan",
+	"settings-show-link-help": "Memaparkan butang tindakan (❖) selepas pautan untuk membuka dialog Beza Segera. Jika tidak, tindakan klik akan ditambah terus pada pautan tersebut. Anda masih boleh membuka pautan dalam tab semasa dengan menekan Alt+Click.",
+	"settings-show-page-link": "Tunjukkan pautan laman"
 }

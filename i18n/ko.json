@@ -105,7 +105,7 @@
 	"settings-fieldset-menu": "메뉴",
 	"settings-show-menu-icons": "인스턴트 디프 대화 상자 드롭다운 메뉴에 아이콘을 표시합니다.",
 	"settings-show-watchlist-popup": "주시문서 목록에 문서를 추가하거나 제거할 때 고급 옵션을 표시합니다.",
-	"settings-show-watchlist-popup-help": "가능한 경우 주시문서 목록 기간 및 라벨 설정이 포함된 팝업을 표시합니다.",
+	"settings-show-watchlist-popup-help": "가능한 경우 주시문서 목록 기간 및 레이블 설정이 포함된 팝업을 표시합니다.",
 	"settings-links-hash": "링크에 문단 이름(앵커) 포함",
 	"settings-links-hash-help": "선택한 축소되지 않은 형식으로 복사 동작을 사용할 때 문단 이름도 링크 URL에 앵커로 추가됩니다.",
 	"settings-links-format": "복사 동작의 링크 형식:",
