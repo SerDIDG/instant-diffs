@@ -362,7 +362,17 @@ class Page {
 	 * @private
 	 */
 	onRequestRelativeRevisionError = ( error, data ) => {
-		this.onRequestError( error, data );
+		const errorData = data?.error;
+		if ( errorData?.code !== 'missingcontent' ) return;
+
+		// Try to parse an error message for a missing id as a last resort
+		const ids = [
+			this.article.get( 'oldid' ),
+			errorData.info.replace( /\D/g, '' ),
+		];
+
+		// Set article values
+		this.setRelativeRevision( ids );
 	};
 
 	/**
@@ -377,9 +387,22 @@ class Page {
 		}
 
 		// Set article values
+		const ids = [ compare.fromrevid, compare.torevid ];
+		this.setRelativeRevision( ids );
+	};
+
+	/**
+	 * Sets the relative revision ids.
+	 * @private
+	 * @param {number[]} ids
+	 */
+	setRelativeRevision( ids ) {
+		ids = utils.arrayUnique( ids ).filter( num => !isNaN( num ) && num > 0 );
+		if ( ids.length < 2 ) return;
+
 		const oldid = this.article.get( 'direction' ) === 'next'
-			? Math.max( compare.fromrevid, compare.torevid )
-			: Math.min( compare.fromrevid, compare.torevid );
+			? Math.max( ...ids )
+			: Math.min( ...ids );
 		this.article.set( {
 			oldid,
 			revid: oldid,

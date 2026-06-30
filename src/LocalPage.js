@@ -142,9 +142,11 @@ class LocalPage extends Page {
 		const values = this.article.getValues();
 		const pageParams = {
 			title: !utils.isEmpty( values.title ) ? values.title : undefined,
-			diff: !utils.isEmpty( values.diff ) ? values.diff : 'prev',
-			oldid: !utils.isEmpty( values.oldid ) ? values.oldid : undefined,
 			curid: !utils.isEmpty( values.curid ) ? values.curid : undefined,
+			oldid: !utils.isEmpty( values.oldid ) ? values.oldid : undefined,
+			diff: !utils.isEmpty( values.diff )
+				? values.diff : utils.inArray( [ 'prev', 'next' ], values.direction )
+					? values.direction : 'prev',
 		};
 
 		const params = {
