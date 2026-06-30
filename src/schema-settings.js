@@ -322,7 +322,7 @@ function getLinksFormatExample( options ) {
 		title, oldid: '12345', type: 'revision', section: 'Section',
 	}, {}, options );
 	const page = getHref( {
-		title, curid: '12345', type: 'revision', typeVariant: 'page', section: 'Section',
+		title, curid: '12345', type: 'revision', section: 'Section',
 	}, {}, options );
 
 	return h( 'ul.instantDiffs-list--settings',

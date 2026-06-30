@@ -318,10 +318,10 @@ class Link {
 			hash: this.url.hash,
 		};
 
-		if ( id.local.specialPagesLinksRegExp.test( urlParts.title ) ) {
+		if ( id.local.specialPagesLinksFlatRegExp.test( urlParts.title ) ) {
 			// Get components from splitting url title
 			articleValues = { ...articleValues, ...utilsLink.getSplitSpecialUrl( urlParts.title ) };
-		} else if ( id.local.specialPagesLinksRegExp.test( urlParts.pathname ) ) {
+		} else if ( id.local.specialPagesLinksFlatRegExp.test( urlParts.pathname ) ) {
 			// Get components from splitting url pathname
 			articleValues = { ...articleValues, ...utilsLink.getSplitSpecialUrl( urlParts.pathname ) };
 		} else {

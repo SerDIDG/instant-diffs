@@ -151,7 +151,7 @@ class Article {
 			values.diff = 'cur';
 		}
 		if ( !utils.isValidDir( values.direction ) ) {
-			values.direction = 'prev';
+			delete values.direction;
 		}
 
 		// Validate section
@@ -174,7 +174,7 @@ class Article {
 	validate() {
 		// Check if a link type is a compare between two pages
 		if (
-			utils.getCanonicalSpecialPage( this.values.title ) === 'Special:ComparePages' &&
+			utils.checkSpecialPageTitle( 'Special:ComparePages', this.values.title ) &&
 			( !utils.isEmpty( this.values.page1 ) || utils.isValidID( this.values.rev1 ) ) &&
 			( !utils.isEmpty( this.values.page2 ) || utils.isValidID( this.values.rev2 ) )
 		) {
@@ -186,7 +186,7 @@ class Article {
 
 		// Check if a link type is a deleted page or revision
 		// ToDo: implement preview of the deleted content
-		if ( utils.getCanonicalSpecialPage( this.values.title ) === 'Special:Undelete' ) {
+		if ( utils.checkSpecialPageTitle( 'Special:Undelete', this.values.title ) ) {
 			this.values.type = 'diff';
 			this.values.typeVariant = 'undelete';
 			return false;
@@ -195,12 +195,24 @@ class Article {
 		// Check if a link type is a revision
 		if ( utils.isValidID( this.values.oldid ) && utils.isEmpty( this.values.diff ) ) {
 			this.values.type = 'revision';
+			this.values.typeVariant = 'revision';
+
+			// Set base direction
+			if ( !utils.isValidDir( this.values.direction ) ) {
+				this.values.direction = 'cur';
+			}
+
 			return true;
 		}
 
 		// Check if a link type is a diff
 		if ( utils.isValidID( this.values.diff ) || utils.isValidID( this.values.oldid ) ) {
 			this.values.type = 'diff';
+
+			// Set base direction
+			if ( !utils.isValidDir( this.values.direction ) ) {
+				this.values.direction = 'prev';
+			}
 
 			// Swap parameters if oldid is a direction and a title is empty
 			if ( utils.isEmpty( this.values.title ) && utils.isValidDir( this.values.oldid ) ) {

@@ -88,7 +88,7 @@ class GlobalPage extends Page {
 			params.torelative = utils.isValidDir( values.diff ) ? values.diff : 'prev';
 		}
 		if ( values.type === 'revision' && !utils.isValidID( values.diff ) ) {
-			params.torelative = utils.isValidDir( values.direction ) ? values.direction : 'prev';
+			params.torelative = 'prev';
 		}
 		if ( values.typeVariant === 'page' && utils.isValidID( values.curid ) ) {
 			params.fromid = values.curid;
@@ -371,6 +371,7 @@ class GlobalPage extends Page {
 			format: 'json',
 			formatversion: 2,
 			uselang: id.local.userLanguage,
+			useskin: mw.config.get( 'skin' ),
 		};
 
 		const oldid = Math.max( this.article.get( 'revid' ), this.article.get( 'oldid' ) );

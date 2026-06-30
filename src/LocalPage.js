@@ -17,11 +17,6 @@ class LocalPage extends Page {
 	type = 'local';
 
 	/**
-	 * @type {boolean}
-	 */
-	isDependenciesLoaded = false;
-
-	/**
 	 * Get a promise array for the main load request.
 	 * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
 	 */
@@ -31,10 +26,11 @@ class LocalPage extends Page {
 		// Try to load page dependencies in parallel to the main request:
 		// * for the revision view we need to know actual revision id;
 		// * for the page view we need to know page id.
+		const values = this.article.getValues();
 		if (
-			this.article.get( 'type' ) === 'revision' && (
-				( this.article.get( 'typeVariant' ) !== 'page' && utils.isValidID( this.article.get( 'revid' ) ) ) ||
-				( this.article.get( 'typeVariant' ) === 'page' && utils.isValidID( this.article.get( 'curid' ) ) )
+			values.type === 'revision' && (
+				( values.typeVariant === 'revision' && utils.isValidID( values.revid ) ) ||
+				( values.typeVariant === 'page' && utils.isValidID( values.curid ) )
 			)
 		) {
 			promises.push( this.requestPage() );
@@ -60,9 +56,10 @@ class LocalPage extends Page {
 			format: 'json',
 			formatversion: 2,
 			uselang: id.local.userLanguage,
+			useskin: mw.config.get( 'skin' ),
 		};
 
-		const oldid = this.configManager.get( 'wgDiffNewId' ) || Math.max( this.article.get( 'revid' ), this.article.get( 'oldid' ) );
+		const oldid = this.configManager.get( 'wgDiffNewId' ) || this.article.get( 'revid' );
 		const pageid = this.configManager.get( 'wgArticleId' ) || this.article.get( 'curid' );
 
 		if ( utils.isValidID( oldid ) ) {
@@ -82,8 +79,6 @@ class LocalPage extends Page {
 	 * @private
 	 */
 	onRequestPageError = ( message, data, params ) => {
-		this.isDependenciesLoaded = true;
-
 		const errorParams = {
 			message,
 			type: 'dependencies',
@@ -104,8 +99,6 @@ class LocalPage extends Page {
 	 * @private
 	 */
 	onRequestPageDone = ( data, params ) => {
-		this.isDependenciesLoaded = true;
-
 		// Render error if the parse request is completely failed
 		this.pageParse = data?.parse;
 		if ( !this.pageParse ) {
@@ -147,9 +140,9 @@ class LocalPage extends Page {
 		if ( this.error ) return $.Deferred().resolve().promise();
 
 		const values = this.article.getValues();
-		const page = {
+		const pageParams = {
 			title: !utils.isEmpty( values.title ) ? values.title : undefined,
-			diff: !utils.isEmpty( values.diff ) ? values.diff : values.direction,
+			diff: !utils.isEmpty( values.diff ) ? values.diff : 'prev',
 			oldid: !utils.isEmpty( values.oldid ) ? values.oldid : undefined,
 			curid: !utils.isEmpty( values.curid ) ? values.curid : undefined,
 		};
@@ -157,7 +150,7 @@ class LocalPage extends Page {
 		const params = {
 			url: id.local.mwEndPoint,
 			dataType: 'html',
-			data: $.extend( page, this.articleParams ),
+			data: $.extend( pageParams, this.articleParams ),
 		};
 
 		return this.requestManager.ajax( params );
@@ -460,11 +453,6 @@ class LocalPage extends Page {
 	async fire() {
 		// Restore functionally of extensions and scripts
 		this.restoreFunctionality();
-
-		// Request page dependencies lazily, so visually it appears faster than actually
-		if ( this.article.get( 'type' ) === 'revision' && !this.isDependenciesLoaded ) {
-			await this.requestPage();
-		}
 
 		// Fire parent hooks and events
 		await super.fire();

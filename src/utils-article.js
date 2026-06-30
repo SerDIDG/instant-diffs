@@ -17,7 +17,7 @@ export function getRevID( article ) {
 
 	if ( values.type === 'revision' ) {
 		if ( utils.isValidID( values.oldid ) ) {
-			if ( !utils.isValidDir( values.direction ) || values.direction === 'prev' ) {
+			if ( !utils.isValidDir( values.direction ) || values.direction === 'cur' ) {
 				return values.oldid;
 			}
 		}
@@ -330,7 +330,7 @@ export function getHref( article, articleParams, options ) {
 			articleParams.oldid = values.revid;
 		} else if ( utils.isValidID( values.oldid ) ) {
 			articleParams.oldid = values.oldid;
-			if ( utils.isValidDir( values.direction ) && values.direction === 'next' ) {
+			if ( utils.isValidDir( values.direction ) && values.direction !== 'cur' ) {
 				articleParams.direction = values.direction;
 			}
 		}

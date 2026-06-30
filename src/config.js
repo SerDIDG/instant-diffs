@@ -524,6 +524,11 @@ export const local = {
 	specialPagesAliasesPrefixed: {},
 
 	/**
+	 * @type {Object<string, RegExp>}
+	 */
+	specialPagesAliasesRegExp: {},
+
+	/**
 	 * @type {Array<string>}
 	 */
 	specialPagesAliasesPrefixedFlat: [],
@@ -551,7 +556,7 @@ export const local = {
 	/**
 	 * @type {RegExp}
 	 */
-	specialPagesLinksRegExp: null,
+	specialPagesLinksFlatRegExp: null,
 
 	/**
 	 * @type {RegExp}

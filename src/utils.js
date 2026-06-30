@@ -710,17 +710,16 @@ export function getSpecialPageAliases( data, name ) {
 	return arrayUnique( values );
 }
 
-export function getCanonicalSpecialPage( value ) {
-	if ( isEmpty( value ) ) return;
+export function getSpecialPageLinksRegExp( data ) {
+	const ruleset = id.config.specialPagesLinksRegExp
+		.replaceAll( '$1', data.join( '|' ) );
+	return new RegExp( ruleset, 'i' );
+}
 
-	try {
-		const title = new mw.Title( value ).getPrefixedDb();
-		for ( const [ name, aliases ] of Object.entries( id.local.specialPagesAliasesPrefixed ) ) {
-			if ( aliases.includes( title ) ) {
-				return name;
-			}
-		}
-	} catch {}
+export function checkSpecialPageTitle( specialPage, title ) {
+	const regExp = id.local.specialPagesAliasesRegExp[ specialPage ];
+	if ( !regExp || isEmpty( title ) ) return;
+	return regExp.test( title );
 }
 
 /******* ELEMENTS *******/

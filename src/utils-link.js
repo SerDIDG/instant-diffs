@@ -6,15 +6,16 @@ export function getSplitSpecialUrl( title ) {
 	const values = {};
 
 	// Check for the 'Special:PermanentLink'
-	const permanentLink = id.local.specialPagesAliasesPrefixed[ 'Special:PermanentLink' ];
-	if ( permanentLink.includes( titleParts[ 0 ] ) ) {
+	if (
+		utils.checkSpecialPageTitle( 'Special:PermanentLink', titleParts[ 0 ] ) ||
+		utils.checkSpecialPageTitle( 'Special:Permalink', titleParts[ 0 ] )
+	) {
 		values.oldid = titleParts[ 1 ];
 		return values;
 	}
 
 	// Check for the 'Special:Redirect'
-	const redirect = id.local.specialPagesAliasesPrefixed[ 'Special:Redirect' ];
-	if ( redirect.includes( titleParts[ 0 ] ) ) {
+	if ( utils.checkSpecialPageTitle( 'Special:Redirect', titleParts[ 0 ] ) ) {
 		if ( titleParts[ 1 ] === 'revision' ) {
 			values.oldid = titleParts[ 2 ];
 			return values;

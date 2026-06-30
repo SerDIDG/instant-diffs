@@ -234,7 +234,8 @@ class Page {
 	 */
 	getPreloadPromises() {
 		return [
-			this.requestCompare(),
+			this.requestRelativeRevision(),
+			this.requestComparePages(),
 		];
 	}
 
@@ -319,10 +320,78 @@ class Page {
 	};
 
 	/**
+	 * Request relative revision.
+	 * @returns {Promise}
+	 */
+	requestRelativeRevision() {
+		const values = this.article.getValues();
+
+		// Check if there are no errors,
+		// then check if it's a revision type variant of the revision,
+		// then check if an oldid is not empty and valid,
+		// then check if a direction is not empty and valid,
+		// otherwise terminate.
+		if (
+			this.error ||
+			values.type !== 'revision' ||
+			values.typeVariant !== 'revision' ||
+			!utils.isValidID( values.oldid ) ||
+			!utils.inArray( [ 'prev', 'next' ], values.direction )
+		) {
+			return $.Deferred().resolve().promise();
+		}
+
+		const params = {
+			action: 'compare',
+			prop: [ 'ids' ],
+			fromrev: values.oldid,
+			torelative: values.direction,
+			format: 'json',
+			formatversion: 2,
+			uselang: id.local.userLanguage,
+		};
+
+		return this.requestManager
+			.get( params )
+			.then( this.onRequestRelativeRevisionDone )
+			.fail( this.onRequestRelativeRevisionError );
+	}
+
+	/**
+	 * Event that emits after the compare request failed.
+	 * @private
+	 */
+	onRequestRelativeRevisionError = ( error, data ) => {
+		this.onRequestError( error, data );
+	};
+
+	/**
+	 * Event that emits after the compare request successive.
+	 * @private
+	 */
+	onRequestRelativeRevisionDone = ( data ) => {
+		// Render error if the compare request is completely failed
+		const compare = data?.compare;
+		if ( !compare ) {
+			return this.onRequestRelativeRevisionError( null, data );
+		}
+
+		// Set article values
+		const oldid = this.article.get( 'direction' ) === 'next'
+			? Math.max( compare.fromrevid, compare.torevid )
+			: Math.min( compare.fromrevid, compare.torevid );
+		this.article.set( {
+			oldid,
+			revid: oldid,
+			direction: 'cur',
+		} );
+	};
+
+	/**
 	 * Request the compare pages.
 	 * @returns {Promise}
 	 */
-	requestCompare() {
+	requestComparePages() {
 		const values = this.article.getValues();
 
 		// Check if there are no errors,
@@ -351,15 +420,15 @@ class Page {
 
 		return this.requestManager
 			.get( params )
-			.then( this.onRequestCompareDone )
-			.fail( this.onRequestCompareError );
+			.then( this.onRequestComparePagesDone )
+			.fail( this.onRequestComparePagesError );
 	}
 
 	/**
 	 * Event that emits after the compare request failed.
 	 * @private
 	 */
-	onRequestCompareError = ( error, data ) => {
+	onRequestComparePagesError = ( error, data ) => {
 		this.onRequestError( error, data );
 	};
 
@@ -367,11 +436,11 @@ class Page {
 	 * Event that emits after the compare request successive.
 	 * @private
 	 */
-	onRequestCompareDone = ( data ) => {
+	onRequestComparePagesDone = ( data ) => {
 		// Render error if the compare request is completely failed
 		const compare = data?.compare;
 		if ( !compare ) {
-			return this.onRequestCompareError( null, data );
+			return this.onRequestComparePagesError( null, data );
 		}
 
 		// Set article values

@@ -156,6 +156,7 @@ class Api {
 			format: 'json',
 			formatversion: 2,
 			uselang: id.local.language,
+			useskin: mw.config.get( 'skin' ),
 			...params,
 		};
 

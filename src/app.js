@@ -149,6 +149,7 @@ function assembleSpecialPages() {
 		id.local.specialPagesLocalPrefixed[ name ] = new mw.Title( local ).getPrefixedDb();
 		id.local.specialPagesAliases[ name ] = utils.getSpecialPageAliases( Api.specialPagesLocal, name );
 		id.local.specialPagesAliasesPrefixed[ name ] = utils.getSpecialPageAliases( id.local.specialPagesLocalPrefixed, name );
+		id.local.specialPagesAliasesRegExp[ name ] = utils.getSpecialPageLinksRegExp( id.local.specialPagesAliasesPrefixed[ name ] );
 
 		if ( id.config.specialPagesLinks.includes( name ) ) {
 			id.local.specialPagesLinksAliases[ name ] = id.local.specialPagesAliases[ name ];
@@ -156,7 +157,7 @@ function assembleSpecialPages() {
 		}
 	}
 
-	// Make the flat versions of special pages aliases for optimization purposes
+	// Assemble the flat versions of special pages aliases for optimization purposes
 	id.local.specialPagesAliasesFlat = utils.arrayUnique(
 		Object.values( id.local.specialPagesAliases ).flat(),
 	);
@@ -169,6 +170,13 @@ function assembleSpecialPages() {
 	id.local.specialPagesLinksAliasesPrefixedFlat = utils.arrayUnique(
 		Object.values( id.local.specialPagesLinksAliasesPrefixed ).flat(),
 	);
+
+	// Assemble RegExp for testing for mwArticlePath
+	const articlePathRuleset = id.config.articlePathRegExp.replaceAll( '$1', id.local.mwArticlePath );
+	id.local.articlePathRegExp = new RegExp( articlePathRuleset );
+
+	// Assemble RegExp for testing special page titles in the links
+	id.local.specialPagesLinksFlatRegExp = utils.getSpecialPageLinksRegExp( id.local.specialPagesLinksAliasesPrefixedFlat );
 }
 
 /**
@@ -176,17 +184,6 @@ function assembleSpecialPages() {
  * Generates selectors based on server URLs and special page aliases.
  */
 function assembleLinkSelector() {
-	// Assemble RegExp for testing for mwArticlePath
-	const articlePathRuleset = id.config.articlePathRegExp
-		.replaceAll( '$1', id.local.mwArticlePath );
-	id.local.articlePathRegExp = new RegExp( articlePathRuleset );
-
-	// Assemble RegExp for testing special page titles in the links
-	const specialPagesJoined = id.local.specialPagesLinksAliasesPrefixedFlat.join( '|' );
-	const specialPagesLinksRuleset = id.config.specialPagesLinksRegExp
-		.replaceAll( '$1', specialPagesJoined );
-	id.local.specialPagesLinksRegExp = new RegExp( specialPagesLinksRuleset, 'i' );
-
 	// Start assemble links selector
 	const linkSelector = [];
 	id.config.linkSelector.forEach( item => {

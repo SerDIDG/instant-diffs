@@ -426,7 +426,6 @@ class Navigation {
 				hostname: this.article.get( 'hostname' ),
 				oldid: mw.config.get( 'wgDiffOldId' ),
 				diff: this.article.get( 'type' ) === 'diff' ? 'prev' : null,
-				direction: this.article.get( 'type' ) === 'revision' ? 'prev' : null,
 			} );
 			href = getHref( article );
 		}
