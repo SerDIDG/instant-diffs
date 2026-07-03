@@ -75,7 +75,7 @@
 		"minimist": "^1.2.8",
 		"mwn": "^3.0.3",
 		"prompts": "^2.4.2",
-		"types-mediawiki": "^2.0.0"
+		"types-mediawiki": "^2.1.0"
 	},
 	"allowScripts": {
 		"esbuild@0.28.1": true
