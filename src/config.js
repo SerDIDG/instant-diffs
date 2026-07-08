@@ -289,11 +289,11 @@ export const config = {
 		'[data-instantdiffs-line="all"] a',                             // Manually marked links in link line
 		'a[data-instantdiffs-link]',                                    // Manually marked link
 		'a.external[href^="$1"]',                                       // External links that lead to the same wiki
+		'a.extiw',                                                      // External links that lead to the interwiki
 		'a.mw-changeslist-date',                                        // Changelists (revision)
 		'a.mw-changeslist-diff',                                        // Changelists (diff)
 		'a.mw-changeslist-diff-cur',                                    // Changelists (diff to current)
 		'a.mw-changeslist-groupdiff',                                   // Changelists (diffs in a group)
-		'.mw-changeslist-line a.extiw',                                 // Changelists (foreign wiki link)
 		'.mw-fr-reviewlink a',                                          // Changelists (FlaggedRevs link)
 		'.mw-enhanced-rc-time a',                                       // Changelists (revision)
 		'.mw-history-histlinks a',                                      // Page history
