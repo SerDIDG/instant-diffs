@@ -560,6 +560,7 @@ class Navigation {
 		};
 
 		options = {
+			article,
 			name: 'back',
 			label: utils.msg( `goto-back-${ type }` ),
 			title: utils.msgHint( `goto-back-${ type }`, 'back', settings.get( 'enableHotkeys' ) ),

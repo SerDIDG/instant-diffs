@@ -15,7 +15,7 @@ import id from '../id';
 function process( page ) {
 	if ( !page || page.error ) return;
 
-	const $links = page.getContainer()?.find( '[id^="tw-revert"] a' );
+	const $links = page.getContainer().find( '[id^="tw-revert"] a' );
 	$links.each( ( i, node ) => {
 		node.addEventListener( 'click', () => page.close() );
 	} );

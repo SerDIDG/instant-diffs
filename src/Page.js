@@ -879,14 +879,26 @@ class Page {
 		return this.articleParams;
 	}
 
+	/**
+	 * Get the container element.
+	 * @returns {JQuery<HTMLElement>}
+	 */
 	getContainer() {
 		return this.nodes.$container;
 	}
 
+	/**
+	 * Get the content body element.
+	 * @returns {JQuery<HTMLElement>}
+	 */
 	getBody() {
 		return this.nodes.$body;
 	}
 
+	/**
+	 * Get the diff table element.
+	 * @returns {JQuery<HTMLElement>}
+	 */
 	getDiffTable() {
 		return this.nodes.$table;
 	}
