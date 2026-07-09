@@ -198,6 +198,7 @@ class LocalPage extends Page {
 		const $fromLinks = this.nodes.$data.find( '#mw-diff-otitle1 strong > a, #differences-prevlink' );
 		if ( $fromLinks.length > 0 ) {
 			const href = $fromLinks.prop( 'href' );
+			articleValues.deletedHref = href;
 
 			const oldid = Number( utils.getParamFromUrl( 'oldid', href ) );
 			if ( utils.isValidID( oldid ) ) {
@@ -216,6 +217,7 @@ class LocalPage extends Page {
 		const $toLinks = this.nodes.$data.find( '#mw-diff-ntitle1 strong > a, #differences-nextlink' );
 		if ( $toLinks.length > 0 ) {
 			const href = $toLinks.prop( 'href' );
+			articleValues.addedHref = href;
 
 			const oldid = Number( utils.getParamFromUrl( 'oldid', href ) );
 			if ( utils.isValidID( oldid ) ) {

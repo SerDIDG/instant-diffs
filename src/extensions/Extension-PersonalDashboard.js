@@ -8,7 +8,7 @@
 import id from '../id';
 
 /**
- * Process Personal Dashborad extension.
+ * Process Personal Dashboard extension.
  */
 function process() {
 	const $context = $( '#personal-dashboard-root' );

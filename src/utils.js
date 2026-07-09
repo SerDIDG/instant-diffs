@@ -1043,8 +1043,38 @@ export function addBaseToLinks( $content, url, hashOnly = false ) {
 	}
 }
 
+/**
+ * Add a base url to the anchor link hrefs.
+ * @param {JQuery} $content
+ * @param {string} url
+ */
+export function addBaseToAnchors( $content, url ) {
+	if ( !$content ) return;
+
+	let baseUrl;
+	try {
+		baseUrl = new URL( url, `https://${ location.hostname }` );
+		baseUrl.hash = '';
+	} catch {
+		return;
+	}
+
+	const handler = ( i, el ) => {
+		const href = el.getAttribute( 'href' );
+		el.setAttribute( 'href', `${ baseUrl }${ href }` );
+	};
+
+	$content
+		.filter( 'a[href^="#"]' )
+		.each( handler );
+
+	$content
+		.find( 'a[href^="#"]' )
+		.each( handler );
+}
+
 export function addTargetToLinks( $content ) {
-	if ( !settings.get( 'openInNewTab' ) ) return;
+	if ( !$content || !settings.get( 'openInNewTab' ) ) return;
 
 	const handler = ( i, el ) => {
 		// Add a target attribute only to links with non-empty href.

@@ -18,5 +18,6 @@ import './extensions/Extension-WikiLambda';
 
 // Gadgets
 import './extensions/Gadget-ConvenientDiscussions';
+import './extensions/Gadget-SmartDiff';
 import './extensions/Gadget-Twinkle';
 import './extensions/Gadget-WikEdDiff';
