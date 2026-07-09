@@ -308,7 +308,6 @@ export const config = {
 		'[data-afl-log-id] a',                                          // [[Special:AbuseLog]]
 		'a.ext-globalwatchlist-diff',                                   // [[Special:GlobalWatchlist]]
 		'.wikibase-statementview-references a',                         // Wikibase statements references
-		'a.edit-summary-time',                                          // [[Extension:Translate]]
 		'#mw-fr-revision-messages a',                                   // [[Extension:FlaggedRevs]] mobile warning
 		'#mw-fr-revision-details a',                                    // [[Extension:FlaggedRevs]] desktop popup
 		//'.mw-undelete-revlist a',                                     // [[Special:Undelete]]
@@ -376,8 +375,6 @@ export const config = {
 			'.mw-special-AbuseLog li[data-afl-log-id]',                 // [[Special:AbuseLog]]
 			'.wikibase-statementview-references',                       // Wikibase statement references
 			'.ext-globalwatchlist-site',                                // [[Special:GlobalWatchlist]]
-			'.tux-message-editor',                                      // [[Extension:Translate]]
-			'.mw-pt-translate-header',                                  // [[Extension:Translate]] Page header
 			//'.mw-undelete-revlist',                                   // [[Special:Undelete]]
 		],
 	},

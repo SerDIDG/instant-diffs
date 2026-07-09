@@ -528,6 +528,7 @@ class Page {
 				expiry: page.watchlistexpiry,
 				notificationtimestamp: page.notificationtimestamp,
 				new: page.new,
+				editable: page.actions?.edit,
 				label:
 					( isWbContentModel( page.contentmodel ) && entity.label?.[ 0 ] ) ||
 					( page.contentmodel === 'EntitySchema' && getEntitySchemaLabel( props[ 'displaytitle' ] ) ) ||

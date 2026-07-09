@@ -545,9 +545,7 @@ export function getURL( href ) {
 }
 
 export function getParamFromUrl( param, href ) {
-	const url = getURL( href );
-	if ( !url ) return;
-	return url.searchParams.get( param );
+	return mw.util.getParamValue( param, href );
 }
 
 export function getComponentFromUrl( param, href ) {

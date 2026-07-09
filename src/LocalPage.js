@@ -192,42 +192,47 @@ class LocalPage extends Page {
 
 	collectData() {
 		const articleValues = {};
-
-		const $fromLinks = this.nodes.$data.find( '#mw-diff-otitle1 strong > a, #differences-prevlink' );
-		const $toLinks = this.nodes.$data.find( '#mw-diff-ntitle1 strong > a, #differences-nextlink' );
+		const configValues = {};
 
 		// Get title, diff and oldid values
+		const $fromLinks = this.nodes.$data.find( '#mw-diff-otitle1 strong > a, #differences-prevlink' );
 		if ( $fromLinks.length > 0 ) {
-			const oldid = Number( utils.getParamFromUrl( 'oldid', $fromLinks.prop( 'href' ) ) );
+			const href = $fromLinks.prop( 'href' );
+
+			const oldid = Number( utils.getParamFromUrl( 'oldid', href ) );
 			if ( utils.isValidID( oldid ) ) {
-				this.configManager.set( 'wgDiffOldId', oldid );
+				articleValues.deletedId = oldid;
+				configValues.wgDiffOldId = oldid;
 			}
 
-			const title = utils.getParamFromUrl( 'title', $fromLinks.prop( 'href' ) ) || $fromLinks.prop( 'title' );
+			const title = utils.getTitleFromUrl( href ) || $fromLinks.prop( 'title' );
 			if ( !utils.isEmpty( title ) ) {
+				articleValues.deletedTitle = title;
 				articleValues.page1 = title;
 				articleValues.title = title;
 			}
 		}
-		if ( $toLinks.length > 0 ) {
-			const diff = Number( utils.getParamFromUrl( 'oldid', $toLinks.prop( 'href' ) ) );
-			if ( utils.isValidID( diff ) ) {
-				this.configManager.setValues( {
-					wgDiffNewId: diff,
-					wgRevisionId: diff,
-				} );
 
-				// Set actual revision id for the copy actions, etc.
-				articleValues.revid = diff;
+		const $toLinks = this.nodes.$data.find( '#mw-diff-ntitle1 strong > a, #differences-nextlink' );
+		if ( $toLinks.length > 0 ) {
+			const href = $toLinks.prop( 'href' );
+
+			const oldid = Number( utils.getParamFromUrl( 'oldid', href ) );
+			if ( utils.isValidID( oldid ) ) {
+				articleValues.addedId = oldid;
+				articleValues.revid = oldid;
+				configValues.wgDiffNewId = oldid;
+				configValues.wgRevisionId = oldid;
 
 				// Replace diff when its values = cur
 				if ( this.article.get( 'diff' ) === 'cur' ) {
-					articleValues.diff = diff;
+					articleValues.diff = oldid;
 				}
 			}
 
-			const title = utils.getParamFromUrl( 'title', $toLinks.prop( 'href' ) ) || $toLinks.prop( 'title' );
+			const title = utils.getTitleFromUrl( href ) || $toLinks.prop( 'title' );
 			if ( !utils.isEmpty( title ) ) {
+				articleValues.addedTitle = title;
 				articleValues.page2 = title;
 				articleValues.title = title;
 			}
@@ -239,7 +244,7 @@ class LocalPage extends Page {
 			delete articleValues.page2;
 		}
 
-		// Populate user name
+		// Populate username
 		const $userLink = this.nodes.$data.find( '#mw-diff-ntitle2 .mw-userlink' );
 		if ( $userLink.length > 0 ) {
 			articleValues.userhidden = $userLink.hasClass( 'history-deleted' );
@@ -263,13 +268,14 @@ class LocalPage extends Page {
 		// Get undo links to check if the user can edit the page
 		const $editLinks = this.nodes.$data.find( '.mw-diff-undo a, .mw-rollback-link a' );
 		if ( $editLinks.length > 0 ) {
-			this.configManager.set( 'wgIsProbablyEditable', true );
+			articleValues.editable = true;
+			configValues.wgIsProbablyEditable = true;
+			configValues.wgRelevantPageIsProbablyEditable = true;
 		}
 
-		// Set article values
+		// Set article and config values
 		this.article.set( articleValues );
-
-		// Save the title values to the mw.config
+		this.configManager.setValues( configValues );
 		this.configManager.setTitle( this.article.getMW( 'title' ) );
 
 		// Save additional user options dependent of a page type.

@@ -11,6 +11,7 @@ import './extensions/Skin-Citizen';
 
 // Extensions
 import './extensions/Extension-IPInfo';
+import './extensions/Extension-PersonalDashboard';
 import './extensions/Extension-Translate';
 import './extensions/Extension-WikibaseMediaInfo';
 import './extensions/Extension-WikiLambda';

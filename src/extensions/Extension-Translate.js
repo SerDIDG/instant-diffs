@@ -16,6 +16,10 @@ import * as utils from '../utils';
 function process( helpers, $context ) {
 	if ( !$context || !utils.isAllowed() ) return;
 
+	$context
+		.find( 'a.edit-summary-time' )
+		.attr( 'data-instantdiffs-link', 'basic' );
+
 	mw.hook( `${ id.config.prefix }.process` ).fire( $context );
 }
 

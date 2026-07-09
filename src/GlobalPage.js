@@ -118,6 +118,8 @@ class GlobalPage extends Page {
 			const general = data.general;
 			if ( !utils.isEmptyObject( general ) ) {
 				this.configManager.setValues( {
+					wgWikiID: general.wikiid,
+					wgDBname: general.wikiid,
 					wgServer: general.server,
 					wgServerName: general.servername,
 					wgMobileServer: general.mobileserver,
@@ -227,6 +229,10 @@ class GlobalPage extends Page {
 
 		// Set article values
 		const articleValues = {
+			deletedId: this.data.fromrevid,
+			deleteTitle: this.data.fromtitle,
+			addedId: this.data.torevid,
+			addedTitle: this.data.totitle,
 			previd: this.data.prev,
 			nextid: this.data.next,
 			curid: this.configManager.get( 'wgArticleId' ),

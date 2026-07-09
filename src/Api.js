@@ -255,7 +255,7 @@ class Api {
 	 * @return {Promise<*|{}>}
 	 */
 	static async getSiteInfo(
-		fields = [ 'general', 'skins' ],
+		fields = [ 'general', 'skins', 'crosssiteajaxdomains' ],
 		articleOrHostname,
 		requestManager,
 	) {
