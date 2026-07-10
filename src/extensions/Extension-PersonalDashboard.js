@@ -6,13 +6,14 @@
  */
 
 import id from '../id';
+import * as utils from '../utils';
 
 /**
  * Process Personal Dashboard extension.
  */
 function process() {
 	const $context = $( '#personal-dashboard-root' );
-	if ( !$context || $context.length === 0 ) return;
+	if ( $context.length === 0 || !utils.isAllowed() ) return;
 
 	const options = JSON.stringify( { setClasses: 'clear' } );
 	$context

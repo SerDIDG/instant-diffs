@@ -61,6 +61,14 @@ export const schema = {
 					helpMsg: 'settings-show-page-link-help',
 				},
 			},
+			markWatchedLink: {
+				type: 'checkbox',
+				enabled: true,
+				default: true,
+				config: {
+					labelMsg: 'settings-mark-watched-link',
+				},
+			},
 			highlightLine: {
 				type: 'checkbox',
 				enabled: true,

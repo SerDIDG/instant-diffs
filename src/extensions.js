@@ -1,7 +1,6 @@
 import './styles/extensions.less';
 
 // Page adjustments
-import './extensions/Page-ChangeLists';
 import './extensions/Page-Contributions';
 import './extensions/Page-EditTags';
 import './extensions/Page-History';
@@ -10,6 +9,7 @@ import './extensions/Page-History';
 import './extensions/Skin-Citizen';
 
 // Extensions
+import './extensions/Extension-GlobalWatchlist';
 import './extensions/Extension-IPInfo';
 import './extensions/Extension-PersonalDashboard';
 import './extensions/Extension-Translate';

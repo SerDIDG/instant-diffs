@@ -408,6 +408,10 @@ class GlobalPage extends Page {
 		if ( data?.error ) {
 			errorParams.code = data.error.code;
 			errorParams.message = data.error.info;
+
+		}
+		if ( data?.textStatus === 'abort' ) {
+			errorParams.silent = true;
 		}
 
 		const type = params.oldid ? 'revid' : 'curid';

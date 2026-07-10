@@ -81,6 +81,7 @@
 	"settings-show-link-help": "Help text for the checkbox labeled with the {{msg-wm|Instant-diffs-settings-show-link}} message in the Settings dialog.",
 	"settings-show-page-link": "Label of the checkbox in the Settings dialog.\n\n\"Convenient Discussion\" should be translated according to the name in {{msg-wm|Convenient-discussions-script-name}}.",
 	"settings-show-page-link-help": "Help text for the checkbox labeled with the {{msg-wm|Instant-diffs-settings-show-page-link}} message in the Settings dialog.",
+	"settings-mark-watched-link": "Label of the checkbox in the Settings dialog.",
 	"settings-highlight-line": "Label of the checkbox in the Settings dialog.",
 	"settings-mark-watched-line": "Label of the checkbox in the Settings dialog.",
 	"settings-fieldset-dialog": "Title for the field group that combines dialog-related settings.\n\nDisplayed in the Settings dialog.",

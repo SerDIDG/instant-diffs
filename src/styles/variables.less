@@ -12,13 +12,16 @@
 	--instantDiffs-color-link: var(--color-progressive, #36c);
 	--instantDiffs-color-link--hover: var(--color-progressive--hover, #3056a9);
 	--instantDiffs-color-link--active: var(--color-progressive--active, #233566);
+	--instantDiffs-color-link--seen: var(--color-visited, #6a60b0);
 	--instantDiffs-color-link-error: var(--color-error, #bf3c2c);
 	--instantDiffs-color-link-error--hover: var(--color-error--hover, #9f3526);
 	--instantDiffs-color-link-error--active: var(--color-error--active, #612419);
+	--instantDiffs-color-panel: var(--color-placeholder, #72777d);
 
 	--instantDiffs-background-link: var(--background-color-progressive-subtle, #f1f4fd);
 	--instantDiffs-background-link--hover: var(--background-color-interactive-subtle--hover, #eaecf0);
 	--instantDiffs-background-link--active: var(--background-color-interactive-subtle--active, #dadde3);
+	--instantDiffs-background-link--seen: var(--background-color-option-purple, #f0ecf6);
 	--instantDiffs-background-link-error: var(--background-color-error-subtle, #ffe9e5);
 	--instantDiffs-background-link-error--hover: var(--background-color-error-subtle--hover, #ffdad3);
 	--instantDiffs-background-link-error--active: var(--background-color-error-subtle--active, #ffc8bd);
@@ -39,4 +42,8 @@
 	--instantDiffs-view-scroll-padding-top: 0;
 
 	--instantDiffs-button-radius: var(--border-radius-base, @border-radius-base);
+
+	&.skin-theme-clientpref-night {
+		--instantDiffs-background-link--seen: var(--background-color-option-purple, #353262);
+	}
 }

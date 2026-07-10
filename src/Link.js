@@ -1128,6 +1128,12 @@ class Link {
 	 * @private
 	 */
 	onDialogClose() {
+		// Mark link as seen
+		if ( settings.get( 'markWatchedLink' ) ) {
+			this.node.classList.add( 'seen' );
+		}
+
+		// Mark list line as seen
 		if ( this.mw.hasLine ) {
 			if ( settings.get( 'highlightLine' ) ) {
 				this.mw.line.classList.remove( 'instantDiffs-line--highlight' );

@@ -47,6 +47,11 @@
 		color: var(--instantDiffs-color-link);
 		text-decoration: none;
 
+		&:is(.seen) {
+			background: var(--instantDiffs-background-link--seen);
+			color: var(--instantDiffs-color-link--seen);
+		}
+
 		&:is(:hover, :focus-visible) {
 			background: var(--instantDiffs-background-link--hover);
 			color: var(--instantDiffs-color-link--hover);
@@ -100,7 +105,7 @@
 	margin-inline: var(--instantDiffs-gap);
 	font-weight: normal;
 	font-style: normal;
-	color: #72777d;
+	color: var(--instantDiffs-color-panel);
 	user-select: none;
 
 	&:is(:empty) {
@@ -128,6 +133,10 @@
 		&-info {
 			cursor: help;
 		}
+	}
+
+	a.seen + & {
+		color: var(--instantDiffs-color-link--seen)
 	}
 
 	// /* Edge-case when the panel is inside a codex dialog footer */
