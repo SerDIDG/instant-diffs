@@ -752,7 +752,7 @@ class Page {
 		const { modulestyles = [], modulescripts = [], modules = [] } = data;
 
 		const dependencies = [
-			...getDependencies( this.article ),
+			...getDependencies( this.article, this.nodes.$body ),
 			...modulestyles,
 			...modulescripts,
 			...modules,

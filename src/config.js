@@ -101,6 +101,12 @@ export const config = {
 				],
 			},
 		},
+		selectors: [
+			{                                                           // [[Extension:UserProfileV2]]
+				selector: [ '.profile-masthead' ],
+				dependencies: [ 'ext.userProfileV2.styles' ],
+			},
+		],
 		messages: {
 			6: [                                                        // File:
 				'wikibasemediainfo-filepage-fileinfo-heading',
@@ -260,8 +266,8 @@ export const config = {
 		monobook: [ 'monobook-body' ],
 		minerva: [ 'content' ],
 		timeless: [ 'mw-body' ],
-		fandomdesktop: ['page-content'],
-		fandommobile: ['page-content'],
+		fandomdesktop: [ 'page-content' ],
+		fandommobile: [ 'page-content' ],
 	},
 
 	// Content selectors
@@ -380,7 +386,7 @@ export const config = {
 	},
 	mwLinkExclude: {
 		hasClass: [
-			'mw-contributions-title'                                    // [[Special:GlobalWatchlist]]
+			'mw-contributions-title',                                   // [[Special:GlobalWatchlist]]
 		],
 	},
 	mwLinkDiffOnly: {},

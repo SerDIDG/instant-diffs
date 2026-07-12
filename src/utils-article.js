@@ -45,6 +45,7 @@ export function getRevID( article ) {
 export function getNamespaceDependencies( article, data ) {
 	let dependencies = [];
 	if ( utils.isEmpty( data ) ) return dependencies;
+	if ( utils.isArray( data ) ) return data;
 
 	// Set common dependencies
 	if ( utils.isArray( data[ '*' ] ) ) {
@@ -63,9 +64,10 @@ export function getNamespaceDependencies( article, data ) {
 /**
  * Gets the article dependencies.
  * @param {import('./Article').default} article
+ * @param {JQuery<HTMLElement>} [$container]
  * @return {Array<string>}
  */
-export function getDependencies( article ) {
+export function getDependencies( article, $container ) {
 	let dependencies = [];
 
 	// Page common dependencies
@@ -92,6 +94,25 @@ export function getDependencies( article ) {
 		);
 	}
 
+	// Selector-specific dependencies
+	if ( $container instanceof jQuery ) {
+		dependencies = dependencies.concat(
+			getSelectorDependencies( article, $container ),
+		);
+	}
+
+	return dependencies;
+}
+
+function getSelectorDependencies( article, $container ) {
+	let dependencies = [];
+	id.config.dependencies.selectors.forEach( item => {
+		const $nodes = $container.find( item.selector.join( ',' ) );
+		if ( $nodes.length === 0 ) return;
+		dependencies = dependencies.concat(
+			getNamespaceDependencies( article, item.dependencies ),
+		);
+	} );
 	return dependencies;
 }
 
