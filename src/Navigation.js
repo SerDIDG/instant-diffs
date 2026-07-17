@@ -802,6 +802,7 @@ class Navigation {
 			relative: false,
 			hash: settings.get( 'linksHash' ),
 			minify: settings.get( 'linksFormat' ) === 'minify',
+			special: settings.get( 'linksFormat' ) === 'special',
 		};
 		const href = getHref( this.article, {}, hrefOptions );
 

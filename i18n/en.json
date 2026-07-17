@@ -114,6 +114,7 @@
     "settings-links-hash-help": "The section name will also be appended as an anchor to the link URL when using copy actions with the selected non-minified format.",
     "settings-links-format": "Link format for the copy action:",
     "settings-links-format-full": "Full url with a page title",
+    "settings-links-format-special": "Special page url",
     "settings-links-format-minify": "Minified url",
     "settings-wikilinks-format": "Wikilink format for the copy action:",
     "settings-wikilinks-format-link": "Simple link in brackets",

@@ -264,6 +264,7 @@ export async function getWikilink( article ) {
 		relative: false,
 		hash: settings.get( 'linksHash' ),
 		minify: settings.get( 'linksFormat' ) === 'minify',
+		special: settings.get( 'linksFormat' ) === 'special',
 		wikilink: true,
 		wikilinkPreset: settings.get( 'wikilinksFormat' ),
 	};
@@ -388,6 +389,8 @@ function processHref( article, articleParams, options ) {
 		hash: false,
 		minify: false,
 		interwiki: null,
+		special: false,
+		specialTitle: null,
 		wikilink: false,
 		wikilinkPreset: null,
 		...options,
@@ -403,7 +406,13 @@ function processHref( article, articleParams, options ) {
 
 	// Get url with the current hostname
 	let url;
-	if ( !utils.isEmpty( article.get( 'title' ) ) ) {
+	if ( options.special ) {
+		if ( !options.specialTitle ) {
+			options.preset = id.config.linkPresets.special;
+			options.specialTitle = getSpecialTitle( article, articleParams, options );
+		}
+		url = new URL( mw.util.getUrl( options.specialTitle ), mwEndPointUrl.origin );
+	} else if ( !utils.isEmpty( article.get( 'title' ) ) ) {
 		url = new URL( mw.util.getUrl( article.get( 'title' ), articleParams ), mwEndPointUrl.origin );
 	} else {
 		url = new URL( mwEndPointUrl );
@@ -428,27 +437,25 @@ function processHref( article, articleParams, options ) {
 
 	// Get relative or absolute href
 	options.href = decodeURIComponent( options.relative ? ( url.pathname + url.search + url.hash ) : url.toString() );
-	options.hash = decodeURIComponent( url.hash );
+	options.hrefHash = decodeURIComponent( url.hash );
 
 	// Get wikilink
 	if ( options.wikilink ) {
-		return processWikilink( article, articleParams, options );
+		options.preset = id.config.wikilinkPresets[ options.wikilinkPreset ] || id.config.wikilinkPresets.special;
+		return getSpecialTitle( article, articleParams, options );
 	}
 
 	return options.href;
 }
 
-function processWikilink( article, articleParams, options ) {
+function getSpecialTitle( article, articleParams, options ) {
 	articleParams = { ...articleParams };
 	options = {
-		href: null,
-		hash: null,
 		type: 'diff',
-		minify: false,
-		relative: true,
 		interwiki: null,
-		wikilink: true,
-		wikilinkPreset: 'special',
+		href: null,
+		hrefHash: null,
+		preset: {},
 		...options,
 	};
 
@@ -465,15 +472,12 @@ function processWikilink( article, articleParams, options ) {
 	}
 
 	// Add hash
-	if ( !utils.isEmpty( options.hash ) ) {
-		attr = `${ attr }${ options.hash }`;
+	if ( !utils.isEmpty( options.hrefHash ) ) {
+		attr = `${ attr }${ options.hrefHash }`;
 	}
 
-	// Get preset
-	const preset = id.config.wikilinkPresets[ options.wikilinkPreset ] || id.config.wikilinkPresets.special;
-
 	// Format wikilink
-	const wikilink = preset[ options.type ];
+	const wikilink = options.preset[ options.type ];
 	const prefix = options.interwiki?.prefix;
 	return wikilink
 		.replace( '$1', attr )

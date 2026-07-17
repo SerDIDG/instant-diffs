@@ -106,6 +106,7 @@
 	"settings-links-hash-help": "Назва розділу також додаватиметься як якір до URL-адреси посилання при копіюванні у повному форматі.",
 	"settings-links-format": "Формат посилань для копіювання:",
 	"settings-links-format-full": "Повне посилання з назвою сторінки",
+	"settings-links-format-special": "Посилання на спеціальну сторінку",
 	"settings-links-format-minify": "Скорочене посилання",
 	"settings-wikilinks-format": "Формат вікі-посилання для копіювання:",
 	"settings-wikilinks-format-link": "Просте посилання в дужках",

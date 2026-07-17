@@ -211,7 +211,15 @@ export const config = {
 		mobileDown: '(max-width: 639px)',
 	},
 
-	// Wikilink format presets
+	// Link format presets
+	linkPresets: {
+		special: {
+			page: 'Special:Redirect/page/$1',
+			diff: 'Special:Diff/$1',
+			revision: 'Special:PermanentLink/$1',
+		},
+	},
+
 	wikilinkPresets: {
 		link: {
 			page: '[$href $msg]',

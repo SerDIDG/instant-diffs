@@ -218,6 +218,9 @@ export const schema = {
 					full: {
 						labelMsg: 'settings-links-format-full',
 					},
+					special: {
+						labelMsg: 'settings-links-format-special',
+					},
 					minify: {
 						labelMsg: 'settings-links-format-minify',
 					},
@@ -287,6 +290,7 @@ function onLinksFormatSelect() {
 		relative: false,
 		hash: linksHash,
 		minify: linkFormat === 'minify',
+		special: linkFormat === 'special',
 	};
 	const help = getLinksFormatExample( options );
 	this.setFieldHelp( 'linksFormat', help );
@@ -308,6 +312,7 @@ function onWikilinksFormatSelect() {
 		relative: false,
 		hash: linksHash,
 		minify: linkFormat === 'minify',
+		special: linkFormat === 'special',
 		wikilink: true,
 		wikilinkPreset: wikilinkFormat,
 	};
@@ -323,15 +328,9 @@ function onWikilinksFormatSelect() {
  */
 function getLinksFormatExample( options ) {
 	const title = utils.msg( 'copy-wikilink-example-title' );
-	const diff = getHref( {
-		title, diff: '12345', type: 'diff', section: 'Section',
-	}, {}, options );
-	const revision = getHref( {
-		title, oldid: '12345', type: 'revision', section: 'Section',
-	}, {}, options );
-	const page = getHref( {
-		title, curid: '12345', type: 'revision', section: 'Section',
-	}, {}, options );
+	const diff = getHref( { title, diff: '12345', section: 'Section' }, {}, options );
+	const revision = getHref( { title, oldid: '12345', section: 'Section' }, {}, options );
+	const page = getHref( { title, curid: '12345', section: 'Section' }, {}, options );
 
 	return h( 'ul.instantDiffs-list--settings',
 		h( 'li', h( 'i', diff ) ),
@@ -341,11 +340,11 @@ function getLinksFormatExample( options ) {
 }
 
 /**
- * Get navigation pinnable actions as options object.
+ * Get navigation pinnable actions as an object of options.
  * Includes both currently available actions and previously pinned actions.
  * @returns {Record<string, Record>} Map of action names to their options
  * @example
- * // Returns: { prev: { label: 'Previous' }, next: { label: 'Next' } }
+ * // Returns: { 'prev': { label: 'Previous' }, 'next': { label: 'Next' } }
  */
 function getPinnedActionsOptions() {
 	const actions = view.getPage()?.getNavigation()?.getPinnableActions();
