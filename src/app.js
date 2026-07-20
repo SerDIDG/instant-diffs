@@ -54,6 +54,8 @@ function prepare( require ) {
 	id.local.mwCanonicalSpecialPageName = mw.config.get( 'wgCanonicalSpecialPageName' );
 	id.local.mwTitle = new mw.Title( /** @type {string} */ mw.config.get( 'wgRelevantPageName' ) );
 	id.local.mwTitleText = id.local.mwTitle.getPrefixedText();
+	id.local.mwServer = mw.config.get( 'wgServer' );
+	id.local.mwServerName = mw.config.get( 'wgServerName' );
 
 	// Predict a mobile server name and add it to the mw.config
 	const mobileServer = utils.getMobileServer();
@@ -61,12 +63,12 @@ function prepare( require ) {
 	mw.config.set( 'wgMobileServerName', utils.getComponentFromUrl( 'hostname', mobileServer ) );
 
 	// Get hostnames (including predicted mobile variants) used to assemble the link selector
-	const mwServers = [ mw.config.get( 'wgServer' ), mw.config.get( 'wgMobileServer' ) ]
+	const mwServers = [ id.local.mwServer, mw.config.get( 'wgMobileServer' ) ]
 		.filter( value => !utils.isEmpty( value ) )
 		.map( utils.getHref );
 	id.local.mwServers = utils.arrayUnique( mwServers );
 
-	const mwServerNames = [ mw.config.get( 'wgServerName' ), mw.config.get( 'wgMobileServerName' ) ]
+	const mwServerNames = [ id.local.mwServerName, mw.config.get( 'wgMobileServerName' ) ]
 		.filter( value => !utils.isEmpty( value ) );
 	id.local.mwServerNames = utils.arrayUnique( mwServerNames );
 

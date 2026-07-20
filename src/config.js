@@ -505,9 +505,19 @@ export const local = {
 	mwTitleText: null,
 
 	/**
+	 * @type {string|null}
+	 */
+	mwServer: null,
+
+	/**
 	 * @type {Array<string>}
 	 */
 	mwServers: [],
+
+	/**
+	 * @type {string|null}
+	 */
+	mwServerName: null,
 
 	/**
 	 * @type {Array<string>}

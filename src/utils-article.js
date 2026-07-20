@@ -18,7 +18,7 @@ export function getHostname( articleOrHostname ) {
 	if ( !utils.isEmpty( hostname ) ) {
 		return hostname;
 	}
-	return mw.config.get( 'wgServerName' );
+	return id.local.mwServerName;
 }
 
 export function getRevID( article ) {
