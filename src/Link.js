@@ -291,8 +291,11 @@ class Link {
 			return;
 		}
 
+		// Exclude links that do not match site ajax domains config
+		if ( !utilsLink.isAllowedDomain( this.url.hostname ) ) return;
+
 		// Exclude links with specific action parameters
-		if ( id.config.exclude.linkActions.includes( this.url.searchParams.get( 'action' ) ) ) return;
+		if ( !utilsLink.isAllowedAction( this.url.searchParams.get( 'action' ) ) ) return;
 
 		// Exclude links with specific selectors
 		if ( utilsLink.isMWLink( this.node, id.config.mwLinkExclude ) ) return;

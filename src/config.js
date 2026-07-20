@@ -302,7 +302,7 @@ export const config = {
 	linkSelector: [                                                     // $1 - server
 		'[data-instantdiffs-line="all"] a',                             // Manually marked links in link line
 		'a[data-instantdiffs-link]',                                    // Manually marked link
-		'a.external[href^="$1"]',                                       // External links that lead to the same wiki
+		'a.external',                                                   // External links
 		'a.extiw',                                                      // External links that lead to the interwiki
 		'a.mw-changeslist-date',                                        // Changelists (revision)
 		'a.mw-changeslist-diff',                                        // Changelists (diff)

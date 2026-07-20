@@ -1,8 +1,8 @@
 import * as utils from './utils';
 import * as utilsArticle from './utils-article';
 
+import Site from './Site';
 import settings from './settings';
-import Api from './Api';
 
 /**
  * Class representing an Article object.
@@ -286,7 +286,7 @@ class Article {
 	 */
 	processHostname() {
 		// Set server names
-		const { general } = Api.siteInfoAliases[ this.values.hostname ] || {};
+		const { general } = Site.aliases[ this.values.hostname ] || {};
 		if ( !utils.isEmptyObject( general ) ) {
 			this.values.hostname = utils.isMF() && !utils.isEmpty( general.mobileservername ) ? general.mobileservername : general.servername;
 			this.mw.serverName = general.servername;

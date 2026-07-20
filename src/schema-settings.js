@@ -3,7 +3,7 @@ import { getHref } from './utils-article';
 
 import view from './view';
 import settings from './settings';
-import Api from './Api';
+import Site from './Site';
 
 const { h } = utils;
 
@@ -20,7 +20,7 @@ export const schema = {
 			enableMobile: {
 				type: 'checkbox',
 				enabled: true,
-				enabledCondition: async () => Api.siteInfoHasSkin( 'minerva' ),
+				enabledCondition: async () => Site.hasSkin( 'minerva' ),
 				default: true,
 				config: {
 					labelMsg: 'settings-enable-mobile',

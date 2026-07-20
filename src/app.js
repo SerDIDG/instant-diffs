@@ -7,6 +7,7 @@ import { getQueryDefaults, getSchemaDefaults, getSchemaSettings } from './utils-
 import './styles/app.less';
 
 import Api from './Api';
+import Site from './Site';
 import Article from './Article';
 import Button from './Button';
 import Link from './Link';
@@ -100,7 +101,7 @@ function prepare( require ) {
  * @return {Promise<void>}
  */
 async function getSiteInfo() {
-	const { general } = await Api.getSiteInfo() || {};
+	const { general } = await Site.getInfo() || {};
 	if ( !utils.isEmptyObject( general ) ) {
 		// Add a mobile server name to the mw.config
 		// ToDo: mobile server name will be deprecated soon (T214998)
@@ -275,6 +276,7 @@ function app() {
 	id.settings = settings;
 	id.modules = {
 		Api,
+		Site,
 		Article,
 		Link,
 		Button,

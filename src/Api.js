@@ -1,9 +1,9 @@
 import id from './id';
 import * as utils from './utils';
 import * as utilsApi from './utils-api';
+import { getHostname } from './utils-article';
 
 import settings from './settings';
-import Article from './Article';
 
 class Api {
 	/**
@@ -27,7 +27,7 @@ class Api {
 	 * @returns {mw.Api} mw.Api or mw.ForeignApi instance
 	 */
 	static getApi( articleOrHostname ) {
-		const hostname = articleOrHostname instanceof Article ? articleOrHostname.get( 'hostname' ) : articleOrHostname;
+		const hostname = getHostname( articleOrHostname );
 
 		if ( !utils.isForeign( hostname ) ) {
 			if ( !this.api ) {
@@ -235,125 +235,6 @@ class Api {
 		}
 	}
 
-	/******* SITE INFO *******/
-
-	/**
-	 * @type {Object<string, Object>}
-	 */
-	static siteInfo = {};
-
-	/**
-	 * @type {Object<string, Object>}
-	 */
-	static siteInfoAliases = {};
-
-	/**
-	 * Gets the project info.
-	 * @param {Array} [fields=['general', 'skins']]
-	 * @param {import('./Article').default|string} [articleOrHostname]
-	 * @param {import('./RequestManager').default} [requestManager]
-	 * @return {Promise<*|{}>}
-	 */
-	static async getSiteInfo(
-		fields = [ 'general', 'skins', 'crosssiteajaxdomains' ],
-		articleOrHostname,
-		requestManager,
-	) {
-		let hostname = articleOrHostname instanceof Article ? articleOrHostname.get( 'hostname' ) : articleOrHostname;
-		if ( utils.isEmpty( hostname ) ) {
-			hostname = mw.config.get( 'wgServerName' );
-		}
-
-		// Try to get cached data from the local storage
-		if ( !utils.isNew() && utils.isEmptyObject( this.siteInfo ) ) {
-			this.siteInfo = mw.storage.getObject( `${ id.config.prefix }-siteInfo` ) || {};
-			this.processSiteInfo();
-		}
-
-		// Ty to get data from the static property
-		if ( this.checkSiteInfo( hostname, fields ) ) {
-			return this.siteInfoAliases[ hostname ] || this.siteInfo[ hostname ];
-		}
-
-		// Request data via API
-		const params = {
-			action: 'query',
-			meta: 'siteinfo',
-			siprop: fields,
-			format: 'json',
-			formatversion: 2,
-			uselang: id.local.userLanguage,
-		};
-		const api = requestManager ? requestManager : this;
-
-		try {
-			const { query } = await api.get( params, hostname );
-
-			if ( !this.siteInfo[ hostname ] ) {
-				this.siteInfo[ hostname ] = {};
-			}
-			for ( const [ key, value ] of Object.entries( query ) ) {
-				this.siteInfo[ hostname ][ key ] = value;
-			}
-
-			// Cache data with expiry
-			mw.storage.setObject( `${ id.config.prefix }-siteInfo`, this.siteInfo, settings.get( 'storageExpiry' ) );
-
-			this.processSiteInfoAliases( this.siteInfo[ hostname ] );
-			return this.siteInfo[ hostname ];
-		} catch ( error ) {
-			this.notifyError( error );
-		}
-	}
-
-	/**
-	 * @private
-	 */
-	static processSiteInfo() {
-		if ( utils.isEmptyObject( this.siteInfo ) ) return;
-
-		for ( const site of Object.values( this.siteInfo ) ) {
-			this.processSiteInfoAliases( site );
-		}
-	}
-
-	/**
-	 * @private
-	 */
-	static processSiteInfoAliases( site ) {
-		if ( utils.isEmptyObject( site?.general ) ) return;
-
-		this.siteInfoAliases[ site.general.servername ] = site;
-		if ( !utils.isEmpty( site.general.mobileserver ) ) {
-			site.general.mobileservername = utils.getComponentFromUrl( 'hostname', site.general.mobileserver );
-			this.siteInfoAliases[ site.general.mobileservername ] = site;
-		}
-	}
-
-	/**
-	 * @private
-	 */
-	static checkSiteInfo( hostname, fields = [] ) {
-		if ( this.siteInfoAliases[ hostname ] ) {
-			return utils.isEmpty( fields ) || fields.every( field => this.siteInfoAliases[ hostname ][ field ] );
-		}
-		if ( this.siteInfo[ hostname ] ) {
-			return utils.isEmpty( fields ) || fields.every( field => this.siteInfo[ hostname ][ field ] );
-		}
-		return false;
-	}
-
-	/**
-	 * Check if the site has a specified registered skin.
-	 * @param {string} name - Skin code name
-	 * @param {import('./Article').default|string} [articleOrHostname] - Article instance or hostname
-	 * @returns {Promise<*>}
-	 */
-	static async siteInfoHasSkin( name, articleOrHostname ) {
-		const { skins } = await Api.getSiteInfo( [ 'skins' ], articleOrHostname ) || {};
-		return skins?.some( skin => skin.code === name );
-	}
-
 	/******* SPECIAL PAGES *******/
 
 	/**
@@ -417,47 +298,6 @@ class Api {
 			mw.storage.setObject( `${ id.config.prefix }-specialPagesLocal`, this.specialPagesLocal, settings.get( 'storageExpiry' ) );
 
 			return this.specialPagesLocal;
-		} catch ( error ) {
-			this.notifyError( error );
-		}
-	}
-
-	/******* INTERWIKI MAP *******/
-
-	/**
-	 * @type {Array}
-	 */
-	static interwikiMap = [];
-
-	static async getInterwikiMap( articleOrHostname ) {
-		// Try to get cached data from the local storage
-		if ( !utils.isNew() && utils.isEmpty( this.interwikiMap ) ) {
-			this.interwikiMap = mw.storage.getObject( `${ id.config.prefix }-interwikiMap` ) || [];
-		}
-
-		// Ty to get data from the static property
-		if ( !utils.isEmpty( this.interwikiMap ) ) {
-			return this.interwikiMap;
-		}
-
-		// Request data via API
-		const params = {
-			action: 'query',
-			meta: 'siteinfo',
-			siprop: 'interwikimap',
-			format: 'json',
-			formatversion: 2,
-			uselang: id.local.userLanguage,
-		};
-
-		try {
-			const { query } = await this.get( params, articleOrHostname );
-
-			// Cache data with expiry
-			this.interwikiMap = query.interwikimap;
-			mw.storage.setObject( `${ id.config.prefix }-interwikiMap`, this.interwikiMap, settings.get( 'storageExpiry' ) );
-
-			return this.interwikiMap;
 		} catch ( error ) {
 			this.notifyError( error );
 		}

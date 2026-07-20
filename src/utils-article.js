@@ -2,11 +2,24 @@ import id from './id';
 import * as utils from './utils';
 import { isWbContentModel } from './utils-api';
 
-import Api from './Api';
+import Site from './Site';
 import Article from './Article';
 import settings from './settings';
 
 /******* VALUES *******/
+
+/**
+ * Gets the article hostname.
+ * @param {import('./Article').default|string} [articleOrHostname] - Article instance or hostname
+ * @returns {string}
+ */
+export function getHostname( articleOrHostname ) {
+	const hostname = articleOrHostname instanceof Article ? articleOrHostname.get( 'hostname' ) : articleOrHostname;
+	if ( !utils.isEmpty( hostname ) ) {
+		return hostname;
+	}
+	return mw.config.get( 'wgServerName' );
+}
 
 export function getRevID( article ) {
 	const values = article.getValues();
@@ -271,7 +284,7 @@ export async function getWikilink( article ) {
 
 	// Get project prefix for the foreign link
 	if ( article.isForeign ) {
-		const interwikiMap = await Api.getInterwikiMap();
+		const interwikiMap = await Site.getInterwikiMap();
 		if ( interwikiMap ) {
 			hrefOptions.interwiki = interwikiMap
 				.filter( entry => entry.url.includes( article.getMW( 'serverName' ) ) )

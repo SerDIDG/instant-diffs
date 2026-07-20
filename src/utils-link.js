@@ -1,6 +1,8 @@
 import id from './id';
 import * as utils from './utils';
 
+import Site from './Site';
+
 export function getSplitSpecialUrl( title ) {
 	const titleParts = title.split( '/' );
 	const values = {};
@@ -103,4 +105,50 @@ export function getMWLineTitle( container ) {
 	if ( !node ) return;
 
 	return !utils.isEmpty( node.title ) ? node.title : node.innerText;
+}
+
+export function isAllowedAction( action ) {
+	return !id.config.exclude.linkActions.includes( action );
+}
+
+/**
+ * Memoizes hostname → domain-pattern-match results for the current page load.
+ * @type {Map<string, boolean>}
+ */
+const domainMatchCache = new Map();
+
+/**
+ * Tests whether a hostname is allowed by the site's domain patterns config.
+ * Checks the current site's own server names first, since most links
+ * on a page point back to the same site.
+ * @param {string} hostname
+ * @returns {boolean}
+ */
+export function isAllowedDomain( hostname ) {
+	const h = hostname.toLowerCase();
+	if ( domainMatchCache.has( h ) ) return domainMatchCache.get( h );
+
+	const isLocal = id.local.mwServerNames.some( ( name ) => name.toLowerCase() === h );
+	if ( isLocal ) {
+		domainMatchCache.set( h, true );
+		return true;
+	}
+
+	const config = Site.getCORSConfig();
+	if ( !config ) return false;
+
+	let result = config.exact.has( h );
+	if ( !result ) {
+		let idx = h.indexOf( '.' );
+		while ( idx !== -1 && !result ) {
+			if ( config.wildcardBases.has( h.slice( idx + 1 ) ) ) result = true;
+			idx = h.indexOf( '.', idx + 1 );
+		}
+	}
+	if ( !result ) {
+		result = config.globRegexes.some( ( re ) => re.test( h ) );
+	}
+
+	domainMatchCache.set( h, result );
+	return result;
 }

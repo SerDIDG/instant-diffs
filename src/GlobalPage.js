@@ -2,10 +2,10 @@ import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
 import * as utilsArticle from './utils-article';
-import { getNamespaceConfig } from './utils-api';
 import { getDate } from './utils-user';
 
 import Api from './Api';
+import Site from './Site';
 import Page from './Page';
 import view from './view';
 
@@ -113,7 +113,7 @@ class GlobalPage extends Page {
 	 */
 	async requestSiteInfo() {
 		const fields = [ 'general', 'namespaces', 'namespacealiases' ];
-		const data = await Api.getSiteInfo( fields, this.article, this.requestManager ) || {};
+		const data = await Site.getInfo( fields, this.article, this.requestManager ) || {};
 		if ( !utils.isEmptyObject( data ) ) {
 			const general = data.general;
 			if ( !utils.isEmptyObject( general ) ) {
@@ -131,7 +131,7 @@ class GlobalPage extends Page {
 			}
 
 			// Process a namespace list into the mw.config format
-			const namespaceConfig = getNamespaceConfig( this.article.get( 'hostname' ) );
+			const namespaceConfig = Site.getNamespaceConfig( this.article );
 			this.configManager.setValues( namespaceConfig );
 
 			// Set additional config variables

@@ -21,6 +21,7 @@ self.instantDiffs ||= {};
  * @property {InstanceType<typeof import('./settings').default>} settings - Settings instance
  * @property {{
  *   Api: typeof import('./Api').default,
+ *   Site: typeof import('./Site').default,
  *   Article: typeof import('./Article').default,
  *   Link: typeof import('./Link').default,
  *   Button: typeof import('./Button').default,
