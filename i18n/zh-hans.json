@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"GuoPC"
+			"GuoPC",
+			"郭佳昌"
 		]
 	},
 	"script-name": "Instant Diffs",
@@ -79,6 +80,7 @@
 	"settings-show-link-help": "在链接后显示操作按钮（❖）用于打开Instant Diffs对话框，否则点击操作会直接作用于链接。您仍可以通过按下Alt+单击以在当前标签页中打开链接。",
 	"settings-show-page-link": "显示页面链接",
 	"settings-show-page-link-help": "链接后显示操作按钮（➔）用于导航至编辑过的页面和章节。如果安装了[[mw:Special:MyLanguage/Convenient Discussions|Convenient Discussions]]脚本，该按钮还会尝试导航至相应的留言内容。",
+	"settings-mark-watched-link": "当从相关链接打开即时差异对话框时，将链接标记为已访问。",
 	"settings-highlight-line": "当Instant Diffs对话框从相关链接打开时，突出显示在监视列表和类似列表里的各行内容。",
 	"settings-mark-watched-line": "当Instant Diffs对话框从相关链接打开时，在监视列表里将更改标记为已查看。",
 	"settings-fieldset-dialog": "对话框",
@@ -105,6 +107,7 @@
 	"settings-links-hash-help": "当使用选定的非压缩格式进行复制操作时，章节名称也会作为锚点附加到链接URL中。",
 	"settings-links-format": "复制操作的链接格式：",
 	"settings-links-format-full": "带有页面标题的完整URL",
+	"settings-links-format-special": "特殊页面URL",
 	"settings-links-format-minify": "缩短的URL",
 	"settings-wikilinks-format": "复制操作的wiki链接格式：",
 	"settings-wikilinks-format-link": "包在括号中的简易链接",

@@ -3,13 +3,14 @@
 		"authors": [
 			"Bisang",
 			"Serhio Magpie",
+			"Suleiman the Magnificent Television",
 			"Tensama0415",
 			"YeBoy371",
 			"Ykhwong",
 			"解浪"
 		]
 	},
-	"script-name": "인스턴트 디프",
+	"script-name": "Instant Diffs",
 	"script-name-short": "ID",
 	"diff-title": "판 사이의 차이",
 	"diff-title-hidden": "판 사이의 차이가 숨겨져 있습니다",
@@ -84,6 +85,7 @@
 	"settings-show-link-help": "링크 뒤에 인스턴트 디프 대화 상자를 열기 위한 작업 버튼(❖)을 표시합니다. 그렇지 않으면 클릭 동작이 링크에 직접 추가됩니다. Alt+Click을 누르면 여전히 현재 탭에서 링크를 열 수 있습니다.",
 	"settings-show-page-link": "문서 링크 표시",
 	"settings-show-page-link-help": "링크 뒤에 편집이 이루어진 문서와 문단으로 이동하기 위한 작업 버튼(➔)을 표시합니다. [[mw:Special:MyLanguage/Convenient Discussions|편리한 토론]] 스크립트가 설치되어 있으면 버튼이 해당 댓글로도 이동하려고 시도합니다.",
+	"settings-mark-watched-link": "관련 링크에서 인스턴트 디프 대화 상자가 열릴 때 링크를 방문한 것으로 표시합니다.",
 	"settings-highlight-line": "관련 링크에서 인스턴트 디프 대화 상자가 열릴 때 주시문서 목록 및 유사한 목록의 줄을 강조 표시합니다.",
 	"settings-mark-watched-line": "관련 링크에서 인스턴트 디프 대화 상자가 열릴 때 주시문서 목록의 변경 사항을 방문한 것으로 표시합니다.",
 	"settings-fieldset-dialog": "대화 상자",
@@ -110,6 +112,7 @@
 	"settings-links-hash-help": "선택한 축소되지 않은 형식으로 복사 동작을 사용할 때 문단 이름도 링크 URL에 앵커로 추가됩니다.",
 	"settings-links-format": "복사 동작의 링크 형식:",
 	"settings-links-format-full": "문서 제목이 포함된 전체 URL",
+	"settings-links-format-special": "특수 문서 url",
 	"settings-links-format-minify": "최소화된 URL",
 	"settings-wikilinks-format": "복사 동작의 위키링크 형식:",
 	"settings-wikilinks-format-link": "대괄호 안의 단순 링크",
