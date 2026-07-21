@@ -280,11 +280,10 @@ class Link {
 	 * @private
 	 */
 	process() {
+		// Get and validate link url
 		this.href = this.node.href;
 		if ( utils.isEmpty( this.href ) ) return;
 
-		// Validate link url
-		const urlParts = {};
 		try {
 			this.url = new URL( this.href );
 		} catch {
@@ -301,6 +300,7 @@ class Link {
 		if ( utilsLink.isMWLink( this.node, id.config.mwLinkExclude ) ) return;
 
 		// Get page title from the url pathname
+		const urlParts = {};
 		try {
 			const pathname = decodeURIComponent( this.url.pathname );
 			if ( id.local.articlePathRegExp.test( pathname ) ) {
