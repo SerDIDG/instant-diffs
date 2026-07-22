@@ -656,22 +656,24 @@ export function getRevisionSection( revision ) {
  * @return {string|undefined}
  */
 export function getMobileServer() {
-	const server = mw.config.get( 'wgServer' ).replace( /^https?:/, '' );
-	const prefix = new RegExp( `^//www\\.` ).test( server ) ? 'www.' : '';
+	const server = ( /** @type {string} */ ( mw.config.get( 'wgServer' ) ) ).replace( /^https?:/, '' );
+	const prefix = server.startsWith( '//www.' ) ? 'www.' : '';
 
 	const language = mw.config.get( 'wgContentLanguage' );
 	if ( !isEmpty( language ) ) {
-		const regExp = new RegExp( `^//${ language }\\.` );
-		if ( regExp.test( server ) ) {
-			return server.replace( regExp, `//${ language }.m.` );
+		const languagePrefix = `//${ language }.`;
+		if ( server.startsWith( languagePrefix ) ) {
+			const url = server.slice( languagePrefix.length );
+			return `//${ language }.m.${ url }`;
 		}
 	}
 
 	const project = mw.config.get( 'wgNoticeProject' );
 	if ( !isEmpty( project ) ) {
-		const regExp = new RegExp( `^//${ prefix }${ project }\\.` );
-		if ( regExp.test( server ) ) {
-			return server.replace( regExp, !isEmpty( prefix ) ? `//m.${ project }.` : `//${ project }.m.` );
+		const projectPrefix = `//${ prefix }${ project }.`;
+		if ( server.startsWith( projectPrefix ) ) {
+			const url = server.slice( projectPrefix.length );
+			return !isEmpty( prefix ) ? `//m.${ project }.${ url }` : `//${ project }.m.${ url }`;
 		}
 	}
 }

@@ -109,6 +109,12 @@ class Link {
 	}
 
 	/**
+	 * List of URL search param names to collect values from.
+	 * @type {string[]}
+	 */
+	static URL_SEARCH_COMPONENTS = [ 'title', 'curid', 'oldid', 'diff', 'direction', 'page1', 'rev1', 'page2', 'rev2' ];
+
+	/**
 	 * @type {HTMLAnchorElement}
 	 */
 	node;
@@ -134,17 +140,17 @@ class Link {
 	url;
 
 	/**
-	 * @type {Object|null}
+	 * @type {Object|undefined}
 	 */
 	error;
 
 	/**
-	 * @type {Object}
+	 * @type {Object|undefined}
 	 */
 	revision;
 
 	/**
-	 * @type {Object}
+	 * @type {Object|undefined}
 	 */
 	compare;
 
@@ -261,16 +267,15 @@ class Link {
 			this.options.initiatorPage = view.getPage();
 		}
 
-		// Start link processing
+		// Validate link href, construct the Article instance,
+		// then render panel actions and attach events
 		this.process();
-
-		// Add a link instance to the stack
-		Link.addLink( this.node, this );
-
-		// Start the render process if the link is a valid diff or a revision link
 		if ( this.isValid ) {
 			this.render();
 		}
+
+		// Add a link instance to the stack
+		Link.addLink( this.node, this );
 	}
 
 	/**
@@ -304,7 +309,7 @@ class Link {
 		try {
 			const pathname = decodeURIComponent( this.url.pathname );
 			if ( id.local.articlePathRegExp.test( pathname ) ) {
-				const title = pathname.replace( new RegExp( id.local.mwArticlePath ), '' );
+				const title = pathname.slice( id.local.mwArticlePath.length );
 				urlParts.pathname = new mw.Title( title ).getPrefixedDb();
 			}
 		} catch {}
@@ -329,7 +334,7 @@ class Link {
 			articleValues = { ...articleValues, ...utilsLink.getSplitSpecialUrl( urlParts.pathname ) };
 		} else {
 			// Get components from url search parameters
-			[ 'title', 'curid', 'oldid', 'diff', 'direction', 'page1', 'rev1', 'page2', 'rev2' ].forEach( name => {
+			Link.URL_SEARCH_COMPONENTS.forEach( name => {
 				articleValues[ name ] = this.url.searchParams.get( name );
 			} );
 

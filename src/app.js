@@ -50,9 +50,9 @@ function prepare( require ) {
 	id.local.mwEndPoint = `${ location.origin }${ mw.config.get( 'wgScript' ) }`;
 	id.local.mwEndPointUrl = new URL( id.local.mwEndPoint );
 	id.local.mwAction = mw.config.get( 'wgAction' );
-	id.local.mwArticlePath = (/** @type {string} */ mw.config.get( 'wgArticlePath' ) ).replace( '$1', '' );
+	id.local.mwArticlePath = (/** @type {string} */ ( mw.config.get( 'wgArticlePath' ) ) ).replace( '$1', '' );
 	id.local.mwCanonicalSpecialPageName = mw.config.get( 'wgCanonicalSpecialPageName' );
-	id.local.mwTitle = new mw.Title( /** @type {string} */ mw.config.get( 'wgRelevantPageName' ) );
+	id.local.mwTitle = new mw.Title( /** @type {string} */ ( mw.config.get( 'wgRelevantPageName' ) ) );
 	id.local.mwTitleText = id.local.mwTitle.getPrefixedText();
 	id.local.mwServer = mw.config.get( 'wgServer' );
 	id.local.mwServerName = mw.config.get( 'wgServerName' );
@@ -175,7 +175,7 @@ function assembleSpecialPages() {
 	);
 
 	// Assemble RegExp for testing for mwArticlePath
-	const articlePathRuleset = id.config.articlePathRegExp.replaceAll( '$1', id.local.mwArticlePath );
+	const articlePathRuleset = id.config.articlePathRegExp.replaceAll( '$1', mw.util.escapeRegExp( id.local.mwArticlePath ) );
 	id.local.articlePathRegExp = new RegExp( articlePathRuleset );
 
 	// Assemble RegExp for testing special page titles in the links
