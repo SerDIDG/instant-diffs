@@ -109,6 +109,7 @@
 	"settings-links-hash-help": "Bij gebruik van kopieerhandelingen met het geselecteerde niet-geminificeerde formaat wordt de sectienaam ook als anker aan de koppelings-URL toegevoegd.",
 	"settings-links-format": "Koppelingopmaak voor kopiëren:",
 	"settings-links-format-full": "Volledige URL met een paginatitel",
+	"settings-links-format-special": "Speciale pagina-URL",
 	"settings-links-format-minify": "Geminimaliseerde url",
 	"settings-wikilinks-format": "Wikikoppelingopmaak voor kopiëren:",
 	"settings-wikilinks-format-link": "Eenvoudige koppeling tussen haakjes",
