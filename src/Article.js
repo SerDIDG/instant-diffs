@@ -45,16 +45,16 @@ class Article {
 	isValid = false;
 
 	/**
-	 * Flag that indicates if the link is from foreign interwiki.
-	 * @type {boolean}
-	 */
-	isForeign = false;
-
-	/**
 	 * Flag that indicates if the diff or revision is hidden.
 	 * @type {boolean}
 	 */
 	isHidden = false;
+
+	/**
+	 * Flag that indicates if the link is from foreign interwiki.
+	 * @type {boolean}
+	 */
+	isForeign = false;
 
 	/**
 	 * Create an Article instance.
