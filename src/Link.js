@@ -11,7 +11,7 @@ import settings from './settings';
 
 import './styles/links.less';
 
-const { h, ht } = utils;
+const { h } = utils;
 
 /**
  * Link configuration options
@@ -98,6 +98,15 @@ class Link {
 	 */
 	static hasLink( node ) {
 		return this.stack.has( node );
+	}
+
+	/**
+	 * Checks if a link instance is valid.
+	 * @param {import('./Link').default} link - Link instance to check
+	 * @returns {boolean} True if a link instance is valid
+	 */
+	static checkLink( link ) {
+		return link instanceof Link && link.isValid;
 	}
 
 	/**
@@ -199,6 +208,12 @@ class Link {
 	isValid = false;
 
 	/**
+	 * Whether the link points to a hidden diff or revision link.
+	 * @type {boolean}
+	 */
+	isHidden = false;
+
+	/**
 	 * Whether the link points to a foreign wiki.
 	 * @type {boolean}
 	 */
@@ -217,22 +232,10 @@ class Link {
 	isLoaded = false;
 
 	/**
-	 * Whether the link was successfully processed and rendered.
-	 * @type {boolean}
-	 */
-	isProcessed = false;
-
-	/**
 	 * Whether the link is currently being observed by IntersectionObserver.
 	 * @type {boolean}
 	 */
 	isObserved = false;
-
-	/**
-	 * Whether the link has a pending lazy request (used with 'request' behavior).
-	 * @type {boolean}
-	 */
-	hasRequest = false;
 
 	/**
 	 * Creates a Link instance for a diff or revision link.
@@ -348,6 +351,7 @@ class Link {
 		this.article = new Article( articleValues );
 		this.isValid = this.article.isValid;
 		this.isForeign = this.article.isForeign;
+		this.isHidden = this.article.isHidden;
 	}
 
 	/**
@@ -365,12 +369,6 @@ class Link {
 
 		// Post-validate options
 		this.postValidateOptions();
-
-		// Populate the page title from the watchlist line entry for the edge cases.
-		// Link minifiers like [[:ru:User:Stjn/minilink.js]] often remove titles from the links.
-		if ( utils.isEmpty( this.article.get( 'title' ) ) && this.mw.hasLine ) {
-			this.article.set( { title: this.mw.title } );
-		}
 
 		// Render by behavior
 		switch ( this.options.behavior ) {
@@ -427,8 +425,15 @@ class Link {
 			this.mw.line = utilsLink.getMWLine( this.node );
 			if ( this.mw.line ) {
 				this.mw.hasLine = true;
-				this.mw.title = utilsLink.getMWLineTitle( this.mw.line );
 				this.mw.line.classList.add( 'instantDiffs-line' );
+
+				// Populate the page title from the watchlist line entry for the edge cases.
+				// Link minifiers often remove titles from the links.
+				// @see {@link https://ru.wikipedia.org/wiki/User:Stjn/minilink.js}
+				if ( utils.isEmpty( this.article.get( 'title' ) ) ) {
+					this.mw.title = utilsLink.getMWLineTitle( this.mw.line );
+					this.article.set( { title: this.mw.title } );
+				}
 			}
 
 			// Check if a link contributed by a user is in a commit message, etc.
@@ -536,15 +541,12 @@ class Link {
 	 * @private
 	 */
 	renderRequest() {
-		this.hasRequest = this.isValid;
-
-		if ( this.hasRequest ) {
+		if ( this.isValid ) {
 			this.toggleSpinner( true );
 			this.observe();
 		} else {
 			this.toggleSpinner( false );
 			this.isLoaded = true;
-			this.isProcessed = false;
 			this.unobserve();
 		}
 	}
@@ -615,6 +617,10 @@ class Link {
 	onRequestRevisionError = ( error, data ) => {
 		this.isLoading = false;
 
+		// Set article values
+		this.isHidden = this.article.isHidden = true;
+
+		// Sett error object
 		this.error = {
 			type: 'revision',
 			tag: 'link',
@@ -631,7 +637,7 @@ class Link {
 			utils.notifyError( `error-revision-${ this.error.code }`, this.error );
 		}
 
-		this.renderError();
+		this.renderView();
 	};
 
 	/**
@@ -645,31 +651,28 @@ class Link {
 
 		// Render error if the query request is completely failed
 		const query = data?.query;
-		if ( !query || ( !query.badrevids && !query.badpageids && !query.pages ) ) {
+		if ( !query ) {
 			return this.onRequestRevisionError( undefined, data );
 		}
 
-		// Get a page for the query request
-		const page = query.pages?.[ 0 ];
-		const revision = page?.revisions?.[ 0 ];
-
-		// Check for a specific error code and error if exist
+		// Render error if a specific error code present
 		const error = getQueryRevisionError( query );
 		if ( error ) {
-			this.error = error;
-			return this.renderError();
+			return this.onRequestRevisionError( undefined, { error } );
 		}
 
-		this.revision = revision;
+		// Get page and revision data
+		const page = query.pages[ 0 ];
+		this.revision = page.revisions[ 0 ];
 
 		// Set article values
 		this.article.set( {
 			title: page.title,
 			section: utils.getRevisionSection( this.revision ),
 		} );
-		this.article.isHidden = utils.isRevisionHidden( this.revision );
+		this.isHidden = this.article.isHidden = utils.isRevisionHidden( this.revision );
 
-		this.renderSuccess();
+		this.renderView();
 	};
 
 	/******* REQUEST DIFF *******/
@@ -711,6 +714,10 @@ class Link {
 	onRequestDiffError = ( error, data ) => {
 		this.isLoading = false;
 
+		// Set article values
+		this.isHidden = this.article.isHidden = true;
+
+		// Sett error object
 		this.error = {
 			type: 'diff',
 			tag: 'link',
@@ -726,7 +733,7 @@ class Link {
 			utils.notifyError( 'error-diff-generic', this.error );
 		}
 
-		this.renderError();
+		this.renderView();
 	};
 
 	/**
@@ -749,9 +756,9 @@ class Link {
 			title: utils.getCompareTitle( this.compare ),
 			section: utils.getCompareSection( this.compare ),
 		} );
-		this.article.isHidden = utils.isCompareHidden( this.compare );
+		this.isHidden = this.article.isHidden = utils.isCompareHidden( this.compare );
 
-		this.renderSuccess();
+		this.renderView();
 	};
 
 	/******* REQUEST COMPARE *******/
@@ -794,6 +801,10 @@ class Link {
 	onRequestCompareError = ( error, data ) => {
 		this.isLoading = false;
 
+		// Set article values
+		this.isHidden = this.article.isHidden = true;
+
+		// Sett error object
 		this.error = {
 			type: 'diff',
 			tag: 'link',
@@ -809,7 +820,7 @@ class Link {
 			utils.notifyError( 'error-diff-generic', this.error );
 		}
 
-		this.renderError();
+		this.renderView();
 	};
 
 	/**
@@ -836,9 +847,9 @@ class Link {
 			title: utils.getCompareTitle( this.compare ),
 			section: utils.getCompareSection( this.compare ),
 		} );
-		this.article.isHidden = utils.isCompareHidden( this.compare );
+		this.isHidden = this.article.isHidden = utils.isCompareHidden( this.compare );
 
-		this.renderSuccess();
+		this.renderView();
 	};
 
 	/******* RENDER *******/
@@ -850,7 +861,7 @@ class Link {
 	renderEvent() {
 		if ( !this.isValid ) return;
 
-		this.renderSuccess();
+		this.renderView();
 	}
 
 	/**
@@ -866,53 +877,17 @@ class Link {
 			return;
 		}
 
-		this.renderSuccess();
+		this.renderView();
 	}
 
 	/**
-	 * Renders error state for failed API requests.
-	 * Displays an error indicator in the action panel.
+	 * Renders the link's actions.
+	 * Creates an action panel with diff/revision buttons,
+	 * and an error indicator if available.
 	 * @private
 	 */
-	renderError() {
+	renderView() {
 		this.isLoaded = true;
-		this.isProcessed = false;
-		this.toggleSpinner( false );
-
-		// Render actions panel
-		if ( this.options.behavior !== 'event' ) {
-			this.renderWrapper();
-
-			let messageName;
-			if ( this.error.type ) {
-				messageName = `error-${ this.error.type }-${ this.error.code || 'generic' }`;
-				if ( !utils.isMessageExists( messageName ) ) {
-					messageName = `error-${ this.error.type }-generic`;
-				}
-			}
-
-			this.nodes.error = h( 'span', {
-					class: [ 'item', 'error', 'error-info' ],
-					title: utils.getErrorMessage( messageName, this.error, this.article ),
-				},
-				ht( utils.getLabel( 'error' ) ),
-			);
-			this.nodes.inner.append( this.nodes.error );
-
-			this.embed( this.node, this.options.insertMethod );
-		}
-
-		mw.hook( `${ id.config.prefix }.link.renderError` ).fire( this );
-	}
-
-	/**
-	 * Renders success state after successful data loading.
-	 * Creates an action panel with diff/revision buttons.
-	 * @private
-	 */
-	renderSuccess() {
-		this.isLoaded = true;
-		this.isProcessed = true;
 		this.toggleSpinner( false );
 
 		// Mutate existing link element
@@ -925,14 +900,16 @@ class Link {
 			this.renderWrapper();
 
 			this.renderLinkAction();
-			if ( this.options.showPageLink ) {
+			if ( this.options.showPageLink && !this.error ) {
 				this.renderPageAction();
 			}
 
 			this.embed( this.node, this.options.insertMethod );
 		}
 
-		mw.hook( `${ id.config.prefix }.link.renderSuccess` ).fire( this );
+		const statusHook = this.error ? 'renderError' : 'renderSuccess';
+		mw.hook( `${ id.config.prefix }.link.${ statusHook }` ).fire( this );
+		mw.hook( `${ id.config.prefix }.link.renderComplete` ).fire( this );
 	}
 
 	/**
@@ -956,13 +933,13 @@ class Link {
 			href: null,
 			target: utils.getTarget( this.options.initiatorView ),
 			handler: null,
-			classes: [],
+			classes: [ 'text' ],
 			modifiers: [],
 			container: this.nodes.inner,
 			...params,
 		};
 
-		params.classes = [ 'item', 'text', 'instantDiffs-action', ...params.classes ];
+		params.classes = [ 'item', 'instantDiffs-action', ...params.classes ];
 		params.modifiers.forEach( modifier => params.classes.push( `instantDiffs-action--${ modifier }` ) );
 
 		return new Button( params );

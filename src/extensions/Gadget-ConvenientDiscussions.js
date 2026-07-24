@@ -15,7 +15,7 @@ import Link from '../Link';
  * @param {import('../Link').default} link
  */
 function renderLink( link ) {
-	if ( !link || !link.isValid || !link.isProcessed || link.isForeign || !link.options.showPageLink || link.actions.cd ) return;
+	if ( !Link.checkLink( link ) || !link.error || link.isForeign || !link.options.showPageLink || link.actions.cd ) return;
 
 	link.extensions.cd = {};
 	link.extensions.cd.href = getHref( link );

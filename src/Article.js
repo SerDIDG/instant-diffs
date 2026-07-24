@@ -208,6 +208,7 @@ class Article {
 		// Check if a link type is a diff
 		if ( utils.isValidID( this.values.diff ) || utils.isValidID( this.values.oldid ) ) {
 			this.values.type = 'diff';
+			this.values.typeVariant = 'diff';
 
 			// Set base direction
 			if ( !utils.isValidDir( this.values.direction ) ) {
@@ -245,6 +246,7 @@ class Article {
 		// Check if a link type is a diff
 		if ( !utils.isEmpty( this.values.title ) && utils.isValidDir( this.values.diff ) ) {
 			this.values.type = 'diff';
+			this.values.typeVariant = 'diff';
 			return true;
 		}
 

@@ -85,13 +85,8 @@ class Snapshot {
 	 * @returns {boolean}
 	 */
 	isLinkValid( link ) {
-		// Check if a link is a Link instance
-		const isLink = link instanceof Link;
-		if ( !isLink ) return false;
-
-		// Check if a link is valid
-		const isProcessed = link.isValid && ( link.isProcessed || ( link.hasRequest && !link.isLoaded ) );
-		if ( !isProcessed ) return false;
+		// Check if a link is a valid Link instance
+		if ( !Link.checkLink( link ) ) return false;
 
 		// Check filter rules
 		const isValidType = !utils.isEmpty( this.options.filterType )

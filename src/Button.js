@@ -34,6 +34,7 @@ class Button {
 			ariaHaspopup: false,
 			altTitle: null,
 			useAltKey: false,
+			useRole: true,
 			...options,
 		};
 
@@ -68,7 +69,7 @@ class Button {
 		if ( !utils.isEmpty( this.options.href ) ) {
 			this.node.href = this.options.href;
 			this.node.target = this.options.target;
-		} else {
+		} else if ( this.options.useRole ) {
 			this.node.setAttribute( 'tabindex', '0' );
 			this.node.setAttribute( 'role', 'button' );
 		}
