@@ -161,7 +161,8 @@ export const schema = {
 				default: true,
 				config: {
 					labelMsg: 'settings-unhide-diffs',
-					helpMsgDom: [ 'settings-unhide-diffs-help', 'suppressrevision', 'mw:Special:MyLanguage/Help:RevisionDelete' ],
+					helpInline: false,
+					helpMsgSnippet: [ 'settings-unhide-diffs-help', 'suppressrevision', 'mw:Special:MyLanguage/Help:RevisionDelete' ],
 				},
 			},
 			openInNewTab: {
@@ -194,6 +195,7 @@ export const schema = {
 				default: true,
 				config: {
 					labelMsg: 'settings-show-watchlist-popup',
+					helpInline: false,
 					helpMsg: 'settings-show-watchlist-popup-help',
 				},
 			},
@@ -203,6 +205,7 @@ export const schema = {
 				default: false,
 				config: {
 					labelMsg: 'settings-links-hash',
+					helpInline: false,
 					helpMsg: 'settings-links-hash-help',
 				},
 				onChange: onLinksHashChange,
