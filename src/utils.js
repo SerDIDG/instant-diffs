@@ -372,9 +372,10 @@ export function msg() {
 	return mw.msg.apply( mw.msg, getMsgParams( arguments ) );
 }
 
-export function hint( str ) {
-	str = `hint-${ str }`;
-	return `[${ msg( str ) }]`;
+export function hint() {
+	const str = `hint-${ arguments[ 0 ] }`;
+	const params = Array.from( arguments ).slice( 1 );
+	return `[${ msg( str, ...params ) }]`;
 }
 
 export function msgHint( str, hintStr, showHint = true ) {
@@ -941,7 +942,7 @@ export function addClick( node, handler, useAltKey = true ) {
 		if ( isEmpty( node.dataset.altTitle ) ) {
 			node.dataset.altTitle = node.title;
 		}
-		node.dataset.altTitle = `${ node.dataset.altTitle } ${ hint( 'alt-click' ) }`.trim();
+		node.dataset.altTitle = `${ node.dataset.altTitle } ${ hint( 'alt-click-description', msg( 'hint-alt-click' ) ) }`.trim();
 		node.dataset.origTitle = node.title;
 
 		// Set alt title temporary to increase compatibility with the other scripts
