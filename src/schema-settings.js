@@ -49,7 +49,7 @@ export const schema = {
 				default: false,
 				config: {
 					labelMsg: 'settings-show-link',
-					helpMsg: 'settings-show-link-help',
+					helpMsgDom: () => [ 'settings-show-link-help', utils.getLabel( 'diff' ), utils.getLabel( 'revision' ), utils.msg( 'hint-alt-click' ) ],
 				},
 			},
 			showPageLink: {
@@ -58,7 +58,7 @@ export const schema = {
 				default: true,
 				config: {
 					labelMsg: 'settings-show-page-link',
-					helpMsg: 'settings-show-page-link-help',
+					helpMsgDom: () => [ 'settings-show-page-link-help', utils.getLabel( 'page' ), 'mw:Special:MyLanguage/Convenient Discussions' ],
 				},
 			},
 			markWatchedLink: {
@@ -105,15 +105,15 @@ export const schema = {
 				options: {
 					compact: {
 						labelMsg: 'settings-view-width-compact',
-						titleMsg: [ 'settings-view-width-option-title', view.constructor.getSize( 'compact' ).width ],
+						titleMsg: () => [ 'settings-view-width-option-title', view.constructor.getSize( 'compact' ).width ],
 					},
 					standard: {
 						labelMsg: 'settings-view-width-standard',
-						titleMsg: [ 'settings-view-width-option-title', view.constructor.getSize( 'standard' ).width ],
+						titleMsg: () => [ 'settings-view-width-option-title', view.constructor.getSize( 'standard' ).width ],
 					},
 					wide: {
 						labelMsg: 'settings-view-width-wide',
-						titleMsg: [ 'settings-view-width-option-title', view.constructor.getSize( 'wide' ).width ],
+						titleMsg: () => [ 'settings-view-width-option-title', view.constructor.getSize( 'wide' ).width ],
 					},
 					full: {
 						labelMsg: 'settings-view-width-full',
@@ -159,7 +159,7 @@ export const schema = {
 				default: true,
 				config: {
 					labelMsg: 'settings-unhide-diffs',
-					helpMsg: [ 'settings-unhide-diffs-help', 'suppressrevision' ],
+					helpMsgDom: [ 'settings-unhide-diffs-help', 'suppressrevision', 'mw:Special:MyLanguage/Help:RevisionDelete' ],
 				},
 			},
 			openInNewTab: {
@@ -340,7 +340,7 @@ function getLinksFormatExample( options ) {
 }
 
 /**
- * Get navigation pinnable actions as an object of options.
+ * Gets navigation pinnable actions as an object of options.
  * Includes both currently available actions and previously pinned actions.
  * @returns {Record<string, Record>} Map of action names to their options
  * @example

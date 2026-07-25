@@ -415,19 +415,24 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	validateFieldConfig( config ) {
 		// Process message options
 		const msgOptions = [
-			{ key: 'labelMsg', target: 'label', useDom: true },
-			{ key: 'titleMsg', target: 'title', useDom: false },
-			{ key: 'helpMsg', target: 'help', useDom: true },
+			{ key: 'labelMsg', target: 'label', msgFn: utils.msg },
+			{ key: 'titleMsg', target: 'title', msgFn: utils.msg },
+			{ key: 'helpMsg', target: 'help', msgFn: utils.msg },
+			{ key: 'helpMsgDom', target: 'help', msgFn: utils.msgDom },
+			{ key: 'helpMsgSnippet', target: 'help', msgFn: utils.msgSnippet },
+			{ key: 'helpSnippet', target: 'help', msgFn: utils.htmlSnippet },
 		];
 
-		msgOptions.forEach( ( { key, target, useDom } ) => {
-			const value = config[ key ];
+		msgOptions.forEach( ( { key, target, msgFn } ) => {
+			let value = config[ key ];
 			if ( !value ) return;
 
-			const msgFn = useDom ? utils.msgDom : utils.msg;
-			config[ target ] = Array.isArray( value )
-				? msgFn( ...value )
-				: msgFn( value );
+			if ( utils.isFunction( value ) ) {
+				value = value.call( this );
+			}
+
+			config[ target ] = utils.isArray( value )
+				? msgFn( ...value ) : msgFn( value );
 		} );
 
 		return config;
