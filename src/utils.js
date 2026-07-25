@@ -393,6 +393,14 @@ export function msgDom() {
 	return mw.message.apply( mw.message, getMsgParams( arguments ) ).parseDom();
 }
 
+export function msgSnippet( ...args ) {
+	return htmlSnippet( msgParse( ...args ) );
+}
+
+export function htmlSnippet( content ) {
+	return new OO.ui.HtmlSnippet( content );
+}
+
 export function textDom( text ) {
 	mw.messages.set( { [ getMsgKey( 'buffer' ) ]: text } );
 	return msgDom( 'buffer' );
@@ -766,6 +774,10 @@ export function hf( ...children ) {
 
 export function hj( $node ) {
 	return hf( ...$node.toArray() );
+}
+
+export function kdb( ...children ) {
+	return h( 'kbd.instantDiffs-kdb', ...children );
 }
 
 /**

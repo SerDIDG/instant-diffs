@@ -48,7 +48,7 @@ function process() {
 		const $button = $container.find( '.mw-history-compareselectedversions-button' );
 
 		new HistoryCompareButton( {
-			label: utils.msg( 'compare-label', id.config.labels.diff ),
+			label: utils.msg( 'compare-label', utils.getLabel( 'diff' ) ),
 			title: utils.msg( 'compare-title', utils.msg( 'script-name' ) ),
 			classes: [ 'mw-ui-button', 'cdx-button', 'instantDiffs-button--compare' ],
 			insertMethod: 'insertAfter',

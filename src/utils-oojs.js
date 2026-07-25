@@ -79,10 +79,6 @@ export function fixFloatedElementsIsolation() {
 		} );
 }
 
-export function renderOoUiElement( $element ) {
-	return new OO.ui.Element( { $element } );
-}
-
 export function getWindowManager() {
 	// Define custom dialog size
 	setViewDialogSize();
