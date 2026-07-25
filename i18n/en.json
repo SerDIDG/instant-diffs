@@ -113,7 +113,7 @@
     "settings-enable-hotkeys": "Enable keyboard shortcuts in the Instant Diffs dialog.",
     "settings-show-diff-tools": "Show additional diff tools, such as the Inline format toggle.",
     "settings-show-revision-info": "Show change information when viewing a revision.",
-    "settings-unhide-diffs": "Display hidden revision content and diff info without additional steps.",
+    "settings-unhide-diffs": "Display hidden diffs and revisions without additional steps.",
     "settings-unhide-diffs-help": "The <code>$1</code> [[$2|user right]] is required to view revision content.",
     "settings-open-in-new-tab": "Open links inside the Instant Diffs dialog in a new tab.",
     "settings-fieldset-menu": "Menu",
