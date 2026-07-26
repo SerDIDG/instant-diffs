@@ -47,7 +47,7 @@ ul.instantDiffs-list {
 		}
 	}
 
-	&--clear {
+	&--hotkeys {
 		padding: 0;
 		margin: 0;
 		list-style: none;
@@ -55,6 +55,10 @@ ul.instantDiffs-list {
 
 		li {
 			margin: 0;
+
+			& + li {
+				margin-top: calc(1em / 2.4);
+			}
 		}
 
 		i {

@@ -285,7 +285,7 @@ function getHotkeysHelp() {
 		const $message = utils.msgDom( `hint-${ item }-description`, kdb( utils.msg( `hint-${ item }` ) ) );
 		return h( 'li', hj( $message ) );
 	} );
-	return h( 'ul.instantDiffs-list--clear', ...elements );
+	return h( 'ul.instantDiffs-list--hotkeys', ...elements );
 }
 
 /**
