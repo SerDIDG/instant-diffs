@@ -49,7 +49,7 @@ export const schema = {
 				default: false,
 				config: {
 					labelMsg: 'settings-show-link',
-					helpMsgDom: () => [ 'settings-show-link-help', utils.getLabel( 'diff' ), utils.getLabel( 'revision' ), kdb( utils.msg( 'hint-alt-click' ) ) ],
+					help: () => utils.msgDom( 'settings-show-link-help', utils.getLabel( 'diff' ), utils.getLabel( 'revision' ), kdb( utils.msg( 'hint-alt-click' ) ) ),
 				},
 			},
 			showPageLink: {
@@ -58,7 +58,7 @@ export const schema = {
 				default: true,
 				config: {
 					labelMsg: 'settings-show-page-link',
-					helpMsgDom: () => [ 'settings-show-page-link-help', utils.getLabel( 'page' ), 'mw:Special:MyLanguage/Convenient Discussions' ],
+					help: () => utils.msgDom( 'settings-show-page-link-help', utils.getLabel( 'page' ), 'mw:Special:MyLanguage/Convenient Discussions' ),
 				},
 			},
 			markWatchedLink: {
@@ -136,7 +136,7 @@ export const schema = {
 				config: {
 					labelMsg: 'settings-enable-hotkeys',
 					helpInline: false,
-					helpSnippet: getHotkeysHelp,
+					help: getHotkeysHelpSnippet,
 				},
 			},
 			showDiffTools: {
@@ -162,7 +162,7 @@ export const schema = {
 				config: {
 					labelMsg: 'settings-unhide-diffs',
 					helpInline: false,
-					helpMsgSnippet: [ 'settings-unhide-diffs-help', 'suppressrevision', 'mw:Special:MyLanguage/Help:RevisionDelete' ],
+					help: () => utils.msgSnippet( 'settings-unhide-diffs-help', 'suppressrevision', 'mw:Special:MyLanguage/Help:RevisionDelete' ),
 				},
 			},
 			openInNewTab: {
@@ -277,15 +277,16 @@ export const schema = {
 /**
  * Gets tooltip help message for the Hotkeys field.
  * @private
- * @returns {HTMLElement}
+ * @returns {OO.ui.HtmlSnippet}
  */
-function getHotkeysHelp() {
+function getHotkeysHelpSnippet() {
 	const items = [ 'close', 'prev', 'next', 'snapshot-prev', 'snapshot-next', 'switch', 'actions', 'unpatrolled', 'back' ];
 	const elements = items.map( item => {
 		const $message = utils.msgDom( `hint-${ item }-description`, kdb( utils.msg( `hint-${ item }` ) ) );
 		return h( 'li', hj( $message ) );
 	} );
-	return h( 'ul.instantDiffs-list--hotkeys', ...elements );
+	const list = h( 'ul.instantDiffs-list--hotkeys', ...elements );
+	return utils.htmlSnippet( list );
 }
 
 /**

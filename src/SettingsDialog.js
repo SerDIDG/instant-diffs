@@ -424,12 +424,12 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	validateFieldConfig( config ) {
 		// Process message options
 		const msgOptions = [
+			{ key: 'label', target: 'label' },
 			{ key: 'labelMsg', target: 'label', msgFn: utils.msg },
+			{ key: 'title', target: 'title' },
 			{ key: 'titleMsg', target: 'title', msgFn: utils.msg },
+			{ key: 'help', target: 'help' },
 			{ key: 'helpMsg', target: 'help', msgFn: utils.msg },
-			{ key: 'helpMsgDom', target: 'help', msgFn: utils.msgDom },
-			{ key: 'helpMsgSnippet', target: 'help', msgFn: utils.msgSnippet },
-			{ key: 'helpSnippet', target: 'help', msgFn: utils.htmlSnippet },
 		];
 
 		msgOptions.forEach( ( { key, target, msgFn } ) => {
@@ -440,8 +440,9 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 				value = value.call( this );
 			}
 
-			config[ target ] = utils.isArray( value )
-				? msgFn( ...value ) : msgFn( value );
+			config[ target ] = !msgFn
+				? value : utils.isArray( value )
+					? msgFn( ...value ) : msgFn( value );
 		} );
 
 		return config;
