@@ -16,9 +16,10 @@ class ViewDialog extends OO.ui.MessageDialog {
 		{
 			action: 'close',
 			label: utils.msg( 'action-close' ),
-			title: utils.msgHint( 'action-close', 'close' ),
+			title: utils.msgHint( 'action-close', 'close', settings.get( 'enableHotkeys' ) ),
 		},
 	];
+	static escapable = settings.get( 'enableHotkeys' );
 
 	/**
 	 * Create a ViewDialog instance.
@@ -32,6 +33,14 @@ class ViewDialog extends OO.ui.MessageDialog {
 	initialize() {
 		super.initialize();
 
+		// Close the dialog when clicking outside it
+		if ( settings.get( 'closeOutside' ) ) {
+			this.$clickOverlay = $( '<div>' )
+				.on( 'click', () => this.close() )
+				.addClass( 'instantDiffs-view-overlay' )
+				.appendTo( this.$element );
+		}
+
 		// By default, the whole message is wrapped in a <label> element.
 		// We don't want that behavior and revert it.
 		this.message.$element.remove();
@@ -41,14 +50,6 @@ class ViewDialog extends OO.ui.MessageDialog {
 		// Set content scroll element as primary focusable element
 		this.$content.removeAttr( 'tabindex' );
 		this.container.$element.attr( 'tabindex', '-1' );
-
-		// Close the dialog when clicking outside it
-		if ( settings.get( 'closeOutside' ) ) {
-			this.$clickOverlay = $( '<div>' )
-				.on( 'click', () => this.close() )
-				.addClass( 'instantDiffs-view-overlay' )
-				.appendTo( this.$element );
-		}
 
 		// Render progress bar loader
 		this.progressBar = new ViewProgressBar();
@@ -85,6 +86,10 @@ class ViewDialog extends OO.ui.MessageDialog {
 		if ( utils.isActiveElement() ) return;
 
 		this.emit( 'hotkey', event );
+	}
+
+	getEscapeAction() {
+		return this.constructor.escapable ? '' : null;
 	}
 
 	getBodyHeight() {

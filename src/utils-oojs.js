@@ -4,26 +4,45 @@ import view from './view';
 import settings from './settings';
 
 /**
- * Add some properties to the inheritor class that the (ES5)
- * @see {@link https://www.mediawiki.org/wiki/OOjs/Inheritance OOUI inheritance mechanism} uses.
- * It partly replicates the operations made in
- * @see {@link https://doc.wikimedia.org/oojs/master/OO.html#.inheritClass OO.inheritClass}.
+ * Make a class conform to the structure used by OOjs' ES5-based classes, with its
+ * {@link https://www.mediawiki.org/wiki/OOjs/Inheritance inheritance mechanism} and peculiar way to
+ * store static properties. It partly replicates the operations made in
+ * {@link https://doc.wikimedia.org/oojs/master/OO.html#.inheritClass OO.inheritClass}.
  * @author {@link https://github.com/jwbth Jack who built the house}
  *
- * @param {Function} targetClass Inheritor class.
+ * @param {Function} TargetClass Inheritor class.
  * @returns {Function}
  */
-export function tweakUserOoUiClass( targetClass ) {
-	const originClass = Object.getPrototypeOf( targetClass );
-	OO.initClass( originClass );
-	targetClass.static = Object.create( originClass.static );
-	Object.keys( targetClass )
-		.filter( ( key ) => key !== 'static' )
+export function tweakUserOoUiClass( TargetClass ) {
+	const OriginClass = Object.getPrototypeOf( TargetClass );
+	if ( OriginClass?.prototype ) {
+		TargetClass.parent = TargetClass.super = OriginClass;
+		OO.initClass( OriginClass );
+
+		// Move prototype properties
+		Object.getOwnPropertyNames( OriginClass.prototype )
+			.filter( ( name ) => name !== 'constructor' && !( name in TargetClass.prototype ) )
+			.forEach( ( name ) => {
+				Object.defineProperty(
+					TargetClass.prototype,
+					name,
+					/** @type {PropertyDescriptor} */ (
+						Object.getOwnPropertyDescriptor( OriginClass.prototype, name )
+					),
+				);
+			} );
+	}
+
+	// Move static properties
+	TargetClass.static = Object.create( OriginClass?.static || null );
+	Object.keys( TargetClass )
+		.filter( ( key ) => ![ 'parent', 'super', 'static' ].includes( key ) )
 		.forEach( ( key ) => {
-			targetClass.static[ key ] = targetClass[ key ];
+			const targetClassStatic = /** @type {AnyByKey} */ ( TargetClass.static );
+			targetClassStatic[ key ] = TargetClass[ key ];
 		} );
-	targetClass.parent = targetClass.super = originClass;
-	return targetClass;
+
+	return TargetClass;
 }
 
 /**

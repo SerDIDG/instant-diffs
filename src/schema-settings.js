@@ -280,7 +280,7 @@ export const schema = {
  * @returns {HTMLElement}
  */
 function getHotkeysHelp() {
-	const items = [ 'prev', 'next', 'snapshot-prev', 'snapshot-next', 'switch', 'actions', 'unpatrolled', 'back' ];
+	const items = [ 'close', 'prev', 'next', 'snapshot-prev', 'snapshot-next', 'switch', 'actions', 'unpatrolled', 'back' ];
 	const elements = items.map( item => {
 		const $message = utils.msgDom( `hint-${ item }-description`, kdb( utils.msg( `hint-${ item }` ) ) );
 		return h( 'li', hj( $message ) );

@@ -41,6 +41,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 			flags: [ 'safe', 'close' ],
 		},
 	];
+	static escapable = settings.get( 'enableHotkeys' );
 
 	/**
 	 * @type {Record<string, OO.ui.PanelLayout>}
@@ -73,6 +74,14 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
 	initialize( ...args ) {
 		super.initialize( ...args );
+
+		// Close the dialog when clicking outside it
+		if ( settings.get( 'closeOutside' ) ) {
+			this.$clickOverlay = $( '<div>' )
+				.on( 'click', () => this.close() )
+				.addClass( 'instantDiffs-view-overlay' )
+				.appendTo( this.$element );
+		}
 
 		// Render panels
 		this.panels.edit = this.renderEditPanel();
@@ -533,6 +542,10 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		utils.addBaseToLinks( $container, id.config.origin );
 	}
 
+	getEscapeAction() {
+		return this.constructor.escapable ? '' : null;
+	}
+
 	getBodyHeight() {
 		return 500;
 	}
@@ -554,7 +567,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 			this.setFieldDisabled( name, true );
 		}
 
-		settings.request()
+		void settings.request()
 			.then( this.onActionRequestSuccess )
 			.fail( this.onActionRequestError )
 			.always( () => this.popPending() );
