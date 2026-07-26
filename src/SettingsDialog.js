@@ -547,7 +547,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	}
 
 	getBodyHeight() {
-		return 500;
+		return 516;
 	}
 
 	/******* REQUEST PROCESS ******/
