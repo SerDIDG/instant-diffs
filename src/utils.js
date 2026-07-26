@@ -778,7 +778,7 @@ export function hj( $node ) {
 }
 
 export function kdb( ...children ) {
-	return h( 'kbd.instantDiffs-kdb', ...children );
+	return h( 'kbd.instantDiffs-code', ...children );
 }
 
 /**
