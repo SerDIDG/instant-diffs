@@ -265,6 +265,13 @@ export function removeLinkTags( tags ) {
 	tags.forEach( tag => tag?.remove() );
 }
 
+function getStyleHref( article, title ) {
+	const href = mw.util.getUrl( title, { action: 'raw', ctype: 'text/css' } );
+	return article.isForeign
+		? getHrefAbsolute( article, href )
+		: href;
+}
+
 /******* FORMAT HREFS *******/
 
 /**
@@ -276,6 +283,7 @@ export async function getWikilink( article ) {
 	const hrefOptions = {
 		relative: false,
 		hash: settings.get( 'linksHash' ),
+		label: settings.get( 'linksLabel' ),
 		minify: settings.get( 'linksFormat' ) === 'minify',
 		special: settings.get( 'linksFormat' ) === 'special',
 		wikilink: true,
@@ -400,6 +408,7 @@ function processHref( article, articleParams, options ) {
 		type: 'diff',
 		relative: true,
 		hash: false,
+		label: false,
 		minify: false,
 		interwiki: null,
 		special: false,
@@ -465,6 +474,7 @@ function getSpecialTitle( article, articleParams, options ) {
 	articleParams = { ...articleParams };
 	options = {
 		type: 'diff',
+		label: false,
 		interwiki: null,
 		href: null,
 		hrefHash: null,
@@ -492,16 +502,20 @@ function getSpecialTitle( article, articleParams, options ) {
 	// Format wikilink
 	const wikilink = options.preset[ options.type ];
 	const prefix = options.interwiki?.prefix;
-	return wikilink
-		.replace( '$1', attr )
-		.replace( '$pref', prefix ? `${ prefix }:` : '' )
-		.replace( '$href', options.href )
-		.replace( '$msg', utils.msg( `copy-wikilink-${ options.type }` ) );
+	return formatPattern( wikilink, {
+		'1': attr,
+		'pref': prefix ? `${ prefix }:` : '',
+		'href': options.href,
+		'msg': options.label ? utils.msg( `copy-wikilink-${ options.type }` ) : null,
+	} );
 }
 
-function getStyleHref( article, title ) {
-	const href = mw.util.getUrl( title, { action: 'raw', ctype: 'text/css' } );
-	return article.isForeign
-		? getHrefAbsolute( article, href )
-		: href;
+function formatPattern( pattern, values ) {
+	// resolve {#if:$var}content{/if} blocks first
+	pattern = pattern.replace( /\{#if:\$(\w+)\}(.*?)\{\/if\}/g, ( _, name, content ) =>
+		utils.isEmpty( values[ name ] ) ? '' : content,
+	);
+
+	// then substitute ${var} placeholders
+	return pattern.replace( /\$\{(\w+)\}/g, ( _, name ) => values[ name ] ?? '' );
 }

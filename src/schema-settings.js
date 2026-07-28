@@ -210,6 +210,15 @@ export const schema = {
 				},
 				onChange: onLinksHashChange,
 			},
+			linksLabel: {
+				type: 'checkbox',
+				enabled: true,
+				default: true,
+				config: {
+					labelMsg: 'settings-links-label',
+				},
+				onChange: onLinksLabelChange,
+			},
 			linksFormat: {
 				type: 'radioSelect',
 				enabled: true,
@@ -299,16 +308,27 @@ function onLinksHashChange() {
 }
 
 /**
+ * Event that emits after a links label hash setting was changed.
+ * @private
+ */
+function onLinksLabelChange() {
+	// Update the Links Format field help text
+	onLinksFormatSelect.call( this, this.getField( 'linksFormat' ) );
+}
+
+/**
  * Event that emits after a links format setting was changed.
  * @private
  */
 function onLinksFormatSelect() {
 	const linksHash = this.getFieldValue( 'linksHash' );
 	const linkFormat = this.getFieldValue( 'linksFormat' );
+	const linksLabel = this.getFieldValue( 'linksLabel' );
 
 	const options = {
 		relative: false,
 		hash: linksHash,
+		label: linksLabel,
 		minify: linkFormat === 'minify',
 		special: linkFormat === 'special',
 	};
@@ -326,11 +346,13 @@ function onLinksFormatSelect() {
 function onWikilinksFormatSelect() {
 	const linksHash = this.getFieldValue( 'linksHash' );
 	const linkFormat = this.getFieldValue( 'linksFormat' );
+	const linksLabel = this.getFieldValue( 'linksLabel' );
 	const wikilinkFormat = this.getFieldValue( 'wikilinksFormat' );
 
 	const options = {
 		relative: false,
 		hash: linksHash,
+		label: linksLabel,
 		minify: linkFormat === 'minify',
 		special: linkFormat === 'special',
 		wikilink: true,

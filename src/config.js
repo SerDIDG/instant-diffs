@@ -214,22 +214,22 @@ export const config = {
 	// Link format presets
 	linkPresets: {
 		special: {
-			page: 'Special:Redirect/page/$1',
-			diff: 'Special:Diff/$1',
-			revision: 'Special:PermanentLink/$1',
+			page: 'Special:Redirect/page/${1}',
+			diff: 'Special:Diff/${1}',
+			revision: 'Special:PermanentLink/${1}',
 		},
 	},
 
 	wikilinkPresets: {
 		link: {
-			page: '[$href $msg]',
-			diff: '[$href $msg]',
-			revision: '[$href $msg]',
+			page: '[${href}{#if:$msg} ${msg}{/if}]',
+			diff: '[${href}{#if:$msg} ${msg}{/if}]',
+			revision: '[${href}{#if:$msg} ${msg}{/if}]',
 		},
 		special: {
-			page: '[[$prefSpecial:Redirect/page/$1|$msg]]',
-			diff: '[[$prefSpecial:Diff/$1|$msg]]',
-			revision: '[[$prefSpecial:PermanentLink/$1|$msg]]',
+			page: '[[${pref}Special:Redirect/page/${1}{#if:$msg}|${msg}{/if}]]',
+			diff: '[[${pref}Special:Diff/${1}{#if:$msg}|${msg}{/if}]]',
+			revision: '[[${pref}Special:PermanentLink/${1}{#if:$msg}|${msg}{/if}]]',
 		},
 	},
 

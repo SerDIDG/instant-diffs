@@ -30,7 +30,7 @@ class HistoryCompareButton extends ViewButton {
 			diff: this.nodes.$diff.val(),
 		} );
 
-		super.openDialog();
+		return super.openDialog();
 	}
 
 	/**
