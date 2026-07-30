@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Addonian1123",
 			"Kly",
 			"LowensteinYang",
 			"Serhio Magpie"
@@ -49,10 +50,13 @@
 	"goto-settings": "設定",
 	"goto-actions": "操作",
 	"hint-close": "Esc",
+	"hint-close-description": "$1：關閉「即時差異」的對話方塊。",
 	"hint-alt-click": "Alt+點擊",
 	"hint-alt-click-description": "$1：開啟連結",
 	"hint-snapshot-prev": "Ctrl+左方鍵",
+	"hint-snapshot-prev-description": "$1：導航至頁面上的上一個連結。",
 	"hint-snapshot-next": "Ctrl+右方鍵",
+	"hint-snapshot-next-description": "$1：導航至頁面上的下一個連結。",
 	"hint-prev": "左方鍵",
 	"hint-next": "右方鍵",
 	"hint-switch": "Ctrl+上方鍵",
