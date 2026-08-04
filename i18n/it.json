@@ -88,7 +88,7 @@
 	"settings-unhide-diffs-help": "Per visualizzare il contenuto della versione è necessario il [[$2|diritto utente]] <code>$1</code>.",
 	"settings-open-in-new-tab": "Apri i collegamenti all'interno di Instant Diffs in una nuova scheda.",
 	"settings-show-menu-icons": "Mostra le icone nel menu a discesa del dialogo Instant Diffs.",
-	"settings-links-hash": "Includi il nome della sezione (ancora) nei collegamenti",
+	"settings-links-hash": "Includi il nome della sezione (ancora) nei collegamenti.",
 	"settings-links-hash-help": "Il nome della sezione verrà aggiunto anche come un'ancora all'URL del collegamento quando si utilizzano le azioni di copia con il formato non minimizzato selezionato.",
 	"settings-links-format": "Formato del collegamento per l'azione di copia:",
 	"settings-links-format-full": "URL completo con titolo della pagina",
