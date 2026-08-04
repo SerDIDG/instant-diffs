@@ -140,7 +140,15 @@ export function getModuleExport( moduleName, relativePath ) {
 	return moduleObj?.packageExports[ relativePath ];
 }
 
-export function executeModuleScript( moduleName ) {
+export function executeModuleScript( moduleName, fileName ) {
 	const moduleObj = mw.loader.moduleRegistry[ moduleName ];
-	return moduleObj?.script( $, jQuery, null, null );
+	if ( !moduleObj ) return;
+
+	if ( fileName ) {
+		const moduleHandler = moduleObj.script.files?.[ fileName ];
+		return utils.isFunction( moduleHandler ) ? moduleHandler() : undefined;
+	}
+
+	const moduleHandler = moduleObj.script;
+	return utils.isFunction( moduleHandler ) ? moduleHandler( $, jQuery, null, null ) : undefined;
 }

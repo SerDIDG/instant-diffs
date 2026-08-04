@@ -20,6 +20,70 @@ const { h, hf, ht } = utils;
  */
 class Navigation {
 	/**
+	 * Map of action names to their counterpart actions.
+	 * @private
+	 * @type {Record<string, string>}
+	 */
+	static ACTION_COUNTERPARTS = {
+		'unpatrolled': 'back',
+		'back-unpatrolled': 'unpatrolled',
+		'compareCur': 'back',
+		'back-compareCur': 'compareCur',
+	};
+
+	/**
+	 * Map of disabled action names to their alternative actions.
+	 * @private
+	 * @type {Record<string, string>}
+	 */
+	static ACTION_DISABLED_COUNTERPARTS = {
+		'next': 'prev',
+		'prev': 'next',
+		'snapshotNext': 'snapshotPrev',
+		'snapshotPrev': 'snapshotNext',
+	};
+
+	/**
+	 * Map of action hotkeys in LTR direction.
+	 * Keys are modifier states, values map key codes to action names.
+	 * @private
+	 * @type {Record<string, Record<string, string>>}
+	 */
+	static ACTION_HOTKEYS = {
+		none: {
+			ArrowLeft: 'prev',
+			ArrowRight: 'next',
+		},
+		ctrl: {
+			ArrowLeft: 'snapshotPrev',
+			ArrowRight: 'snapshotNext',
+			ArrowUp: 'switch',
+			ArrowDown: 'actions',
+			KeyZ: 'back',
+			KeyP: 'unpatrolled',
+		},
+		alt: {},
+		shift: {},
+	};
+
+	/**
+	 * Map of action hotkeys in RTL direction (overrides for LTR).
+	 * Keys are modifier states, values map key codes to action names.
+	 * @private
+	 * @type {Record<string, Record<string, string>>}
+	 */
+	static ACTION_HOTKEYS_RTL = {
+		none: {
+			ArrowRight: 'prev',
+			ArrowLeft: 'next',
+		},
+		ctrl: {
+			ArrowRight: 'snapshotPrev',
+			ArrowLeft: 'snapshotNext',
+		},
+	};
+
+	/**
 	 * @type {typeof import('./MenuActionsButton').default}
 	 */
 	MenuActionsButton;
@@ -286,6 +350,9 @@ class Navigation {
 		// Copy a wikilink to the clipboard action
 		this.renderCopyWikilink( options );
 
+		// Link to the compare with lastest revision
+		this.renderCompareCurLink( options );
+
 		// Link to the revision or to the edit
 		this.renderTypeLink( options );
 
@@ -419,27 +486,29 @@ class Navigation {
 	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderPrevLink( options ) {
+		const values = this.article.getValues();
+
 		let href;
 		if ( this.options.links.prev ) {
 			const article = new Article( {
-				title: this.article.get( 'title' ),
-				hostname: this.article.get( 'hostname' ),
-				oldid: mw.config.get( 'wgDiffOldId' ),
-				diff: this.article.get( 'type' ) === 'diff' ? 'prev' : null,
+				title: values.title,
+				hostname: values.hostname,
+				oldid: values.deletedId,
+				diff: values.type === 'diff' ? 'prev' : null,
 			} );
 			href = getHref( article );
 		}
 
 		const label = utils.renderLabel( {
 			short: utils.msg( 'goto-prev' ),
-			long: utils.msg( `goto-prev-${ this.article.get( 'type' ) }` ),
+			long: utils.msg( `goto-prev-${ values.type }` ),
 			iconBefore: document.dir === 'ltr' ? '←' : '→',
 		} );
 
 		options = {
 			name: 'prev',
 			label: $( label ),
-			title: utils.msgHint( `goto-prev-${ this.article.get( 'type' ) }`, 'prev', settings.get( 'enableHotkeys' ) ),
+			title: utils.msgHint( `goto-prev-${ values.type }`, 'prev', settings.get( 'enableHotkeys' ) ),
 			href: href,
 			disabled: !href,
 			setLink: !!href,
@@ -458,28 +527,30 @@ class Navigation {
 	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderNextLink( options ) {
+		const values = this.article.getValues();
+
 		let href;
 		if ( this.options.links.next ) {
 			const article = new Article( {
-				title: this.article.get( 'title' ),
-				hostname: this.article.get( 'hostname' ),
-				oldid: mw.config.get( 'wgDiffNewId' ),
-				diff: this.article.get( 'type' ) === 'diff' ? 'next' : null,
-				direction: this.article.get( 'type' ) === 'revision' ? 'next' : null,
+				title: values.title,
+				hostname: values.hostname,
+				oldid: values.addedId,
+				diff: values.type === 'diff' ? 'next' : null,
+				direction: values.type === 'revision' ? 'next' : null,
 			} );
 			href = getHref( article );
 		}
 
 		const label = utils.renderLabel( {
 			short: utils.msg( 'goto-next' ),
-			long: utils.msg( `goto-next-${ this.article.get( 'type' ) }` ),
+			long: utils.msg( `goto-next-${ values.type }` ),
 			iconAfter: document.dir === 'ltr' ? '→' : '←',
 		} );
 
 		options = {
 			name: 'next',
 			label: $( label ),
-			title: utils.msgHint( `goto-next-${ this.article.get( 'type' ) }`, 'next', settings.get( 'enableHotkeys' ) ),
+			title: utils.msgHint( `goto-next-${ values.type }`, 'next', settings.get( 'enableHotkeys' ) ),
 			href: href,
 			disabled: !href,
 			setLink: !!href,
@@ -610,6 +681,38 @@ class Navigation {
 			handler: this.actionCopyWikilink.bind( this ),
 			...options,
 		} );
+	}
+
+	/**
+	 * Render a button that navigates to the compare with lastest revision
+	 * @private
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
+	 */
+	renderCompareCurLink( options ) {
+		const values = this.article.getValues();
+		if ( values.revid === values.curRevid ) return;
+
+		const article = new Article( {
+			title: values.title,
+			hostname: values.hostname,
+			oldid: Math.min( values.addedId, values.deletedId ),
+			diff: 'cur',
+		} );
+
+		options = {
+			name: 'compareCur',
+			label: utils.msg( 'goto-compare-cur' ),
+			icon: 'diffs',
+			href: getHref( article ),
+			setLink: true,
+			linkOptions: {
+				initiatorPage: this.page,
+				onRequest: () => this.setActionRegister( options.name ),
+			},
+			...options,
+		};
+
+		this.menu.renderButton( options );
 	}
 
 	/**
@@ -882,28 +985,6 @@ class Navigation {
 	/******* BUTTONS ACTIONS *******/
 
 	/**
-	 * Map of action names to their counterpart actions.
-	 * @private
-	 * @type {Record<string, string>}
-	 */
-	ACTION_COUNTERPARTS = {
-		'unpatrolled': 'back',
-		'back-unpatrolled': 'unpatrolled',
-	};
-
-	/**
-	 * Map of disabled action names to their alternative actions.
-	 * @private
-	 * @type {Record<string, string>}
-	 */
-	ACTION_DISABLED_COUNTERPARTS = {
-		'next': 'prev',
-		'prev': 'next',
-		'snapshotNext': 'snapshotPrev',
-		'snapshotPrev': 'snapshotNext',
-	};
-
-	/**
 	 * Set focus on the specified button.
 	 * If the button is disabled, attempts to focus its counterpart instead.
 	 * @param {import('./MenuButton').default|string} widgetOrName - Button widget or action name
@@ -954,14 +1035,14 @@ class Navigation {
 	 */
 	focusActionByName( name ) {
 		// Apply action counterpart transformation
-		name = this.ACTION_COUNTERPARTS[ name ] || name;
+		name = Navigation.ACTION_COUNTERPARTS[ name ] || name;
 
 		// Try to focus on the primary action
 		const focused = this.menu.focusButton( name, this.groups );
 		if ( focused ) return true;
 
 		// If the primary action was disabled, try the counterpart
-		name = this.ACTION_DISABLED_COUNTERPARTS[ name ];
+		name = Navigation.ACTION_DISABLED_COUNTERPARTS[ name ];
 		if ( !name ) return false;
 
 		return this.menu.focusButton( name, this.groups );
@@ -1142,54 +1223,14 @@ class Navigation {
 	/******* HOTKEYS *******/
 
 	/**
-	 * Map of action hotkeys in LTR direction.
-	 * Keys are modifier states, values map key codes to action names.
-	 * @private
-	 * @type {Record<string, Record<string, string>>}
-	 */
-	ACTION_HOTKEYS = {
-		none: {
-			ArrowLeft: 'prev',
-			ArrowRight: 'next',
-		},
-		ctrl: {
-			ArrowLeft: 'snapshotPrev',
-			ArrowRight: 'snapshotNext',
-			ArrowUp: 'switch',
-			ArrowDown: 'actions',
-			KeyZ: 'back',
-			KeyP: 'unpatrolled',
-		},
-		alt: {},
-		shift: {},
-	};
-
-	/**
-	 * Map of action hotkeys in RTL direction (overrides for LTR).
-	 * Keys are modifier states, values map key codes to action names.
-	 * @private
-	 * @type {Record<string, Record<string, string>>}
-	 */
-	ACTION_HOTKEYS_RTL = {
-		none: {
-			ArrowRight: 'prev',
-			ArrowLeft: 'next',
-		},
-		ctrl: {
-			ArrowRight: 'snapshotPrev',
-			ArrowLeft: 'snapshotNext',
-		},
-	};
-
-	/**
 	 * Get the appropriate action hotkey map based on a text direction.
 	 * @private
 	 * @returns {Record<string, Record<string, string>>}
 	 */
 	getActionHotkeyMap() {
 		return document.dir === 'rtl'
-			? utils.optionsMerge( this.ACTION_HOTKEYS, this.ACTION_HOTKEYS_RTL )
-			: this.ACTION_HOTKEYS;
+			? utils.optionsMerge( Navigation.ACTION_HOTKEYS, Navigation.ACTION_HOTKEYS_RTL )
+			: Navigation.ACTION_HOTKEYS;
 	}
 
 	/**
