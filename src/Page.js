@@ -43,6 +43,11 @@ class Page {
 	articleParams = {};
 
 	/**
+	 * @type {Object}
+	 */
+	requestParams = {};
+
+	/**
 	 * Response to the main request
 	 * @type {Object|string}
 	 */
@@ -170,13 +175,13 @@ class Page {
 			wbEntityId: false,
 			'thanks-confirmation-required': true,
 		} );
-
 		this.userOptionsManager = new ConfigManager( {}, mw.user.options );
-
 		this.requestManager = new RequestManager( this.article );
 
 		// Mixin constructor
 		OO.EventEmitter.call( this );
+
+		mw.hook( `${ id.config.prefix }.page.ready` ).fire( this );
 	}
 
 	/**
@@ -529,6 +534,7 @@ class Page {
 				notificationtimestamp: page.notificationtimestamp,
 				new: page.new,
 				editable: page.actions?.edit,
+				actions: page.actions,
 				label:
 					( isWbContentModel( page.contentmodel ) && entity.label?.[ 0 ] ) ||
 					( page.contentmodel === 'EntitySchema' && getEntitySchemaLabel( props[ 'displaytitle' ] ) ) ||

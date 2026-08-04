@@ -12,8 +12,7 @@
 /******* TOOLS *******/
 
 .instantDiffs-page-tools {
-	display: flex;
-	justify-content: center;
+	margin-bottom: 1em;
 
 	&:is(:empty) {
 		display: none;
@@ -37,6 +36,19 @@
 
 	#mw-fr-revisiontag-old {
 		margin-bottom: 1em;
+	}
+
+	#mw-fr-reviewform {
+		.flaggedrevs_reviewform {
+			margin: 0;
+			border: none;
+		}
+
+		p {
+			&:is(:empty) {
+				display: none;
+			}
+		}
 	}
 
 	// /* Set a min height for the diff tools so they don't jump while loading */

@@ -72,7 +72,7 @@ class GlobalPage extends Page {
 	 */
 	requestProcess() {
 		const values = this.article.getValues();
-		const params = {
+		this.requestParams = {
 			action: 'compare',
 			prop: [ 'title', 'ids', 'rel', 'timestamp', 'user', 'diff', 'parsedcomment' ],
 			fromrev: utils.isValidID( values.oldid ) ? values.oldid : undefined,
@@ -85,17 +85,17 @@ class GlobalPage extends Page {
 		};
 
 		if ( values.type === 'diff' && !utils.isValidID( values.diff ) ) {
-			params.torelative = utils.isValidDir( values.diff ) ? values.diff : 'prev';
+			this.requestParams.torelative = utils.isValidDir( values.diff ) ? values.diff : 'prev';
 		}
 		if ( values.type === 'revision' && !utils.isValidID( values.diff ) ) {
-			params.torelative = 'prev';
+			this.requestParams.torelative = 'prev';
 		}
 		if ( values.typeVariant === 'page' && utils.isValidID( values.curid ) ) {
-			params.fromid = values.curid;
-			params.torelative = 'cur';
+			this.requestParams.fromid = values.curid;
+			this.requestParams.torelative = 'cur';
 		}
 
-		return this.requestManager.get( params );
+		return this.requestManager.get( this.requestParams );
 	}
 
 	/**

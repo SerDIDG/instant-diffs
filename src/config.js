@@ -59,7 +59,6 @@ export const config = {
 			'mediawiki.diff.styles',
 			'mediawiki.misc-authed-curate',
 			'mediawiki.page.watch.ajax',
-			'ext.flaggedRevs.basic',
 			'ext.visualEditor.diffPage.init',
 		],
 		page: {
@@ -67,6 +66,8 @@ export const config = {
 				'ext.thanks.corethank',
 				'ext.checkUser.styles',
 				'ext.checkUser.userInfoCard',
+				'ext.flaggedRevs.basic',
+				'ext.flaggedRevs.review',
 			],
 		},
 		revision: {

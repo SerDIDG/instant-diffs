@@ -17,6 +17,11 @@ class LocalPage extends Page {
 	type = 'local';
 
 	/**
+	 * @type {Array}
+	 */
+	diffTablePrefixTools = [];
+
+	/**
 	 * Get a promise array for the main load request.
 	 * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
 	 */
@@ -140,7 +145,7 @@ class LocalPage extends Page {
 		if ( this.error ) return $.Deferred().resolve().promise();
 
 		const values = this.article.getValues();
-		const pageParams = {
+		this.requestParams = {
 			title: !utils.isEmpty( values.title ) ? values.title : undefined,
 			curid: !utils.isEmpty( values.curid ) ? values.curid : undefined,
 			oldid: !utils.isEmpty( values.oldid ) ? values.oldid : undefined,
@@ -152,9 +157,8 @@ class LocalPage extends Page {
 		const params = {
 			url: id.local.mwEndPoint,
 			dataType: 'html',
-			data: $.extend( pageParams, this.articleParams ),
+			data: $.extend( this.requestParams, this.articleParams ),
 		};
-
 		return this.requestManager.ajax( params );
 	}
 
@@ -431,27 +435,29 @@ class LocalPage extends Page {
 	restoreFunctionality() {
 		if ( this.error ) return;
 
-		// Restore rollback and patrol links scripts
+		// Restore rollback and patrol scripts
 		executeModuleScript( 'mediawiki.misc-authed-curate' );
-
-		// Restore rollback link
 		utilsPage.restoreRollbackLink( this.nodes.$body );
 
 		// Restore diff format toggle buttons
-		const diffTablePrefixTools = [];
-
 		if ( this.article.get( 'type' ) === 'diff' && settings.get( 'showDiffTools' ) ) {
 			const hasInlineToggle = utilsPage.restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
-			if ( hasInlineToggle ) diffTablePrefixTools.push( hasInlineToggle );
+			if ( hasInlineToggle ) this.diffTablePrefixTools.push( 'inlineFormatToggle' );
 
 			const hasVisualDiffs = utilsPage.restoreVisualDiffs( this.nodes.$diffTablePrefix );
-			if ( hasVisualDiffs ) diffTablePrefixTools.push( hasVisualDiffs );
+			if ( hasVisualDiffs ) this.diffTablePrefixTools.push( 'visualDiffs' );
 		}
 
-		// Show diffTablePrefix if at least one tool was restored and visible
+		this.checkDiffTablePrefix();
+	}
+
+	/**
+	 * Shows diffTablePrefix if at least one tool was rendered and visible.
+	 */
+	checkDiffTablePrefix() {
 		if ( this.nodes.$diffTablePrefix?.length > 0 ) {
 			const hasVisibleChild = this.nodes.$diffTablePrefix.children( ':visible' ).length > 0;
-			this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', ( !hasVisibleChild || diffTablePrefixTools.length === 0 ) );
+			this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', ( !hasVisibleChild || this.diffTablePrefixTools.length === 0 ) );
 		}
 	}
 
