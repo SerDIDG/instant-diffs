@@ -316,9 +316,6 @@ class LocalPage extends Page {
 	processDiffTable() {
 		// Find diff table tools container and pre-toggle visibility
 		this.nodes.$diffTablePrefix = this.nodes.$data.filter( '.mw-diff-table-prefix' );
-		if ( this.article.get( 'type' ) !== 'diff' || !settings.get( 'showDiffTools' ) ) {
-			this.nodes.$diffTablePrefix.addClass( 'instantDiffs-hidden' );
-		}
 
 		// Find table elements
 		this.nodes.$table = this.nodes.$data.filter( 'table.diff' );
@@ -367,7 +364,7 @@ class LocalPage extends Page {
 
 		// Hide unsupported or unnecessary element
 		this.nodes.$data
-			.find( '.mw-diff-slot-header, .mw-slot-header' )
+			.find( '.mw-diff-slot-header, .mw-slot-header, .mw-diff-inline-legend, .ve-init-mw-diffPage-diffMode, .mw-diffPage-inlineToggle-container' )
 			.addClass( 'instantDiffs-hidden' );
 	}
 
@@ -455,10 +452,11 @@ class LocalPage extends Page {
 	 * Shows diffTablePrefix if at least one tool was rendered and visible.
 	 */
 	checkDiffTablePrefix() {
-		if ( this.nodes.$diffTablePrefix?.length > 0 ) {
-			const hasVisibleChild = this.nodes.$diffTablePrefix.children( ':visible' ).length > 0;
-			this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', ( !hasVisibleChild || this.diffTablePrefixTools.length === 0 ) );
-		}
+		if ( !this.nodes.$diffTablePrefix || this.nodes.$diffTablePrefix.length === 0 ) return;
+
+		const hasVisibleChild = this.nodes.$diffTablePrefix.children( ':visible' ).length > 0;
+		const shouldVisible = settings.get( 'showDiffTools' ) && ( hasVisibleChild || this.diffTablePrefixTools.length > 0 );
+		this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', !shouldVisible );
 	}
 
 	/******* ACTIONS *******/

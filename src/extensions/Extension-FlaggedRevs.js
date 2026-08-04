@@ -16,7 +16,7 @@ import settings from '../settings';
 function request( page ) {
 	if (
 		!settings.get( 'showDiffTools' ) ||
-		!( page?.type === 'local' ) ||
+		!page || page.type !== 'local' || page.error ||
 		!page.getArticle().get( 'actions' ).review
 	) {
 		return;
