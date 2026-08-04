@@ -35,6 +35,7 @@
 	"goto-prev-revision": "Попередня версія",
 	"goto-next-revision": "Наступна версія",
 	"goto-back-revision": "Повернутися",
+	"goto-compare-cur": "Порівняти з поточною",
 	"goto-diff": "Перейти до редагування",
 	"goto-revision": "Перейти до версії",
 	"goto-page": "Перейти до сторінки",

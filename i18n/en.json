@@ -39,6 +39,7 @@
     "goto-prev-revision": "Older revision",
     "goto-next-revision": "Newer revision",
     "goto-back-revision": "Back",
+    "goto-compare-cur": "Compare latest",
     "goto-diff": "Go to edit",
     "goto-revision": "Go to revision",
     "goto-page": "Go to page",

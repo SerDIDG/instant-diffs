@@ -37,6 +37,7 @@
 	"goto-prev-revision": "Label for the button that navigates to the older revision.\n\nSee also: {{msg-wm|Instant-diffs-goto-prev}}.\n\nDisplayed in the Instant Diffs dialog navigation.",
 	"goto-next-revision": "Label for the button that navigates to the newer revision.\n\nSee also: {{msg-wm|Instant-diffs-goto-next}}.\n\nDisplayed in the Instant Diffs dialog navigation.",
 	"goto-back-revision": "Label for the button that navigates to the previous revision view after switching to the pending changes view.\n\nDisplayed in the Instant Diffs dialog navigation.\n\n{{identical|Back}}",
+	"goto-compare-cur": "Label for the button that navigates to the compare with lastest revision.\n\nDisplayed in the Instant Diffs dialog context menu.",
 	"goto-diff": "Label for the button that navigates to the particular diff.\n\nDisplayed in the Instant Diffs dialog context menu.",
 	"goto-revision": "Label for the button that navigates to the particular revision.\n\nDisplayed in the Instant Diffs dialog context menu.",
 	"goto-page": "Label for the button that navigates to the particular page.\n\nDisplayed in the Instant Diffs dialog context menu.",
