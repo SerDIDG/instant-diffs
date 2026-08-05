@@ -539,7 +539,7 @@ export function getTarget( isInWindow ) {
 }
 
 export function getHref( href ) {
-	if ( /^\/\//.test( href ) ) {
+	if ( isString( href ) && href.startsWith( '//' ) ) {
 		href = `https:${ href }`;
 	}
 	return href;
