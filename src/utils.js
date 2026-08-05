@@ -327,6 +327,14 @@ export function inArray( arrOrStr, entry ) {
 	return false;
 }
 
+export function arrayRemove( arr, item ) {
+	const index = arr.indexOf( item );
+	if ( index > -1 ) {
+		arr.splice( index, 1 );
+	}
+	return arr;
+}
+
 /**
  * Remove duplicates from an array.
  * @param {Array<*>} arr

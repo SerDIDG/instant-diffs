@@ -6,7 +6,9 @@
  */
 
 import id from '../id';
+import * as utils from '../utils';
 import { executeModuleScript } from '../utils-oojs';
+
 import settings from '../settings';
 
 /**
@@ -26,6 +28,7 @@ function request( page ) {
 	page.nodes.flaggedRevsButton = new OO.ui.PopupButtonWidget( {
 		icon: 'eyeClosed',
 		label: 'Review',
+		disabled: true,
 		popup: {
 			padded: false,
 			align: 'force-right',
@@ -41,6 +44,7 @@ function request( page ) {
 	const articleParams = {
 		action: 'view',
 		useskin: 'apioutput',
+		diffonly: 1,
 	};
 	const params = {
 		url: id.local.mwEndPoint,
@@ -61,7 +65,14 @@ function render( page, data ) {
 
 	// Find and append review form
 	const $reviewForm = $nodes.find( '#mw-fr-reviewform' );
+	if ( !$reviewForm || $reviewForm.length === 0 ) {
+		utils.arrayRemove( page.diffTablePrefixTools, 'flaggedRevsButton' );
+		page.checkDiffTablePrefix();
+		return;
+	}
+
 	page.nodes.flaggedRevsButton.getPopup().$body.append( $reviewForm );
+	page.nodes.flaggedRevsButton.setDisabled( false );
 
 	// Restore review form JS code
 	executeModuleScript( 'ext.flaggedRevs.review', 'review.js' );
