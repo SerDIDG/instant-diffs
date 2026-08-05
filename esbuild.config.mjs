@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import * as esbuild from 'esbuild';
 import { replace } from 'esbuild-plugin-replace';
 import { lessLoader } from 'esbuild-plugin-less';
-import { getProject } from './scripts/utils.mjs';
+import { getProject, createEs5Plugin } from './scripts/utils.mjs';
 
 const args = minimist( process.argv.slice( 2 ) );
 const warning = ( text ) => console.log( chalk.yellowBright( text ) );
@@ -65,6 +65,7 @@ const config = {
 		css: footer,
 	},
 	plugins: [
+		createEs5Plugin( project.esbuild.target ),
 		replace( strings ),
 		lessLoader(),
 	],
