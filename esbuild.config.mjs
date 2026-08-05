@@ -56,6 +56,7 @@ const config = {
 	treeShaking: true,
 	outfile: `${ project.dir }/${ project.fileName }.js`,
 	format: 'iife',
+	target: 'es2017',
 	banner: {
 		js: banner,
 		css: banner,
