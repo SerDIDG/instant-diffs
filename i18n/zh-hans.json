@@ -36,6 +36,7 @@
 	"goto-prev-revision": "较旧修订",
 	"goto-next-revision": "较新修订",
 	"goto-back-revision": "返回",
+	"goto-compare-cur": "比较最新",
 	"goto-diff": "前往编辑",
 	"goto-revision": "前往修订",
 	"goto-page": "前往页面",

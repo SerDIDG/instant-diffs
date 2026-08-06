@@ -40,6 +40,7 @@
 	"goto-prev-revision": "النسخة الأقدم",
 	"goto-next-revision": "المراجعة الأحدث",
 	"goto-back-revision": "العودة",
+	"goto-compare-cur": "قارن أحدث الإصدارات",
 	"goto-diff": "انتقل إلى التحرير",
 	"goto-revision": "انتقل إلى المراجعة",
 	"goto-page": "انتقل إلى الصفحة",
