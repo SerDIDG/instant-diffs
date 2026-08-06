@@ -22,7 +22,7 @@ class ReviewForm {
 	article;
 
 	/**
-	 * @type {ReviewButton}
+	 * @type {import('./ReviewButton').default}
 	 */
 	button;
 
@@ -61,7 +61,7 @@ class ReviewForm {
 
 	render() {
 		// Render popup button
-		this.button = new ReviewButton();
+		this.button = new this.ReviewButton();
 
 		// Register diff tool
 		this.page.registerDiffTool( {
