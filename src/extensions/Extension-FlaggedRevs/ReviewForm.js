@@ -100,6 +100,17 @@ class ReviewForm {
 		if ( $reviewForm.length === 0 ) {
 			return this.onError();
 		}
+		$reviewForm.addClass( 'instantDiffs-extension-flaggedRevs' );
+
+		// Group and wrap buttons inside the form
+		const $buttonContainer = $( '<div>' ).addClass( 'fr-rating-buttons' );
+		const $buttons = $reviewForm.find( '#mw-fr-submit-accept, #mw-fr-submit-reject, #mw-fr-submit-unaccept' );
+		for ( const button of $buttons ) {
+			const $button = $( button );
+			$buttonContainer
+				.insertBefore( $button )
+				.append( $button );
+		}
 
 		// Embed form to the button popup and pop pending state
 		utils.addTargetToLinks( $reviewForm );

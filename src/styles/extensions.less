@@ -1,10 +1,13 @@
-/******* WIKIBASE MEDIA INFO *******/
+/******* FLAGGED REVS *******/
 
-.instantDiffs-extension-wikibaseMediaInfo {
-	.oo-ui-indexLayout-stackLayout {
-		> .oo-ui-tabPanelLayout-active {
-			margin: 1rem 0 0;
-			padding: 0;
+.instantDiffs-extension-flaggedRevs {
+	.fr-rating-buttons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 5px;
+
+		input {
+			flex: auto;
 		}
 	}
 }
@@ -19,6 +22,17 @@
 
 		&.seen {
 			background-color: var(--background-color-neutral-subtle, #f8f9fa);
+		}
+	}
+}
+
+/******* WIKIBASE MEDIA INFO *******/
+
+.instantDiffs-extension-wikibaseMediaInfo {
+	.oo-ui-indexLayout-stackLayout {
+		> .oo-ui-tabPanelLayout-active {
+			margin: 1rem 0 0;
+			padding: 0;
 		}
 	}
 }
