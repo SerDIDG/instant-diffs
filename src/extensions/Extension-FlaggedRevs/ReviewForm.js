@@ -2,12 +2,15 @@ import id from '../../id';
 import * as utils from '../../utils';
 import { executeModuleScript } from '../../utils-oojs';
 
-import ReviewButton from './ReviewButton';
-
 /**
  * Class representing the review form.
  */
 class ReviewForm {
+	/**
+	 * @type {typeof import('./ReviewButton').default}
+	 */
+	ReviewButton;
+
 	/**
 	 * @type {import('../../Page').Page.Any}
 	 */
@@ -44,6 +47,9 @@ class ReviewForm {
 		) {
 			return;
 		}
+
+		// Lazy-import modules
+		this.ReviewButton = require( './ReviewButton' ).default;
 
 		// Change id attributes for the FlaggedRevs elements on the page before render review form.
 		// Restores attributes to the origin states before page detach.
