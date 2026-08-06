@@ -7,75 +7,13 @@
 
 import id from '../id';
 import * as utils from '../utils';
-import { executeModuleScript } from '../utils-oojs';
+import { executeModuleScript, tweakUserOoUiClass } from '../utils-oojs';
 
-import settings from '../settings';
 
-/**
- * Requests FlaggedRevs form and renders review button.
- * @param {import('./Page').default} page
- */
-function request( page ) {
-	if (
-		!settings.get( 'showDiffTools' ) ||
-		!page || page.type !== 'local' || page.error ||
-		!page.getArticle().get( 'actions' ).review
-	) {
-		return;
-	}
 
-	// Render popup button
-	page.nodes.flaggedRevsButton = new OO.ui.PopupButtonWidget( {
-		icon: 'eyeClosed',
-		label: 'Review',
-		disabled: true,
-		popup: {
-			padded: false,
-			align: 'force-right',
-		},
-	} );
-	page.nodes.$diffTablePrefix.prepend( page.nodes.flaggedRevsButton.$element );
 
-	// Toggle diff tools visibility
-	page.diffTablePrefixTools.push( 'flaggedRevsButton' );
-	page.checkDiffTablePrefix();
 
-	// Request page HTML
-	const articleParams = {
-		action: 'view',
-		useskin: 'apioutput',
-		diffonly: 1,
-	};
-	const params = {
-		url: id.local.mwEndPoint,
-		dataType: 'html',
-		data: $.extend( page.requestParams, articleParams ),
-	};
-	page.requestManager.ajax( params )
-		.done( ( data ) => render( page, data ) );
-}
-
-/**
- * Finds and appends review form intro review button popover.
- * @param {import('./Page').default} page
- * @param {string} data
- */
-function render( page, data ) {
-	const $nodes = $( $.parseHTML( data ) );
-
-	// Find and append review form
-	const $reviewForm = $nodes.find( '#mw-fr-reviewform' );
-	if ( !$reviewForm || $reviewForm.length === 0 ) {
-		utils.arrayRemove( page.diffTablePrefixTools, 'flaggedRevsButton' );
-		page.checkDiffTablePrefix();
-		return;
-	}
-
-	page.nodes.flaggedRevsButton.getPopup().$body.append( $reviewForm );
-	page.nodes.flaggedRevsButton.setDisabled( false );
-
-	// Restore review form JS code
-	executeModuleScript( 'ext.flaggedRevs.review', 'review.js' );
-}
-
-mw.hook( `${ id.config.prefix }.page.complete` ).add( request );
+mw.hook( `${ id.config.prefix }.page.renderSuccess` ).add( ( page ) => {
+	if ( !page ) return;
+	new ReviewForm( page );
+} );

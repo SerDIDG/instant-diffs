@@ -13,6 +13,19 @@ import settings from './settings';
 import './styles/page.less';
 
 /**
+ * @typedef {import('./LocalPage').default|import('./GlobalPage').default} Page.Any
+ */
+
+/**
+ * Page's diff tool configuration options.
+ * @typedef {Object} Page.DiffTool
+ * @property {string} name - Tool name
+ * @property {HTMLElement|JQuery<HTMLElement>} [node] - Element to append
+ * @property {(tool: Page.DiffTool) => void} [onAttach] - Callback fired after element attached
+ * @property {(tool: Page.DiffTool) => void} [onDetach] - Callback fired after element detached
+ */
+
+/**
  * Class representing a Page.
  * @mixes OO.EventEmitter
  */
@@ -25,7 +38,7 @@ class Page {
 	/**
 	 * @type {string}
 	 */
-	type = 'abstract';
+	static type = 'abstract';
 
 	/**
 	 * @type {import('./Article').default}
@@ -111,6 +124,11 @@ class Page {
 	navigation;
 
 	/**
+	 * @type {Array<Page.DiffTool>}
+	 */
+	diffTools = [];
+
+	/**
 	 * @type {boolean}
 	 */
 	isLoading = false;
@@ -135,7 +153,7 @@ class Page {
 	 * @param {import('./Article').default} article - An Article instance
 	 * @param {Object} [options] - Configuration options
 	 * @param {string[]} [options.initiatorAction] - An action name
-	 * @param {import('./Page').default} [options.initiatorPage] - A Page instance
+	 * @param {import('./Page').Page.Any} [options.initiatorPage] - A Page instance
 	 * @param {boolean} [options.fireDiffHook] - Fire 'wikipage.diff' hook on fire method
 	 * @param {boolean} [options.fireContentHook] - Fire 'wikipage.content' hook on fire method
 	 */
@@ -169,6 +187,7 @@ class Page {
 			wgRevisionId: false,
 			wgDiffOldId: false,
 			wgDiffNewId: false,
+			wgStableRevisionId: false,
 			wgCanonicalSpecialPageName: false,
 			wgIsProbablyEditable: false,
 			wgRelevantPageIsProbablyEditable: false,
@@ -180,8 +199,6 @@ class Page {
 
 		// Mixin constructor
 		OO.EventEmitter.call( this );
-
-		mw.hook( `${ id.config.prefix }.page.ready` ).fire( this );
 	}
 
 	/**
@@ -507,12 +524,14 @@ class Page {
 			const props = page.pageprops || {};
 			const entity = page.entityterms || {};
 			const terms = page.terms || {};
+			const flagged = page.flagged || {};
 
 			// Set values for mw.config
 			this.configManager.setValues( {
 				wgArticleId: page.pageid,
 				wgRelevantArticleId: page.pageid,
 				wgCurRevisionId: page.lastrevid,
+				wgStableRevisionId: flagged.stable_revid,
 				wgContentLanguage: page.pagelanguage,
 				wgContentLanguageDir: page.pagelanguagedir,
 				wgPageContentModel: page.contentmodel,
@@ -529,6 +548,7 @@ class Page {
 				title: page.title,
 				curid: page.pageid,
 				curRevid: page.lastrevid,
+				stableRevid: flagged.stable_revid,
 				watched: page.watched,
 				expiry: page.watchlistexpiry,
 				notificationtimestamp: page.notificationtimestamp,
@@ -634,8 +654,8 @@ class Page {
 		// Mark the page as seen in the watchlist
 		this.markAsSeen();
 
-		mw.hook( `${ id.config.prefix }.page.renderSuccess` ).fire( this );
-		mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
+		this.emitHook( 'renderSuccess' );
+		this.emitHook( 'renderComplete' );
 	}
 
 	async renderError() {
@@ -660,8 +680,8 @@ class Page {
 
 		await this.render();
 
-		mw.hook( `${ id.config.prefix }.page.renderError` ).fire( this );
-		mw.hook( `${ id.config.prefix }.page.renderComplete` ).fire( this );
+		this.emitHook( 'renderError' );
+		this.emitHook( 'renderComplete' );
 	}
 
 	async render() {
@@ -767,6 +787,80 @@ class Page {
 		return mw.loader.using( utils.getDependencies( dependencies ) );
 	}
 
+	/******* DIFF TOOLS *******/
+
+	/**
+	 * Registers diff tool.
+	 * @param {Page.DiffTool} options - Tool options
+	 */
+	registerDiffTool( options ) {
+		if ( !settings.get( 'showDiffTools' ) ) return;
+
+		options = {
+			name: null,
+			node: null,
+			onAttach: () => {},
+			onDetach: () => {},
+			...options,
+		};
+		this.diffTools.push( options );
+
+		if ( options.node ) {
+			const $container = this.getDiffTools();
+			if ( $container ) {
+				const $inlineLegend = $container.find( '.mw-diff-inline-legend' );
+				if ( $inlineLegend.length > 0 ) {
+					utils.embed( options.node, $inlineLegend, 'insertAfter' );
+				} else {
+					utils.embed( options.node, $container, 'prependTo' );
+				}
+			}
+		}
+		if ( utils.isFunction( options.onAttach ) ) {
+			options.onAttach( options );
+		}
+
+		this.checkDiffTools();
+	}
+
+	/**
+	 * Unregisters diff tool.
+	 * @param {string} name - Tool name
+	 */
+	detachDiffTool( name ) {
+		if ( !settings.get( 'showDiffTools' ) ) return;
+
+		this.diffTools = this.diffTools.filter( ( options ) => {
+			if ( options.name !== name ) return true;
+			utils.remove( options.node );
+			if ( utils.isFunction( options.onDetach ) ) {
+				options.onDetach( options );
+			}
+			return false;
+		} );
+		this.checkDiffTools();
+	}
+
+	/**
+	 * Gets diff tools container.
+	 * @returns {JQuery<HTMLElement>}
+	 */
+	getDiffTools() {
+		return this.nodes.$diffTablePrefix;
+	}
+
+	/**
+	 * Shows diff tools container if at least one tool was rendered and visible.
+	 */
+	checkDiffTools() {
+		const $container = this.getDiffTools();
+		if ( !$container || $container.length === 0 ) return;
+
+		const hasVisibleChild = $container.children( ':visible' ).length > 0;
+		const shouldVisible = settings.get( 'showDiffTools' ) && ( hasVisibleChild || this.diffTools.length > 0 );
+		$container.toggleClass( 'instantDiffs-hidden', !shouldVisible );
+	}
+
 	/******* HELPERS *******/
 
 	getScrollableSection() {
@@ -800,7 +894,7 @@ class Page {
 	 */
 	async fire() {
 		// Fire hook on ready
-		mw.hook( `${ id.config.prefix }.page.ready` ).fire( this );
+		this.emitHook( 'ready' );
 
 		// Fire navigation events
 		this.getNavigation()?.fire();
@@ -821,11 +915,19 @@ class Page {
 			}
 		}
 
-		// Replace link target attributes after the hooks have fired
 		utils.addTargetToLinks( this.nodes.$container );
 
 		// Fire hook on complete
-		mw.hook( `${ id.config.prefix }.page.complete` ).fire( this );
+		this.emitHook( 'complete' );
+	}
+
+	/**
+	 * Fires event and hook with given name.
+	 * @param {string} name
+	 */
+	emitHook( name ) {
+		this.emit( name );
+		mw.hook( `${ id.config.prefix }.page.${ name }` ).fire( this );
 	}
 
 	focus() {
@@ -924,13 +1026,15 @@ class Page {
 	detach() {
 		if ( this.isDetached ) return;
 
-		mw.hook( `${ id.config.prefix }.page.beforeDetach` ).fire( this );
+		this.emitHook( 'beforeDetach' );
 
 		this.abort();
 		this.restoreConfigs();
 		this.getNavigation()?.detach();
 		this.getContainer()?.detach();
 		this.isDetached = true;
+
+		this.emitHook( 'detach' );
 	}
 }
 

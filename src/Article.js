@@ -129,6 +129,15 @@ class Article {
 	}
 
 	/**
+	 * Checks if a user action available in the actions object.
+	 * @param {string} action
+	 * @return {boolean|undefined}
+	 */
+	hasAction( action ) {
+		return this.values.actions?.[ action ];
+	}
+
+	/**
 	 * @private
 	 */
 	validateValues( values ) {

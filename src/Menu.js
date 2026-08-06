@@ -3,7 +3,7 @@ import * as utils from './utils';
 import settings from './settings';
 
 /**
- * Menu Button's configuration options, extends MenuButton.Options
+ * Menu Button's configuration options, extends MenuButton.Options.
  * @typedef {MenuButton.Options & Object} Menu.ButtonOptions
  * @property {string} [name] - A button name, used for the data-mw-ui-id attribute
  * @property {string} [group] - A group name, used for grouping buttons
@@ -392,7 +392,7 @@ class Menu {
 	 */
 	pendingButton( name, group, value ) {
 		this.eachButtonWidget( name, group, widget => {
-			widget.pending( value );
+			widget.setPending( value );
 		} );
 	}
 }

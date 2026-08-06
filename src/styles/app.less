@@ -26,6 +26,21 @@
 	}
 }
 
+.instantDiffs-button {
+	.oo-ui-buttonElement-pending {
+		position: absolute;
+		inset: 0;
+	}
+
+	.oo-ui-labelElement-label {
+		position: relative;
+	}
+
+	&.instantDiffs-button--pending {
+		pointer-events: none;
+	}
+}
+
 .instantDiffs-notice-box {
 	display: flex;
 	flex-direction: column;

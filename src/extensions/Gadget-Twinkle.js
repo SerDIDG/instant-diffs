@@ -10,7 +10,7 @@ import id from '../id';
 
 /**
  * Process Twinkle gadget.
- * @param {import('../Page').default} page
+ * @param {import('../Page').Page.Any} page
  */
 function process( page ) {
 	if ( !page || page.error ) return;

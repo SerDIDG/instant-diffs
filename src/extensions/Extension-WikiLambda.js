@@ -11,7 +11,7 @@ import * as utils from '../utils';
 
 /**
  * Restores WikiLambda extension.
- * @param {import('../Page').default} page
+ * @param {import('../Page').Page.Any} page
  */
 function process( page ) {
 	if ( !page || page.error || page.article.get( 'type' ) !== 'revision' ) return;
@@ -29,7 +29,7 @@ function process( page ) {
 
 /**
  * Restores local WikiLambda extension.
- * @param {import('../Page').default} page
+ * @param {import('../Page').Page.Any} page
  */
 function processLocal( page ) {
 	page.nodes.$wikiLambdaApp = page.getBody().find( '#ext-wikilambda-app' );
@@ -71,7 +71,7 @@ function renderApp( $container ) {
 
 /**
  * Restores foreign WikiLambda extension.
- * @param {import('../Page').default} page
+ * @param {import('../Page').Page.Any} page
  */
 function processForeign( page ) {
 	page.nodes.$wikiLambdaApp = page.getBody().find( '#ext-wikilambda-app' );

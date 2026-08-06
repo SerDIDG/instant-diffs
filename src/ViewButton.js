@@ -52,7 +52,7 @@ class ViewButton extends Button {
 	 * @private
 	 */
 	onDialogRequest() {
-		this.pending( true );
+		this.setPending( true );
 		this.emit( 'loading' );
 	}
 
@@ -62,7 +62,7 @@ class ViewButton extends Button {
 	 * @private
 	 */
 	onDialogLoad() {
-		this.pending( false );
+		this.setPending( false );
 		this.emit( 'loaded' );
 	}
 

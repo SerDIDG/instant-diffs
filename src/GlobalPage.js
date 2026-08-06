@@ -229,9 +229,9 @@ class GlobalPage extends Page {
 
 		// Set article values
 		const articleValues = {
-			deletedId: this.data.fromrevid,
+			deletedRevid: this.data.fromrevid,
 			deleteTitle: this.data.fromtitle,
-			addedId: this.data.torevid,
+			addedRevid: this.data.torevid,
 			addedTitle: this.data.totitle,
 			previd: this.data.prev,
 			nextid: this.data.next,

@@ -9,7 +9,7 @@ import settings from './settings';
  */
 class MenuActionsButton extends OO.ui.PopupButtonWidget {
 	/**
-	 * Create a MenuActionsButton instance.
+	 * Creates a MenuActionsButton instance.
 	 * @param {OO.ui.PopupButtonWidget.ConfigOptions} [options] - A PopupButtonWidget configuration options
 	 */
 	constructor( options ) {
@@ -37,34 +37,31 @@ class MenuActionsButton extends OO.ui.PopupButtonWidget {
 	}
 
 	/**
-	 * Execute a click handler on the button element.
+	 * Executes a click handler on the button element.
 	 * @returns {MenuActionsButton}
 	 */
 	execHandler() {
 		this.$button.get( 0 ).click();
-
 		return this;
 	}
 
 	/**
-	 * Toggle a popup state.
+	 * Toggles a popup state.
 	 * @param {boolean} value
 	 * @returns {MenuActionsButton}
 	 */
 	togglePopup( value ) {
 		this.getPopup().toggle( value );
-
 		return this;
 	}
 
 	/**
-	 * Toggle a buttons pending state that shows a loading cursor.
+	 * Toggles a buttons pending state that shows a loading cursor.
 	 * @param {boolean} value
 	 * @returns {MenuActionsButton}
 	 */
-	pending( value ) {
+	setPending( value ) {
 		this.$button.toggleClass( 'instantDiffs-link--pending', value );
-
 		return this;
 	}
 }

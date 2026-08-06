@@ -19,7 +19,7 @@ const $ATTACHED_POPUPS = [];
 
 /**
  * Attach IPInfo popups from the default overlay to the View dialog.
- * @param {import('../Page').default} page
+ * @param {import('../Page').Page.Any} page
  */
 function attachPopups( page ) {
 	if ( !page ) return;
@@ -42,7 +42,7 @@ function attachPopups( page ) {
 
 /**
  * Detach all IPInfo popups from the View dialog.
- * @param {import('../Page').default} page
+ * @param {import('../Page').Page.Any} page
  */
 function detachPopups( page ) {
 	if ( !page ) return;

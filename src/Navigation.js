@@ -94,7 +94,7 @@ class Navigation {
 	MenuButton;
 
 	/**
-	 * @type {import('./Page').default}
+	 * @type {import('./Page').Page.Any}
 	 */
 	page;
 
@@ -140,7 +140,7 @@ class Navigation {
 
 	/**
 	 * Create a Page navigation bar instance.
-	 * @param {import('./Page').default} page - A Page instance
+	 * @param {import('./Page').Page.Any} page - A Page instance
 	 * @param {import('./Article').default} article - An Article instance
 	 * @param {Object} [articleParams] - Article parameters
 	 * @param {Object} [options] - Configuration options
@@ -493,7 +493,7 @@ class Navigation {
 			const article = new Article( {
 				title: values.title,
 				hostname: values.hostname,
-				oldid: values.deletedId,
+				oldid: values.deletedRevid,
 				diff: values.type === 'diff' ? 'prev' : null,
 			} );
 			href = getHref( article );
@@ -534,7 +534,7 @@ class Navigation {
 			const article = new Article( {
 				title: values.title,
 				hostname: values.hostname,
-				oldid: values.addedId,
+				oldid: values.addedRevid,
 				diff: values.type === 'diff' ? 'next' : null,
 				direction: values.type === 'revision' ? 'next' : null,
 			} );
@@ -695,7 +695,7 @@ class Navigation {
 		const article = new Article( {
 			title: values.title,
 			hostname: values.hostname,
-			oldid: Math.min( values.addedId, values.deletedId ),
+			oldid: Math.min( values.addedRevid, values.deletedRevid ),
 			diff: 'cur',
 		} );
 
@@ -951,7 +951,7 @@ class Navigation {
 			this.watch = new Watch( this.article, {
 				onUpdate: state => {
 					this.menu.eachButtonWidget( 'watch', null, widget => {
-						widget.pending( state === 'loading' );
+						widget.setPending( state === 'loading' );
 						updateWatchButtonStatus( this.article, widget );
 					} );
 				},

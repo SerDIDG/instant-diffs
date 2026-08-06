@@ -10,7 +10,7 @@ import * as utils from '../utils';
 
 /**
  * Adds base url and target to anchor links in the diff table.
- * @param {import('../Page').default} page
+ * @param {import('../Page').Page.Any} page
  */
 function process( page ) {
 	if ( !page ) return;

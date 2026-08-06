@@ -12,7 +12,7 @@ const { h } = utils;
 
 /**
  * Restores file media info.
- * @param {import('../Page').default} page
+ * @param {import('../Page').Page.Any} page
  */
 function process( page ) {
 	if ( !page || page.error || page.article.get( 'type' ) !== 'revision' ) return;

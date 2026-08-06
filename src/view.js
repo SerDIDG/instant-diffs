@@ -47,7 +47,7 @@ class View {
 	link;
 
 	/**
-	 * @type {import('./Page').default}
+	 * @type {import('./Page').Page.Any}
 	 */
 	page;
 
@@ -132,7 +132,7 @@ class View {
 	 * Set up the configuration options.
 	 * @param {import('./Link').default|import('./ViewButton').default} link a Link, or a ViewButton instance
 	 * @param {Object} [options] configuration options
-	 * @param {import('./Page').default} [options.initiatorPage] a Page instance
+	 * @param {import('./Page').Page.Any} [options.initiatorPage] a Page instance
 	 * @param {Function} [options.onOpen] a callback
 	 * @param {Function} [options.onClose] a callback
 	 * @returns {boolean} a ready state
@@ -554,7 +554,7 @@ class View {
 
 	/**
 	 * Get the Page instance.
-	 * @returns {import('./Page').default} a Page instance
+	 * @returns {import('./Page').Page.Any} a Page instance
 	 */
 	getPage() {
 		return this.page;
@@ -562,7 +562,7 @@ class View {
 
 	/**
 	 * Get the Page instance.
-	 * @returns {import('./Page').default} a Page instance
+	 * @returns {import('./Page').Page.Any} a Page instance
 	 */
 	getPreviousPage() {
 		return this.previousPage;

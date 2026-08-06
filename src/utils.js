@@ -973,6 +973,20 @@ export function removeClick( node, callback ) {
 }
 
 /**
+ * Removes node from the DOM.
+ * @param {HTMLElement|DocumentFragment|JQuery<HTMLElement>} node
+ */
+export function remove( node ) {
+	if ( !node ) return;
+
+	if ( node instanceof jQuery ) {
+		node.detach();
+	} else {
+		node.remove();
+	}
+}
+
+/**
  * Appends an element to the provided context.
  * @param {HTMLElement|DocumentFragment|JQuery<HTMLElement>} node
  * @param {HTMLElement|JQuery<HTMLElement>} container

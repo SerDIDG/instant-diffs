@@ -6,10 +6,11 @@ import Link from './Link';
 import settings from './settings';
 
 /**
- * MenuButton's configuration options, extends OO.ui.ButtonWidget configuration
+ * MenuButton's configuration options, extends OO.ui.ButtonWidget configuration.
  * @typedef {OO.ui.ButtonWidget.ConfigOptions & Object} MenuButton.Options
  * @property {string} [name] - A button name, used for the data-mw-ui-id attribute
  * @property {'default'|'navigation'|'pin'|'menu'} [type='default'] - A Button view type
+ * @property {boolean} [pending=false] - Set pending state
  * @property {boolean} [invisibleLabel=false] - Hide the button label
  * @property {boolean} [invisibleIcon=false] - Hide the button icon
  * @property {string} [href] - Button link href
@@ -55,8 +56,9 @@ class MenuButton extends OO.ui.ButtonWidget {
 		options = {
 			name: null,
 			type: 'default',
-			classes: [],
+			classes: [ 'instantDiffs-button' ],
 			framed: true,
+			pending: false,
 			invisibleLabel: false,
 			invisibleIcon: false,
 			icon: 'puzzle',
@@ -105,6 +107,14 @@ class MenuButton extends OO.ui.ButtonWidget {
 		// Properties
 		this.options = options;
 
+		// Pending element
+		this.$pending = $( '<span>' )
+			.addClass( 'oo-ui-buttonElement-pending' )
+			.prependTo( this.$button );
+
+		// Mixin constructors
+		OO.ui.mixin.PendingElement.call( this, { $pending: this.$pending } );
+
 		// Initialization
 		this.setInvisibleIcon( options.invisibleIcon );
 
@@ -114,6 +124,10 @@ class MenuButton extends OO.ui.ButtonWidget {
 
 		if ( options.setLink ) {
 			this.setLink( options.linkOptions );
+		}
+
+		if ( options.pending ) {
+			this.setPending( options.pending );
 		}
 	}
 
@@ -203,13 +217,14 @@ class MenuButton extends OO.ui.ButtonWidget {
 	 * @param {boolean} value
 	 * @returns {MenuButton}
 	 */
-	pending( value ) {
-		this.$button.toggleClass( 'instantDiffs-link--pending', value );
-
+	setPending( value ) {
+		value ? this.pushPending() : this.popPending();
+		this.$element.toggleClass( 'instantDiffs-button--pending', value );
 		return this;
 	}
 }
 
 tweakUserOoUiClass( MenuButton );
+OO.mixinClass( MenuButton, OO.ui.mixin.PendingElement );
 
 export default MenuButton;

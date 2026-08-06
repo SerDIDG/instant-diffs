@@ -9,7 +9,7 @@ import './extensions/Page-History';
 import './extensions/Skin-Citizen';
 
 // Extensions
-import './extensions/Extension-FlaggedRevs';
+import './extensions/Extension-FlaggedRevs/extension';
 import './extensions/Extension-GlobalWatchlist';
 import './extensions/Extension-IPInfo';
 import './extensions/Extension-PersonalDashboard';

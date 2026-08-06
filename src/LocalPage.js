@@ -17,11 +17,6 @@ class LocalPage extends Page {
 	type = 'local';
 
 	/**
-	 * @type {Array}
-	 */
-	diffTablePrefixTools = [];
-
-	/**
 	 * Get a promise array for the main load request.
 	 * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
 	 */
@@ -206,7 +201,7 @@ class LocalPage extends Page {
 
 			const oldid = Number( utils.getParamFromUrl( 'oldid', href ) );
 			if ( utils.isValidID( oldid ) ) {
-				articleValues.deletedId = oldid;
+				articleValues.deletedRevid = oldid;
 				configValues.wgDiffOldId = oldid;
 			}
 
@@ -225,7 +220,7 @@ class LocalPage extends Page {
 
 			const oldid = Number( utils.getParamFromUrl( 'oldid', href ) );
 			if ( utils.isValidID( oldid ) ) {
-				articleValues.addedId = oldid;
+				articleValues.addedRevid = oldid;
 				articleValues.revid = oldid;
 				configValues.wgDiffNewId = oldid;
 				configValues.wgRevisionId = oldid;
@@ -316,6 +311,9 @@ class LocalPage extends Page {
 	processDiffTable() {
 		// Find diff table tools container and pre-toggle visibility
 		this.nodes.$diffTablePrefix = this.nodes.$data.filter( '.mw-diff-table-prefix' );
+		if ( this.article.get( 'type' ) !== 'diff' || !settings.get( 'showDiffTools' ) ) {
+			this.nodes.$diffTablePrefix.addClass( 'instantDiffs-hidden' );
+		}
 
 		// Find table elements
 		this.nodes.$table = this.nodes.$data.filter( 'table.diff' );
@@ -364,7 +362,7 @@ class LocalPage extends Page {
 
 		// Hide unsupported or unnecessary element
 		this.nodes.$data
-			.find( '.mw-diff-slot-header, .mw-slot-header, .mw-diff-inline-legend, .ve-init-mw-diffPage-diffMode, .mw-diffPage-inlineToggle-container' )
+			.find( '.mw-diff-slot-header, .mw-slot-header' )
 			.addClass( 'instantDiffs-hidden' );
 	}
 
@@ -437,26 +435,15 @@ class LocalPage extends Page {
 		utilsPage.restoreRollbackLink( this.nodes.$body );
 
 		// Restore diff format toggle buttons
-		if ( this.article.get( 'type' ) === 'diff' && settings.get( 'showDiffTools' ) ) {
-			const hasInlineToggle = utilsPage.restoreInlineFormatToggle( this.nodes.$diffTablePrefix );
-			if ( hasInlineToggle ) this.diffTablePrefixTools.push( 'inlineFormatToggle' );
+		if ( this.article.get( 'type' ) === 'diff' ) {
+			const hasInlineToggle = utilsPage.restoreInlineFormatToggle( this.getDiffTools() );
+			if ( hasInlineToggle ) this.registerDiffTool( { name: 'inlineFormatToggle' } );
 
-			const hasVisualDiffs = utilsPage.restoreVisualDiffs( this.nodes.$diffTablePrefix );
-			if ( hasVisualDiffs ) this.diffTablePrefixTools.push( 'visualDiffs' );
+			const hasVisualDiffs = utilsPage.restoreVisualDiffs( this.getDiffTools() );
+			if ( hasVisualDiffs ) this.registerDiffTool( { name: 'visualDiffs' } );
 		}
 
-		this.checkDiffTablePrefix();
-	}
-
-	/**
-	 * Shows diffTablePrefix if at least one tool was rendered and visible.
-	 */
-	checkDiffTablePrefix() {
-		if ( !this.nodes.$diffTablePrefix || this.nodes.$diffTablePrefix.length === 0 ) return;
-
-		const hasVisibleChild = this.nodes.$diffTablePrefix.children( ':visible' ).length > 0;
-		const shouldVisible = settings.get( 'showDiffTools' ) && ( hasVisibleChild || this.diffTablePrefixTools.length > 0 );
-		this.nodes.$diffTablePrefix.toggleClass( 'instantDiffs-hidden', !shouldVisible );
+		this.checkDiffTools();
 	}
 
 	/******* ACTIONS *******/
