@@ -25,6 +25,8 @@
     "action-reload": "Reload",
     "action-watch": "Watch",
     "action-unwatch": "Unwatch",
+    "action-review": "Review",
+    "action-review-title": "Review pending changes",
 
     "goto-snapshot-prev": "Previous link on a page",
     "goto-snapshot-next": "Next link on a page",
