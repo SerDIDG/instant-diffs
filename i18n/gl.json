@@ -36,6 +36,7 @@
 	"goto-prev-revision": "Revisión anterior",
 	"goto-next-revision": "Revisión seguinte",
 	"goto-back-revision": "Volver",
+	"goto-compare-cur": "Comparar a última",
 	"goto-diff": "Ir á edición",
 	"goto-revision": "Ir á revisión",
 	"goto-page": "Ir á páxina",

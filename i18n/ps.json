@@ -36,6 +36,7 @@
 	"goto-prev-revision": "زړه بياکتنه",
 	"goto-next-revision": "نوې بياکتنه",
 	"goto-back-revision": "پر شا کېدل",
+	"goto-compare-cur": "وروستۍ پرلتنې",
 	"goto-diff": "سمون ته ورتلل",
 	"goto-revision": "بياکتنې ته ورتلل",
 	"goto-page": "مخ ته ورتلل",

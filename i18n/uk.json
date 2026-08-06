@@ -22,6 +22,8 @@
 	"action-reload": "Перезавантажити",
 	"action-watch": "Спостерігати",
 	"action-unwatch": "Не спостерігати",
+	"action-review": "Перевірити",
+	"action-review-title": "Перевірити невідпатрульовані зміни",
 	"goto-snapshot-prev": "Попереднє посилання на сторінці",
 	"goto-snapshot-next": "Наступне посилання на сторінці",
 	"goto-view-diff": "Різниця версій",
