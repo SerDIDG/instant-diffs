@@ -24,6 +24,11 @@ class ReviewForm {
 	button;
 
 	/**
+	 * @type {Object<string,HTMLElement>}
+	 */
+	frElements = {};
+
+	/**
 	 * Creates a Review Form instance.
 	 * @param {import('../../Page').Page.Any} page - a Page instance
 	 */
@@ -39,6 +44,11 @@ class ReviewForm {
 		) {
 			return;
 		}
+
+		// Change id attributes for the FlaggedRevs elements on the page before render review form.
+		// Restores attributes to the origin states before page detach.
+		this.prepareElements();
+		this.page.on( 'beforeDetach', () => this.restoreElements() );
 
 		this.render();
 	}
@@ -108,6 +118,32 @@ class ReviewForm {
 	onError = () => {
 		this.page.detachDiffTool( 'flaggedRevsButton' );
 	};
+
+	/**
+	 * Changes id attributes for the FlaggedRevs elements on the page.
+	 * @private
+	 */
+	prepareElements() {
+		const $container = $( '#mw-content-text' );
+		if ( $container.length === 0 ) return;
+
+		const $nodes = $container.find( '[id^="mw-fr-"]' );
+		for ( const node of $nodes ) {
+			const id = node.id;
+			node.id = `instantDiffs-${ id }`;
+			this.frElements[ id ] = node;
+		}
+	}
+
+	/**
+	 * Restores id attributes for the FlaggedRevs elements to the origin states before page detach.
+	 * @private
+	 */
+	restoreElements() {
+		for ( const [ id, node ] of Object.entries( this.frElements ) ) {
+			node.id = id;
+		}
+	}
 }
 
 export default ReviewForm;
