@@ -100,28 +100,45 @@ class Button {
 	 * Append a button to the specified node.
 	 * @param {HTMLElement|JQuery<HTMLElement>} container
 	 * @param {string} [insertMethod]
+	 * @returns {Button}
 	 */
 	embed( container, insertMethod ) {
 		utils.embed( this.node, container, insertMethod );
+		return this;
 	}
 
 	/**
-	 * Remove a button from the DOM.
+	 * Removes a button from the DOM.
+	 * @returns {Button}
 	 */
 	remove() {
 		this.node.remove();
+		return this;
 	}
 
 	/**
-	 * Toggle a button pending state that shows a loading cursor.
+	 * Toggles a button focus state.
 	 * @param {boolean} value
+	 * @param {FocusOptions} [options]
+	 * @returns {Button}
+	 */
+	setFocus( value, options ) {
+		value ? this.node.focus( options ) : this.node.blur();
+		return this;
+	}
+
+	/**
+	 * Toggles a button pending state.
+	 * @param {boolean} value
+	 * @returns {Button}
 	 */
 	setPending( value ) {
 		this.node.classList.toggle( 'instantDiffs-link--pending', value );
+		return this;
 	}
 
 	/**
-	 * Get a button node.
+	 * Gets a button node.
 	 * @returns {HTMLElement}
 	 */
 	getContainer() {
@@ -129,7 +146,7 @@ class Button {
 	}
 
 	/**
-	 * Get a button node.
+	 * Gets a button node.
 	 * @returns {HTMLElement}
 	 */
 	getNode() {

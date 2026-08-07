@@ -585,7 +585,7 @@ class Page {
 			return $.Deferred().resolve().promise();
 		}
 
-		const title = this.article.getMW( 'title' )?.getMain();
+		const title = this.article.getTitle()?.getMain();
 		const label = await Api.getWBLabel( title, this.article, this.requestManager );
 		if ( !utils.isEmpty( label ) ) {
 			this.configManager.set( 'wbEntityId', title );

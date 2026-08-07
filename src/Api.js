@@ -343,6 +343,68 @@ class Api {
 			this.notifyError( error );
 		}
 	}
+
+	/******* USER INFO *******/
+
+	/**
+	 * @type {Object<string, *>}
+	 */
+	static userInfo = {};
+
+	/**
+	 * @type {Object<string, Promise>}
+	 */
+	static userInfoPromise = {};
+
+	/**
+	 * Requests user info.
+	 * @param {import('./Article').default|string} [articleOrHostname]
+	 * @return {Promise<Object>}
+	 */
+	static async getUserInfo( articleOrHostname ) {
+		const hostname = getHostname( articleOrHostname );
+		const storageKey = `${ id.config.prefix }-userInfo`;
+
+		// Try to get cached data from the local storage
+		if ( !utils.isNew() && utils.isEmptyObject( this.userInfo ) ) {
+			this.userInfo = mw.storage.getObject( storageKey ) || {};
+		}
+
+		// Try to get data from the static property
+		if ( !utils.isEmptyObject( this.userInfo[ hostname ] ) ) {
+			return this.userInfo[ hostname ];
+		}
+
+		// Request data via API
+		try {
+			if ( this.userInfoPromise[ hostname ] ) {
+				return this.userInfoPromise[ hostname ];
+			}
+
+			this.userInfoPromise[ hostname ] = this.getApi( articleOrHostname ).getUserInfo();
+			this.userInfo[ hostname ] = await this.userInfoPromise[ hostname ];
+
+			// Cache data with expiry
+			mw.storage.setObject( storageKey, this.userInfo, settings.get( 'storageExpiry' ) );
+
+			return this.userInfo[ hostname ];
+		} catch ( error ) {
+			this.notifyError( error );
+		} finally {
+			delete this.userInfoPromise[ hostname ];
+		}
+	}
+
+	/**
+	 * Check if the user has a specified right.
+	 * @param {string} right - Right name
+	 * @param {import('./Article').default|string} [articleOrHostname] - Article instance or hostname
+	 * @returns {Promise<boolean>}
+	 */
+	static async userHasRight( right, articleOrHostname ) {
+		const { rights } = await this.getUserInfo( articleOrHostname ) || {};
+		return rights?.includes( right ) || false;
+	}
 }
 
 export default Api;

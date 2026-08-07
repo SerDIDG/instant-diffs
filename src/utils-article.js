@@ -66,7 +66,7 @@ export function getNamespaceDependencies( article, data ) {
 	}
 
 	// Set namespace-specific dependencies
-	const namespace = article.getMW( 'title' )?.getNamespaceId();
+	const namespace = article.getTitle()?.getNamespaceId();
 	if ( utils.isArray( data[ namespace ] ) ) {
 		dependencies = dependencies.concat( data[ namespace ] );
 	}
@@ -211,7 +211,7 @@ function getForeignStylesDependencies( article, data ) {
 	}
 
 	// Set namespace-specific dependencies
-	const namespace = article.getMW( 'title' )?.getNamespaceId();
+	const namespace = article.getTitle()?.getNamespaceId();
 	if ( utils.isArray( data[ namespace ] ) ) {
 		styles = styles.concat(
 			data[ namespace ].map( title => getStyleHref( article, title ) ),

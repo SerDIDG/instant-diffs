@@ -1,9 +1,10 @@
 import * as utils from './utils';
 import { getHref } from './utils-article';
 
+import Api from './Api';
+import Site from './Site';
 import view from './view';
 import settings from './settings';
-import Site from './Site';
 
 const { h, hj, kdb } = utils;
 
@@ -20,7 +21,7 @@ export const schema = {
 			enableMobile: {
 				type: 'checkbox',
 				enabled: true,
-				enabledCondition: async () => Site.hasSkin( 'minerva' ),
+				enabledCondition: async () => await Site.hasSkin( 'minerva' ),
 				default: true,
 				config: {
 					labelMsg: 'settings-enable-mobile',
@@ -145,6 +146,19 @@ export const schema = {
 				default: true,
 				config: {
 					labelMsg: 'settings-show-diff-tools',
+				},
+				onChange: onShowDiffToolsChange,
+			},
+			enableReviewForm: {
+				type: 'checkbox',
+				enabled: true,
+				enabledCondition: async () => await Api.userHasRight( 'review' ),
+				default: true,
+				disabledCondition: () => !settings.get( 'showDiffTools' ),
+				config: {
+					labelMsg: 'settings-enable-review-form',
+					helpInline: false,
+					help: () => utils.msgSnippet( 'settings-show-revision-info-help', 'review', 'mw:Special:MyLanguage/Extension:FlaggedRevs#User_rights' ),
 				},
 			},
 			showRevisionInfo: {
@@ -296,6 +310,11 @@ function getHotkeysHelpSnippet() {
 	} );
 	const list = h( 'ul.instantDiffs-list--hotkeys', ...elements );
 	return utils.htmlSnippet( list );
+}
+
+function onShowDiffToolsChange() {
+	const value = this.getFieldValue( 'showDiffTools' );
+	this.setFieldDisabled( 'enableReviewForm', !value, true );
 }
 
 /**

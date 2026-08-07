@@ -309,6 +309,10 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 			type: null,
 			input: null,
 			field: null,
+			enabled: true,
+			enabledCondition: null,
+			disabled: false,
+			disabledCondition: null,
 			config: {
 				label: null,
 				align: 'inline',
@@ -322,7 +326,8 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		}, item );
 
 		// Validate
-		item.enabled = await this.checkField( name, item );
+		item.enabled = await this.checkFieldEnabled( name, item );
+		item.disabled = await this.checkFieldDisabled( name, item );
 		item.config = this.validateFieldConfig( item.config );
 
 		// Options
@@ -377,10 +382,15 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		return item;
 	}
 
-	async checkField( name, field ) {
+	async checkFieldEnabled( name, field ) {
 		if ( !settings.check( name ) ) return false;
-		if ( !utils.isFunction( field.enabledCondition ) ) return true;
+		if ( !utils.isFunction( field.enabledCondition ) ) return field.enabled;
 		return await field.enabledCondition( name, field );
+	}
+
+	async checkFieldDisabled( name, field ) {
+		if ( !utils.isFunction( field.disabledCondition ) ) return field.disabled;
+		return await field.disabledCondition( name, field );
 	}
 
 	renderInputOption( name, item, type ) {
@@ -506,10 +516,16 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		return this;
 	}
 
-	setFieldDisabled( name, value ) {
+	setFieldDisabled( name, value, setAsDefault ) {
 		const item = this.getField( name );
 		if ( !item ) return;
 
+		if ( value === 'default' ) {
+			value = item.disabled;
+		}
+		if ( setAsDefault ) {
+			item.disabled = value;
+		}
 		item.input.setDisabled( value );
 		return this;
 	}
@@ -640,7 +656,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
 		// Update input values
 		for ( const [ name ] of Object.entries( this.fields ) ) {
-			this.setFieldDisabled( name, false );
+			this.setFieldDisabled( name, 'default' );
 
 			const option = options[ name ];
 			if ( typeof option === 'undefined' ) continue;

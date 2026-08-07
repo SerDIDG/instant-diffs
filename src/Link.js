@@ -1025,6 +1025,11 @@ class Link {
 	 * @returns {JQuery.Promise} Promise that resolves when dialog content loads
 	 */
 	openDialog() {
+		// Set invisible focus to the link action before opening view dialog
+		// to prevent scroll jumping when view dialog closes.
+		this.actions.action.setFocus( true, { focusVisible: false } );
+
+		// Setup view
 		const options = {
 			initiatorPage: this.options.initiatorPage,
 			onOpen: () => this.onDialogOpen(),

@@ -91,6 +91,7 @@ function prepare( require ) {
 
 	// Get other dependencies
 	return Promise.allSettled( [
+		Api.getUserInfo(),
 		Api.getSpecialPages(),
 		getSiteInfo(),
 		...getMessages(),

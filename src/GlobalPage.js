@@ -250,7 +250,7 @@ class GlobalPage extends Page {
 		this.article.set( articleValues );
 
 		// Save the title values to the mw.config
-		this.configManager.setTitle( this.article.getMW( 'title' ) );
+		this.configManager.setTitle( this.article.getTitle() );
 
 		// Collect links that will be available in the navigation
 		this.links.prev = utils.isValidID( this.data.fromrevid );

@@ -350,6 +350,15 @@ class Article {
 	}
 
 	/**
+	 * Gets processed title.
+	 * @alias getMW( 'title' )
+	 * @return {mw.Title}
+	 */
+	getTitle() {
+		return this.mw.title;
+	}
+
+	/**
 	 * Process the compare pages titles and set mw page properties.
 	 */
 	processComparePages() {

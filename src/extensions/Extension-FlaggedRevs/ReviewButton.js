@@ -4,7 +4,9 @@ import { tweakUserOoUiClass } from '../../utils-oojs';
 /**
  * ReviewButton's configuration options, extends OO.ui.ButtonWidget configuration.
  * @typedef {OO.ui.PopupButtonWidget.ConfigOptions & Object} ReviewButton.Options
+ * @property {JQuery<HTMLElement>} [$content] - Content to embed into popup
  * @property {boolean} [pending=false] - Set pending state
+ * @property {boolean} [hidden=false] - Set hidden state
  */
 
 /**
@@ -29,6 +31,7 @@ class ReviewButton extends OO.ui.PopupButtonWidget {
 			label: utils.msg( 'action-review' ),
 			title: utils.msg( 'action-review-title' ),
 			pending: true,
+			hidden: false,
 			popup: {
 				padded: false,
 				align: 'force-right',
@@ -50,8 +53,14 @@ class ReviewButton extends OO.ui.PopupButtonWidget {
 		OO.ui.mixin.PendingElement.call( this, { $pending: this.$pending } );
 
 		// Set properties
+		if ( options.$content ) {
+			this.setContent( options.$content );
+		}
 		if ( options.pending ) {
 			this.setPending( options.pending );
+		}
+		if ( options.hidden ) {
+			this.setHidden( options.hidden );
 		}
 	}
 
@@ -73,6 +82,16 @@ class ReviewButton extends OO.ui.PopupButtonWidget {
 	setPending( value ) {
 		value ? this.pushPending() : this.popPending();
 		this.$element.toggleClass( 'instantDiffs-button--pending', value );
+		return this;
+	}
+
+	/**
+	 * Toggles a buttons hidden state.
+	 * @param {boolean} value
+	 * @returns {ReviewButton}
+	 */
+	setHidden( value ) {
+		this.$element.toggleClass( 'instantDiffs-hidden', value );
 		return this;
 	}
 }

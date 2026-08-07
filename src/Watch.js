@@ -178,7 +178,7 @@ class Watch {
 	 * @private
 	 */
 	requestWatchStatus() {
-		const title = this.article.getMW( 'title' ).getPrefixedDb();
+		const title = this.article.getTitle().getPrefixedDb();
 
 		const request = this.isWatched
 			? Api.unwatch( title, this.article )
@@ -220,7 +220,7 @@ class Watch {
 		}
 
 		this.isWatched = data.watched === true;
-		const mwTitle = this.article.getMW( 'title' );
+		const mwTitle = this.article.getTitle();
 		const expiry = data.expiry || 'infinity';
 
 		let message = this.isWatched ? 'addedwatchtext' : 'removedwatchtext';
@@ -362,7 +362,7 @@ class Watch {
 					initialAction: this.isWatched ? 'unwatch' : 'watch',
 					expiryEnabled: this.isWatchlistExpiryEnabled,
 					labelsEnabled: this.watchlistLabelsEnabled,
-					title: this.article.getMW( 'title' ),
+					title: this.article.getTitle(),
 					dataExpiryOptions: watchlistWidgets.dataExpiryOptions,
 					preferredExpiry: this.preferredExpiry,
 					link: this.$watchLink[ 0 ],

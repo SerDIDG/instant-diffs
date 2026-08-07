@@ -362,7 +362,7 @@ class Navigation {
 			this.renderPageLink( options );
 
 			// Link to the talk page
-			if ( this.article.getMW( 'title' ).canHaveTalkPage() ) {
+			if ( this.article.getTitle().canHaveTalkPage() ) {
 				this.renderTalkPageLink( options );
 			}
 
@@ -741,8 +741,8 @@ class Navigation {
 	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderPageLink( options ) {
-		const href = this.article.getMW( 'title' ).isTalkPage()
-			? this.article.getMW( 'title' ).getSubjectPage().getUrl()
+		const href = this.article.getTitle().isTalkPage()
+			? this.article.getTitle().getSubjectPage().getUrl()
 			: this.article.get( 'href' );
 
 		const iconSet = {
@@ -754,7 +754,7 @@ class Navigation {
 		this.menu.renderButton( {
 			name: 'page',
 			label: utils.msg( 'goto-page' ),
-			icon: iconSet[ this.article.getMW( 'title' ).getNamespaceId() ] || iconSet.default,
+			icon: iconSet[ this.article.getTitle().getNamespaceId() ] || iconSet.default,
 			href: href,
 			...options,
 		} );
@@ -766,9 +766,9 @@ class Navigation {
 	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderTalkPageLink( options ) {
-		const href = this.article.getMW( 'title' ).isTalkPage()
+		const href = this.article.getTitle().isTalkPage()
 			? this.article.get( 'href' )
-			: this.article.getMW( 'title' ).getTalkPage().getUrl();
+			: this.article.getTitle().getTalkPage().getUrl();
 
 		const iconSet = {
 			2: 'userTalk',
@@ -779,7 +779,7 @@ class Navigation {
 		this.menu.renderButton( {
 			name: 'talkPage',
 			label: utils.msg( 'goto-talkpage' ),
-			icon: iconSet[ this.article.getMW( 'title' ).getNamespaceId() ] || iconSet.default,
+			icon: iconSet[ this.article.getTitle().getNamespaceId() ] || iconSet.default,
 			href: href,
 			...options,
 		} );

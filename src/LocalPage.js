@@ -277,7 +277,7 @@ class LocalPage extends Page {
 		// Set article and config values
 		this.article.set( articleValues );
 		this.configManager.setValues( configValues );
-		this.configManager.setTitle( this.article.getMW( 'title' ) );
+		this.configManager.setTitle( this.article.getTitle() );
 
 		// Save additional user options dependent of a page type.
 		// FixMe: See T346252 for the details about Visual Diffs.
@@ -398,6 +398,10 @@ class LocalPage extends Page {
 			.addClass( 'instantDiffs-hidden' );
 	}
 
+	hasFlaggedRevs() {
+		return this.nodes.$frDiffHeader?.length > 0;
+	}
+
 	processMobileFooter() {
 		this.nodes.$diffMobileFooter = this.nodes.$data.filter( '.mw-diff-mobile-footer' );
 		if ( this.nodes.$diffMobileFooter.length === 0 ) return;
@@ -417,7 +421,7 @@ class LocalPage extends Page {
 		const $buttons = this.nodes.$diffMobileFooter.find( buttonSelectors.join( ',' ) );
 		if ( $buttons.length === 0 ) return;
 
-		if ( mw.user.isAnon() ) {
+		if ( id.local.mwIsAnon ) {
 			$buttons.hide();
 		} else {
 			$buttons.children( 'a' ).addClass( buttonClasses );
@@ -427,7 +431,7 @@ class LocalPage extends Page {
 	/**
 	 * Restores functionally of extensions and scripts.
 	 */
-	restoreFunctionality() {
+	processDiffTools() {
 		if ( this.error ) return;
 
 		// Restore rollback and patrol scripts
@@ -453,7 +457,7 @@ class LocalPage extends Page {
 	 */
 	async fire() {
 		// Restore functionally of extensions and scripts
-		this.restoreFunctionality();
+		this.processDiffTools();
 
 		// Fire parent hooks and events
 		await super.fire();

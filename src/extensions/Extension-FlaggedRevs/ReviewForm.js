@@ -2,6 +2,8 @@ import id from '../../id';
 import * as utils from '../../utils';
 import { executeModuleScript } from '../../utils-oojs';
 
+import settings from '../../settings';
+
 /**
  * Class representing the review form.
  */
@@ -24,7 +26,7 @@ class ReviewForm {
 	/**
 	 * @type {import('./ReviewButton').default}
 	 */
-	button;
+	reviewButton;
 
 	/**
 	 * @type {Object<string,HTMLElement>}
@@ -40,6 +42,7 @@ class ReviewForm {
 		this.article = page.getArticle();
 
 		if (
+			!settings.get( 'enableReviewForm' ) ||
 			this.article.isForeign ||
 			this.article.get( 'type' ) !== 'diff' ||
 			this.article.get( 'deletedRevid' ) > this.article.get( 'stableRevid' ) ||
@@ -56,17 +59,24 @@ class ReviewForm {
 		this.prepareElements();
 		this.page.on( 'beforeDetach', () => this.restoreElements() );
 
-		this.render();
+		// Render popup button:
+		// Show button immediately if FlaggedRevs elements persist on the page,
+		// otherwise show button after a successful form HTML request.
+		if ( this.page.hasFlaggedRevs() ) {
+			this.render();
+		}
 	}
 
+	/**
+	 * Renders popup button and registers diff tool.
+	 */
 	render() {
-		// Render popup button
-		this.button = new this.ReviewButton();
+		this.reviewButton = new this.ReviewButton();
 
 		// Register diff tool
 		this.page.registerDiffTool( {
 			name: 'flaggedRevsButton',
-			node: this.button.$element,
+			node: this.reviewButton.$element,
 			onAttach: () => this.request(),
 		} );
 	}
@@ -107,6 +117,7 @@ class ReviewForm {
 			return this.onError();
 		}
 		$reviewForm.addClass( 'instantDiffs-extension-flaggedRevs' );
+		utils.addTargetToLinks( $reviewForm );
 
 		// Group and wrap buttons inside the form
 		const $buttonContainer = $( '<div>' ).addClass( 'fr-rating-buttons' );
@@ -118,9 +129,11 @@ class ReviewForm {
 				.append( $button );
 		}
 
-		// Embed form to the button popup and pop pending state
-		utils.addTargetToLinks( $reviewForm );
-		this.button
+		// Embed form to the review button's popup and pop pending state
+		if ( !this.reviewButton ) {
+			this.render();
+		}
+		this.reviewButton
 			.setContent( $reviewForm )
 			.setPending( false );
 

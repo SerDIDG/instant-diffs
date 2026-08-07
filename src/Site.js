@@ -39,10 +39,11 @@ class Site {
 		requestManager,
 	) {
 		const hostname = getHostname( articleOrHostname );
+		const storageKey = `${ id.config.prefix }-siteInfo`;
 
 		// Try to get cached data from the local storage
 		if ( !utils.isNew() && utils.isEmptyObject( this.info ) ) {
-			this.info = mw.storage.getObject( `${ id.config.prefix }-siteInfo` ) || {};
+			this.info = mw.storage.getObject( storageKey ) || {};
 			this.processInfo();
 		}
 
@@ -73,7 +74,7 @@ class Site {
 			}
 
 			// Cache data with expiry
-			mw.storage.setObject( `${ id.config.prefix }-siteInfo`, this.info, settings.get( 'storageExpiry' ) );
+			mw.storage.setObject( storageKey, this.info, settings.get( 'storageExpiry' ) );
 
 			this.processAliases( this.info[ hostname ] );
 			return this.info[ hostname ];
@@ -210,7 +211,7 @@ class Site {
 	/**
 	 * Gets the site interwiki map.
 	 * @param {import('./Article').default|string} [articleOrHostname] - Article instance or hostname
-	 * @returns {Array|undefined}
+	 * @returns {Promise<Array>}
 	 */
 	static async getInterwikiMap( articleOrHostname ) {
 		const { interwikimap } = await Site.getInfo( [ 'interwikimap' ], articleOrHostname ) || {};
@@ -221,7 +222,7 @@ class Site {
 	 * Check if the site has a specified registered skin.
 	 * @param {string} name - Skin code name
 	 * @param {import('./Article').default|string} [articleOrHostname] - Article instance or hostname
-	 * @returns {Promise<*>}
+	 * @returns {Promise<boolean>}
 	 */
 	static async hasSkin( name, articleOrHostname ) {
 		const { skins } = await Site.getInfo( [ 'skins' ], articleOrHostname ) || {};
