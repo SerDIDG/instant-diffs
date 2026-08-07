@@ -109,6 +109,8 @@
 	"settings-close-outside": "Label of the checkbox in the settings dialog.",
 	"settings-enable-hotkeys": "Label of the checkbox in the settings dialog.",
 	"settings-show-diff-tools": "Label of the checkbox in the Settings dialog.",
+	"settings-enable-review-form": "Label of the checkbox in the Settings dialog.\n\n* $1: button name labeled with {{msg-wm|Instant-diffs-action-review-title}}.",
+	"settings-enable-review-form-help": "Help text for the checkbox labeled with the {{msg-wm|Instant-diffs-settings-enable-review-form}} message in the Settings dialog.\n\n* $1: <code>review</code>.\n* $2: Extension:FlaggedRevs page name.",
 	"settings-show-revision-info": "Label of the checkbox in the Settings dialog.",
 	"settings-unhide-diffs": "Display hidden revision content and diff info without additional steps.",
 	"settings-unhide-diffs-help": "Help text for the checkbox labeled with the {{msg-wm|Instant-diffs-settings-unhide-diffs}} message in the Settings dialog.\n\n* $1: <code>suppressrevision</code>.\n* $2: Help:RevisionDelete page name.",

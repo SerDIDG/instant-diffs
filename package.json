@@ -1,6 +1,6 @@
 {
 	"name": "instant-diffs",
-	"version": "6.0.0+build.26",
+	"version": "6.0.0+build.27",
 	"description": "A JavaScript tool that enhances MediaWiki diff links with interactive functionality.",
 	"keywords": [
 		"wikipedia",
@@ -65,7 +65,7 @@
 		"@wikimedia/codex-design-tokens": "^2.6.2",
 		"chalk": "^6.0.0",
 		"cross-env": "^10.1.0",
-		"dompurify": "^3.4.12",
+		"dompurify": "^3.4.13",
 		"esbuild": "0.28.1",
 		"esbuild-plugin-copy": "^2.1.1",
 		"esbuild-plugin-import-glob": "^0.1.1",
@@ -73,7 +73,7 @@
 		"esbuild-plugin-replace": "^1.4.0",
 		"eslint": "^10.8.0",
 		"hyperscript": "^2.0.2",
-		"jsdom": "^30.0.0",
+		"jsdom": "^30.0.1",
 		"minimist": "^1.2.8",
 		"mwn": "^3.0.3",
 		"prompts": "^2.4.2",

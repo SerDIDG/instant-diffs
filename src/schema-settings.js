@@ -156,9 +156,9 @@ export const schema = {
 				default: true,
 				disabledCondition: () => !settings.get( 'showDiffTools' ),
 				config: {
-					labelMsg: 'settings-enable-review-form',
+					label: () => utils.msg( 'settings-enable-review-form', utils.msg( 'action-review-title' ) ),
 					helpInline: false,
-					help: () => utils.msgSnippet( 'settings-show-revision-info-help', 'review', 'mw:Special:MyLanguage/Extension:FlaggedRevs#User_rights' ),
+					help: () => utils.msgSnippet( 'settings-enable-review-form-help', 'review', 'mw:Special:MyLanguage/Extension:FlaggedRevs#User_rights' ),
 				},
 			},
 			showRevisionInfo: {
