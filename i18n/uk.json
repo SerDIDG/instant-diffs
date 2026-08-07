@@ -107,6 +107,8 @@
 	"settings-close-outside": "Закривати вікно Instant Diffs натискаючи поза його межами.",
 	"settings-enable-hotkeys": "Увімкнути гарячі клавіші у вікні Instant Diffs.",
 	"settings-show-diff-tools": "Показувати додаткові інструменти для перегляду змін, зокрема перемикач формату «Лінійно».",
+	"settings-enable-review-form": "Показувати кнопку «$1» в додаткових інструментах.",
+	"settings-enable-review-form-help": "The <code>$1</code> [[$2|user right]] is required to review pending changes.",
 	"settings-show-revision-info": "Показувати інформацію про зміни під час перегляду версії.",
 	"settings-unhide-diffs": "Показувати приховані редагування і версії без додаткових дій.",
 	"settings-unhide-diffs-help": "Щоб переглянути вміст версії потрібне [[$2|право користувача]] <code>$1</code>.",
