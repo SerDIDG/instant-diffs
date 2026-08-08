@@ -90,6 +90,14 @@
     "dialog-notice-foreign-revision": "You are viewing a foreign revision from [$1 $2]. Some features can be limited.",
     "dialog-notice-foreign-wikilambda": "WikiLambda app is not currently supported in the foreign revisions.",
 
+    "intro-link-about": "About",
+    "intro-link-news": "News",
+    "intro-link-talk": "Feedback",
+    "intro-link-api": "Developer guide",
+    "intro-version": "Version",
+    "intro-contributors": "Contributors",
+    "intro-translators": "Translators",
+
     "settings-title": "Instant Diffs Settings",
     "settings-saved": "The settings have been saved successfully.\nReload the page to apply them.",
     "settings-saved-icon": "Checkmark icon",
@@ -117,6 +125,8 @@
     "settings-show-diff-tools": "Show additional diff tools, such as the Inline format toggle.",
     "settings-enable-review-form": "Show \"$1\" button in additional diff tools.",
     "settings-enable-review-form-help": "The <code>$1</code> [[$2|user right]] is required to review pending changes.",
+    "settings-enable-detailed-pages": "Enable detailed revision loader for some namespaces.",
+    "settings-enable-detailed-pages-help": "When available, performs a slightly time-consuming request. Currently only supported in the file namespace.",
     "settings-show-revision-info": "Show change information when viewing a revision.",
     "settings-unhide-diffs": "Display hidden diffs and revisions without additional steps.",
     "settings-unhide-diffs-help": "The <code>$1</code> [[$2|user right]] is required to view revision content.",
