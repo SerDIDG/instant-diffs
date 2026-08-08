@@ -57,6 +57,9 @@ const config = {
 	outfile: `${ project.dir }/${ project.fileName }.js`,
 	format: 'iife',
 	target: 'es2017',
+	loader: {
+		'.svg': 'text',
+	},
 	banner: {
 		js: banner,
 		css: banner,

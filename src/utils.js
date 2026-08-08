@@ -115,6 +115,16 @@ export function origin( path ) {
 }
 
 /**
+ * Adds an origin prefix to the page name.
+ * @param path
+ * @param {string} path
+ * @returns {string}
+ */
+export function originPage( path ) {
+	return origin( `/wiki/Special:MyLanguage/${ path }` );
+}
+
+/**
  * Adds a server prefix to the href.
  * @param {string} path
  * @returns {string}

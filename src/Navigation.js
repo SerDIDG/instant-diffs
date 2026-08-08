@@ -12,6 +12,7 @@ import view from './view';
 import settings from './settings';
 
 import './styles/navigation.less';
+import { originPage } from './utils';
 
 const { h, hf, ht } = utils;
 
@@ -106,11 +107,6 @@ class Navigation {
 	/**
 	 * @type {Object}
 	 */
-	articleParams = {};
-
-	/**
-	 * @type {Object}
-	 */
 	options = {};
 
 	/**
@@ -142,17 +138,14 @@ class Navigation {
 	 * Create a Page navigation bar instance.
 	 * @param {import('./Page').Page.Any} page - A Page instance
 	 * @param {import('./Article').default} article - An Article instance
-	 * @param {Object} [articleParams] - Article parameters
 	 * @param {Object} [options] - Configuration options
 	 * @param {string[]} [options.initiatorAction] - An action name
 	 * @param {Object} [options.links] - A link nodes object
 	 */
-	constructor( page, article, articleParams, options ) {
+	constructor( page, article, options ) {
 		this.page = page;
 
 		this.article = article;
-
-		this.articleParams = { ...articleParams };
 
 		this.options = {
 			initiatorAction: null,
@@ -887,7 +880,7 @@ class Navigation {
 			name: 'id',
 			label: $( label ),
 			icon: null,
-			href: utils.origin( `/wiki/${ id.config.link }` ),
+			href: utils.originPage( id.config.link ),
 			classes: [ 'instantDiffs-button--link-id' ],
 			...options,
 		} );

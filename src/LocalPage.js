@@ -3,6 +3,7 @@ import * as utils from './utils';
 import * as utilsPage from './utils-page';
 import { executeModuleScript } from './utils-oojs';
 
+import Site from './Site';
 import Page from './Page';
 import settings from './settings';
 
@@ -15,6 +16,21 @@ class LocalPage extends Page {
 	 * @type {string}
 	 */
 	type = 'local';
+
+	/**
+	 * @type {Object}
+	 */
+	articleParams = {};
+
+	/**
+	 * Get a promise array for the preload request.
+	 * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
+	 */
+	getPreloadPromises() {
+		const promises = super.getPreloadPromises();
+		promises.push( this.processArticleParams() );
+		return promises;
+	}
 
 	/**
 	 * Get a promise array for the main load request.
@@ -40,6 +56,26 @@ class LocalPage extends Page {
 	}
 
 	/******* DEPENDENCIES *******/
+
+	async processArticleParams() {
+		this.articleParams = {
+			action: 'render',
+			diffonly: this.article.get( 'type' ) === 'diff' ? 1 : 0,
+			unhide: settings.get( 'unHideDiffs' ) ? 1 : 0,
+			uselang: id.local.userLanguage,
+		};
+
+		if (
+			settings.get( 'enableDetailedPages' ) &&
+			this.article.get( 'type' ) === 'revision' &&
+			id.config.detailedPageNamespaces.includes( this.article.getTitle().getNamespaceId() ) &&
+			await Site.hasSkin( 'apioutput' )
+		) {
+			this.article.isDetailed = true;
+			this.articleParams.action = 'view';
+			this.articleParams.useskin = 'apioutput';
+		}
+	}
 
 	/**
 	 * Request page dependencies.
@@ -160,9 +196,12 @@ class LocalPage extends Page {
 	/******* RENDER *******/
 
 	async renderContentSuccess() {
+		// Modify ids of the PHP OOUI infuse elements so they do not repeat
+		this.data = this.data.replace( /ooui-php-(\d+)(?!-id)/g, 'ooui-php-$1-id' );
+
 		// Parse and append all data coming from the endpoint
 		this.nodes.data = $.parseHTML( this.data );
-		this.nodes.$data = $( this.nodes.data ).appendTo( this.nodes.$body );
+		this.nodes.$data = this.getNodesData().appendTo( this.nodes.$body );
 
 		// Collect missing data from the diff table before manipulations
 		this.collectData();
@@ -189,12 +228,21 @@ class LocalPage extends Page {
 		await super.renderContentSuccess();
 	}
 
+	getNodesData() {
+		const $nodes = $( this.nodes.data );
+		const $contentText = $nodes.find( '#mw-content-text' );
+		if ( this.article.isDetailed && $contentText.length > 0 ) {
+			return $contentText.children();
+		}
+		return $nodes;
+	}
+
 	collectData() {
 		const articleValues = {};
 		const configValues = {};
 
 		// Get title, diff and oldid values
-		const $fromLinks = this.nodes.$data.find( '#mw-diff-otitle1 strong > a, #differences-prevlink' );
+		const $fromLinks = this.nodes.$body.find( '#mw-diff-otitle1 strong > a, #differences-prevlink' );
 		if ( $fromLinks.length > 0 ) {
 			const href = $fromLinks.prop( 'href' );
 			articleValues.deletedHref = href;
@@ -213,7 +261,7 @@ class LocalPage extends Page {
 			}
 		}
 
-		const $toLinks = this.nodes.$data.find( '#mw-diff-ntitle1 strong > a, #differences-nextlink' );
+		const $toLinks = this.nodes.$body.find( '#mw-diff-ntitle1 strong > a, #differences-nextlink' );
 		if ( $toLinks.length > 0 ) {
 			const href = $toLinks.prop( 'href' );
 			articleValues.addedHref = href;
@@ -246,7 +294,7 @@ class LocalPage extends Page {
 		}
 
 		// Populate username
-		const $userLink = this.nodes.$data.find( '#mw-diff-ntitle2 .mw-userlink' );
+		const $userLink = this.nodes.$body.find( '#mw-diff-ntitle2 .mw-userlink' );
 		if ( $userLink.length > 0 ) {
 			articleValues.userhidden = $userLink.hasClass( 'history-deleted' );
 			if ( !articleValues.userhidden ) {
@@ -255,19 +303,19 @@ class LocalPage extends Page {
 		}
 
 		// Populate timestamps
-		const $toTimestamp = this.nodes.$data.find( '#mw-diff-ntitle1 .mw-diff-timestamp' );
+		const $toTimestamp = this.nodes.$body.find( '#mw-diff-ntitle1 .mw-diff-timestamp' );
 		if ( $toTimestamp.length > 0 ) {
 			articleValues.timestamp = $toTimestamp.attr( 'data-timestamp' );
 		}
 
 		// Populate section name
-		const $toSectionLinks = this.nodes.$data.find( '#mw-diff-ntitle3 .autocomment a' );
+		const $toSectionLinks = this.nodes.$body.find( '#mw-diff-ntitle3 .autocomment a' );
 		if ( utils.isEmpty( this.article.get( 'section' ) ) && $toSectionLinks.length > 0 ) {
 			articleValues.section = utils.getComponentFromUrl( 'hash', $toSectionLinks.prop( 'href' ) );
 		}
 
 		// Get undo links to check if the user can edit the page
-		const $editLinks = this.nodes.$data.find( '.mw-diff-undo a, .mw-rollback-link a' );
+		const $editLinks = this.nodes.$body.find( '.mw-diff-undo a, .mw-rollback-link a' );
 		if ( $editLinks.length > 0 ) {
 			articleValues.editable = true;
 			configValues.wgIsProbablyEditable = true;
@@ -290,10 +338,7 @@ class LocalPage extends Page {
 	}
 
 	processWarnings() {
-		this.nodes.$data
-			.filter( '.cdx-message' )
-			.prependTo( this.nodes.$body );
-		this.nodes.$data
+		this.nodes.$body
 			.find( '.cdx-message' )
 			.prependTo( this.nodes.$body );
 
@@ -310,13 +355,13 @@ class LocalPage extends Page {
 
 	processDiffTable() {
 		// Find diff table tools container and pre-toggle visibility
-		this.nodes.$diffTablePrefix = this.nodes.$data.filter( '.mw-diff-table-prefix' );
+		this.nodes.$diffTablePrefix = this.nodes.$body.find( '.mw-diff-table-prefix' );
 		if ( this.article.get( 'type' ) !== 'diff' || !settings.get( 'showDiffTools' ) ) {
 			this.nodes.$diffTablePrefix.addClass( 'instantDiffs-hidden' );
 		}
 
 		// Find table elements
-		this.nodes.$table = this.nodes.$data.filter( 'table.diff' );
+		this.nodes.$table = this.nodes.$body.find( 'table.diff' );
 
 		// Find and hide the next / previous diff links, so the other scripts can use them later
 		this.nodes.$prev = this.nodes.$table
@@ -337,8 +382,8 @@ class LocalPage extends Page {
 		utils.clearWhitespaces( rightTitle4 );
 
 		// Hide unsupported or unnecessary element
-		this.nodes.$data
-			.filter( '.mw-revslider-container, .mw-diff-revision-history-links,  #mw-oldid' )
+		this.nodes.$body
+			.find( '.mw-revslider-container, .mw-diff-revision-history-links,  #mw-oldid' )
 			.addClass( 'instantDiffs-hidden' );
 
 		// Collect links that will be available in the navigation
@@ -347,7 +392,7 @@ class LocalPage extends Page {
 	}
 
 	processRevision() {
-		this.nodes.$diffTitle = this.nodes.$data.filter( '.diff-currentversion-title' );
+		this.nodes.$diffTitle = this.nodes.$body.find( '.diff-currentversion-title' );
 
 		// Show or hide mobile diff footer
 		if ( !settings.get( 'showRevisionInfo' ) ) {
@@ -361,15 +406,15 @@ class LocalPage extends Page {
 		this.processCategories();
 
 		// Hide unsupported or unnecessary element
-		this.nodes.$data
+		this.nodes.$body
 			.find( '.mw-diff-slot-header, .mw-slot-header' )
 			.addClass( 'instantDiffs-hidden' );
 	}
 
 	processFlaggedRevs() {
 		// Find FlaggedRevs table info and insert before the diff table to fix the element flow
-		this.nodes.$frDiffHeader = this.nodes.$data
-			.filter( '#mw-fr-diff-headeritems' )
+		this.nodes.$frDiffHeader = this.nodes.$body
+			.find( '#mw-fr-diff-headeritems' )
 			.insertBefore( this.nodes.$table );
 
 		// Find and hide the "All unpatrolled diffs" link, so the other scripts can use it later
@@ -393,7 +438,7 @@ class LocalPage extends Page {
 		}
 
 		// Hide unsupported or unnecessary element
-		this.nodes.$data
+		this.nodes.$body
 			.find( '.fr-diff-to-stable, #mw-fr-diff-dataform' )
 			.addClass( 'instantDiffs-hidden' );
 	}
@@ -403,7 +448,7 @@ class LocalPage extends Page {
 	}
 
 	processMobileFooter() {
-		this.nodes.$diffMobileFooter = this.nodes.$data.filter( '.mw-diff-mobile-footer' );
+		this.nodes.$diffMobileFooter = this.nodes.$body.find( '.mw-diff-mobile-footer' );
 		if ( this.nodes.$diffMobileFooter.length === 0 ) return;
 
 		// Append diff mobile footer to the bottom

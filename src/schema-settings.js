@@ -5,8 +5,9 @@ import Api from './Api';
 import Site from './Site';
 import view from './view';
 import settings from './settings';
+import id from './id';
 
-const { h, hj, kdb } = utils;
+const { h, ht, hj, kdb } = utils;
 
 /**
  * Settings Shema
@@ -18,6 +19,13 @@ export const schema = {
 			labelMsg: 'settings-fieldset-general',
 		},
 		fields: {
+			intro: {
+				type: 'html',
+				field: false,
+				enabled: true,
+				default: undefined,
+				content: renderIntroField,
+			},
 			enableMobile: {
 				type: 'checkbox',
 				enabled: true,
@@ -161,6 +169,16 @@ export const schema = {
 					help: () => utils.msgSnippet( 'settings-enable-review-form-help', 'review', 'mw:Special:MyLanguage/Extension:FlaggedRevs#User_rights' ),
 				},
 			},
+			enableDetailedPages: {
+				type: 'checkbox',
+				enabled: true,
+				default: true,
+				config: {
+					labelMsg: 'settings-enable-detailed-pages',
+					helpInline: false,
+					helpMsg: 'settings-enable-detailed-pages-help',
+				},
+			},
 			showRevisionInfo: {
 				type: 'checkbox',
 				enabled: true,
@@ -298,6 +316,89 @@ export const schema = {
 };
 
 /**
+ * Renders content for the Intro field.
+ * @private
+ * @returns {OO.ui.Widget}
+ */
+function renderIntroField() {
+	/*!
+	 * Logo "Instant_Diffs_logo_with_wordmark.svg"
+	 * @author Serhio Magpie
+	 * @see {@link https://commons.wikimedia.org/wiki/File:Instant_Diffs_logo_with_wordmark.svg }
+	 */
+
+	const image = (/** @type {string} */ require( './images/Instant_Diffs_logo_with_wordmark.svg' ) );
+	const contributors = id.config.contributors.join( ', ' );
+	const translators = Object
+		.entries( id.i18n )
+		.map( ( [ key, value ] ) => {
+			value = value[ '@metadata' ]?.authors?.join( ', ' ) || null;
+			return [ key, value ]
+				.filter( entry => !utils.isEmpty( entry ) )
+				.join( ': ' );
+		} )
+		.join( '; ' );
+
+	const content = h( 'div', {
+			class: 'instantDiffs-settings-intro',
+		},
+		h( 'div', {
+			class: 'instantDiffs-image--intro',
+			role: 'image',
+			title: utils.msg( 'script-name' ),
+			innerHTML: image,
+		} ),
+		h( 'ul.instantDiffs-list--intro',
+			h( 'li',
+				h( 'a', {
+					href: utils.originPage( id.config.link ),
+					target: '_blank',
+					innerText: utils.msg( 'intro-link-about' ),
+				} ),
+			),
+			h( 'li',
+				h( 'a', {
+					href: utils.originPage( `${ id.config.link }/News` ),
+					target: '_blank',
+					innerText: utils.msg( 'intro-link-news' ),
+				} ),
+			),
+			h( 'li',
+				h( 'a', {
+					href: utils.originPage( id.config.discussion ),
+					target: '_blank',
+					innerText: utils.msg( 'intro-link-talk' ),
+				} ),
+			),
+			h( 'li',
+				h( 'a', {
+					href: utils.originPage( `${ id.config.link }/API` ),
+					target: '_blank',
+					innerText: utils.msg( 'intro-link-api' ),
+				} ),
+			),
+		),
+		h( 'p',
+			h( 'strong', `${ utils.msg( 'intro-version' ) }:` ),
+			ht( ` ${ id.config.version }.` ),
+		),
+		h( 'p',
+			h( 'strong', `${ utils.msg( 'intro-contributors' ) }:` ),
+			ht( ` ${ contributors }.` ),
+		),
+		h( 'p',
+			h( 'strong', `${ utils.msg( 'intro-translators' ) }:` ),
+			ht( ` ${ translators }.` ),
+		),
+		h( 'hr' ),
+	);
+
+	return new OO.ui.Widget( {
+		$content: $( content ),
+	} );
+}
+
+/**
  * Gets tooltip help message for the Hotkeys field.
  * @private
  * @returns {OO.ui.HtmlSnippet}
@@ -393,7 +494,7 @@ function getLinksFormatExample( options ) {
 	const revision = getHref( { title, oldid: '12345', section: 'Section' }, {}, options );
 	const page = getHref( { title, curid: '12345', section: 'Section' }, {}, options );
 
-	return h( 'ul.instantDiffs-list--settings',
+	return h( 'ul.instantDiffs-list--examples',
 		h( 'li', h( 'i', diff ) ),
 		h( 'li', h( 'i', revision ) ),
 		h( 'li', h( 'i', page ) ),

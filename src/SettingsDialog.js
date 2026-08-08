@@ -193,7 +193,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 		 * @see {@link https://commons.wikimedia.org/wiki/File:Eo_circle_light-green_checkmark.svg }
 		 */
 
-		const image = '/6/6f/Eo_circle_light-green_checkmark.svg';
+		const image = (/** @type {string} */ require( './images/Eo_circle_light-green_checkmark.svg' ) );
 
 		const content = renderNoticeBox( {
 			image,
@@ -209,45 +209,12 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 
 	renderEmptyContent() {
 		/*!
-		 * Icon "Cappuccino.svg"
-		 * @author OpenClipArt
-		 * @see {@link https://commons.wikimedia.org/wiki/File:Cappuccino.svg }
-		 */
-
-		/*!
-		 * Icon "Coffe.svg"
-		 * @author OpenClipArt
-		 * @see {@link https://commons.wikimedia.org/wiki/File:Coffe.svg }
-		 */
-
-		/*!
 		 * Icon "Coffee cup icon.svg"
 		 * @author OpenClipArt
 		 * @see {@link https://commons.wikimedia.org/wiki/File:Coffee_cup_icon.svg }
 		 */
 
-		/*!
-		 * Icon "Applications-ristretto.svg"
-		 * @author Sebastian Kraft
-		 * @see {@link https://commons.wikimedia.org/wiki/File:Applications-ristretto.svg }
-		 */
-
-		/*!
-		 * Icon "Cup-o-coffee-simple.svg"
-		 * @author Peewack
-		 * @author Julius Schorzman (Quasipalm)
-		 * @see {@link https://commons.wikimedia.org/wiki/File:Cup-o-coffee-simple.svg }
-		 */
-
-		const images = [
-			'/2/2f/Cappuccino.svg',
-			'/c/ca/Coffe.svg',
-			'/9/9a/Coffee_cup_icon.svg',
-			'/1/1a/Applications-ristretto.svg',
-			'/f/f7/Cup-o-coffee-simple.svg',
-		];
-		const index = Math.floor( Math.random() * images.length );
-		const image = images[ index ] || images[ 0 ];
+		const image = (/** @type {string} */ require( './images/Coffee_cup_icon.svg' ) );
 
 		const content = renderNoticeBox( {
 			image,
@@ -365,6 +332,10 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 					items: options,
 				} );
 				break;
+
+			case 'html':
+				item.input = await this.getFieldContent( name, item );
+				break;
 		}
 
 		// Input handlers
@@ -380,6 +351,12 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 			.toggle( item.enabled );
 
 		return item;
+	}
+
+	async getFieldContent( name, field ) {
+		if ( !settings.check( name ) ) return;
+		if ( !utils.isFunction( field.content ) ) return;
+		return await field.content( name, field );
 	}
 
 	async checkFieldEnabled( name, field ) {

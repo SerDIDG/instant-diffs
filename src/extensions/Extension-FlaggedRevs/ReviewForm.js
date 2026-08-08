@@ -3,6 +3,7 @@ import * as utils from '../../utils';
 import { executeModuleScript } from '../../utils-oojs';
 
 import settings from '../../settings';
+import Site from '../../Site';
 
 /**
  * Class representing the review form.
@@ -50,6 +51,13 @@ class ReviewForm {
 		) {
 			return;
 		}
+
+		this.init();
+	}
+
+	async init() {
+		const hasSkin = await Site.hasSkin( 'apioutput' );
+		if ( !hasSkin ) return;
 
 		// Lazy-import modules
 		this.ReviewButton = require( './ReviewButton' ).default;

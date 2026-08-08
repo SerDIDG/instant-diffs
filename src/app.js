@@ -299,6 +299,7 @@ function app() {
 
 	// Bundle language strings
 	i18nBundle();
+	contributorsBundle();
 
 	// Pre-process language strings
 	utils.processMessages();
@@ -350,6 +351,13 @@ function i18nBundle() {
 	for ( const load of Object.values( loaders ) ) {
 		load();
 	}
+}
+
+/**
+ * Bundle contributors list.
+ */
+function contributorsBundle() {
+	id.config.contributors = require( `../${ id.config.outdir }/${ id.config.outname }-contributors.json` );
 }
 
 /**

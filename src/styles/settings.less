@@ -7,6 +7,32 @@
 	}
 }
 
+.instantDiffs-settings-intro {
+	img {
+		margin-bottom: 0.5rem;
+		max-width: 360px;
+		aspect-ratio: 1605 / 368;
+		border: none;
+		font-size: 0;
+	}
+
+	ul {
+		margin-bottom: 0.75rem;
+	}
+
+	p {
+		color: var(--instantDiffs-color-subtle);
+	}
+
+	hr {
+		margin-block: 1rem 0.75rem;
+	}
+
+	.instantDiffs-image--intro {
+		margin-bottom: 0.5rem;
+	}
+}
+
 .instantDiffs-settings-panel {
 	&--empty,
 	&--finish {
@@ -26,14 +52,44 @@
 	}
 }
 
+.instantDiffs-image--intro {
+	max-width: 360px;
+
+	svg {
+		width: 100%;
+		height: auto;
+	}
+}
+
 /* Reset list styles for a list hint element */
 /* Use more specific selector because mobile Minerva loads unscoped ".ns-special ul" */
 /* 1.42857143em is a size of the OOUI checkbox/radio */
 ul.instantDiffs-list {
-	&--settings {
-		padding: 0;
+	&--intro {
+		margin-inline: 0;
+		padding-inline: 0;
+		list-style: none;
+		font-weight: bold;
+
+		li {
+			margin: 0;
+			display: inline;
+
+			&::after {
+				content: " · ";
+				font-weight: bold
+			}
+
+			&:last-child::after {
+				content: none
+			}
+		}
+	}
+
+	&--examples {
 		margin-block: 0;
 		margin-inline: 1.42857143em 0;
+		padding: 0;
 		list-style: disc;
 		font-size: var(--instantDiffs-font-size-hint);
 
@@ -48,8 +104,8 @@ ul.instantDiffs-list {
 	}
 
 	&--hotkeys {
-		padding: 0;
 		margin: 0;
+		padding: 0;
 		list-style: none;
 		font-size: var(--instantDiffs-font-size-hint);
 

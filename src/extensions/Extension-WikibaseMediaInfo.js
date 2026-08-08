@@ -15,14 +15,26 @@ const { h } = utils;
  * @param {import('../Page').Page.Any} page
  */
 function process( page ) {
-	if ( !page || page.error || page.article.get( 'type' ) !== 'revision' ) return;
+	if ( !page || page.article.get( 'type' ) !== 'revision' ) return;
 
-	page.nodes.$mediaInfoView = page.getBody().find( 'mediainfoview' );
-	if ( page.nodes.$mediaInfoView.length === 0 ) return;
+	// Infuse server-rendered OOUI tab elements, if present,
+	// otherwise render mediainfoview, if present.
+	const $tabs = page.getBody().find( '.wbmi-tabs' );
+	if ( $tabs.length > 0 ) {
+		page.on( 'ready', () => {
+			const tabs = OO.ui.infuse( $tabs );
 
-	const content = render( page.nodes.$mediaInfoView );
-	if ( content ) {
-		utils.embed( content, page.nodes.$diffTitle, 'insertAfter' );
+			// This shouldn't be needed, as this is the first tab, but it is (T340803)
+			tabs.setTabPanel( 'wikiTextPlusCaptions' );
+		} );
+	} else {
+		const $mediaInfoView = page.getBody().find( 'mediainfoview' );
+		if ( $mediaInfoView.length === 0 ) return;
+
+		const content = render( $mediaInfoView );
+		if ( content ) {
+			utils.embed( content, page.nodes.$diffTitle, 'insertAfter' );
+		}
 	}
 }
 

@@ -30,15 +30,16 @@
 	"main": "src/app.js",
 	"scripts": {
 		"buildI18n": "node ./scripts/buildI18n.mjs",
+		"buildContributors": "node ./scripts/buildContributors.mjs",
 
-		"start": "npm run buildI18n && node esbuild.config.mjs --start --dev",
+		"start": "npm run buildI18n && npm run buildContributors && node esbuild.config.mjs --start --dev",
 		"start:local": "cross-env PROJECT=local npm run start",
 
-		"dev": "npm run buildI18n && node esbuild.config.mjs --build --dev",
+		"dev": "npm run buildI18n && npm run buildContributors && node esbuild.config.mjs --build --dev",
 		"dev:testwiki": "cross-env PROJECT=testwiki npm run dev",
 		"dev:mediawiki": "cross-env PROJECT=mediawiki npm run dev",
 
-		"build": "npm run buildI18n && node esbuild.config.mjs --build",
+		"build": "npm run buildI18n && npm run buildContributors && node esbuild.config.mjs --build",
 		"build:testwiki": "cross-env PROJECT=testwiki npm run build",
 		"build:mediawiki": "cross-env PROJECT=mediawiki npm run build",
 

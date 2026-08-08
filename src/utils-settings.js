@@ -79,11 +79,17 @@ export function renderNoticeBox( params ) {
 	const classes = [ 'instantDiffs-notice-box' ];
 	params.modifiers.forEach( modifier => classes.push( `instantDiffs-notice-box--${ modifier }` ) );
 
+	if ( params.image.startsWith( '<svg' ) ) {
+		params.image = `data:image/svg+xml,${ encodeURIComponent( params.image ) }`;
+	} else {
+		params.image = `${ id.config.commonsAssetsPath }${ params.image }`;
+	}
+
 	return h( 'div', {
 			class: classes,
 		},
 		h( 'img', {
-			src: `${ id.config.commonsAssetsPath }${ params.image }`,
+			src: params.image,
 			alt: params.alt,
 		} ),
 		h( 'h5', params.content ),

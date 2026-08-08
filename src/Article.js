@@ -57,6 +57,12 @@ class Article {
 	isForeign = false;
 
 	/**
+	 * Flag that indicates if detailed loader was used.
+	 * @type {boolean}
+	 */
+	isDetailed = false;
+
+	/**
 	 * Create an Article instance.
 	 * @param {Record<string, *>} values - A key-value pairs object
 	 * @param {Record<string, *>} [options] - Configuration options

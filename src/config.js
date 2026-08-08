@@ -13,6 +13,7 @@ export const config = {
 	prefix: 'instantDiffs',
 	messagePrefix: 'instant-diffs',
 	settingsPrefix: 'userjs-instantDiffs',
+	contributors: {},
 
 	dependencies: {
 		styles: '__styles__',
@@ -92,6 +93,12 @@ export const config = {
 			],
 			486: [                                                      // Data:
 				'ext.jsonConfig',
+			],
+		},
+		detailed: {
+			6: [
+				'mediawiki.action.view.filepage',
+				"wikibase.mediainfo.uls",
 			],
 		},
 		skins: {
@@ -265,12 +272,13 @@ export const config = {
 		'GlobalContributions',
 		'GlobalWatchlist',
 	],
-
 	nonEditableContentModels: [
 		'wikibase-item',
 		'wikibase-property',
 		'wikibase-lexeme',
 	],
+
+	detailedPageNamespaces: [ 6 ],
 
 	// Skin-specific content classes
 	skinBodyClasses: {

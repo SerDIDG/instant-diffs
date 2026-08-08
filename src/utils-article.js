@@ -107,6 +107,16 @@ export function getDependencies( article, $container ) {
 		);
 	}
 
+	// Detailed-specific dependencies
+	if ( article.isDetailed ) {
+		const detailedDependencies = id.config.dependencies.detailed;
+		if ( detailedDependencies ) {
+			dependencies = dependencies.concat(
+				getNamespaceDependencies( article, detailedDependencies ),
+			);
+		}
+	}
+
 	// Selector-specific dependencies
 	if ( $container instanceof jQuery ) {
 		dependencies = dependencies.concat(

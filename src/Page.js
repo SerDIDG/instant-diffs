@@ -53,11 +53,6 @@ class Page {
 	/**
 	 * @type {Object}
 	 */
-	articleParams = {};
-
-	/**
-	 * @type {Object}
-	 */
 	requestParams = {};
 
 	/**
@@ -166,13 +161,6 @@ class Page {
 			fireDiffHook: true,
 			fireContentHook: true,
 			...options,
-		};
-
-		this.articleParams = {
-			action: 'render',
-			diffonly: this.article.get( 'type' ) === 'diff' ? 1 : 0,
-			unhide: settings.get( 'unHideDiffs' ) ? 1 : 0,
-			uselang: id.local.userLanguage,
 		};
 
 		this.configManager = new ConfigManager( {
@@ -729,7 +717,7 @@ class Page {
 
 	async renderContentSuccess() {
 		// Request lazy-loaded dependencies
-		this.requestDependencies();
+		await this.requestDependencies();
 	}
 
 	async renderContentError() {
@@ -739,7 +727,7 @@ class Page {
 	}
 
 	async renderNavigation() {
-		this.navigation = new Navigation( this, this.article, this.articleParams, {
+		this.navigation = new Navigation( this, this.article, {
 			initiatorAction: this.options.initiatorAction,
 			links: this.links,
 		} );
@@ -981,10 +969,6 @@ class Page {
 		}
 
 		return title;
-	}
-
-	getArticleParams() {
-		return this.articleParams;
 	}
 
 	/**
