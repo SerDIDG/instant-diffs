@@ -172,6 +172,7 @@ export const schema = {
 			enableDetailedPages: {
 				type: 'checkbox',
 				enabled: true,
+				enabledCondition: async () => await Site.hasSkin( 'apioutput' ),
 				default: true,
 				config: {
 					labelMsg: 'settings-enable-detailed-pages',
