@@ -152,3 +152,18 @@ export function isAllowedDomain( hostname ) {
 	domainMatchCache.set( h, result );
 	return result;
 }
+
+/**
+ * Tests whether a hostname is allowed by checking legacy rules.
+ * @param {string} hostname
+ * @param {HTMLElement} node
+ * @returns {boolean}
+ */
+export function isAllowedDomainLegacy( hostname, node ) {
+	const isIDLink = node.hasAttribute( 'data-instantdiffs-link' );
+	return utils.isLegacy( '1.47.0' ) && (
+		isIDLink ||
+		node.classList.contains( 'extiw' ) ||
+		id.config.legacyAllowedSpecialPages.includes( id.local.mwCanonicalSpecialPageName )
+	);
+}

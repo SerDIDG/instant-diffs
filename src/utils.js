@@ -184,6 +184,27 @@ export function isForeign( hostname ) {
 }
 
 /**
+ * Memoizes legacy version checks.
+ * @type {Map<string, boolean>}
+ */
+const legacyCache = new Map();
+
+/**
+ * Checks if current wiki version is legacy relative to input version.
+ * @param {string} version
+ * @return {boolean}
+ */
+export function isLegacy( version ) {
+	if ( legacyCache.has( version ) ) {
+		return legacyCache.get( version );
+	}
+
+	const result = semverCompare( id.local.mwVersion, version ) < 0;
+	legacyCache.set( version, result );
+	return result;
+}
+
+/**
  * Checks if the MobileFrontend extension is enabled.
  * @return {boolean}
  */
@@ -1107,6 +1128,35 @@ export function addBaseToAnchors( $content, url ) {
 
 	$content
 		.find( 'a[href^="#"]' )
+		.each( handler );
+}
+
+/**
+ * Add a hostname to the image srcs.
+ * @param {JQuery} $content
+ * @param {string} url
+ */
+export function addBaseToImages( $content, url ) {
+	if ( !$content ) return;
+
+	let baseUrl;
+	try {
+		baseUrl = new URL( url, `https://${ location.hostname }` );
+	} catch {
+		return;
+	}
+
+	const handler = ( i, el ) => {
+		$( el )
+			.attr( 'src', 'https://' + baseUrl.hostname + $( el ).attr( 'src' ).replace( /special:mylanguage\//i, '' ) );
+	};
+
+	$content
+		.filter( 'img[src^="/"]:not([src^="//"])' )
+		.each( handler );
+
+	$content
+		.find( 'img[src^="/"]:not([src^="//"])' )
 		.each( handler );
 }
 

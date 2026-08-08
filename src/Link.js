@@ -279,7 +279,9 @@ class Link {
 		}
 
 		// Exclude links that do not match site ajax domains config
-		if ( !utilsLink.isAllowedDomain( this.url.hostname ) ) return;
+		if ( !utilsLink.isAllowedDomain( this.url.hostname ) ) {
+			if ( !utilsLink.isAllowedDomainLegacy( this.url.hostname, this.node ) ) return;
+		}
 
 		// Exclude links with specific action parameters
 		if ( !utilsLink.isAllowedAction( this.url.searchParams.get( 'action' ) ) ) return;

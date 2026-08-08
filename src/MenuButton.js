@@ -48,7 +48,7 @@ class MenuButton extends OO.ui.ButtonWidget {
 	handler;
 
 	/**
-	 * Create a MenuButton instance.
+	 * Creates a MenuButton instance.
 	 * @param {MenuButton.Options} [options] - A MenuButton configuration options
 	 */
 	constructor( options ) {
@@ -132,7 +132,7 @@ class MenuButton extends OO.ui.ButtonWidget {
 	}
 
 	/**
-	 * Toggle icon visibility.
+	 * Toggles icon visibility.
 	 * @param {boolean} invisibleIcon
 	 * @returns {MenuButton}
 	 */
@@ -148,18 +148,20 @@ class MenuButton extends OO.ui.ButtonWidget {
 	}
 
 	/**
-	 * Create a Link instance around the button element.
+	 * Creates a Link instance around the button element.
 	 * @param {Link.Options}linkOptions
 	 * @returns {MenuButton}
 	 */
 	setLink( linkOptions ) {
-		this.link = new Link( this.$button.get( 0 ), linkOptions );
+		const node = this.$button.get( 0 );
+		node.dataset.instantdiffsLink = '';
+		this.link = new Link( node, linkOptions );
 
 		return this;
 	}
 
 	/**
-	 * Set a click handler to the button element.
+	 * Sets a click handler to the button element.
 	 * @param {(widget: MenuButton, event: Event) => void} [handler] - A click handler
 	 * @param {boolean} [useAltKey] - Use the alt key to bypass the handler
 	 * @returns {MenuButton}
@@ -178,7 +180,7 @@ class MenuButton extends OO.ui.ButtonWidget {
 	}
 
 	/**
-	 * Execute a click handler on the button element.
+	 * Executes a click handler on the button element.
 	 * @returns {MenuButton}
 	 */
 	execHandler() {
@@ -188,7 +190,7 @@ class MenuButton extends OO.ui.ButtonWidget {
 	}
 
 	/**
-	 * Get a configuration option by name.
+	 * Gets a configuration option by name.
 	 * @param {string} name
 	 * @returns {*}
 	 */
@@ -197,7 +199,7 @@ class MenuButton extends OO.ui.ButtonWidget {
 	}
 
 	/**
-	 * Get configuration options.
+	 * Gets configuration options.
 	 * @returns {MenuButton.Options}
 	 */
 	getOptions() {
@@ -205,7 +207,7 @@ class MenuButton extends OO.ui.ButtonWidget {
 	}
 
 	/**
-	 * Get the Article instance.
+	 * Gets the Article instance.
 	 * @returns {import('./Article').default}
 	 */
 	getArticle() {
@@ -213,7 +215,7 @@ class MenuButton extends OO.ui.ButtonWidget {
 	}
 
 	/**
-	 * Toggle a buttons pending state that shows a loading cursor.
+	 * Toggles a buttons pending state that shows a loading cursor.
 	 * @param {boolean} value
 	 * @returns {MenuButton}
 	 */

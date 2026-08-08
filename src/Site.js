@@ -191,8 +191,13 @@ class Site {
 		crosssiteajaxdomains.forEach( ( raw ) => {
 			const pattern = raw.trim().toLowerCase();
 			if ( pattern.startsWith( '*.' ) ) {
-				wildcardBases.add( pattern.slice( 2 ) );
-			} else if ( /[*?]/.test( pattern ) ) {
+				const base = pattern.slice( 2 );
+				if ( !/[*?]/.test( base ) ) {
+					wildcardBases.add( base );
+					return;
+				}
+			}
+			if ( /[*?]/.test( pattern ) ) {
 				const reStr = '^' + pattern
 					.replace( /[.+^${}()|[\]\\]/g, '\\$&' )
 					.replace( /\*/g, '.*' )
@@ -204,7 +209,6 @@ class Site {
 		} );
 
 		this.CORSConfig[ hostname ] = { exact, wildcardBases, globRegexes };
-
 		return this.CORSConfig[ hostname ];
 	}
 

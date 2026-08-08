@@ -167,8 +167,9 @@ class GlobalPage extends Page {
 		// Render and append diff mobile footer
 		this.renderMobileFooter();
 
-		// Convert relative links to the absolute including hashes
+		// Convert relative links to the absolute including hashes and image srcs
 		utils.addBaseToLinks( this.nodes.$body, this.article.get( 'href' ) );
+		utils.addBaseToImages( this.nodes.$body, this.article.get( 'href' ) );
 
 		// Call a parent method that wraps a process
 		await super.renderContentSuccess();

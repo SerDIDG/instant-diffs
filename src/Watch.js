@@ -314,7 +314,7 @@ class Watch {
 
 			// Remove the expiry argument added @since 1.45 (T265716)
 			// for older MediaWiki versions.
-			if ( utils.semverCompare( mw.config.get( 'wgVersion' ), '1.45.0' ) < 0 ) {
+			if ( utils.isLegacy( '1.45.0' ) ) {
 				params.splice( 2, 1 );
 			}
 

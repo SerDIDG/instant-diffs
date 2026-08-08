@@ -261,6 +261,10 @@ export const config = {
 		'Special:ComparePages',
 		'Special:Undelete',
 	],
+	legacyAllowedSpecialPages: [
+		'GlobalContributions',
+		'GlobalWatchlist',
+	],
 
 	nonEditableContentModels: [
 		'wikibase-item',
@@ -464,6 +468,11 @@ export const local = {
 	 * @type {string|null}
 	 */
 	linkSelector: null,
+
+	/**
+	 * @type {string|null}
+	 */
+	mwVersion: null,
 
 	/**
 	 * @type {boolean}

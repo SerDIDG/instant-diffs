@@ -636,7 +636,7 @@ class Navigation {
 			label: utils.msg( `goto-back-${ type }` ),
 			title: utils.msgHint( `goto-back-${ type }`, 'back', settings.get( 'enableHotkeys' ) ),
 			icon: 'newline',
-			href: getHref( article, initiator.getArticleParams(), hrefOptions ),
+			href: getHref( article, {}, hrefOptions ),
 			classes: [ 'instantDiffs-button--back' ],
 			setLink: true,
 			linkOptions: {
@@ -702,7 +702,7 @@ class Navigation {
 		options = {
 			name: 'compareCur',
 			label: utils.msg( 'goto-compare-cur' ),
-			icon: 'diffs',
+			icon: utils.isLegacy( '1.47.0' ) ? 'articles' : 'diffs',
 			href: getHref( article ),
 			setLink: true,
 			linkOptions: {
