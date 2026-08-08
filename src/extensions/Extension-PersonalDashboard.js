@@ -12,12 +12,12 @@ import * as utils from '../utils';
  * Process Personal Dashboard extension.
  */
 function process() {
-	const $context = $( '#personal-dashboard-root' );
+	const $context = $( '.personal-dashboard-viewport' );
 	if ( $context.length === 0 || !utils.isAllowed() ) return;
 
 	const options = JSON.stringify( { setClasses: 'clear' } );
 	$context
-		.find( 'a.personal-dashboard-review-changes__card' )
+		.find( 'a.personal-dashboard-review-changes__card__link' )
 		.attr( 'data-instantdiffs-link', 'event' )
 		.attr( 'data-instantdiffs-options', options );
 
