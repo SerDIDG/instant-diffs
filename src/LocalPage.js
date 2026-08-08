@@ -439,7 +439,7 @@ class LocalPage extends Page {
 
 		// Hide unsupported or unnecessary element
 		this.nodes.$body
-			.find( '.fr-diff-to-stable, #mw-fr-diff-dataform' )
+			.find( '.fr-diff-to-stable, #mw-fr-diff-dataform, #mw-fr-reviewform' )
 			.addClass( 'instantDiffs-hidden' );
 	}
 
