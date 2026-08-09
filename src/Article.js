@@ -1,3 +1,4 @@
+import id from './id';
 import * as utils from './utils';
 import * as utilsArticle from './utils-article';
 
@@ -302,6 +303,12 @@ class Article {
 	 * Process hostname and set mw serverName, mw endPoint, and isForeign properties.
 	 */
 	processHostname() {
+		// Resolve redirects
+		const redirect = id.config.redirects[ this.values.hostname ];
+		if ( redirect ) {
+			this.values.hostname = redirect;
+		}
+
 		// Set server names
 		const { general } = Site.aliases[ this.values.hostname ] || {};
 		if ( !utils.isEmptyObject( general ) ) {

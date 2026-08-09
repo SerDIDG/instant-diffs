@@ -344,7 +344,7 @@ class LocalPage extends Page {
 
 		// Render a warning when revision was not found
 		if ( this.pageInfo?.error ) {
-			const $emptyMessage = this.nodes.$data.filter( 'p' );
+			const $emptyMessage = this.nodes.$body.find( '> p' );
 			if ( $emptyMessage.length > 0 ) {
 				this.renderWarning( {
 					$content: $emptyMessage,

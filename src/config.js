@@ -98,7 +98,7 @@ export const config = {
 		detailed: {
 			6: [
 				'mediawiki.action.view.filepage',
-				"wikibase.mediainfo.uls",
+				'wikibase.mediainfo.uls',
 			],
 		},
 		skins: {
@@ -113,6 +113,10 @@ export const config = {
 			{                                                           // [[Extension:UserProfileV2]]
 				selector: [ '.profile-masthead' ],
 				dependencies: [ 'ext.userProfileV2.styles' ],
+			},
+			{                                                           // [[Extension:Parsoid]]
+				selector: [ '.mw-parser-output[data-mw-parsoid-version]' ],
+				dependencies: [ 'mediawiki.skinning.content.parsoid' ],
 			},
 		],
 		messages: {
@@ -178,6 +182,11 @@ export const config = {
 				'checkuser-userinfocard-toggle-button-aria-label',
 			],
 		},
+	},
+
+	redirects: {
+		'meta.wikipedia.org': 'meta.wikimedia.org',
+		'commons.wikipedia.org': 'commons.wikimedia.org',
 	},
 
 	// Settings options
