@@ -23,16 +23,6 @@ class LocalPage extends Page {
 	articleParams = {};
 
 	/**
-	 * Get a promise array for the preload request.
-	 * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
-	 */
-	getPreloadPromises() {
-		const promises = super.getPreloadPromises();
-		promises.push( this.processArticleParams() );
-		return promises;
-	}
-
-	/**
 	 * Get a promise array for the main load request.
 	 * @return {(Promise|JQuery.jqXHR|JQuery.Promise|mw.Api.AbortablePromise)[]}
 	 */
@@ -56,26 +46,6 @@ class LocalPage extends Page {
 	}
 
 	/******* DEPENDENCIES *******/
-
-	async processArticleParams() {
-		this.articleParams = {
-			action: 'render',
-			diffonly: this.article.get( 'type' ) === 'diff' ? 1 : 0,
-			unhide: settings.get( 'unHideDiffs' ) ? 1 : 0,
-			uselang: id.local.userLanguage,
-		};
-
-		if (
-			settings.get( 'enableDetailedPages' ) &&
-			this.article.get( 'type' ) === 'revision' &&
-			id.config.detailedPageNamespaces.includes( this.article.getTitle().getNamespaceId() ) &&
-			await Site.hasSkin( 'apioutput' )
-		) {
-			this.article.isDetailed = true;
-			this.articleParams.action = 'view';
-			this.articleParams.useskin = 'apioutput';
-		}
-	}
 
 	/**
 	 * Request page dependencies.
@@ -185,6 +155,23 @@ class LocalPage extends Page {
 					? values.direction : 'prev',
 		};
 
+		this.articleParams = {
+			action: 'render',
+			diffonly: values.type === 'diff' ? 1 : 0,
+			unhide: settings.get( 'unHideDiffs' ) ? 1 : 0,
+			uselang: id.local.userLanguage,
+		};
+		if (
+			settings.get( 'enableDetailedPages' ) &&
+			Site.hasSkinCached( 'apioutput' ) &&
+			values.type === 'revision' &&
+			id.config.detailedPageNamespaces.includes( this.article.getTitle().getNamespaceId() )
+		) {
+			this.article.isDetailed = true;
+			this.articleParams.action = 'view';
+			this.articleParams.useskin = 'apioutput';
+		}
+
 		const params = {
 			url: id.local.mwEndPoint,
 			dataType: 'html',
@@ -196,9 +183,6 @@ class LocalPage extends Page {
 	/******* RENDER *******/
 
 	async renderContentSuccess() {
-		// Modify ids of the PHP OOUI infuse elements so they do not repeat
-		this.data = this.data.replace( /ooui-php-(\d+)(?!-id)/g, 'ooui-php-$1-id' );
-
 		// Parse and append all data coming from the endpoint
 		this.nodes.data = $.parseHTML( this.data );
 		this.nodes.$data = this.getNodesData().appendTo( this.nodes.$body );

@@ -12,7 +12,7 @@ class Site {
 	static info = {};
 
 	/**
-	 * @type {Object<string, Object>}
+	 * @type {Object<string, string>}
 	 */
 	static aliases = {};
 
@@ -49,7 +49,7 @@ class Site {
 
 		// Ty to get data from the static property
 		if ( this.checkInfo( hostname, fields ) ) {
-			return this.aliases[ hostname ] || this.info[ hostname ];
+			return this.getInfoCached( hostname );
 		}
 
 		// Request data via API
@@ -65,7 +65,6 @@ class Site {
 
 		try {
 			const { query } = await api.get( params, hostname );
-
 			if ( !this.info[ hostname ] ) {
 				this.info[ hostname ] = {};
 			}
@@ -75,8 +74,8 @@ class Site {
 
 			// Cache data with expiry
 			mw.storage.setObject( storageKey, this.info, settings.get( 'storageExpiry' ) );
+			this.processAliases( hostname );
 
-			this.processAliases( this.info[ hostname ] );
 			return this.info[ hostname ];
 		} catch ( error ) {
 			Api.notifyError( error );
@@ -86,24 +85,36 @@ class Site {
 	/**
 	 * @private
 	 */
+	static getInfoCached( hostname ) {
+		const alias = this.aliases[ hostname ];
+		if ( this.info[ alias ] ) {
+			return this.info[ alias ];
+		}
+		return this.info[ hostname ];
+	}
+
+	/**
+	 * @private
+	 */
 	static processInfo() {
 		if ( utils.isEmptyObject( this.info ) ) return;
 
-		for ( const site of Object.values( this.info ) ) {
-			this.processAliases( site );
+		for ( const hostname of Object.keys( this.info ) ) {
+			this.processAliases( hostname );
 		}
 	}
 
 	/**
 	 * @private
 	 */
-	static processAliases( site ) {
-		if ( utils.isEmptyObject( site?.general ) ) return;
+	static processAliases( hostname ) {
+		const data = this.info[ hostname ];
+		if ( utils.isEmptyObject( data?.general ) ) return;
 
-		this.aliases[ site.general.servername ] = site;
-		if ( !utils.isEmpty( site.general.mobileserver ) ) {
-			site.general.mobileservername = utils.getComponentFromUrl( 'hostname', site.general.mobileserver );
-			this.aliases[ site.general.mobileservername ] = site;
+		this.aliases[ data.general.servername ] = hostname;
+		if ( !utils.isEmpty( data.general.mobileserver ) ) {
+			data.general.mobileservername = utils.getComponentFromUrl( 'hostname', data.general.mobileserver );
+			this.aliases[ data.general.mobileservername ] = hostname;
 		}
 	}
 
@@ -111,13 +122,9 @@ class Site {
 	 * @private
 	 */
 	static checkInfo( hostname, fields = [] ) {
-		if ( this.aliases[ hostname ] ) {
-			return utils.isEmpty( fields ) || fields.every( field => this.aliases[ hostname ][ field ] );
-		}
-		if ( this.info[ hostname ] ) {
-			return utils.isEmpty( fields ) || fields.every( field => this.info[ hostname ][ field ] );
-		}
-		return false;
+		const info = this.getInfoCached( hostname );
+		if ( !info ) return false;
+		return utils.isEmpty( fields ) || fields.every( field => info[ field ] );
 	}
 
 	/**
@@ -132,7 +139,7 @@ class Site {
 		if ( this.namespaceConfig[ hostname ] ) return this.namespaceConfig[ hostname ];
 
 		// Get site info
-		const data = this.aliases[ hostname ];
+		const data = this.getInfoCached( hostname );
 		if ( utils.isEmptyObject( data ) ) return;
 
 		// Process namespace config
@@ -180,7 +187,7 @@ class Site {
 		if ( this.CORSConfig[ hostname ] ) return this.CORSConfig[ hostname ];
 
 		// Get site info
-		const { crosssiteajaxdomains } = this.aliases[ hostname ] || {};
+		const { crosssiteajaxdomains } = this.getInfoCached( hostname ) || {};
 		if ( utils.isEmpty( crosssiteajaxdomains ) ) return;
 
 		// Process CORS config
@@ -218,19 +225,33 @@ class Site {
 	 * @returns {Promise<Array>}
 	 */
 	static async getInterwikiMap( articleOrHostname ) {
-		const { interwikimap } = await Site.getInfo( [ 'interwikimap' ], articleOrHostname ) || {};
+		const { interwikimap } = await this.getInfo( [ 'interwikimap' ], articleOrHostname ) || {};
 		return interwikimap;
 	}
 
 	/**
-	 * Check if the site has a specified registered skin.
+	 * Checks if the site has a specified registered skin.
 	 * @param {string} name - Skin code name
 	 * @param {import('./Article').default|string} [articleOrHostname] - Article instance or hostname
 	 * @returns {Promise<boolean>}
 	 */
 	static async hasSkin( name, articleOrHostname ) {
-		const { skins } = await Site.getInfo( [ 'skins' ], articleOrHostname ) || {};
-		return skins?.some( skin => skin.code === name );
+		const { skins } = await this.getInfo( [ 'skins' ], articleOrHostname ) || {};
+		return skins?.some( skin => skin.code === name ) ?? false;
+	}
+
+	/**
+	 * Checks from the cache if the site has a specified registered skin.
+	 * Returns false if no cached data exists yet for the hostname,
+	 * call getInfo() or hasSkin() first to ensure the cache is populated.
+	 * @param {string} name - Skin code name
+	 * @param {import('./Article').default|string} [articleOrHostname] - Article instance or hostname
+	 * @returns {boolean}
+	 */
+	static hasSkinCached( name, articleOrHostname ) {
+		const hostname = getHostname( articleOrHostname );
+		const { skins } = this.getInfoCached( hostname ) || {};
+		return skins?.some( skin => skin.code === name ) ?? false;
 	}
 }
 
