@@ -329,16 +329,26 @@ function renderIntroField() {
 	 */
 
 	const image = (/** @type {string} */ require( './images/Instant_Diffs_logo_with_wordmark.svg' ) );
-	const contributors = id.config.contributors.join( ', ' );
-	const translators = Object
-		.entries( id.i18n )
-		.map( ( [ key, value ] ) => {
-			value = value[ '@metadata' ]?.authors?.join( ', ' ) || null;
-			return [ key, value ]
-				.filter( entry => !utils.isEmpty( entry ) )
-				.join( ': ' );
-		} )
-		.join( '; ' );
+	const contributors = utils.arrayIntersperse(
+		id.config.contributors.map( name => h( 'bdi', name ) ),
+		ht( ', ' ),
+	);
+	const translators = utils.arrayIntersperse(
+		Object.entries( id.i18n )
+			.map( ( [ key, value ] ) => {
+				const authors = value[ '@metadata' ]?.authors || [];
+				if ( utils.isEmpty( authors ) ) return null;
+				return h( 'bdi',
+					ht( `${ key }: ` ),
+					...utils.arrayIntersperse(
+						authors.map( name => h( 'bdi', name ) ),
+						ht( ', ' ),
+					),
+				);
+			} )
+			.filter( entry => !utils.isEmpty( entry ) ),
+		ht( '; ' ),
+	);
 
 	const content = h( 'div', {
 			class: 'instantDiffs-settings-intro',
@@ -385,11 +395,15 @@ function renderIntroField() {
 		),
 		h( 'p',
 			h( 'strong', `${ utils.msg( 'intro-contributors' ) }:` ),
-			ht( ` ${ contributors }.` ),
+			ht( ' ' ),
+			...contributors,
+			ht( '.' ),
 		),
 		h( 'p',
 			h( 'strong', `${ utils.msg( 'intro-translators' ) }:` ),
-			ht( ` ${ translators }.` ),
+			ht( ' ' ),
+			...translators,
+			ht( '.' ),
 		),
 		h( 'hr' ),
 	);

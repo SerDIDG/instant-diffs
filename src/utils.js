@@ -85,7 +85,7 @@ export function isToggleKey( event ) {
  * @returns {boolean}
  */
 export function isElement( value ) {
-	return value instanceof Element || value instanceof HTMLElement;
+	return value instanceof Text || value instanceof Element || value instanceof HTMLElement;
 }
 
 /**
