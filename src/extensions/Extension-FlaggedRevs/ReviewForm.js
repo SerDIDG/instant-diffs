@@ -42,22 +42,21 @@ class ReviewForm {
 		this.page = page;
 		this.article = page.getArticle();
 
+		const isValidPage = this.page.hasFlaggedRevs();
+		const isReviewableArticle = !this.article.isForeign &&
+			this.article.hasAction( 'review' ) &&
+			this.article.get( 'type' ) === 'diff';
+		const isReviewableRevision = this.article.get( 'deletedRevid' ) <= this.article.get( 'stableRevid' );
+
 		if (
 			!settings.get( 'enableReviewForm' ) ||
-			this.article.isForeign ||
-			this.article.get( 'type' ) !== 'diff' ||
-			this.article.get( 'deletedRevid' ) > this.article.get( 'stableRevid' ) ||
-			!this.article.hasAction( 'review' )
+			!Site.hasSkinCached( 'apioutput' ) ||
+			!isValidPage ||
+			!isReviewableArticle ||
+			!isReviewableRevision
 		) {
 			return;
 		}
-
-		this.init();
-	}
-
-	async init() {
-		const hasSkin = await Site.hasSkin( 'apioutput' );
-		if ( !hasSkin ) return;
 
 		// Lazy-import modules
 		this.ReviewButton = require( './ReviewButton' ).default;
@@ -67,12 +66,7 @@ class ReviewForm {
 		this.prepareElements();
 		this.page.on( 'beforeDetach', () => this.restoreElements() );
 
-		// Render popup button:
-		// Show button immediately if FlaggedRevs elements persist on the page,
-		// otherwise show button after a successful form HTML request.
-		if ( this.page.hasFlaggedRevs() ) {
-			this.render();
-		}
+		this.render();
 	}
 
 	/**
@@ -89,6 +83,10 @@ class ReviewForm {
 		} );
 	}
 
+	/**
+	 * Requests the review form HTML.
+	 * @returns {JQuery.jqXHR}
+	 */
 	request() {
 		const articleParams = {
 			action: 'view',
@@ -107,7 +105,7 @@ class ReviewForm {
 
 	/**
 	 * Event that emits after the request successive.
-	 * @param {string} data
+	 * @param {string} data - HTML string data
 	 * @private
 	 */
 	onSuccess = ( data ) => {
@@ -138,9 +136,6 @@ class ReviewForm {
 		}
 
 		// Embed form to the review button's popup and pop pending state
-		if ( !this.reviewButton ) {
-			this.render();
-		}
 		this.reviewButton
 			.setContent( $reviewForm )
 			.setPending( false );
