@@ -1,7 +1,6 @@
 import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
-import * as utilsArticle from './utils-article';
 import { getDate } from './utils-user';
 
 import Api from './Api';
@@ -479,12 +478,12 @@ class GlobalPage extends Page {
 	}
 
 	requestForeignDependencies() {
-		const dependencies = utilsArticle.getForeignDependencies( this.article );
+		const dependencies = utilsPage.getForeignDependencies( this );
 
-		utilsArticle.loadForeignDependencies( this.article, dependencies.modules );
-		utilsArticle.loadForeignStylesDependencies( this.article, dependencies.styles );
+		utilsPage.loadForeignDependencies( this, dependencies.modules );
+		utilsPage.loadForeignStylesDependencies( this, dependencies.styles );
 
-		this.linkTags = utilsArticle.addLinkTags( dependencies.links );
+		this.linkTags = utilsPage.addLinkTags( dependencies.links );
 	}
 
 	/******* ACTIONS *******/
@@ -495,7 +494,7 @@ class GlobalPage extends Page {
 		super.detach();
 
 		// Remove link tags from the head, that was added to load styles for the foreign pages
-		utilsArticle.removeLinkTags( this.linkTags );
+		utilsPage.removeLinkTags( this.linkTags );
 	}
 }
 

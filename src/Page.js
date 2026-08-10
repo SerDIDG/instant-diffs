@@ -1,7 +1,6 @@
 import id from './id';
 import * as utils from './utils';
 import * as utilsPage from './utils-page';
-import { getDependencies, getMessageDependencies } from './utils-article';
 import { getAbstractWikiLabel, getEntitySchemaLabel, getWikilambdaLabel, isWbContentModel } from './utils-api';
 
 import Api from './Api';
@@ -13,7 +12,7 @@ import settings from './settings';
 import './styles/page.less';
 
 /**
- * @typedef {import('./LocalPage').default|import('./GlobalPage').default} Page.Any
+ * @typedef {import('./Page').default|import('./LocalPage').default|import('./GlobalPage').default} Page.Any
  */
 
 /**
@@ -132,6 +131,11 @@ class Page {
 	 * @type {boolean}
 	 */
 	isLoaded = false;
+
+	/**
+	 * @type {boolean}
+	 */
+	isDetailed = false;
 
 	/**
 	 * @type {boolean}
@@ -589,7 +593,7 @@ class Page {
 	 * @returns {Promise}
 	 */
 	async requestMessages() {
-		const messages = getMessageDependencies( this.article );
+		const messages = utilsPage.getMessageDependencies( this );
 		if ( utils.isEmpty( messages ) ) return $.Deferred().resolve().promise();
 		await Api.loadMessage( messages );
 	}
@@ -766,7 +770,7 @@ class Page {
 		const { modulestyles = [], modulescripts = [], modules = [] } = data;
 
 		const dependencies = [
-			...getDependencies( this.article, this.nodes.$body ),
+			...utilsPage.getDependencies( this, this.nodes.$body ),
 			...modulestyles,
 			...modulescripts,
 			...modules,

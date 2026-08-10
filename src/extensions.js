@@ -1,6 +1,7 @@
 import './styles/extensions.less';
 
 // Page adjustments
+import './extensions/Page-AbuseLog';
 import './extensions/Page-Contributions';
 import './extensions/Page-EditTags';
 import './extensions/Page-History';

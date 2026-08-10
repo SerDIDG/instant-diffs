@@ -341,7 +341,6 @@ export const config = {
 		'table.diff #differences-nextlink',                             // [[Special:Diff]]: Next edit
 		'.mw-diff-revision-history-links a',                            // [[Special:Diff]]: MobileDiff navigation links
 		'.mw-logevent-loglines a',                                      // [[Special:Logs]]
-		'[data-afl-log-id] a',                                          // [[Special:AbuseLog]]
 		'a.ext-globalwatchlist-diff',                                   // [[Special:GlobalWatchlist]]
 		'.wikibase-statementview-references a',                         // Wikibase statements references
 		'#mw-fr-revision-messages a',                                   // [[Extension:FlaggedRevs]] mobile warning
@@ -356,7 +355,6 @@ export const config = {
 			'.mw-contributions-list li',                                // Contributions
 			'.mw-fr-pending-changes-table tr',                          // [[Special:PendingChanges]]
 			'.mw-logevent-loglines li',                                 // [[Special:Logs]]
-			'.mw-special-AbuseLog [data-afl-log-id]',                   // [[Special:AbuseLog]]
 			'.ext-globalwatchlist-site li',                             // [[Special:GlobalWatchlist]]
 			//'.mw-undelete-revlist li',                                // [[Special:Undelete]]
 		],
@@ -408,7 +406,6 @@ export const config = {
 			'#mw-revision-nav',                                         // [[Special:PermanentLink]] / Revision
 			'.mw-fr-pending-changes-table',                             // [[Special:PendingChanges]]
 			'.mw-logevent-loglines',                                    // [[Special:Logs]]
-			'.mw-special-AbuseLog li[data-afl-log-id]',                 // [[Special:AbuseLog]]
 			'.wikibase-statementview-references',                       // Wikibase statement references
 			'.ext-globalwatchlist-site',                                // [[Special:GlobalWatchlist]]
 			//'.mw-undelete-revlist',                                   // [[Special:Undelete]]
@@ -416,7 +413,7 @@ export const config = {
 	},
 	mwLinkExclude: {
 		hasClass: [
-			'mw-contributions-title',                                   // [[Special:GlobalWatchlist]]
+			'mw-contributions-title',                                   // [[Special:GlobalContributions]]
 		],
 	},
 	mwLinkDiffOnly: {},

@@ -165,9 +165,9 @@ class LocalPage extends Page {
 			settings.get( 'enableDetailedPages' ) &&
 			Site.hasSkinCached( 'apioutput' ) &&
 			values.type === 'revision' &&
-			id.config.detailedPageNamespaces.includes( this.article.getTitle().getNamespaceId() )
+			id.config.detailedPageNamespaces.includes( this.article.getTitle()?.getNamespaceId() )
 		) {
-			this.article.isDetailed = true;
+			this.isDetailed = true;
 			this.articleParams.action = 'view';
 			this.articleParams.useskin = 'apioutput';
 		}
@@ -215,7 +215,7 @@ class LocalPage extends Page {
 	getNodesData() {
 		const $nodes = $( this.nodes.data );
 		const $contentText = $nodes.find( '#mw-content-text' );
-		if ( this.article.isDetailed && $contentText.length > 0 ) {
+		if ( this.isDetailed && $contentText.length > 0 ) {
 			return $contentText.children();
 		}
 		return $nodes;

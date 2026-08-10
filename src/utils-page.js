@@ -12,6 +12,245 @@ import settings from './settings';
 
 const { h, hf, ht, hj } = utils;
 
+/******* DEPENDENCIES *******/
+
+/**
+ * Gets the article dependencies.
+ * @param {import('./page').Page.Any} page
+ * @param {JQuery<HTMLElement>} [$container]
+ * @return {Array<string>}
+ */
+export function getDependencies( page, $container ) {
+	const article = page.getArticle();
+
+	let dependencies = [];
+
+	// Page common dependencies
+	const pageDependencies = id.config.dependencies.page;
+	if ( pageDependencies ) {
+		dependencies = dependencies.concat(
+			getNamespaceDependencies( article, pageDependencies ),
+		);
+	}
+
+	// Type-specific dependencies
+	const typeDependencies = id.config.dependencies[ article.get( 'type' ) ];
+	if ( typeDependencies ) {
+		dependencies = dependencies.concat(
+			getNamespaceDependencies( article, typeDependencies ),
+		);
+	}
+
+	// Skin-specific dependencies
+	const skinDependencies = id.config.dependencies.skins[ mw.config.get( 'skin' ) ];
+	if ( skinDependencies ) {
+		dependencies = dependencies.concat(
+			getNamespaceDependencies( article, skinDependencies ),
+		);
+	}
+
+	// Detailed-specific dependencies
+	if ( page.isDetailed ) {
+		const detailedDependencies = id.config.dependencies.detailed;
+		if ( detailedDependencies ) {
+			dependencies = dependencies.concat(
+				getNamespaceDependencies( article, detailedDependencies ),
+			);
+		}
+	}
+
+	// Selector-specific dependencies
+	if ( $container instanceof jQuery ) {
+		dependencies = dependencies.concat(
+			getSelectorDependencies( article, $container ),
+		);
+	}
+
+	return dependencies;
+}
+
+function getNamespaceDependencies( article, data ) {
+	let dependencies = [];
+	if ( utils.isEmpty( data ) ) return dependencies;
+	if ( utils.isArray( data ) ) return data;
+
+	// Set common dependencies
+	if ( utils.isArray( data[ '*' ] ) ) {
+		dependencies = dependencies.concat( data[ '*' ] );
+	}
+
+	// Set namespace-specific dependencies
+	const namespace = article.getTitle()?.getNamespaceId();
+	if ( utils.isArray( data[ namespace ] ) ) {
+		dependencies = dependencies.concat( data[ namespace ] );
+	}
+
+	return dependencies;
+}
+
+function getSelectorDependencies( article, $container ) {
+	let dependencies = [];
+	id.config.dependencies.selectors.forEach( item => {
+		const $nodes = $container.find( item.selector.join( ',' ) );
+		if ( $nodes.length === 0 ) return;
+		dependencies = dependencies.concat(
+			getNamespaceDependencies( article, item.dependencies ),
+		);
+	} );
+	return dependencies;
+}
+
+export function getMessageDependencies( page ) {
+	const article = page.getArticle();
+
+	let dependencies = [];
+
+	// Local article messages
+	const localDependencies = id.config.dependencies.messages;
+	if ( localDependencies ) {
+		dependencies = dependencies.concat(
+			getNamespaceDependencies( article, localDependencies ),
+		);
+	}
+
+	// Foreign article messages
+	if ( article.isForeign ) {
+		const foreignDependencies = id.config.foreignDependencies.messages;
+		if ( foreignDependencies ) {
+			dependencies = dependencies.concat(
+				getNamespaceDependencies( article, foreignDependencies ),
+			);
+		}
+	}
+
+	return dependencies;
+}
+
+/**
+ * Gets the foreign article dependencies.
+ * @param {import('./page').Page.Any} page
+ * @returns {Object<string, Array<string>>}
+ */
+export function getForeignDependencies( page ) {
+	const article = page.getArticle();
+
+	let modules = [];
+	let styles = [];
+	let links = [];
+
+	const typeDependencies = id.config.foreignDependencies[ article.get( 'type' ) ];
+	if ( typeDependencies ) {
+		// Modules
+		modules = modules.concat(
+			getNamespaceDependencies( article, typeDependencies ),
+		);
+
+		// Styles only
+		styles = styles.concat(
+			getNamespaceDependencies( article, typeDependencies.styles ),
+		);
+
+		// Content model-specific dependencies
+		if ( isWbContentModel( mw.config.get( 'wgPageContentModel' ) ) ) {
+			const wikibaseDependencies = typeDependencies.wikibase;
+			if ( wikibaseDependencies ) {
+				// Modules
+				modules = modules.concat(
+					getNamespaceDependencies( article, wikibaseDependencies ),
+				);
+
+				// Styles only
+				styles = styles.concat(
+					wikibaseDependencies.styles.all,
+					utils.isMF() ? wikibaseDependencies.styles.mobile : wikibaseDependencies.styles.desktop,
+				);
+			}
+		}
+
+		// Styles dependencies
+		links = links.concat( getForeignStylesDependencies( article, typeDependencies.links ) );
+	}
+
+	return { modules, styles, links };
+}
+
+function getForeignStylesDependencies( article, data ) {
+	let styles = [];
+	if ( utils.isEmpty( data ) ) return styles;
+
+	// Set common dependencies
+	if ( utils.isArray( data[ '*' ] ) ) {
+		styles = styles.concat(
+			data[ '*' ].map( title => getStyleHref( article, title ) ),
+		);
+	}
+
+	// Set namespace-specific dependencies
+	const namespace = article.getTitle()?.getNamespaceId();
+	if ( utils.isArray( data[ namespace ] ) ) {
+		styles = styles.concat(
+			data[ namespace ].map( title => getStyleHref( article, title ) ),
+		);
+	}
+
+	return styles;
+}
+
+export function loadForeignDependencies( page, data ) {
+	const article = page.getArticle();
+
+	const dependencies = utils.getMissingDependencies( data );
+	const hostname = article.get( 'hostname' );
+	const action = mw.util.wikiScript( 'load' );
+	const params = $.param( {
+		modules: dependencies.join( '|' ),
+		skin: mw.config.get( 'skin' ),
+	} );
+
+	mw.loader.load( `https://${ hostname }${ action }?${ params }` );
+}
+
+export function loadForeignStylesDependencies( page, data ) {
+	const article = page.getArticle();
+
+	const dependencies = utils.getMissingDependencies( data );
+	const hostname = article.get( 'hostname' );
+	const action = mw.util.wikiScript( 'load' );
+	const params = $.param( {
+		modules: dependencies.join( '|' ),
+		only: 'styles',
+		skin: mw.config.get( 'skin' ),
+	} );
+
+	mw.loader.load( `https://${ hostname }${ action }?${ params }`, 'text/css' );
+}
+
+/**
+ * Appends given urls array as link tags to the head.
+ * @param {Array<string>} urls
+ * @returns {Array<HTMLLinkElement>|undefined}
+ */
+export function addLinkTags( urls ) {
+	if ( utils.isEmpty( urls ) ) return;
+	return urls.map( url => mw.loader.addLinkTag?.( url ) );
+}
+
+/**
+ * Removes link tags from the head.
+ * @param {Array<HTMLLinkElement>} tags
+ */
+export function removeLinkTags( tags ) {
+	if ( utils.isEmpty( tags ) ) return;
+	tags.forEach( tag => tag?.remove() );
+}
+
+function getStyleHref( article, title ) {
+	const href = mw.util.getUrl( title, { action: 'raw', ctype: 'text/css' } );
+	return article.isForeign
+		? getHrefAbsolute( article, href )
+		: href;
+}
+
 /******* DIFF TABLE *******/
 
 /**
