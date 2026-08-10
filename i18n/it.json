@@ -24,6 +24,8 @@
 	"action-reload": "Ricarica",
 	"action-watch": "Segui",
 	"action-unwatch": "Non seguire",
+	"action-review": "Revisiona",
+	"action-review-title": "Revisione delle modifiche in sospeso",
 	"goto-snapshot-prev": "Collegamento precedente nella pagina",
 	"goto-snapshot-next": "Collegamento successivo nella pagina",
 	"goto-view-diff": "Mostra modifiche",

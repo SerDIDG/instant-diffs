@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"KormiSK",
 			"Wizzard"
 		]
 	},
@@ -22,6 +23,8 @@
 	"action-reload": "Znova načítať",
 	"action-watch": "Sledovať",
 	"action-unwatch": "Prestať sledovať",
+	"action-review": "Skontrolovať",
+	"action-review-title": "Skontrolovať čakajúce zmeny",
 	"goto-snapshot-prev": "Predchádzajúci odkaz na stránke",
 	"goto-snapshot-next": "Nasledujúci odkaz na stránke",
 	"goto-view-diff": "Zobraziť zmeny",
@@ -35,6 +38,7 @@
 	"goto-prev-revision": "Staršia revízia",
 	"goto-next-revision": "Novšia revízia",
 	"goto-back-revision": "Späť",
+	"goto-compare-cur": "Porovnať najnovšie",
 	"goto-diff": "Prejsť na úpravu",
 	"goto-revision": "Prejsť na revíziu",
 	"goto-page": "Prejsť na stránku",
@@ -104,6 +108,8 @@
 	"settings-close-outside": "Zavrieť dialóg Instant Diffs pri kliknutí mimo neho.",
 	"settings-enable-hotkeys": "Povoliť klávesové skratky v dialógu Instant Diffs.",
 	"settings-show-diff-tools": "Zobraziť ďalšie nástroje na rozdiely, napríklad prepínač riadkového formátu.",
+	"settings-enable-review-form": "Zobraziť tlačidlo „$1“ v ďalších nástrojoch na porovnávanie rozdielov.",
+	"settings-enable-review-form-help": "Na zobrazenie obsahu revízie je potrebné [[$2|používateľské právo]] <code>$1</code>.",
 	"settings-show-revision-info": "Zobraziť informácie o zmene pri prezeraní revízie.",
 	"settings-unhide-diffs": "Zobraziť skryté rozdiely a revízie bez ďalších krokov.",
 	"settings-unhide-diffs-help": "Na zobrazenie obsahu revízie je potrebné [[$2|používateľské právo]] <code>$1</code>.",

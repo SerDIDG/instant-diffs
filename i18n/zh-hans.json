@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"GuoPC",
+			"Quaff5353",
 			"郭佳昌"
 		]
 	},
@@ -23,6 +24,8 @@
 	"action-reload": "重新加载",
 	"action-watch": "监视",
 	"action-unwatch": "取消监视",
+	"action-review": "审核",
+	"action-review-title": "审核待处理的更改",
 	"goto-snapshot-prev": "页面里的上一个链接",
 	"goto-snapshot-next": "页面里的下一个链接",
 	"goto-view-diff": "显示更改",
@@ -81,6 +84,13 @@
 	"dialog-notice-foreign-diff": "您正在查看[$1 $2]的外语差异。部分功能可能受限。",
 	"dialog-notice-foreign-revision": "您正在查看[$1 $2]的外语修订。部分功能可能受限。",
 	"dialog-notice-foreign-wikilambda": "WikiLambda应用程序目前不受外语修订支持。",
+	"intro-link-about": "关于",
+	"intro-link-news": "新闻",
+	"intro-link-talk": "反馈",
+	"intro-link-api": "开发者指南",
+	"intro-version": "版本",
+	"intro-contributors": "贡献者",
+	"intro-translators": "译者",
 	"settings-title": "Instant Diffs设置",
 	"settings-saved": "已成功保存设置。\n请重新加载页面以应用。",
 	"settings-saved-icon": "复选标记图标",
@@ -106,6 +116,10 @@
 	"settings-close-outside": "点击对话框外部时关闭Instant Diffs对话框。",
 	"settings-enable-hotkeys": "在Instant Diffs对话框中启用键盘快捷键。",
 	"settings-show-diff-tools": "显示其他差异工具，例如内联格式开关。",
+	"settings-enable-review-form": "在额外的差异工具中显示“$1”按钮。",
+	"settings-enable-review-form-help": "需要<code>$1</code>[[$2|用户权限]]才能审核待处理的更改。",
+	"settings-enable-detailed-pages": "为部分命名空间启用详细版本加载器。",
+	"settings-enable-detailed-pages-help": "如果可用，会执行一个耗时稍长的请求。目前仅在文件命名空间中受支持。",
 	"settings-show-revision-info": "查看修订时显示更改信息。",
 	"settings-unhide-diffs": "无需额外步骤即可显示隐藏的差异和修订信息。",
 	"settings-unhide-diffs-help": "需要<code>$1</code>[[$2|用户权限]]才能查看修订内容。",
