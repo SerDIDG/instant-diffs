@@ -42,7 +42,7 @@ class ReviewForm {
 		this.page = page;
 		this.article = page.getArticle();
 
-		const isValidPage = this.page.hasFlaggedRevs();
+		const isValidPage = this.page.hasFlaggedRevs?.() ?? false;
 		const isReviewableArticle = !this.article.isForeign &&
 			this.article.hasAction( 'review' ) &&
 			this.article.get( 'type' ) === 'diff';
