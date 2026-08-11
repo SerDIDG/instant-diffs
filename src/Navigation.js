@@ -12,7 +12,6 @@ import view from './view';
 import settings from './settings';
 
 import './styles/navigation.less';
-import { originPage } from './utils';
 
 const { h, hf, ht } = utils;
 
@@ -157,7 +156,7 @@ class Navigation {
 		this.MenuActionsButton = require( './MenuActionsButton' ).default;
 		this.MenuButton = require( './MenuButton' ).default;
 
-		// Setup hotkey events
+		// Set up hotkey events
 		view.connect( this, { hotkey: 'onHotkey' } );
 
 		// Render content
