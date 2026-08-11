@@ -685,10 +685,14 @@ class Navigation {
 		const values = this.article.getValues();
 		if ( values.revid === values.curRevid ) return;
 
+		const ids = utils.arrayUnique( [ values.addedRevid, values.deletedRevid ] )
+			.filter( utils.isValidID );
+		if ( ids.length === 0 ) return;
+
 		const article = new Article( {
 			title: values.title,
 			hostname: values.hostname,
-			oldid: Math.min( values.addedRevid, values.deletedRevid ),
+			oldid: Math.min( ...ids ),
 			diff: 'cur',
 		} );
 

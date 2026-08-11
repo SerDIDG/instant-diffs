@@ -411,7 +411,7 @@ class Page {
 	 * @param {number[]} ids
 	 */
 	setRelativeRevision( ids ) {
-		ids = utils.arrayUnique( ids ).filter( num => !isNaN( num ) && num > 0 );
+		ids = utils.arrayUnique( ids ).filter( utils.isValidID );
 		if ( ids.length < 2 ) return;
 
 		const oldid = this.article.get( 'direction' ) === 'next'
