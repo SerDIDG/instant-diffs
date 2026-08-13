@@ -106,7 +106,7 @@
 	"settings-show-menu-icons": "הצגת סמלים בתפריט הנפתח של חלונית Instant Diffs.",
 	"settings-show-watchlist-popup": "להציג אפשרויות מתקדמות בעת הוספה או הסרה של דפים מרשימת המעקב.",
 	"settings-show-watchlist-popup-help": "כשהאפשרות זמינה, תוצג חלונית עם משך הזמן ברשימת מעקב והגדרות של תוויות.",
-	"settings-links-hash": "לכלול את שם הפרק (עוגן) בקישורים",
+	"settings-links-hash": "לכלול את שם הפרק (עוגן) בקישורים.",
 	"settings-links-hash-help": "שם הסעיף יתווסף גם הוא כעוגן לכתובת הקישור בעת שימוש בפעולות העתקה עם התסדיר הנבחר הלא מצומצם.",
 	"settings-links-format": "תבנית קישור לפעולת ההעתקה:",
 	"settings-links-format-full": "קישור מלא עם כותרת העמוד",
