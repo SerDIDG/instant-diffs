@@ -1,14 +1,12 @@
 name: Deploy i18n
 
 on:
-  # Automatic i18n deploy: when translatewiki pushes localisation updates to i18n/.
   push:
     branches: [ main ]
     paths:
       - 'i18n/*'
       - '!i18n/qqq.json'
 
-  # Manual i18n deploy: choose the project config.
   workflow_dispatch:
     inputs:
       project:
@@ -17,7 +15,9 @@ on:
         required: true
         default: mediawiki
 
-# Share the deploy group so i18n and full deploys never run at the same time.
+permissions:
+  contents: read
+
 concurrency:
   group: deploy
   cancel-in-progress: false
@@ -25,6 +25,9 @@ concurrency:
 jobs:
   deploy-i18n:
     runs-on: ubuntu-latest
+    # Only run automatically if the repo owner opted in via AUTO_DEPLOY_I18N variable.
+    # Manual runs (workflow_dispatch) always work regardless.
+    if: github.event_name == 'workflow_dispatch' || vars.AUTO_DEPLOY_I18N == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -43,7 +46,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # On push: deploy i18n to mediawiki. On manual: the chosen project.
       - name: Deploy i18n
         run: npm run deploy-i18n
         env:

@@ -66,20 +66,25 @@ Because `env.json` is not committed, its contents must be provided as a reposito
 #### Deploy
 The [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) workflow runs in two ways:
 
-* **Automatically** when a GitHub **release is published** — performs a full production deploy to the `mediawiki` project (`npm run deploy`). Only full releases trigger it; prereleases are skipped.
+* **Automatically** when a GitHub **release is published** — performs a full production deployment to the `mediawiki` project (`npm run deploy`). Only full releases trigger it; prereleases are skipped.
 * **Manually** via **Actions → Deploy → Run workflow**, with two inputs:
   * `project` — the configuration key from `env.json` to deploy (e.g. `mediawiki`, `testwiki`). Defaults to `mediawiki`.
-  * `mode` — the deploy mode (defaults to `prod`):
-    * `prod` — a full production deploy (`npm run deploy`)
-    * `dev` — a quick development deploy that enables debugging and skips external i18n (`npm run deploy-dev`)
+  * `mode` — the deployment mode (defaults to `prod`):
+    * `prod` — a full production deployment (`npm run deploy`)
+    * `dev` — a quick development deployment that enables debugging and skips external i18n (`npm run deploy-dev`)
 
 #### Deploy i18n
 The [`.github/workflows/deploy-i18n.yml`](.github/workflows/deploy-i18n.yml) workflow deploys only the internationalization files (`npm run deploy-i18n`). It runs in two ways:
 
-* **Automatically** when localisation updates from [translatewiki.net](https://translatewiki.net/wiki/Translating:Instant_Diffs) are pushed to `i18n/` on the `main` branch — deploys i18n to the `mediawiki` project.
-* **Manually** via **Actions → Deploy i18n → Run workflow**, with a `project` input (the `env.json` configuration key, defaults to `mediawiki`).
+* **Automatically** when localization updates from [translatewiki.net](https://translatewiki.net/wiki/Translating:Instant_Diffs) are pushed to `i18n/` on the `main` branch — deploys i18n to the `mediawiki` project. This is **opt-in** and disabled by default; see [Repository Variables](#repository-variables) below.
+* **Manually** via **Actions → Deploy i18n → Run workflow**, with a `project` input (the `env.json` configuration key, defaults to `mediawiki`). Manual runs always work regardless of the opt-in setting.
 
 i18n deployment still honors each project's `i18nDeploy` setting — if a project has it disabled, nothing is deployed for it.
+
+#### Repository Variables
+| Name | Description |
+|------|--------------|
+| `AUTO_DEPLOY_I18N` | Set to `true` to enable automatic i18n deployment on push to `main`. Defaults to disabled (unset). |
 
 ## Define a gadget
 If you deploy the script as a gadget, remember to define the gadget in your wiki's `MediaWiki:Gadgets-definition` page with a configuration like this:
