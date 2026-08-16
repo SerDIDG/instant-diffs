@@ -59,9 +59,7 @@ cross-env PROJECT=mediawiki npm run deploy
 ```
 
 ### Automated Deployment (GitHub Actions)
-Two workflows build and deploy the gadget from CI.
-
-Because `env.json` is not committed, its contents must be provided as a repository secret named `ENV_JSON`. Add it under **Settings → Secrets and variables → Actions → New repository secret** and paste the full contents of your local `env.json`. Both workflows write this secret to `env.json` before building.
+Two workflows build and deploy the gadget from CI. See [Secrets and Variables](#secrets-and-variables) below for the required setup.
 
 #### Deploy
 The [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) workflow runs in two ways:
@@ -76,15 +74,16 @@ The [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) workflow runs
 #### Deploy i18n
 The [`.github/workflows/deploy-i18n.yml`](.github/workflows/deploy-i18n.yml) workflow deploys only the internationalization files (`npm run deploy-i18n`). It runs in two ways:
 
-* **Automatically** when localization updates from [translatewiki.net](https://translatewiki.net/wiki/Translating:Instant_Diffs) are pushed to `i18n/` on the `main` branch — deploys i18n to the `mediawiki` project. This is **opt-in** and disabled by default; see [Repository Variables](#repository-variables) below.
+* **Automatically** when localization updates from [translatewiki.net](https://translatewiki.net/wiki/Translating:Instant_Diffs) are pushed to `i18n/` on the `main` branch — deploys i18n to the `mediawiki` project. This is **opt-in** and disabled by default; see [Secrets and Variables](#secrets-and-variables) below.
 * **Manually** via **Actions → Deploy i18n → Run workflow**, with a `project` input (the `env.json` configuration key, defaults to `mediawiki`). Manual runs always work regardless of the opt-in setting.
 
 i18n deployment still honors each project's `i18nDeploy` setting — if a project has it disabled, nothing is deployed for it.
 
-#### Repository Variables
-| Name | Description |
-|------|--------------|
-| `AUTO_DEPLOY_I18N` | Set to `true` to enable automatic i18n deployment on push to `main`. Defaults to disabled (unset). |
+#### Secrets and Variables
+| Name | Type | Description |
+|------|------|--------------|
+| `ENV_JSON` | Secret | Full contents of your local `env.json` (it isn't committed to the repo). Add it under **Settings → Secrets and variables → Actions → New repository secret**. Both workflows write this to `env.json` before building. |
+| `AUTO_DEPLOY_I18N` | Variable | Set to `true` to enable automatic i18n deployment on push to `main`. Defaults to disabled (unset). Add it under **Settings → Secrets and variables → Actions → Variables tab → New repository variable**. |
 
 ## Define a gadget
 If you deploy the script as a gadget, remember to define the gadget in your wiki's `MediaWiki:Gadgets-definition` page with a configuration like this:
