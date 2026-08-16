@@ -130,7 +130,7 @@ class Article {
 	}
 
 	/**
-	 * Checks if a user action available in the actions object.
+	 * Checks if a user action available in the action object.
 	 * @param {string} action
 	 * @return {boolean|undefined}
 	 */
@@ -304,7 +304,7 @@ class Article {
 		}
 
 		// Set server names
-		const { general } = Site.aliases[ this.values.hostname ] || {};
+		const { general } = Site.getInfoCached( this.values.hostname ) || {};
 		if ( !utils.isEmptyObject( general ) ) {
 			this.values.hostname = utils.isMF() && !utils.isEmpty( general.mobileservername ) ? general.mobileservername : general.servername;
 			this.mw.serverName = general.servername;
@@ -366,7 +366,7 @@ class Article {
 	}
 
 	/**
-	 * Process the compare pages titles and set mw page properties.
+	 * Process the titles of compare pages and set mw page properties.
 	 */
 	processComparePages() {
 		try {

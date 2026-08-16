@@ -14,7 +14,7 @@ import * as utils from '../utils';
  * @param {JQuery<HTMLElement>} $context
  */
 function process( helpers, $context ) {
-	if ( !$context || !utils.isAllowed() ) return;
+	if ( !utils.isAllowed() || !$context ) return;
 
 	$context
 		.find( 'a.edit-summary-time' )

@@ -341,7 +341,6 @@ export const config = {
 		'table.diff #differences-nextlink',                             // [[Special:Diff]]: Next edit
 		'.mw-diff-revision-history-links a',                            // [[Special:Diff]]: MobileDiff navigation links
 		'.mw-logevent-loglines a',                                      // [[Special:Logs]]
-		'a.ext-globalwatchlist-diff',                                   // [[Special:GlobalWatchlist]]
 		'.wikibase-statementview-references a',                         // Wikibase statements references
 		'#mw-fr-revision-messages a',                                   // [[Extension:FlaggedRevs]] mobile warning
 		'#mw-fr-revision-details a',                                    // [[Extension:FlaggedRevs]] desktop popup
@@ -355,7 +354,6 @@ export const config = {
 			'.mw-contributions-list li',                                // Contributions
 			'.mw-fr-pending-changes-table tr',                          // [[Special:PendingChanges]]
 			'.mw-logevent-loglines li',                                 // [[Special:Logs]]
-			'.ext-globalwatchlist-site li',                             // [[Special:GlobalWatchlist]]
 			//'.mw-undelete-revlist li',                                // [[Special:Undelete]]
 		],
 		seen: [
@@ -382,6 +380,9 @@ export const config = {
 			'differences-prevlink',                                     // [[Special:Diff]]
 			'differences-nextlink',                                     // [[Special:Diff]]
 		],
+		hasAttribute: [
+			['data-instantdiffs-link', 'mw'],
+		],
 		hasClass: [
 			'mw-diff-revision-history-link-prev',                       // [[Special:Diff]]: MobileDiff previous edit
 			'mw-diff-revision-history-link-next',                       // [[Special:Diff]]: MobileDiff next edit
@@ -407,7 +408,6 @@ export const config = {
 			'.mw-fr-pending-changes-table',                             // [[Special:PendingChanges]]
 			'.mw-logevent-loglines',                                    // [[Special:Logs]]
 			'.wikibase-statementview-references',                       // Wikibase statement references
-			'.ext-globalwatchlist-site',                                // [[Special:GlobalWatchlist]]
 			//'.mw-undelete-revlist',                                   // [[Special:Undelete]]
 		],
 	},

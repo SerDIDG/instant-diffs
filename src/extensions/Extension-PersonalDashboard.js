@@ -13,7 +13,7 @@ import * as utils from '../utils';
  */
 function process() {
 	const $context = $( '.personal-dashboard-viewport' );
-	if ( $context.length === 0 || !utils.isAllowed() ) return;
+	if ( !utils.isAllowed() || $context.length === 0 ) return;
 
 	const options = JSON.stringify( { setClasses: 'clear' } );
 	$context

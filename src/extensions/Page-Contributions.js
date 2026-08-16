@@ -35,7 +35,7 @@ function process() {
  */
 function processGlobal() {
 	// Fix relative links in the edit comments
-	// The bug was particularly fixed in MediaWiki 1.45.0 (T398108)
+	// The bug was partially fixed in MediaWiki 1.45.0 (T398108)
 	// ToDo: deprecate after the fix for links in the Wikidata edit summaries
 	const $contributionsLines = $( '.mw-contributions-list li' );
 	$contributionsLines.each( ( i, node ) => {

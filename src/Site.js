@@ -83,7 +83,8 @@ class Site {
 	}
 
 	/**
-	 * @private
+	 * Gets cached site info.
+	 * @returns {Object<*>}
 	 */
 	static getInfoCached( hostname ) {
 		const alias = this.aliases[ hostname ];
@@ -119,6 +120,9 @@ class Site {
 	}
 
 	/**
+	 * Checks if cached site info has specified fields.
+	 * @param {string} hostname
+	 * @param {Array} fields
 	 * @private
 	 */
 	static checkInfo( hostname, fields = [] ) {
@@ -128,11 +132,11 @@ class Site {
 	}
 
 	/**
-	 * Gets the site namespace config.
+	 * Gets cached site namespace config.
 	 * @param {import('./Article').default|string} [articleOrHostname] - Article instance or hostname
 	 * @returns {Object<string, Object>|undefined}
 	 */
-	static getNamespaceConfig( articleOrHostname ) {
+	static getNamespaceConfigCached( articleOrHostname ) {
 		const hostname = getHostname( articleOrHostname );
 
 		// Get config from the cache
@@ -176,11 +180,11 @@ class Site {
 	}
 
 	/**
-	 * Gets the site cross site ajax domains config.
+	 * Gets cached site cross-site ajax domains config.
 	 * @param {import('./Article').default|string} [articleOrHostname] - Article instance or hostname
 	 * @returns {{ exact: Set<string>, wildcardBases: Set<string>, globRegexes: RegExp[] }|undefined}
 	 */
-	static getCORSConfig( articleOrHostname ) {
+	static getCORSConfigCached( articleOrHostname ) {
 		const hostname = getHostname( articleOrHostname );
 
 		// Get config from the cache
@@ -241,7 +245,7 @@ class Site {
 	}
 
 	/**
-	 * Checks from the cache if the site has a specified registered skin.
+	 * Checks if the cached site has a specified registered skin.
 	 * Returns false if no cached data exists yet for the hostname,
 	 * call getInfo() or hasSkin() first to ensure the cache is populated.
 	 * @param {string} name - Skin code name

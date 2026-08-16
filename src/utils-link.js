@@ -43,11 +43,12 @@ export function getSplitSpecialUrl( title ) {
  * Checks if a link matches a given selectors preset.
  * @param {Element} node
  * @param {Object} [preset]
- * @param {Array} [preset.id]
- * @param {Array} [preset.hasClass]
- * @param {Array} [preset.endsWith]
- * @param {Array} [preset.hasChild]
- * @param {Array} [preset.closestTo]
+ * @param {Array<string>} [preset.id]
+ * @param {Array<string>} [preset.hasClass]
+ * @param {Array<string|Array<string>>} [preset.hasAttribute]
+ * @param {Array<string>} [preset.endsWith]
+ * @param {Array<string>} [preset.hasChild]
+ * @param {Array<string>} [preset.closestTo]
  * @returns {boolean}
  */
 export function isMWLink( node, preset ) {
@@ -59,26 +60,37 @@ export function isMWLink( node, preset ) {
 	// Check if a node id matches
 	if ( preset.id ) {
 		isConfirmed = preset.id.includes( node.id );
-		if ( isConfirmed ) return isConfirmed;
+		if ( isConfirmed ) return true;
 	}
 
 	// Check if a node contains a className
 	if ( preset.hasClass ) {
 		isConfirmed = preset.hasClass.some( entry => node.classList.contains( entry ) );
-		if ( isConfirmed ) return isConfirmed;
+		if ( isConfirmed ) return true;
+	}
+
+	// Check if a node has attribute
+	if ( preset.hasAttribute ) {
+		isConfirmed = preset.hasAttribute.some( entry => {
+			if ( utils.isArray( entry ) ) {
+				return entry[ 1 ] === node.getAttribute( entry[ 0 ] );
+			}
+			return node.hasAttribute( entry );
+		} );
+		if ( isConfirmed ) return true;
 	}
 
 	// Check if a node text content ends with a character
 	if ( preset.endsWith ) {
 		const text = node.textContent.trim();
 		isConfirmed = preset.endsWith.some( entry => text.endsWith( entry ) );
-		if ( isConfirmed ) return isConfirmed;
+		if ( isConfirmed ) return true;
 	}
 
 	// Check if a node contains children by a selector
 	if ( preset.hasChild ) {
 		isConfirmed = preset.hasChild.some( entry => node.querySelector( entry ) );
-		if ( isConfirmed ) return isConfirmed;
+		if ( isConfirmed ) return true;
 	}
 
 	// Check if a node is a child of a parent by a selector
@@ -134,7 +146,7 @@ export function isAllowedDomain( hostname ) {
 		return true;
 	}
 
-	const config = Site.getCORSConfig();
+	const config = Site.getCORSConfigCached();
 	if ( !config ) return false;
 
 	let result = config.exact.has( h );

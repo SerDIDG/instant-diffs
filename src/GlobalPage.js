@@ -130,7 +130,7 @@ class GlobalPage extends Page {
 			}
 
 			// Process a namespace list into the mw.config format
-			const namespaceConfig = Site.getNamespaceConfig( this.article );
+			const namespaceConfig = Site.getNamespaceConfigCached( this.article );
 			this.configManager.setValues( namespaceConfig );
 
 			// Set additional config variables
