@@ -51,6 +51,7 @@
     "goto-history": "View history",
 	"goto-info": "View info",
     "goto-talkpage": "Discussion",
+    "goto-subjectpage": "Subject page",
     "goto-settings": "Settings",
     "goto-actions": "Actions",
 
@@ -69,7 +70,7 @@
     "hint-switch": "Ctrl+Arrow Up",
     "hint-switch-description": "$1: switch view between revision and its comparison.",
     "hint-unpatrolled": "Ctrl+P",
-    "hint-unpatrolled-description": "$1: show all [[mw:Special:MyLanguage/Extension:FlaggedRevs|unpatrolled changes]] if available.",
+    "hint-unpatrolled-description": "$1: show all [[mw:Special:MyLanguage/Extension:FlaggedRevs|pending changes]] if available.",
     "hint-back": "Ctrl+Z",
     "hint-back-description": "$1: return to the previous view if available.",
     "hint-actions": "Ctrl+Arrow Down",

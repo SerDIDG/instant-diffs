@@ -18,6 +18,16 @@ class Settings {
 	static utils = utilsSettings;
 
 	/**
+	 * @private
+	 * @type {Object}
+	 */
+	static DEFAULTS_MIGRATIONS_MAP = {
+		pinnedActions: {
+			'talkPage': 'counterPage',
+		},
+	};
+
+	/**
 	 * @type {Promise}
 	 */
 	loadPromise;
@@ -63,7 +73,7 @@ class Settings {
 	/******* DEPENDENCIES *******/
 
 	/**
-	 * Request a Settings dialog dependencies.
+	 * Request the Settings dialog dependencies.
 	 * @returns {Promise|boolean}
 	 */
 	load() {
@@ -283,9 +293,9 @@ class Settings {
 
 	/**
 	 * Get a setting default stored in the config.
-	 * @param {string} [key] for specific option, or undefined for the option's object
-	 * @param {boolean} [userOption=false] get an option only declarative in the settings schema
-	 * @returns {*|object} a specific option, or the option's object
+	 * @param {string} [key] - a specific option key, or undefined for the option's object
+	 * @param {boolean} [userOption=false] - get an option only declarative in the settings schema
+	 * @returns {*|object} - a specific option, or the option's object
 	 */
 	get( key, userOption = false ) {
 		if ( userOption ) {
@@ -310,10 +320,12 @@ class Settings {
 	 * Apply the setting defaults to the singleton and saves to the Local Storage.
 	 * If the second parameter is true, also saves to the Greasemonkey storage (if available)
 	 * and to the local MW User Options.
-	 * @param {Object} options the setting options data
-	 * @param {boolean} [saveUserOptions] save the setting options to the local objects
+	 * @param {Object} options - the setting options data
+	 * @param {boolean} [saveUserOptions] - save the setting options to the local objects
 	 */
 	set( options, saveUserOptions ) {
+		this.migrate( options );
+
 		id.local.defaults = { ...id.local.defaults, ...options };
 
 		// Get options only declarative in the settings schema
@@ -334,6 +346,22 @@ class Settings {
 			if ( !id.local.mwIsAnon ) {
 				mw.user?.options?.set( id.config.settingsPrefix, json );
 			}
+		}
+	}
+
+	/**
+	 * Processes the settings defaults migration.
+	 * @private
+	 * @param {Object} options - the setting options data
+	 */
+	migrate( options ) {
+		for ( const [ name, value ] of Object.entries( options ) ) {
+			const migrationMap = Settings.DEFAULTS_MIGRATIONS_MAP[ name ];
+			if ( !migrationMap ) continue;
+
+			options[ name ] = utils.isArray( value )
+				? value.map( entry => migrationMap[ entry ] ?? entry )
+				: ( migrationMap[ value ] ?? value );
 		}
 	}
 

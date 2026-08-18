@@ -84,6 +84,26 @@ class Navigation {
 	};
 
 	/**
+	 * @private
+	 * @type {Object}
+	 */
+	static SUBJECT_PAGE_ICONS = {
+		2: 'userAvatar',
+		3: 'userAvatar',
+		default: 'pageSettings',
+	};
+
+	/**
+	 * @private
+	 * @type {Object}
+	 */
+	static TALK_PAGE_ICONS = {
+		2: 'userTalk',
+		3: 'userTalk',
+		default: 'speechBubbles',
+	};
+
+	/**
 	 * @type {typeof import('./MenuActionsButton').default}
 	 */
 	MenuActionsButton;
@@ -353,9 +373,9 @@ class Navigation {
 			// Link to the page
 			this.renderPageLink( options );
 
-			// Link to the talk page
+			// Link to the counter-page
 			if ( this.article.getTitle().canHaveTalkPage() ) {
-				this.renderTalkPageLink( options );
+				this.renderCounterPageLink( options );
 			}
 
 			// Link to the edit / view source
@@ -732,51 +752,38 @@ class Navigation {
 	}
 
 	/**
-	 * Render a button that navigates to the article.
+	 * Render a button that navigates to the page.
 	 * @private
 	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
 	renderPageLink( options ) {
-		const href = this.article.getTitle().isTalkPage()
-			? this.article.getTitle().getSubjectPage().getUrl()
-			: this.article.get( 'href' );
-
-		const iconSet = {
-			2: 'userAvatar',
-			3: 'userAvatar',
-			default: 'article',
-		};
-
 		this.menu.renderButton( {
 			name: 'page',
 			label: utils.msg( 'goto-page' ),
-			icon: iconSet[ this.article.getTitle().getNamespaceId() ] || iconSet.default,
-			href: href,
+			href: this.article.get( 'href' ),
+			icon: 'article',
 			...options,
 		} );
 	}
 
 	/**
-	 * Render a button that navigates to the talk article.
+	 * Render a button that navigates to the counter-page,
+	 * e.g., talk-page or subject-page.
 	 * @private
 	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
-	renderTalkPageLink( options ) {
-		const href = this.article.getTitle().isTalkPage()
-			? this.article.get( 'href' )
+	renderCounterPageLink( options ) {
+		const isTalkPage = this.article.getTitle().isTalkPage();
+		const href = isTalkPage
+			? this.article.getTitle().getSubjectPage().getUrl()
 			: this.article.getTitle().getTalkPage().getUrl();
-
-		const iconSet = {
-			2: 'userTalk',
-			3: 'userTalk',
-			default: 'speechBubbles',
-		};
+		const iconSet = Navigation[ isTalkPage ? 'SUBJECT_PAGE_ICONS' : 'TALK_PAGE_ICONS' ];
 
 		this.menu.renderButton( {
-			name: 'talkPage',
-			label: utils.msg( 'goto-talkpage' ),
-			icon: iconSet[ this.article.getTitle().getNamespaceId() ] || iconSet.default,
+			name: 'counterPage',
+			label: utils.msg( isTalkPage ? 'goto-subjectpage' : 'goto-talkpage' ),
 			href: href,
+			icon: iconSet[ this.article.getTitle().getNamespaceId() ] || iconSet.default,
 			...options,
 		} );
 	}
