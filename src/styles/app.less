@@ -96,11 +96,13 @@
  */
 
 .instantDiffs-line {
-	li&,
-	tr& td,
-	table& td,
-	&[data-instantdiffs-line] {
-		transition: background-color 1000ms ease-in-out;
+	&--active {
+		li&,
+		tr& td,
+		table& td,
+		&[data-instantdiffs-line] {
+			transition: background-color 1000ms ease-in-out;
+		}
 	}
 
 	&--highlight {
@@ -108,7 +110,7 @@
 		tr& td,
 		table& td,
 		&[data-instantdiffs-line] {
-			transition-duration: 250ms;
+			transition: background-color 250ms ease-in-out;
 			background-color: var(--instantDiffs-background-line) !important;
 		}
 	}

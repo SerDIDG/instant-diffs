@@ -438,40 +438,50 @@ export function renderDiffEditLinks( article, data ) {
  * @returns {DocumentFragment}
  */
 export function renderUserLink( article, user ) {
-	const title = new mw.Title( user, 2 ).getPrefixedText();
-	const talkTitle = new mw.Title( user, 3 ).getPrefixedText();
-	const contribsTitle = new mw.Title( `Contributions/${ user }`, -1 ).getPrefixedText();
+	const temporary = isTemporary( user );
+	const userTitle = new mw.Title( user, 2 ).getPrefixedText();
+	const userHref = getHrefAbsolute( article, mw.util.getUrl( userTitle ) );
 
-	const links = hf(
+	const talkTitle = new mw.Title( user, 3 ).getPrefixedText();
+	const talkHref = getHrefAbsolute( article, mw.util.getUrl( talkTitle ) );
+
+	const contribTitle = new mw.Title( `Contributions/${ user }`, -1 ).getPrefixedText();
+	const contribHref = getHrefAbsolute( article, mw.util.getUrl( contribTitle ) );
+
+	const userLinks = [
 		h( 'a', {
 				class: [ 'mw-redirect', 'mw-usertoollinks-talk' ],
 				title: talkTitle,
-				href: getHrefAbsolute( article, mw.util.getUrl( talkTitle ) ),
+				href: talkHref,
 			},
 			mw.msg( 'talkpagelinktext' ),
 		),
-		ht( mw.msg( 'pipe-separator' ) ),
-		h( 'a', {
-				class: [ 'mw-redirect', 'mw-usertoollinks-contribs' ],
-				title: contribsTitle,
-				href: getHrefAbsolute( article, mw.util.getUrl( contribsTitle ) ),
-			},
-			mw.msg( 'contribslink' ),
-		),
-	);
+	];
+	if ( !temporary ) {
+		userLinks.push(
+			h( 'a', {
+					class: [ 'mw-redirect', 'mw-usertoollinks-contribs' ],
+					title: contribTitle,
+					href: contribHref,
+				},
+				mw.msg( 'contribslink' ),
+			),
+		);
+	}
+	const linksFragment = hf( ...utils.arrayIntersperse( userLinks, ht( mw.msg( 'pipe-separator' ) ) ) );
 
 	return hf(
 		renderUserInfoCardButton( user ),
 		h( 'a', {
-				class: 'mw-userlink',
-				title: title,
-				href: getHrefAbsolute( article, mw.util.getUrl( title ) ),
+				class: !temporary ? 'mw-userlink' : 'mw-tempuserlink',
+				title: !temporary ? userTitle : contribTitle,
+				href: !temporary ? userHref : contribHref,
 			},
 			h( 'bdi', user ),
 		),
 		ht( mw.msg( 'word-separator' ) ),
 		h( 'span', { class: 'mw-usertoollinks' },
-			hj( mw.message( 'parentheses', links ).parseDom() ),
+			hj( mw.message( 'parentheses', linksFragment ).parseDom() ),
 		),
 	);
 }

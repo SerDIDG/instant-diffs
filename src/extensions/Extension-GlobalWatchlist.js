@@ -22,8 +22,9 @@ import * as utils from '../utils';
 function process( context ) {
 	if ( !utils.isAllowed() || !context?.root ) return;
 
-	// Mark the diff list lines as ready to be processed
 	const $container = $( context.root );
+
+	// Mark the diff list lines as ready to be processed
 	$container
 		.find( '.ext-globalwatchlist-site li' )
 		.attr( 'data-instantdiffs-line', '' );

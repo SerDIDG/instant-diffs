@@ -1,10 +1,11 @@
 /**
  * EXTENSION: FLAGGED REVS
  *
- * Adds enhancements to the "Revision Review" special page:
- * - marks the diff list lines as ready to be processed.
+ * Adds enhancements to the Special:RevisionReview and Special:PendingChanges pages:
+ * - marks the diff list lines as ready to be processed;
+ * - marks links as ready to be processed.
  * Adds enhancements to the Page view:
- * - requests FlaggedRevs form and renders review button.
+ * - requests FlaggedRevs form and renders the review button.
  * @see {@link https://www.mediawiki.org/wiki/Extension:FlaggedRevs}
  */
 
@@ -14,13 +15,30 @@ import * as utils from '../../utils';
 import ReviewForm from './ReviewForm';
 
 /**
- * Marks the diff list lines as ready to be processed.
+ * Processes Special:RevisionReview.
  */
 function processRevisionReview() {
 	const $container = utils.getContentNode();
 	$container
 		.find( 'ul li' )
 		.attr( 'data-instantdiffs-line', 'all' );
+}
+
+/**
+ * Processes Special:PendingChanges.
+ */
+function processPendingChanges() {
+	const $container = utils.getContentNode();
+
+	// Mark the diff list lines as ready to be processed
+	$container
+		.find( '.mw-fr-pending-changes-table tr' )
+		.attr( 'data-instantdiffs-line', '' );
+
+	// Mark links as ready to be processed
+	$container
+		.find( 'a.cdx-docs-link' )
+		.attr( 'data-instantdiffs-link', 'mw' );
 }
 
 mw.hook( `${ id.config.prefix }.page.renderSuccess` ).add(
@@ -34,8 +52,10 @@ mw.hook( `${ id.config.prefix }.page.renderSuccess` ).add(
 );
 
 mw.hook( `${ id.config.prefix }.pageAdjustments` ).add( ( id ) => {
-	// Process Special:RevisionReview
 	if ( id.local.mwCanonicalSpecialPageName === 'RevisionReview' ) {
 		processRevisionReview();
+	}
+	if ( id.local.mwCanonicalSpecialPageName === 'PendingChanges' ) {
+		processPendingChanges();
 	}
 } );

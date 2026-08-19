@@ -1035,51 +1035,54 @@ class Link {
 		// Setup view
 		const options = {
 			initiatorPage: this.options.initiatorPage,
-			onOpen: () => this.onDialogOpen(),
-			onClose: () => this.onDialogClose(),
+			onOpen: this.onDialogOpen,
+			onClose: this.onDialogClose,
 		};
 		const isReady = view.setup( this, options );
 		if ( !isReady ) return $.Deferred().resolve().promise();
 
 		this.onDialogRequest();
 		return $.when( view.load() )
-			.always( () => this.onDialogLoad() );
+			.always( this.onDialogLoad );
 	}
 
 	/**
 	 * Callback fired before the View dialog loads.
 	 * Shows loading cursor and triggers onRequest callback.
-	 * @private
+	 * @internal
 	 */
-	onDialogRequest() {
+	onDialogRequest = () => {
 		this.toggleLoader( true );
 
 		if ( utils.isFunction( this.options.onRequest ) ) {
 			this.options.onRequest( this );
 		}
-	}
+	};
 
 	/**
 	 * Callback fired after the View dialog loads.
 	 * Hides loading cursor and triggers onLoad callback.
-	 * @private
+	 * @internal
 	 */
-	onDialogLoad() {
+	onDialogLoad = () => {
 		this.toggleLoader( false );
 
 		if ( utils.isFunction( this.options.onLoad ) ) {
 			this.options.onLoad( this );
 		}
-	}
+	};
 
 	/**
 	 * Callback fired after the View dialog opens.
 	 * Highlights changelist line and triggers onOpen callback.
-	 * @private
+	 * @internal
 	 */
-	onDialogOpen() {
-		if ( this.mw.hasLine && settings.get( 'highlightLine' ) ) {
-			this.mw.line.classList.add( 'instantDiffs-line--highlight' );
+	onDialogOpen = () => {
+		if ( this.mw.hasLine ) {
+			this.mw.line.classList.add( 'instantDiffs-line--active' );
+			if ( settings.get( 'highlightLine' ) ) {
+				this.mw.line.classList.add( 'instantDiffs-line--highlight' );
+			}
 		}
 
 		if ( utils.isFunction( this.options.onOpen ) ) {
@@ -1089,14 +1092,14 @@ class Link {
 		if ( this.options.initiatorLink instanceof Link ) {
 			this.options.initiatorLink.onDialogOpen();
 		}
-	}
+	};
 
 	/**
 	 * Callback fired after the View dialog closes.
 	 * Removes line highlighting, marks lines as seen, and triggers onClose callback.
-	 * @private
+	 * @internal
 	 */
-	onDialogClose() {
+	onDialogClose = () => {
 		// Mark link as seen
 		if ( settings.get( 'markWatchedLink' ) ) {
 			this.node.classList.add( 'seen' );
@@ -1107,6 +1110,10 @@ class Link {
 			if ( settings.get( 'highlightLine' ) ) {
 				this.mw.line.classList.remove( 'instantDiffs-line--highlight' );
 			}
+
+			// Deferred via double rAF so the browser paints the intermediate state.
+			utils.onSchedule( () => this.mw.line.classList.remove( 'instantDiffs-line--active' ) );
+
 			if (
 				settings.get( 'markWatchedLine' ) &&
 				id.config.changeLists.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) )
@@ -1114,6 +1121,7 @@ class Link {
 				this.mw.line.classList.remove( ...id.config.mwLine.unseen );
 				this.mw.line.classList.add( ...id.config.mwLine.seen );
 			}
+
 			if (
 				settings.get( 'markWatchedLine' ) &&
 				id.local.mwCanonicalSpecialPageName === 'GlobalWatchlist'
@@ -1129,7 +1137,7 @@ class Link {
 		if ( this.options.initiatorLink instanceof Link ) {
 			this.options.initiatorLink.onDialogClose();
 		}
-	}
+	};
 
 	/******* STATES *******/
 

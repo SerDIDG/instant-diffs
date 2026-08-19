@@ -335,7 +335,6 @@ export const config = {
 		'.mw-history-histlinks a',                                      // Page history
 		'.mw-diff-bytes + a',
 		'.mw-contributions-list .comment a',                            // Edit summary in the contributions
-		'.mw-fr-pending-changes-table a.cdx-docs-link',                 // [[Special:PendingChanges]]
 		'#mw-revision-nav a',                                           // [[Special:PermanentLink]] / Revision
 		'table.diff #differences-prevlink',                             // [[Special:Diff]]: Previous edit
 		'table.diff #differences-nextlink',                             // [[Special:Diff]]: Next edit
@@ -352,7 +351,6 @@ export const config = {
 			'[data-instantdiffs-line]',                                 // Manually marked list line
 			'.mw-changeslist-line',                                     // Changelists
 			'.mw-contributions-list li',                                // Contributions
-			'.mw-fr-pending-changes-table tr',                          // [[Special:PendingChanges]]
 			'.mw-logevent-loglines li',                                 // [[Special:Logs]]
 			//'.mw-undelete-revlist li',                                // [[Special:Undelete]]
 		],
@@ -381,7 +379,7 @@ export const config = {
 			'differences-nextlink',                                     // [[Special:Diff]]
 		],
 		hasAttribute: [
-			['data-instantdiffs-link', 'mw'],
+			[ 'data-instantdiffs-link', 'mw' ],
 		],
 		hasClass: [
 			'mw-diff-revision-history-link-prev',                       // [[Special:Diff]]: MobileDiff previous edit
@@ -405,7 +403,6 @@ export const config = {
 			'#mw-fr-revision-tag-edit',
 			'.mw-specialpage-summary',                                  // Page header on certain Special pages
 			'#mw-revision-nav',                                         // [[Special:PermanentLink]] / Revision
-			'.mw-fr-pending-changes-table',                             // [[Special:PendingChanges]]
 			'.mw-logevent-loglines',                                    // [[Special:Logs]]
 			'.wikibase-statementview-references',                       // Wikibase statement references
 			//'.mw-undelete-revlist',                                   // [[Special:Undelete]]
