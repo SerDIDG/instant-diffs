@@ -188,3 +188,58 @@
 		opacity: 1;
 	}
 }
+
+/*** LINES ***/
+
+#instantDiffs-line() {
+	.--active() {
+		transition: background-color 1000ms ease-in-out;
+	}
+
+	.--highlight() {
+		transition: background-color 250ms ease-in-out;
+		background-color: var(--instantDiffs-background-line) !important;
+	}
+
+	.--reset() {
+		background-color: transparent !important;
+	}
+
+	.--seen() {
+		.mw-title {
+			font-weight: normal;
+		}
+	}
+}
+
+/*
+ * Tags legend:
+ * li - contributions, page history
+ * tr - watchlist, pending changes
+ * table - watchlist with groups
+ * [data-instantdiffs-line] - marked manually
+ */
+
+.instantDiffs-line {
+	&--active {
+		li&,
+		tr&:not([data-instantdiffs-line]) td,
+		table&:not([data-instantdiffs-line]) td,
+		&[data-instantdiffs-line] {
+			#instantDiffs-line.--active();
+		}
+	}
+
+	&--highlight {
+		li&,
+		tr&:not([data-instantdiffs-line]) td,
+		table&:not([data-instantdiffs-line]) td,
+		&[data-instantdiffs-line] {
+			#instantDiffs-line.--highlight();
+		}
+	}
+
+	&--seen {
+		#instantDiffs-line.--seen();
+	}
+}

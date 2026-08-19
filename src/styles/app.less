@@ -1,3 +1,4 @@
+@import ( reference ) '@wikimedia/codex-design-tokens/theme-wikimedia-ui.less';
 @import 'variables.less';
 
 /******* UTILS *******/
@@ -85,43 +86,6 @@
 
 /******* PAGE SPECIFIC ADJUSTMENTS *******/
 
-/*** LINE ***/
-
-/*
- * Tags legend:
- * li - contributions, page history
- * tr - watchlist, pending changes
- * table - watchlist with groups
- * [data-instantdiffs-line] - marked manually
- */
-
-.instantDiffs-line {
-	&--active {
-		li&,
-		tr& td,
-		table& td,
-		&[data-instantdiffs-line] {
-			transition: background-color 1000ms ease-in-out;
-		}
-	}
-
-	&--highlight {
-		li&,
-		tr& td,
-		table& td,
-		&[data-instantdiffs-line] {
-			transition: background-color 250ms ease-in-out;
-			background-color: var(--instantDiffs-background-line) !important;
-		}
-	}
-
-	&--seen {
-		.mw-title {
-			font-weight: normal;
-		}
-	}
-}
-
 /* Reset ending margin when panel embedded into certain core links */
 .instantDiffs-panel {
 	.mw-fr-reviewlink &,
@@ -144,13 +108,13 @@
 .instantDiffs-button--compare {
 	font-weight: normal;
 
-	// /* [Fix] Button min-width for legacy wikis */
+	// /* Fix button min-width for legacy wikis */
 	&.mw-ui-button {
 		min-width: 0;
 	}
 }
 
-/* [Fix] Buttons vertical alignment */
+/* Fix buttons vertical alignment */
 .instantDiffs-enabled {
 	.mw-history-compareselectedversions {
 		:is( .mw-ui-button, .cdx-button ) {
@@ -161,14 +125,16 @@
 
 body:not(.skin-minerva) {
 	.instantDiffs-line--history {
-		// /* [Fix] Add indent before the left checkbox selector for the all skins except Minerva */
-		.mw-history-histlinks {
-			margin-inline-end: 0.5em;
-		}
+		@media (min-width: @min-width-breakpoint-tablet) {
+			// /* Add indent before the left checkbox selector for the all skins except Minerva */
+			.mw-history-histlinks {
+				margin-inline-end: 0.5em;
+			}
 
-		// /* [Fix] Add indent after the right checkbox selector for the all skins except Minerva */
-		.mw-changeslist-date {
-			margin-inline-start: 0.5em;
+			// /* Add indent after the right checkbox selector for the all skins except Minerva */
+			.mw-changeslist-date {
+				margin-inline-start: 0.5em;
+			}
 		}
 	}
 }
