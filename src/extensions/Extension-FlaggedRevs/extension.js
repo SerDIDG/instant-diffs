@@ -37,7 +37,7 @@ function processPendingChanges() {
 
 	// Mark links as ready to be processed
 	$container
-		.find( 'a.cdx-docs-link' )
+		.find( '.mw-fr-pending-changes-table a.cdx-docs-link' )
 		.attr( 'data-instantdiffs-link', 'mw' );
 }
 
