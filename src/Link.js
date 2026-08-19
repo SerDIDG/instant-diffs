@@ -1101,8 +1101,8 @@ class Link {
 	 */
 	onDialogClose = () => {
 		// Mark link as seen
-		if ( settings.get( 'markWatchedLink' ) ) {
-			this.node.classList.add( 'seen' );
+		if ( settings.get( 'markWatchedLink' ) && this.options.setClasses ) {
+			this.node.classList.add( 'is-seen' );
 		}
 
 		// Mark list line as seen
