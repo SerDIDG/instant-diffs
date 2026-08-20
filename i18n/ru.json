@@ -69,7 +69,7 @@
 	"hint-switch": "Ctrl+Стрелка вверх",
 	"hint-switch-description": "$1: переключить отображение версии и её сравнения.",
 	"hint-unpatrolled": "Ctrl+P",
-	"hint-unpatrolled-description": "$1: показать все [[mw:Special:MyLanguage/Extension:FlaggedRevs|неотпатрулированные изменения]], если доступны.",
+	"hint-unpatrolled-description": "$1: показать все [[mw:Special:MyLanguage/Extension:FlaggedRevs|непроверенные изменения]], если доступны.",
 	"hint-back": "Ctrl+Z",
 	"hint-back-description": "$1: вернуться к предыдущему виду, если доступно.",
 	"hint-actions": "Ctrl+Стрелка вниз",
