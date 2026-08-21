@@ -60,7 +60,7 @@
 	},
 	"devDependencies": {
 		"@fal-works/esbuild-plugin-global-externals": "^2.1.2",
-		"@swc/core": "^1.15.47",
+		"@swc/core": "^1.16.0",
 		"@swc/helpers": "^0.5.23",
 		"@types/oojs-ui": "^0.50.0",
 		"@wikimedia/codex-design-tokens": "^2.6.2",
