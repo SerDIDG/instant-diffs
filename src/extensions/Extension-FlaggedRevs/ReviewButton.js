@@ -25,7 +25,7 @@ class ReviewButton extends OO.ui.PopupButtonWidget {
 	 */
 	constructor( options = {} ) {
 		// Validate options
-		options = utils.optionsMerge( {
+		options = utils.deepMerge( {
 			classes: [ 'instantDiffs-button' ],
 			icon: 'eyeClosed',
 			label: utils.msg( 'action-review' ),

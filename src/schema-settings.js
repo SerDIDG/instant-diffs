@@ -416,7 +416,7 @@ function renderIntroField() {
 }
 
 /**
- * Gets tooltip help message for the Hotkeys field.
+ * Gets a tooltip help message for the Hotkeys field.
  * @private
  * @returns {OO.ui.HtmlSnippet}
  */
@@ -436,25 +436,25 @@ function onShowDiffToolsChange() {
 }
 
 /**
- * Event that emits after a links revision hash setting was changed.
+ * Event that emits after a "links revision hash" setting was changed.
  * @private
  */
 function onLinksHashChange() {
-	// Update the Links Format field help text
+	// Update the "Links Format" field help text
 	onLinksFormatSelect.call( this, this.getField( 'linksFormat' ) );
 }
 
 /**
- * Event that emits after a links label hash setting was changed.
+ * Event that emits after a "links label hash" setting was changed.
  * @private
  */
 function onLinksLabelChange() {
-	// Update the Links Format field help text
+	// Update the "Links Format" field help text
 	onLinksFormatSelect.call( this, this.getField( 'linksFormat' ) );
 }
 
 /**
- * Event that emits after a links format setting was changed.
+ * Event that emits after a "links format" setting was changed.
  * @private
  */
 function onLinksFormatSelect() {

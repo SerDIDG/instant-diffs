@@ -158,7 +158,19 @@ export function getMissingDependencies( data ) {
 }
 
 /**
- * Calls a module required function loaded via "mw.loader" and stored in the singleton.
+ * Checks if a list of modules is loaded.
+ * @param {Array} data
+ * @returns {boolean}
+ */
+export function hasModules( data ) {
+	return data.every( item => {
+		const state = mw.loader.getState( item );
+		return state && ![ 'error', 'missing' ].includes( state );
+	} );
+}
+
+/**
+ * Calls a module's required function loaded via "mw.loader" and stored in the singleton.
  * @param {string} name
  * @return {*}
  */
@@ -200,7 +212,7 @@ export function isForeign( hostname ) {
 const legacyCache = new Map();
 
 /**
- * Checks if current wiki version is legacy relative to input version.
+ * Checks if the current wiki version is legacy relative to the input version.
  * @param {string} version
  * @return {boolean}
  */
@@ -323,7 +335,7 @@ export function semverCompare( a, b ) {
 }
 
 /**
- * Insert separator between array items.
+ * Insert a separator between array items.
  * @param {Array} arr - Array to process
  * @param {*} separator - Item to insert between elements
  * @returns {Array} New array with separators
@@ -376,7 +388,7 @@ export function arrayUnique( arr ) {
 }
 
 /**
- * Deep merge configuration objects.
+ * Deep merge objects.
  * Arrays and primitive values are replaced, not merged.
  * @template {Record<string, any>} T
  * @param {...Partial<T>} objects - Configuration objects to merge
@@ -384,25 +396,89 @@ export function arrayUnique( arr ) {
  * @example
  * const defaults = { api: { timeout: 5000, retries: 3 } };
  * const config = { api: { timeout: 10000 } };
- * optionsMerge(defaults, config);
+ * deepMerge( defaults, config );
  * // { api: { timeout: 10000, retries: 3 } }
  */
-export function optionsMerge( ...objects ) {
-	return objects.reduce( ( prev, obj ) => {
-		Object.keys( obj ).forEach( key => {
-			const pVal = prev[ key ];
-			const oVal = obj[ key ];
+export function deepMerge( ...objects ) {
+	return mergeValues( objects, {} );
+}
 
-			// Only deep merge plain objects, replace everything else
-			if ( isObject( pVal ) && isObject( oVal ) ) {
-				prev[ key ] = optionsMerge( pVal, oVal );
+/**
+ * Deep merge options.
+ * @typedef {Object} deepMerge.Options
+ * @property {boolean|string[]} [mergeArrays=false] - Controls how array values are merged:
+ *   `true` merges all arrays without duplicates (including top-level array arguments),
+ *   a `string[]` merges only nested arrays under those key names without duplicates,
+ *   and `false` (default) replaces arrays as `deepMerge` does.
+ */
+
+/**
+ * Deep merge objects, with control over how array values are merged.
+ * Non-array primitive values are always replaced, not merged.
+ * @template {Record<string, any>} T
+ * @param {Partial<T>[]} objects - Configuration objects to merge, applied in order
+ * @param {deepMerge.Options} [options] - Merge behavior options
+ * @returns {T} Merged configuration object
+ * @example
+ * deepMergeWith( [ { tags: [ 1, 2 ] }, { tags: [ 2, 3 ] } ], { mergeArrays: true } );
+ * // { tags: [ 1, 2, 3 ] }
+ * @example
+ * deepMergeWith( [ defaults, config ], { mergeArrays: [ 'tags' ] } );
+ * // only the `tags` key is merged without duplicates; other arrays are replaced
+ * @example
+ * deepMergeWith( [ [ 1, 2 ], [ 2, 3 ] ], { mergeArrays: true } );
+ * // [ 1, 2, 3 ] - top-level array arguments merge too, when flagged
+ */
+export function deepMergeWith( objects, options = {} ) {
+	return mergeValues( objects, options );
+}
+
+/**
+ * Recursively merges a list of values (objects or arrays) into one, per the given options.
+ * @param {any[]} objects - Values to merge, applied in order
+ * @param {deepMerge.Options} options - Merge behavior options
+ * @param {string} [key] - Key this value list was found under, for `mergeArrays` key matching.
+ *   Left undefined at the top level, where only the blanket `true` flag can apply.
+ * @returns {any} Merged object or array
+ * @private
+ */
+function mergeValues( objects, options, key ) {
+	// Merge arrays directly, since Object.keys() would otherwise
+	// coerce them into a plain object with numeric keys.
+	if ( objects.every( isArray ) ) {
+		return shouldMergeArray( key, options )
+			? arrayUnique( objects.flat() )
+			: objects.at( -1 );
+	}
+
+	return objects.reduce( ( prev, obj ) => {
+		Object.keys( obj ).forEach( k => {
+			const pVal = prev[ k ];
+			const oVal = obj[ k ];
+
+			if ( ( isObject( pVal ) && isObject( oVal ) ) || ( isArray( pVal ) && isArray( oVal ) ) ) {
+				prev[ k ] = mergeValues( [ pVal, oVal ], options, k );
 			} else {
-				prev[ key ] = oVal;
+				prev[ k ] = oVal;
 			}
 		} );
 
 		return prev;
 	}, {} );
+}
+
+/**
+ * Checks whether an array value under the given key should be merged rather than replaced.
+ * A `key` of `undefined` (the top-level array case) only matches the `true` flag,
+ * since there is no key name to match against a `string[]` list.
+ * @param {string} [key] - Object key the array was found under, or undefined at the top level
+ * @param {deepMerge.Options} options - Merge behavior options
+ * @returns {boolean} True if the array should be merged without duplicates
+ * @private
+ */
+function shouldMergeArray( key, options ) {
+	const flag = options.mergeArrays;
+	return flag === true || ( isArray( flag ) && flag.includes( key ) );
 }
 
 /******* MESSAGES *******/
@@ -449,31 +525,6 @@ export function textDom( text ) {
 export function isMessageExists( str ) {
 	if ( isEmpty( str ) ) return false;
 	return mw.message( getMsgKey( str ) ).exists();
-}
-
-export function processMessages() {
-	id.local.userLanguage = mw.config.get( 'wgUserLanguage' );
-
-	// Do not set strings when the language is qqx for debagging
-	if ( id.local.userLanguage === 'qqx' ) {
-		id.local.language = id.local.userLanguage;
-		return;
-	}
-
-	// Merge current language strings with English for fallback
-	id.local.language = id.i18n[ id.local.userLanguage ] ? id.local.userLanguage : 'en';
-	id.local.messages = id.i18n[ id.local.language ] || {};
-	if ( id.local.language !== 'en' ) {
-		id.local.messages = { ...id.i18n.en, ...id.local.messages };
-	}
-
-	// Set strings key-value pairs
-	const processedMessages = {};
-	for ( const [ key, value ] of Object.entries( id.local.messages ) ) {
-		processedMessages[ getMsgKey( key ) ] = value;
-	}
-
-	mw.messages.set( processedMessages );
 }
 
 export function getMsgKey( str ) {
@@ -850,7 +901,7 @@ export function getTargetFromFragment( hash, container ) {
 }
 
 /**
- * Get cumulative offset of an element relative to container.
+ * Get a cumulative offset of an element relative to the container.
  * @param {HTMLElement|JQuery<HTMLElement>} element - Target element
  * @param {HTMLElement|JQuery<HTMLElement>} container - Container to calculate offset from
  * @returns {{top: number, left: number}|null} Cumulative offset or null if invalid

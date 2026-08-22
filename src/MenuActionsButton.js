@@ -14,7 +14,7 @@ class MenuActionsButton extends OO.ui.PopupButtonWidget {
 	 */
 	constructor( options ) {
 		// Validate options
-		options = utils.optionsMerge( {
+		options = utils.deepMerge( {
 			icon: 'menu',
 			label: utils.msg( 'goto-actions' ),
 			title: utils.msgHint( 'goto-actions', 'actions', settings.get( 'enableHotkeys' ) ),

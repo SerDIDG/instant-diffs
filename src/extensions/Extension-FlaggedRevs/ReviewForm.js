@@ -61,8 +61,8 @@ class ReviewForm {
 		// Lazy-import modules
 		this.ReviewButton = require( './ReviewButton' ).default;
 
-		// Change id attributes for the FlaggedRevs elements on the page before render review form.
-		// Restores attributes to the origin states before page detach.
+		// Change id attributes for the FlaggedRevs elements on the page before render a review form.
+		// Restores attributes to the origin states before the page is detached.
 		this.prepareElements();
 		this.page.on( 'beforeDetach', () => this.restoreElements() );
 
@@ -169,7 +169,7 @@ class ReviewForm {
 	}
 
 	/**
-	 * Restores id attributes for the FlaggedRevs elements to the origin states before page detach.
+	 * Restores id attributes for the FlaggedRevs elements to the origin states before the page is detached.
 	 * @private
 	 */
 	restoreElements() {

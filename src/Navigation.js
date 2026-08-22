@@ -1232,7 +1232,7 @@ class Navigation {
 	 */
 	getActionHotkeyMap() {
 		return document.dir === 'rtl'
-			? utils.optionsMerge( Navigation.ACTION_HOTKEYS, Navigation.ACTION_HOTKEYS_RTL )
+			? utils.deepMerge( Navigation.ACTION_HOTKEYS, Navigation.ACTION_HOTKEYS_RTL )
 			: Navigation.ACTION_HOTKEYS;
 	}
 

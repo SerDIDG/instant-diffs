@@ -17,8 +17,9 @@ import GlobalPage from './GlobalPage';
 import ViewButton from './ViewButton';
 import HistoryCompareButton from './HistoryCompareButton';
 import Watch from './Watch';
-import view from './view';
 import settings from './settings';
+import extensions from './extensions';
+import view from './view';
 
 import './styles/skins.less';
 
@@ -28,7 +29,7 @@ import './styles/skins.less';
  * Prepare the application after dependencies are loaded.
  * Initializes OOJS mixins, locale variables, observers, and fetches site info.
  * @param {Function} require - Module require function
- * @return {Promise<PromiseSettledResult<any>[]>} Promise that resolves when all preparations complete
+ * @return {Promise<PromiseSettledResult<any>[]>} Promise that resolves when all preparations are complete
  */
 function prepare( require ) {
 	// Save exported modules to the ID singleton
@@ -143,6 +144,35 @@ function getMessages() {
 			const path = (/** @type {string} */ id.config.dependencies.i18n ).replace( '$lang', lang );
 			return mw.loader.getScript( utils.server( path ) );
 		} );
+}
+
+/**
+ * Resolves and registers localization messages for the user's language, falling back to English.
+ * Skipped entirely when the user language is `qqx` (MediaWiki's message-key debug mode).
+ */
+function processMessages() {
+	id.local.userLanguage = mw.config.get( 'wgUserLanguage' );
+
+	// Do not set strings when the language is qqx for debugging
+	if ( id.local.userLanguage === 'qqx' ) {
+		id.local.language = id.local.userLanguage;
+		return;
+	}
+
+	// Merge current language strings with English for fallback
+	id.local.language = id.i18n[ id.local.userLanguage ] ? id.local.userLanguage : 'en';
+	id.local.messages = id.i18n[ id.local.language ] || {};
+	if ( id.local.language !== 'en' ) {
+		id.local.messages = { ...id.i18n.en, ...id.local.messages };
+	}
+
+	// Set strings key-value pairs
+	const processedMessages = {};
+	for ( const [ key, value ] of Object.entries( id.local.messages ) ) {
+		processedMessages[ utils.getMsgKey( key ) ] = value;
+	}
+
+	mw.messages.set( processedMessages );
 }
 
 /**
@@ -276,8 +306,9 @@ function app() {
 	id.local.defaults = defaultOptions;
 	id.timers = timers;
 	id.utils = utils;
-	id.view = view;
+	id.extensions = extensions;
 	id.settings = settings;
+	id.view = view;
 	id.modules = {
 		Api,
 		Site,
@@ -290,22 +321,23 @@ function app() {
 		LocalPage,
 		GlobalPage,
 		Watch,
-		view,
+		extensions,
 		settings,
+		view,
 	};
 
 	// Track run start time
 	id.timers.run = mw.now();
 
-	// Bundle language strings
+	// Import and bundle language strings and contributors list
 	i18nBundle();
 	contributorsBundle();
 
 	// Pre-process language strings
-	utils.processMessages();
+	processMessages();
 
-	// Bundle extensions
-	require( './extensions.js' );
+	// Import and bundle extensions
+	require( './bundle-extensions.js' );
 
 	// Load dependencies and prepare variables
 	load();
@@ -384,7 +416,7 @@ function load() {
  */
 async function ready() {
 	await settings.processDefaults();
-	utils.processMessages();
+	processMessages();
 
 	// Check if the script is enabled on mobile skin (Minerva)
 	if ( mw.config.get( 'skin' ) === 'minerva' && !settings.get( 'enableMobile' ) ) {
@@ -394,6 +426,10 @@ async function ready() {
 		} );
 		return;
 	}
+
+	// Call load state
+	id.isLoaded = true;
+	mw.hook( `${ id.config.prefix }.load` ).fire( id );
 
 	// Perform page-specific adjustments after preparation and call the ready state
 	id.isReady = true;
@@ -507,7 +543,7 @@ function handleReplace() {
 
 /**
  * Process configuration replacement for a running instance.
- * Updates settings and re-processes content with new configuration.
+ * Updates settings and re-processes content with a new configuration.
  * @param {Object} settingOptions - New setting options
  * @param {Object} defaultOptions - New default options
  * @return {Promise<void>}

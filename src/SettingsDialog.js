@@ -232,7 +232,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	/******* CONSTRUCTOR *******/
 
 	async renderTab( name, item ) {
-		item = utils.optionsMerge( {
+		item = utils.deepMerge( {
 			name: name,
 			fields: {},
 			fieldset: null,
@@ -271,7 +271,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	}
 
 	async renderField( name, item ) {
-		item = utils.optionsMerge( {
+		item = utils.deepMerge( {
 			name: name,
 			type: null,
 			input: null,
@@ -371,7 +371,7 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	}
 
 	renderInputOption( name, item, type ) {
-		item = utils.optionsMerge( {
+		item = utils.deepMerge( {
 			name: name,
 			type: type,
 			data: name,

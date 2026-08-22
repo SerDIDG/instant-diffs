@@ -67,8 +67,6 @@ export const config = {
 				'ext.thanks.corethank',
 				'ext.checkUser.styles',
 				'ext.checkUser.userInfoCard',
-				'ext.flaggedRevs.basic',
-				'ext.flaggedRevs.review',
 			],
 		},
 		revision: {
@@ -330,7 +328,6 @@ export const config = {
 		'a.mw-changeslist-diff',                                        // Changelists (diff)
 		'a.mw-changeslist-diff-cur',                                    // Changelists (diff to current)
 		'a.mw-changeslist-groupdiff',                                   // Changelists (diffs in a group)
-		'.mw-fr-reviewlink a',                                          // Changelists (FlaggedRevs link)
 		'.mw-enhanced-rc-time a',                                       // Changelists (revision)
 		'.mw-history-histlinks a',                                      // Page history
 		'.mw-diff-bytes + a',
@@ -341,8 +338,6 @@ export const config = {
 		'.mw-diff-revision-history-links a',                            // [[Special:Diff]]: MobileDiff navigation links
 		'.mw-logevent-loglines a',                                      // [[Special:Logs]]
 		'.wikibase-statementview-references a',                         // Wikibase statements references
-		'#mw-fr-revision-messages a',                                   // [[Extension:FlaggedRevs]] mobile warning
-		'#mw-fr-revision-details a',                                    // [[Extension:FlaggedRevs]] desktop popup
 		//'.mw-undelete-revlist a',                                     // [[Special:Undelete]]
 	],
 
@@ -367,10 +362,10 @@ export const config = {
 	},
 	mwLineTitle: {
 		selector: [
+			'[data-instantdiffs-line-title]',                           // Manually marked list line title
 			'.mw-changeslist-title',                                    // Changelists
 			'.mw-contributions-title',                                  // Contributions
 			'.mw-newpages-pagename',                                    // [[Special:NewPages]]
-			'.mw-fr-pending-changes-page-title',                        // [[Special:PendingChanges]]
 		],
 	},
 	mwLink: {
@@ -396,11 +391,6 @@ export const config = {
 			'.mw-contributions-list',                                   // Contributions
 			'.mw-history-histlinks',                                    // Page History
 			'.mw-pager-navigation-bar + ul',                            // Legacy lists without specific identifiers
-			'.mw-fr-hist-difflink',                                     // [[Extension:FlaggedRevs]] page history
-			'#mw-fr-reviewnotice',
-			'#mw-fr-revisiontag',
-			'#mw-fr-revisiontag-edit',
-			'#mw-fr-revision-tag-edit',
 			'.mw-specialpage-summary',                                  // Page header on certain Special pages
 			'#mw-revision-nav',                                         // [[Special:PermanentLink]] / Revision
 			'.mw-logevent-loglines',                                    // [[Special:Logs]]
@@ -429,7 +419,6 @@ export const config = {
 	},
 	mwLinkAltTitle: {
 		closestTo: [
-			'.mw-fr-reviewlink',                                        // [[Special:Watchlist]]
 			'.mw-history-histlinks',                                    // History page
 		],
 	},
