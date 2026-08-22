@@ -9,6 +9,15 @@ import id from '../id';
 import * as utils from '../utils';
 
 /**
+ * Extension config.
+ * @type {Record<string, any>}
+ */
+export const schema = {
+	name: 'Extension-Translate',
+	enabled: true,
+};
+
+/**
  * Process Translation extension.
  * @param {Object} helpers
  * @param {JQuery<HTMLElement>} $context

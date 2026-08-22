@@ -319,7 +319,7 @@ class Article {
 		try {
 			this.mw.endPointUrl = new URL( this.mw.endPoint );
 		} catch ( error ) {
-			utils.logException( 'Article:processHostname', 'Unable construct endPointUrl', error );
+			utils.logError( 'Article.processHostname', 'Unable construct endPointUrl', error );
 		}
 
 		// Check if the article is from foreign interwiki

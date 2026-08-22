@@ -12,6 +12,15 @@ import id from '../id';
 import * as utils from '../utils';
 
 /**
+ * Extension config.
+ * @type {Record<string, any>}
+ */
+export const schema = {
+	name: 'Extension-GlobalWatchlist',
+	enabled: true,
+};
+
+/**
  * Processes Global Watchlist.
  * @param {Object} context
  * @param {HTMLElement} context.root

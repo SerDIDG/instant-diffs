@@ -9,21 +9,20 @@
  * @see {@link https://www.mediawiki.org/wiki/Extension:FlaggedRevs}
  */
 
-import id from '../../id';
 import * as utils from '../../utils';
-
-import ReviewForm from './ReviewForm';
 
 import './styles.less';
 
+import ReviewForm from './ReviewForm';
+
 /**
  * Extension config.
- * @type {Record<string, Record>}
+ * @type {Record<string, any>}
  */
 export const schema = {
 	name: 'Extension-FlaggedRevs',
 	enabled: true,
-	enabledCondition: () => utils.hasModules( [ 'ext.flaggedRevs.basic' ] ),
+	enabledCondition: () => !utils.isEmptyObject( mw.config.get( 'wgFlaggedRevsParams' ) ),
 	dependencies: {
 		page: {
 			'*': [
@@ -33,7 +32,7 @@ export const schema = {
 		},
 	},
 	selectors: {
-		linkSelector: [
+		link: [
 			'.mw-fr-reviewlink a',              // Changelists: pending changes link
 			'#mw-fr-revision-messages a',       // Mobile warning
 			'#mw-fr-revision-details a',        // Desktop popup
@@ -61,8 +60,9 @@ export const schema = {
 
 /**
  * Processes special pages.
+ * @param {import('../id').InstantDiffsNamespace} id
  */
-function processPageAdjustments() {
+function processPageAdjustments( id ) {
 	if ( id.local.mwCanonicalSpecialPageName === 'RevisionReview' ) {
 		processRevisionReview();
 	}

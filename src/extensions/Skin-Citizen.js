@@ -9,6 +9,30 @@ import id from '../id';
 import * as utils from '../utils';
 
 /**
+ * Extension config.
+ * @type {Record<string, any>}
+ */
+export const schema = {
+	name: 'Skin-Citizen',
+	enabled: true,
+	enabledCondition: () => mw.config.get( 'skin' ) === 'citizen',
+	hooks: {
+		'pageAdjustments': processPageAdjustments,
+	},
+};
+
+/**
+ * Processes page.
+ */
+function processPageAdjustments() {
+	const lastModLink = document.querySelector( '#citizen-lastmod-relative' );
+	const lastModSidebar = document.querySelector( '#citizen-sidebar-lastmod' );
+	if ( lastModLink && lastModSidebar ) {
+		renderLastMod( lastModLink, lastModSidebar );
+	}
+}
+
+/**
  * Adds support for the "Last modified" link in the sidebar.
  * @param {HTMLAnchorElement} link
  * @param {HTMLElement} container
@@ -26,16 +50,6 @@ function renderLastMod( link, container ) {
 
 		mw.hook( `${ id.config.prefix }.process` ).fire( $( container ) );
 	} catch ( error ) {
-		utils.logException( 'Skin-Citizen', 'Unable to append the link action.', error );
+		utils.logError( 'Skin-Citizen', 'Unable to append the link action.', error );
 	}
 }
-
-mw.hook( 'wikipage.content' ).add( () => {
-	if ( !utils.isAllowed() || mw.config.get( 'skin' ) !== 'citizen' ) return;
-
-	const lastModLink = document.querySelector( '#citizen-lastmod-relative' );
-	const lastModSidebar = document.querySelector( '#citizen-sidebar-lastmod' );
-	if ( lastModLink && lastModSidebar ) {
-		renderLastMod( lastModLink, lastModSidebar );
-	}
-} );

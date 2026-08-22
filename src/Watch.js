@@ -327,7 +327,7 @@ class Watch {
 					autoHideSeconds: 'short',
 				} );
 			} catch ( error ) {
-				utils.logException( 'Watch', 'Falls back to basic watch/unwatch functionality.', error );
+				utils.logError( 'Watch', 'Falls back to basic watch/unwatch functionality.', error );
 				this.showBasicNotice( mwTitle, message );
 			}
 		} );

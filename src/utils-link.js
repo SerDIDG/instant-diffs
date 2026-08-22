@@ -55,7 +55,7 @@ export function isMWLink( node, preset ) {
 	let isConfirmed = false;
 
 	// Validate preset
-	preset = preset || id.config.mwLink;
+	preset = preset || id.config.selectors.mwLink;
 
 	// Check if a node id matches
 	if ( preset.id ) {
@@ -101,7 +101,7 @@ export function isMWLink( node, preset ) {
 }
 
 export function getMWLine( node ) {
-	return node.closest( id.config.mwLine.selector.join( ',' ) );
+	return node.closest( id.config.selectors.mwLine.selector.join( ',' ) );
 }
 
 export function getMWLineTitle( container ) {
@@ -112,7 +112,7 @@ export function getMWLineTitle( container ) {
 	}
 
 	// Get nodes from the selector list
-	const selector = id.config.mwLineTitle.selector.join( ',' );
+	const selector = id.config.selectors.mwLineTitle.selector.join( ',' );
 	const node = container.querySelector( selector );
 	if ( !node ) return;
 

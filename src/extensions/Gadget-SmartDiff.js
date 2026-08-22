@@ -5,8 +5,19 @@
  * @see {@link https://en.wikipedia.org/wiki/User:Nardog/SmartDiff}
  */
 
-import id from '../id';
 import * as utils from '../utils';
+
+/**
+ * Extension config.
+ * @type {Record<string, any>}
+ */
+export const schema = {
+	name: 'Gadget-SmartDiff',
+	enabled: true,
+	hooks: {
+		'page.complete': process,
+	},
+};
 
 /**
  * Adds base url and target to anchor links in the diff table.
@@ -29,5 +40,3 @@ function process( page ) {
 		utils.addTargetToLinks( $addedLinks );
 	}
 }
-
-mw.hook( `${ id.config.prefix }.page.complete` ).add( process );

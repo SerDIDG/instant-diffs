@@ -9,18 +9,29 @@
  * @see {@link https://www.mediawiki.org/wiki/Help:History}
  */
 
-import id from '../id';
 import * as utils from '../utils';
 
 import HistoryCompareButton from '../HistoryCompareButton';
 
 /**
- * Process page history pages:
- * - adds styling and creates compare buttons;
- * - makes diff links for the first page edit if possible;
- * - wraps empty diff links with placeholders and handles.
+ * Extension config.
+ * @type {Record<string, any>}
  */
-function process() {
+export const schema = {
+	name: 'Page-History',
+	enabled: true,
+	hooks: {
+		'pageAdjustments': processPageAdjustments,
+	},
+};
+
+/**
+ * Process page history pages.
+ * @param {import('../id').InstantDiffsNamespace} id
+ */
+function processPageAdjustments( id ) {
+	if ( id.local.mwAction !== 'history' ) return;
+
 	// Add an instantDiffs-line CSS class that adds spaces between selector checkboxes
 	const $revisionLines = $( '#pagehistory > li, #pagehistory .mw-contributions-list > li' )
 		.addClass( 'instantDiffs-line--history' );
@@ -61,9 +72,3 @@ function process() {
 			.insertAfter( $button );
 	} );
 }
-
-mw.hook( `${ id.config.prefix }.pageAdjustments` ).add( ( id ) => {
-	if ( id.local.mwAction === 'history' ) {
-		process();
-	}
-} );

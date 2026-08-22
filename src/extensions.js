@@ -1,8 +1,6 @@
 import id from './id';
 import * as utils from './utils';
 
-import './styles/extensions.less';
-
 /**
  * Class representing the Extensions manager.
  */
@@ -16,15 +14,19 @@ class Extensions {
 	/**
 	 * Registers an extension.
 	 * @param {Record} extension
-	 * @return {Promise<void>}
+	 * @return {Promise<Record|undefined>} The registered extension, or undefined if registration failed
 	 */
 	async register( extension ) {
 		if ( utils.isEmptyObject( extension ) ) {
-			utils.logException( 'Extensions:register', 'Extension schema is empty.', extension );
+			utils.logError( 'Extensions.register', 'Extension schema is empty.', extension );
 			return;
 		}
 		if ( utils.isEmpty( extension.name ) ) {
-			utils.logException( 'Extensions:register', 'Extension name is not provided.', extension );
+			utils.logError( 'Extensions.register', 'Extension name is not provided.', extension );
+			return;
+		}
+		if ( this.registry[ extension.name ] ) {
+			utils.logError( 'Extensions.register', `Extension with name "${ extension.name }" is already registered.`, extension );
 			return;
 		}
 
@@ -34,12 +36,14 @@ class Extensions {
 		// Process
 		if ( extension.enabled ) {
 			this.processDependencies( extension );
+			this.processForeignDependencies( extension );
 			this.processSelectors( extension );
 			this.processHooks( extension );
 		}
 
 		// Register
 		this.registry[ extension.name ] = extension;
+		return extension;
 	}
 
 	/**
@@ -64,14 +68,21 @@ class Extensions {
 	/**
 	 * @private
 	 */
+	processForeignDependencies( extension ) {
+		if ( utils.isEmptyObject( extension.foreignDependencies ) ) return;
+		id.config.foreignDependencies = utils.deepMergeWith( [ id.config.foreignDependencies, extension.foreignDependencies ], {
+			mergeArrays: true,
+		} );
+	}
+
+	/**
+	 * @private
+	 */
 	processSelectors( extension ) {
 		if ( utils.isEmptyObject( extension.selectors ) ) return;
-		for ( const [ name, config ] of Object.entries( extension.selectors ) ) {
-			if ( !id.config[ name ] ) continue;
-			id.config[ name ] = utils.deepMergeWith( [ id.config[ name ], config ], {
-				mergeArrays: true,
-			} );
-		}
+		id.config.selectors = utils.deepMergeWith( [ id.config.selectors, extension.selectors ], {
+			mergeArrays: true,
+		} );
 	}
 
 	/**

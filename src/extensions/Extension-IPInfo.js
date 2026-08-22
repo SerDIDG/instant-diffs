@@ -6,10 +6,22 @@
  * @see {@link https://www.mediawiki.org/wiki/Extension:IPInfo}
  */
 
-import id from '../id';
 import * as utils from '../utils';
 
 import view from '../view';
+
+/**
+ * Extension config.
+ * @type {Record<string, any>}
+ */
+export const schema = {
+	name: 'Extension-IPInfo',
+	enabled: true,
+	hooks: {
+		'page.complete': attachPopups,
+		'page.beforeDetach': detachPopups,
+	},
+};
 
 /**
  * Attached IPInfo popups store.
@@ -50,6 +62,3 @@ function detachPopups( page ) {
 	$ATTACHED_POPUPS.forEach( $popup => $popup.detach() );
 	$ATTACHED_POPUPS.length = 0;
 }
-
-mw.hook( `${ id.config.prefix }.page.complete` ).add( attachPopups );
-mw.hook( `${ id.config.prefix }.page.beforeDetach` ).add( detachPopups );

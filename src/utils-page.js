@@ -17,10 +17,9 @@ const { h, hf, ht, hj } = utils;
 /**
  * Gets the article dependencies.
  * @param {import('./page').Page.Any} page
- * @param {JQuery<HTMLElement>} [$container]
  * @return {Array<string>}
  */
-export function getDependencies( page, $container ) {
+export function getDependencies( page ) {
 	const article = page.getArticle();
 
 	let dependencies = [];
@@ -60,9 +59,10 @@ export function getDependencies( page, $container ) {
 	}
 
 	// Selector-specific dependencies
+	const $container = page.getBody();
 	if ( $container instanceof jQuery ) {
 		dependencies = dependencies.concat(
-			getSelectorDependencies( article, $container ),
+			getSelectorDependencies( article, page.getBody() ),
 		);
 	}
 

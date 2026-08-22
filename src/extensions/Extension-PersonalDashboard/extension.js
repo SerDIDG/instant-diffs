@@ -5,8 +5,19 @@
  * @see {@link https://www.mediawiki.org/wiki/Extension:PersonalDashboard}
  */
 
-import id from '../id';
-import * as utils from '../utils';
+import id from '../../id';
+import * as utils from '../../utils';
+
+import './styles.less';
+
+/**
+ * Extension config.
+ * @type {Record<string, any>}
+ */
+export const schema = {
+	name: 'Extension-PersonalDashboard',
+	enabled: true,
+};
 
 /**
  * Process Personal Dashboard extension.

@@ -6,8 +6,19 @@
  * @see {@link https://www.mediawiki.org/wiki/Extension:WikiLambda}
  */
 
-import id from '../id';
 import * as utils from '../utils';
+
+/**
+ * Extension config.
+ * @type {Record<string, any>}
+ */
+export const schema = {
+	name: 'Extension-WikiLambda',
+	enabled: true,
+	hooks: {
+		'page.ready': process,
+	},
+};
 
 /**
  * Restores WikiLambda extension.
@@ -16,38 +27,29 @@ import * as utils from '../utils';
 function process( page ) {
 	if ( !page || page.error || page.article.get( 'type' ) !== 'revision' ) return;
 
+	const $wikiLambdaApp = page.getBody().find( '#ext-wikilambda-app' );
+	if ( $wikiLambdaApp.length === 0 ) return;
+
 	switch ( page.type ) {
 		case 'local':
-			processLocal( page );
+			renderApp( page, $wikiLambdaApp );
 			break;
+
 		case 'global':
 		case 'foreign':
-			processForeign( page );
+			processForeign( page, $wikiLambdaApp );
 			break;
 	}
-}
-
-/**
- * Restores local WikiLambda extension.
- * @param {import('../Page').Page.Any} page
- */
-function processLocal( page ) {
-	page.nodes.$wikiLambdaApp = page.getBody().find( '#ext-wikilambda-app' );
-	if ( page.nodes.$wikiLambdaApp.length === 0 ) return;
-
-	// Restore WikiLambda app
-	renderApp( page.nodes.$wikiLambdaApp );
 }
 
 /**
  * Renders the WikiLambda app.
  * Partially copied from the WikiLambda extension code:
  * @see {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/extensions/WikiLambda/+/refs/heads/master/resources/ext.wikilambda.app/index.js}
- * @param {JQuery} $container
+ * @param {import('../Page').Page.Any} page
+ * @param {JQuery<HTMLElement>} $container
  */
-function renderApp( $container ) {
-	if ( !$container || $container.length === 0 ) return;
-
+function renderApp( page, $container ) {
 	mw.loader.using( [ '@wikimedia/codex', 'ext.wikilambda.app' ] ).then( require => {
 		const { createMwApp } = require( 'vue' );
 		const { createPinia } = require( 'pinia' );
@@ -72,17 +74,15 @@ function renderApp( $container ) {
 /**
  * Restores foreign WikiLambda extension.
  * @param {import('../Page').Page.Any} page
+ * @param {JQuery<HTMLElement>} $container
  */
-function processForeign( page ) {
-	page.nodes.$wikiLambdaApp = page.getBody().find( '#ext-wikilambda-app' );
-	if ( page.nodes.$wikiLambdaApp.length === 0 ) return;
-
+function processForeign( page, $container ) {
 	// Render a notice about unsupported WikiLambda app
 	const $content = $( utils.msgDom( 'dialog-notice-foreign-wikilambda' ) );
 	page.renderWarning( {
 		$content,
 		type: 'notice',
-		container: page.nodes.$wikiLambdaApp,
+		container: $container,
 		insertMethod: 'insertBefore',
 	} );
 
@@ -92,5 +92,3 @@ function processForeign( page ) {
 		.addClass( 'instantDiffs-hidden' );
 
 }
-
-mw.hook( `${ id.config.prefix }.page.ready` ).add( process );

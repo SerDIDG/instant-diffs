@@ -1,29 +1,76 @@
 /**
  * EXTENSION: WIKIBASE MEIDA INFO
  *
- * Restores file media info.
+ * Restores file media info tabs.
  * @see {@link https://www.mediawiki.org/wiki/Extension:WikibaseMediaInfo}
  */
 
-import id from '../id';
-import * as utils from '../utils';
+import * as utils from '../../utils';
+
+import './styles.less';
 
 const { h } = utils;
 
 /**
- * Restores file media info.
+ * Extension config.
+ * @type {Record<string, any>}
+ */
+export const schema = {
+	name: 'Extension-WikibaseMediaInfo',
+	enabled: true,
+	dependencies: {
+		revision: {
+			6: [                                                        // File:
+				'wikibase.mediainfo.filepage.styles',
+				'wikibase.mediainfo.statements',
+				'wikibase.mediainfo.statements.styles',
+			],
+		},
+		detailed: {
+			6: [                                                        // File:
+				'wikibase.mediainfo.uls',
+			],
+		},
+		messages: {
+			6: [                                                        // File:
+				'wikibasemediainfo-filepage-fileinfo-heading',
+				'wikibasemediainfo-filepage-structured-data-heading',
+			],
+		},
+	},
+	foreignDependencies: {
+		revision: {
+			styles: {
+				6: [                                                    // File:
+					'wikibase.mediainfo.filepage.styles',
+					'wikibase.mediainfo.statements',
+					'wikibase.mediainfo.statements.styles',
+				],
+			},
+		},
+	},
+	hooks: {
+		'page.renderSuccess': processPage,
+	},
+};
+
+/**
+ * Processes Page view.
  * @param {import('../Page').Page.Any} page
  */
-function process( page ) {
+function processPage( page ) {
 	if ( !page || page.article.get( 'type' ) !== 'revision' ) return;
 
-	// Infuse server-rendered OOUI tab elements, if present,
-	// otherwise render mediainfoview, if present.
+	// Infuse server-rendered OOUI tab elements, if present.
 	const $tabsContainer = page.getBody().find( '.wbmi-tabs-container' );
 	if ( $tabsContainer.length > 0 ) {
-		processTabs( page, $tabsContainer );
-	} else {
-		renderTabs( page );
+		return processTabs( page, $tabsContainer );
+	}
+
+	// Otherwise render mediainfoview, if present.
+	const $mediaInfoView = page.getBody().find( 'mediainfoview' );
+	if ( $mediaInfoView.length > 0 ) {
+		return renderTabs( page, $mediaInfoView );
 	}
 }
 
@@ -33,7 +80,7 @@ function process( page ) {
  * @param {JQuery<HTMLElement>} $tabsContainer
  */
 function processTabs( page, $tabsContainer ) {
-	// Modify ids of the PHP OOUI infuse elements so insure they do not repeat
+	// Modify ids of the PHP OOUI infuse elements so ensure they do not repeat
 	const html = $tabsContainer
 		.html()
 		.replace( /("|&quot;)ooui-php-(\d+)(?!-id)("|&quot;)/g, '$1ooui-php-$2-id$3' );
@@ -52,11 +99,9 @@ function processTabs( page, $tabsContainer ) {
 /**
  * Renders tab index layout and embeds media info content.
  * @param {import('../Page').Page.Any} page
+ * @param {JQuery<HTMLElement>} $mediaInfoView
  */
-function renderTabs( page ) {
-	const $mediaInfoView = page.getBody().find( 'mediainfoview' );
-	if ( $mediaInfoView.length === 0 ) return;
-
+function renderTabs( page, $mediaInfoView ) {
 	const captionsTab = new OO.ui.TabPanelLayout( 'captions', {
 		expanded: false,
 		label: mw.msg( 'wikibasemediainfo-filepage-fileinfo-heading' ),
@@ -81,9 +126,7 @@ function renderTabs( page ) {
 		content: [ index ],
 	} );
 
-	// Render amd embed structure
+	// Render and embed structure
 	const content = h( 'div', { class: 'instantDiffs-extension-wikibaseMediaInfo' }, panel.$element.get( 0 ) );
 	utils.embed( content, page.nodes.$diffTitle, 'insertAfter' );
 }
-
-mw.hook( `${ id.config.prefix }.page.renderSuccess` ).add( process );

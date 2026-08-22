@@ -221,7 +221,7 @@ function assembleSpecialPages() {
 function assembleLinkSelector() {
 	// Start assemble links selector
 	const linkSelector = [];
-	id.config.linkSelector.forEach( item => {
+	id.config.selectors.link.forEach( item => {
 		if ( /\$1/.test( item ) ) {
 			id.local.mwServers.forEach( server => {
 				linkSelector.push(

@@ -6,7 +6,17 @@
  * @see {@link https://meta.wikimedia.org/wiki/User:Xiplus/TwinkleGlobal}
  */
 
-import id from '../id';
+/**
+ * Extension config.
+ * @type {Record<string, any>}
+ */
+export const schema = {
+	name: 'Gadget-Twinkle',
+	enabled: true,
+	hooks: {
+		'page.complete': process,
+	},
+};
 
 /**
  * Process Twinkle gadget.
@@ -20,5 +30,3 @@ function process( page ) {
 		node.addEventListener( 'click', () => page.close() );
 	} );
 }
-
-mw.hook( `${ id.config.prefix }.page.complete` ).add( process );

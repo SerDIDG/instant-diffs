@@ -6,7 +6,17 @@
  * @see {@link https://en.wikipedia.org/wiki/User:Cacycle/wikEdDiff}
  */
 
-import id from '../id';
+/**
+ * Extension config.
+ * @type {Record<string, any>}
+ */
+export const schema = {
+	name: 'Gadget-WikEdDiff',
+	enabled: true,
+	hooks: {
+		'page.beforeDetach': process,
+	},
+};
 
 /**
  * Process wikEdDiff gadget.
@@ -26,5 +36,3 @@ function process( page ) {
 		wikEd.diffTableLinkified = false;
 	}
 }
-
-mw.hook( `${ id.config.prefix }.page.beforeDetach` ).add( process );

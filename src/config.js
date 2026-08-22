@@ -72,9 +72,6 @@ export const config = {
 		revision: {
 			6: [                                                        // File:
 				'filepage',
-				'wikibase.mediainfo.filepage.styles',
-				'wikibase.mediainfo.statements',
-				'wikibase.mediainfo.statements.styles',
 			],
 			14: [                                                       // Category:
 				'mediawiki.page.gallery.styles',
@@ -96,7 +93,6 @@ export const config = {
 		detailed: {
 			6: [
 				'mediawiki.action.view.filepage',
-				'wikibase.mediainfo.uls',
 			],
 		},
 		skins: {
@@ -117,22 +113,12 @@ export const config = {
 				dependencies: [ 'mediawiki.skinning.content.parsoid' ],
 			},
 		],
-		messages: {
-			6: [                                                        // File:
-				'wikibasemediainfo-filepage-fileinfo-heading',
-				'wikibasemediainfo-filepage-structured-data-heading',
-			],
-		},
+		messages: {},
 	},
 
 	foreignDependencies: {
 		revision: {
 			styles: {
-				6: [                                                    // File:
-					'wikibase.mediainfo.filepage.styles',
-					'wikibase.mediainfo.statements',
-					'wikibase.mediainfo.statements.styles',
-				],
 				146: [                                                  // Lexeme:
 					'wikibase.lexeme.styles',
 				],
@@ -319,118 +305,120 @@ export const config = {
 	articlePathRegExp: '^($1)',                                         // $1 - article path
 	sectionRegExp: /^\/\*\s*(.*?)\s*\*\/.*$/,
 
-	linkSelector: [                                                     // $1 - server
-		'[data-instantdiffs-line="all"] a',                             // Manually marked links in link line
-		'a[data-instantdiffs-link]',                                    // Manually marked link
-		'a.external',                                                   // External links
-		'a.extiw',                                                      // External links that lead to the interwiki
-		'a.mw-changeslist-date',                                        // Changelists (revision)
-		'a.mw-changeslist-diff',                                        // Changelists (diff)
-		'a.mw-changeslist-diff-cur',                                    // Changelists (diff to current)
-		'a.mw-changeslist-groupdiff',                                   // Changelists (diffs in a group)
-		'.mw-enhanced-rc-time a',                                       // Changelists (revision)
-		'.mw-history-histlinks a',                                      // Page history
-		'.mw-diff-bytes + a',
-		'.mw-contributions-list .comment a',                            // Edit summary in the contributions
-		'#mw-revision-nav a',                                           // [[Special:PermanentLink]] / Revision
-		'table.diff #differences-prevlink',                             // [[Special:Diff]]: Previous edit
-		'table.diff #differences-nextlink',                             // [[Special:Diff]]: Next edit
-		'.mw-diff-revision-history-links a',                            // [[Special:Diff]]: MobileDiff navigation links
-		'.mw-logevent-loglines a',                                      // [[Special:Logs]]
-		'.wikibase-statementview-references a',                         // Wikibase statements references
-		//'.mw-undelete-revlist a',                                     // [[Special:Undelete]]
-	],
+	selectors: {
+		link: [                                                         // $1 - server
+			'[data-instantdiffs-line="all"] a',                         // Manually marked links in link line
+			'a[data-instantdiffs-link]',                                // Manually marked link
+			'a.external',                                               // External links
+			'a.extiw',                                                  // External links that lead to the interwiki
+			'a.mw-changeslist-date',                                    // Changelists (revision)
+			'a.mw-changeslist-diff',                                    // Changelists (diff)
+			'a.mw-changeslist-diff-cur',                                // Changelists (diff to current)
+			'a.mw-changeslist-groupdiff',                               // Changelists (diffs in a group)
+			'.mw-enhanced-rc-time a',                                   // Changelists (revision)
+			'.mw-history-histlinks a',                                  // Page history
+			'.mw-diff-bytes + a',
+			'.mw-contributions-list .comment a',                        // Edit summary in the contributions
+			'#mw-revision-nav a',                                       // [[Special:PermanentLink]] / Revision
+			'table.diff #differences-prevlink',                         // [[Special:Diff]]: Previous edit
+			'table.diff #differences-nextlink',                         // [[Special:Diff]]: Next edit
+			'.mw-diff-revision-history-links a',                        // [[Special:Diff]]: MobileDiff navigation links
+			'.mw-logevent-loglines a',                                  // [[Special:Logs]]
+			'.wikibase-statementview-references a',                     // Wikibase statements references
+			//'.mw-undelete-revlist a',                                 // [[Special:Undelete]]
+		],
 
-	mwLine: {
-		selector: [
-			'[data-instantdiffs-line]',                                 // Manually marked list line
-			'.mw-changeslist-line',                                     // Changelists
-			'.mw-contributions-list li',                                // Contributions
-			'.mw-logevent-loglines li',                                 // [[Special:Logs]]
-			//'.mw-undelete-revlist li',                                // [[Special:Undelete]]
-		],
-		seen: [
-			'mw-changeslist-line-not-watched',
-			'mw-enhanced-not-watched',
-			'mw-changeslist-watchedseen',
-		],
-		unseen: [
-			'mw-changeslist-line-watched',
-			'mw-enhanced-watched',
-			'mw-changeslist-watchedunseen',
-		],
-	},
-	mwLineTitle: {
-		selector: [
-			'[data-instantdiffs-line-title]',                           // Manually marked list line title
-			'.mw-changeslist-title',                                    // Changelists
-			'.mw-contributions-title',                                  // Contributions
-			'.mw-newpages-pagename',                                    // [[Special:NewPages]]
-		],
-	},
-	mwLink: {
-		id: [
-			'differences-prevlink',                                     // [[Special:Diff]]
-			'differences-nextlink',                                     // [[Special:Diff]]
-		],
-		hasAttribute: [
-			[ 'data-instantdiffs-link', 'mw' ],
-		],
-		hasClass: [
-			'mw-diff-revision-history-link-prev',                       // [[Special:Diff]]: MobileDiff previous edit
-			'mw-diff-revision-history-link-next',                       // [[Special:Diff]]: MobileDiff next edit
-			'mw-changeslist-date',
-			'mw-changeslist-diff',
-			'mw-changeslist-diff-cur',
-			'mw-changeslist-groupdiff',
-			'mw-newpages-time',                                         // [[Special:NewPages]]
-		],
-		closestTo: [
-			'[data-instantdiffs-line]',
-			'.mw-changeslist-line',                                     // Changelists
-			'.mw-contributions-list',                                   // Contributions
-			'.mw-history-histlinks',                                    // Page History
-			'.mw-pager-navigation-bar + ul',                            // Legacy lists without specific identifiers
-			'.mw-specialpage-summary',                                  // Page header on certain Special pages
-			'#mw-revision-nav',                                         // [[Special:PermanentLink]] / Revision
-			'.mw-logevent-loglines',                                    // [[Special:Logs]]
-			'.wikibase-statementview-references',                       // Wikibase statement references
-			//'.mw-undelete-revlist',                                   // [[Special:Undelete]]
-		],
-	},
-	mwLinkExclude: {
-		hasClass: [
-			'mw-contributions-title',                                   // [[Special:GlobalContributions]]
-		],
-	},
-	mwLinkDiffOnly: {},
-	mwLinkRevisionOnly: {},
-	mwLinkPrepend: {
-		id: [
-			'differences-nextlink',                                     // [[Special:Diff]]: Next edit
-		],
-		hasClass: [
-			'mw-diff-revision-history-link-next',                       // [[Special:Diff]]: MobileDiff next edit
-		],
-		endsWith: [
-			'→',
-			'←',
-		],
-	},
-	mwLinkAltTitle: {
-		closestTo: [
-			'.mw-history-histlinks',                                    // History page
-		],
-	},
-	mwLinkContent: {
-		closestTo: [
-			'.mw-parser-output',
-		],
-	},
-	mwLinkContentInside: {
-		closestTo: [
-			'.comment',                                                 // Edit summary in the changelists
-		],
+		mwLine: {
+			selector: [
+				'[data-instantdiffs-line]',                             // Manually marked list line
+				'.mw-changeslist-line',                                 // Changelists
+				'.mw-contributions-list li',                            // Contributions
+				'.mw-logevent-loglines li',                             // [[Special:Logs]]
+				//'.mw-undelete-revlist li',                            // [[Special:Undelete]]
+			],
+			seen: [
+				'mw-changeslist-line-not-watched',
+				'mw-enhanced-not-watched',
+				'mw-changeslist-watchedseen',
+			],
+			unseen: [
+				'mw-changeslist-line-watched',
+				'mw-enhanced-watched',
+				'mw-changeslist-watchedunseen',
+			],
+		},
+		mwLineTitle: {
+			selector: [
+				'[data-instantdiffs-line-title]',                       // Manually marked list line title
+				'.mw-changeslist-title',                                // Changelists
+				'.mw-contributions-title',                              // Contributions
+				'.mw-newpages-pagename',                                // [[Special:NewPages]]
+			],
+		},
+		mwLink: {
+			id: [
+				'differences-prevlink',                                 // [[Special:Diff]]
+				'differences-nextlink',                                 // [[Special:Diff]]
+			],
+			hasAttribute: [
+				[ 'data-instantdiffs-link', 'mw' ],
+			],
+			hasClass: [
+				'mw-diff-revision-history-link-prev',                   // [[Special:Diff]]: MobileDiff previous edit
+				'mw-diff-revision-history-link-next',                   // [[Special:Diff]]: MobileDiff next edit
+				'mw-changeslist-date',
+				'mw-changeslist-diff',
+				'mw-changeslist-diff-cur',
+				'mw-changeslist-groupdiff',
+				'mw-newpages-time',                                     // [[Special:NewPages]]
+			],
+			closestTo: [
+				'[data-instantdiffs-line]',
+				'.mw-changeslist-line',                                 // Changelists
+				'.mw-contributions-list',                               // Contributions
+				'.mw-history-histlinks',                                // Page History
+				'.mw-pager-navigation-bar + ul',                        // Legacy lists without specific identifiers
+				'.mw-specialpage-summary',                              // Page header on certain Special pages
+				'#mw-revision-nav',                                     // [[Special:PermanentLink]] / Revision
+				'.mw-logevent-loglines',                                // [[Special:Logs]]
+				'.wikibase-statementview-references',                   // Wikibase statement references
+				//'.mw-undelete-revlist',                               // [[Special:Undelete]]
+			],
+		},
+		mwLinkExclude: {
+			hasClass: [
+				'mw-contributions-title',                               // [[Special:GlobalContributions]]
+			],
+		},
+		mwLinkDiffOnly: {},
+		mwLinkRevisionOnly: {},
+		mwLinkPrepend: {
+			id: [
+				'differences-nextlink',                                 // [[Special:Diff]]: Next edit
+			],
+			hasClass: [
+				'mw-diff-revision-history-link-next',                   // [[Special:Diff]]: MobileDiff next edit
+			],
+			endsWith: [
+				'→',
+				'←',
+			],
+		},
+		mwLinkAltTitle: {
+			closestTo: [
+				'.mw-history-histlinks',                                // History page
+			],
+		},
+		mwLinkContent: {
+			closestTo: [
+				'.mw-parser-output',
+			],
+		},
+		mwLinkContentInside: {
+			closestTo: [
+				'.comment',                                             // Edit summary in the changelists
+			],
+		},
 	},
 };
 

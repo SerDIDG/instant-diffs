@@ -12,6 +12,15 @@ import * as utils from '../utils';
 import Link from '../Link';
 
 /**
+ * Extension config.
+ * @type {Record<string, any>}
+ */
+export const schema = {
+	name: 'Gadget-ConvenientDiscussions',
+	enabled: true,
+};
+
+/**
  * @param {import('../Link').default} link
  */
 function renderLink( link ) {
@@ -65,7 +74,7 @@ function getHref( link ) {
 		try {
 			link.extensions.cd.anchor = cd.api.generateCommentId( link.extensions.cd.date, link.extensions.cd.user );
 		} catch ( error ) {
-			utils.logException( 'Gadget-ConvenientDiscussions', 'Unable to generate comment anchor.', error );
+			utils.logError( 'Gadget-ConvenientDiscussions', 'Unable to generate comment anchor.', error );
 		}
 	}
 

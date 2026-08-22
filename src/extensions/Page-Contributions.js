@@ -9,8 +9,35 @@
  * @see {@link https://www.mediawiki.org/wiki/Extension:GlobalContributions}
  */
 
-import id from '../id';
 import * as utils from '../utils';
+
+/**
+ * Extension config.
+ * @type {Record<string, any>}
+ */
+export const schema = {
+	name: 'Page-Contributions',
+	enabled: true,
+	hooks: {
+		'pageAdjustments': processPageAdjustments,
+	},
+};
+
+/**
+ * Processes special pages.
+ * @param {import('../id').InstantDiffsNamespace} id
+ */
+function processPageAdjustments( id ) {
+	// Process general user contributions
+	if ( id.config.contributionLists.includes( id.local.mwCanonicalSpecialPageName ) ) {
+		process();
+	}
+
+	// Process GlobalContributions extension
+	if ( id.local.mwCanonicalSpecialPageName === 'GlobalContributions' ) {
+		processGlobal();
+	}
+}
 
 /**
  * Process user contribution pages:
@@ -49,15 +76,3 @@ function processGlobal() {
 		} catch {}
 	} );
 }
-
-mw.hook( `${ id.config.prefix }.pageAdjustments` ).add( ( id ) => {
-	// Process local user contributions
-	if ( id.config.contributionLists.includes( id.local.mwCanonicalSpecialPageName ) ) {
-		process();
-	}
-
-	// Process GlobalContributions extension
-	if ( id.local.mwCanonicalSpecialPageName === 'GlobalContributions' ) {
-		processGlobal();
-	}
-} );

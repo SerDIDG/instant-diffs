@@ -288,8 +288,8 @@ export function log( type, message, data ) {
  * @param {string} [description]
  * @param {Array|*} [data]
  */
-export function logException( name, description, data ) {
-	let message = `Exception in "${ name }"`;
+export function logError( name, description, data ) {
+	let message = name;
 	if ( !isEmpty( description ) ) {
 		message = `${ message }: ${ description }`;
 	}
@@ -999,6 +999,7 @@ export function clipboardWriteLink( text, callback ) {
 		document.body.append( textarea );
 		textarea.select();
 
+		//noinspection JSDeprecatedSymbols
 		const successful = document.execCommand( 'copy' );
 		textarea.remove();
 
