@@ -198,7 +198,6 @@ class LocalPage extends Page {
 
 		// Process diff table
 		this.processDiffTable();
-		this.processFlaggedRevs();
 
 		// Process revision
 		if ( this.article.get( 'type' ) === 'revision' ) {
@@ -345,24 +344,24 @@ class LocalPage extends Page {
 		}
 
 		// Find table elements
-		this.nodes.$table = this.nodes.$body.find( 'table.diff' );
+		this.nodes.$diffTable = this.nodes.$body.find( 'table.diff' );
 
 		// Find and hide the next / previous diff links, so the other scripts can use them later
-		this.nodes.$prev = this.nodes.$table
+		this.nodes.$prev = this.nodes.$diffTable
 			.find( '#differences-prevlink' )
 			.attr( 'data-instantdiffs-link', 'none' )
 			.addClass( 'instantDiffs-hidden' );
 
-		this.nodes.$next = this.nodes.$table
+		this.nodes.$next = this.nodes.$diffTable
 			.find( '#differences-nextlink' )
 			.attr( 'data-instantdiffs-link', 'none' )
 			.addClass( 'instantDiffs-hidden' );
 
 		// Clear whitespaces after detaching navigation links
-		const leftTitle4 = this.nodes.$table.find( '#mw-diff-otitle4' );
+		const leftTitle4 = this.nodes.$diffTable.find( '#mw-diff-otitle4' );
 		utils.clearWhitespaces( leftTitle4 );
 
-		const rightTitle4 = this.nodes.$table.find( '#mw-diff-ntitle4' );
+		const rightTitle4 = this.nodes.$diffTable.find( '#mw-diff-ntitle4' );
 		utils.clearWhitespaces( rightTitle4 );
 
 		// Hide unsupported or unnecessary element
@@ -371,8 +370,8 @@ class LocalPage extends Page {
 			.addClass( 'instantDiffs-hidden' );
 
 		// Collect links that will be available in the navigation
-		this.links.prev = utils.isValidID( this.configManager.get( 'wgDiffOldId' ) );
-		this.links.next = this.nodes.$next.attr( 'href' );
+		this.addNavigationLink( 'prev', utils.isValidID( this.configManager.get( 'wgDiffOldId' ) ) );
+		this.addNavigationLink( 'next', this.nodes.$next.attr( 'href' ) );
 	}
 
 	processRevision() {
@@ -384,7 +383,7 @@ class LocalPage extends Page {
 		}
 
 		// Show or hide diff info table in the revision view
-		utilsPage.processRevisionDiffTable( this.nodes.$table );
+		utilsPage.processRevisionDiffTable( this.nodes.$diffTable );
 
 		// Append categories
 		this.processCategories();
@@ -395,42 +394,6 @@ class LocalPage extends Page {
 			.addClass( 'instantDiffs-hidden' );
 	}
 
-	processFlaggedRevs() {
-		// Find FlaggedRevs table info and insert before the diff table to fix the element flow
-		this.nodes.$frDiffHeader = this.nodes.$body
-			.find( '#mw-fr-diff-headeritems' )
-			.insertBefore( this.nodes.$table );
-
-		// Find and hide the "All unpatrolled diffs" link, so the other scripts can use it later
-		this.nodes.$unpatrolled = this.nodes.$frDiffHeader
-			.find( '.fr-diff-to-stable a' )
-			.attr( 'data-instantdiffs-link', 'none' )
-			.addClass( 'instantDiffs-hidden' );
-
-		if ( this.article.get( 'type' ) === 'diff' ) {
-			this.links.unpatrolled = this.nodes.$unpatrolled.attr( 'href' );
-		}
-
-		// Show or hide diff info table in the revision view
-		if ( this.article.get( 'type' ) === 'revision' ) {
-			if ( settings.get( 'showRevisionInfo' ) ) {
-				// Hide the left side of the table and left only related to the revision info
-				this.nodes.$frDiffHeader.find( '.fr-diff-ratings td:nth-child(2n-1)' ).addClass( 'instantDiffs-hidden' );
-			} else {
-				this.nodes.$frDiffHeader.addClass( 'instantDiffs-hidden' );
-			}
-		}
-
-		// Hide unsupported or unnecessary element
-		this.nodes.$body
-			.find( '.fr-diff-to-stable, #mw-fr-diff-dataform, #mw-fr-reviewform' )
-			.addClass( 'instantDiffs-hidden' );
-	}
-
-	hasFlaggedRevs() {
-		return this.nodes.$frDiffHeader?.length > 0;
-	}
-
 	processMobileFooter() {
 		this.nodes.$diffMobileFooter = this.nodes.$body.find( '.mw-diff-mobile-footer' );
 		if ( this.nodes.$diffMobileFooter.length === 0 ) return;
@@ -438,7 +401,7 @@ class LocalPage extends Page {
 		// Append diff mobile footer to the bottom
 		this.nodes.$diffMobileFooter.appendTo( this.nodes.$body );
 
-		// @see {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/50449784d02a0a46297fdd040bdc02a3ca76688e/resources/src/mediawiki.diff/undoButtonToggle.js#8}
+		// @see {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/master/resources/src/mediawiki.diff/undoButtonToggle.js#8}
 		const buttonClasses = 'cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--action-default';
 
 		// Process button classes and visibility

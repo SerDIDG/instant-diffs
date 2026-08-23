@@ -176,15 +176,14 @@ class GlobalPage extends Page {
 
 	async renderContentError() {
 		// Render a custom error warning if a revision was hidden
-		if ( this.errorData?.code === 'missingcontent' ) {
+		const hasWarning = this.errorData?.code === 'missingcontent';
+		if ( hasWarning ) {
 			await this.renderDeletedWarning();
-		} else {
-			await super.renderContentError();
 		}
 
 		// Try to parse an error message for a missing id
 		const values = this.article.getValues();
-		const revid = this.errorData?.code === 'missingcontent' ? this.errorData.info.replace( /\D/g, '' ) : null;
+		const revid = hasWarning ? this.errorData.info.replace( /\D/g, '' ) : null;
 		const ids = [ values.oldid, values.diff, revid ].filter( num => !isNaN( num ) && num > 0 );
 
 		// Get values for mw.config
@@ -199,12 +198,15 @@ class GlobalPage extends Page {
 		// Collect links that will be available in the navigation
 		const { wgDiffOldId, wgDiffNewId } = this.configManager.getValues();
 		if ( wgDiffOldId !== wgDiffNewId ) {
-			this.links.prev = utils.isValidID( wgDiffOldId );
-			this.links.next = utils.isValidID( wgDiffNewId );
+			this.addNavigationLink( 'prev', utils.isValidID( wgDiffOldId ) );
+			this.addNavigationLink( 'next', utils.isValidID( wgDiffNewId ) );
 		}
 
 		// Set the previous page as the initiator to render the backlink
 		this.options.initiatorPage = view.getPreviousPage();
+
+		// Call a parent method that wraps a process
+		await super.renderContentError( { renderWarning: !hasWarning } );
 	}
 
 	collectData() {
@@ -253,8 +255,8 @@ class GlobalPage extends Page {
 		this.configManager.setTitle( this.article.getTitle() );
 
 		// Collect links that will be available in the navigation
-		this.links.prev = utils.isValidID( this.data.fromrevid );
-		this.links.next = this.data.next && this.data.next !== this.data.torevid;
+		this.addNavigationLink( 'prev', utils.isValidID( this.data.fromrevid ) );
+		this.addNavigationLink( 'next', ( this.data.next && this.data.next !== this.data.torevid ) );
 	}
 
 	renderForeignWarning() {
@@ -270,12 +272,22 @@ class GlobalPage extends Page {
 		} );
 	}
 
+	renderErrorWarning() {
+		const message = utils.getErrorMessage( `error-${ this.error.type }-${ this.error.code }`, this.error, this.article );
+		const $content = $( `<p>${ message }</p>` );
+
+		this.nodes.errorWarning = this.renderWarning( {
+			$content,
+			container: this.nodes.foreignWarning,
+			insertMethod: 'insertAfter',
+		} );
+	}
+
 	async renderDeletedWarning() {
 		const message = await Api.parseWikitext( {
 			title: this.article.get( 'title' ),
 			text: mw.msg( 'rev-deleted-no-diff' ),
 		}, this.article );
-
 		const $content = $( message ).find( 'p' );
 
 		this.nodes.deleteWarning = this.renderWarning( {
@@ -339,11 +351,11 @@ class GlobalPage extends Page {
 		}
 
 		// Append diff content
-		this.nodes.$table = $( this.nodes.table.container ).appendTo( this.nodes.$body );
+		this.nodes.$diffTable = $( this.nodes.table.container ).appendTo( this.nodes.$body );
 
 		// Show or hide diff info table in the revision view
 		if ( this.article.get( 'type' ) === 'revision' ) {
-			utilsPage.processRevisionDiffTable( this.nodes.$table );
+			utilsPage.processRevisionDiffTable( this.nodes.$diffTable );
 		}
 	}
 

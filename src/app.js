@@ -14,6 +14,7 @@ import Link from './Link';
 import Page from './Page';
 import LocalPage from './LocalPage';
 import GlobalPage from './GlobalPage';
+import Navigation from './Navigation';
 import ViewButton from './ViewButton';
 import HistoryCompareButton from './HistoryCompareButton';
 import Watch from './Watch';
@@ -45,6 +46,7 @@ function prepare( require ) {
 	mixEventEmitterInObject( settings );
 	OO.mixinClass( Button, OO.EventEmitter );
 	OO.mixinClass( Page, OO.EventEmitter );
+	OO.mixinClass( Navigation, OO.EventEmitter );
 
 	// Prepare locale variables
 	id.local.mwVersion = mw.config.get( 'wgVersion' );

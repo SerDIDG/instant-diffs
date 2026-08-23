@@ -13,7 +13,7 @@ import * as utils from '../../utils';
 
 import './styles.less';
 
-import ReviewForm from './ReviewForm';
+import ReviewPage from './ReviewPage';
 
 /**
  * Extension config.
@@ -54,7 +54,7 @@ export const schema = {
 	},
 	hooks: {
 		'pageAdjustments': processPageAdjustments,
-		'page.renderSuccess': processPage,
+		'page.renderContentSuccess': processPage,
 	},
 };
 
@@ -113,5 +113,5 @@ function processPendingChanges() {
  */
 function processPage( page ) {
 	if ( !page ) return;
-	new ReviewForm( page );
+	new ReviewPage( page );
 }

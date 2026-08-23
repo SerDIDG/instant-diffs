@@ -17,8 +17,66 @@ const { h, hf, ht } = utils;
 
 /**
  * Class representing a Page navigation bar.
+ * @mixes OO.EventEmitter
  */
 class Navigation {
+	/**
+	 * @type {Menu.ButtonOptions}
+	 */
+	static SNAPSHOT_LINKS_OPTIONS = {
+		canSystem: true,
+		systemType: 'pin',
+		systemGroup: 'snapshot',
+		canPin: false,
+		canMenu: false,
+	};
+
+	/**
+	 * @type {Menu.ButtonOptions}
+	 */
+	static SNAPSHOT_LINKS_OPTIONS_MOBILE = {
+		canMenu: true,
+		menuGroup: 'mobile',
+	};
+
+	/**
+	 * @type {Menu.ButtonOptions}
+	 */
+	static NAVIGATION_LINKS_OPTIONS = {
+		canSystem: true,
+		systemType: 'navigation',
+		systemGroup: 'navigation',
+		canPin: false,
+		canMenu: false,
+	};
+
+	/**
+	 * @type {Menu.ButtonOptions}
+	 */
+	static NAVIGATION_LINKS_OPTIONS_MOBILE = {
+		canMenu: true,
+		menuGroup: 'mobile',
+	};
+
+	/**
+	 * @type {Menu.ButtonOptions}
+	 */
+	static MENU_LINKS_OPTIONS = {
+		canPin: true,
+		pinGroup: 'pins',
+		canMenu: true,
+		menuGroup: 'menu',
+	};
+
+	/**
+	 * @type {Menu.ButtonOptions}
+	 */
+	static MENU_FOOTER_LINKS_OPTIONS = {
+		canPin: false,
+		canMenu: true,
+		menuGroup: 'footer',
+	};
+
 	/**
 	 * Map of action names to their counterpart actions.
 	 * @private
@@ -160,6 +218,9 @@ class Navigation {
 	 * @param {Object} [options] - Configuration options
 	 * @param {string[]} [options.initiatorAction] - An action name
 	 * @param {Object} [options.links] - A link nodes object
+	 * @param {string|boolean} [options.links.next]
+	 * @param {string|boolean} [options.links.prev]
+	 * @param {string|boolean} [options.links.pendingChanges]
 	 */
 	constructor( page, article, options ) {
 		this.page = page;
@@ -179,8 +240,14 @@ class Navigation {
 		// Set up hotkey events
 		view.connect( this, { hotkey: 'onHotkey' } );
 
+		// Mixin constructor
+		OO.EventEmitter.call( this );
+
 		// Render content
 		this.render();
+
+		// Fire hook on complete
+		this.emitHook( 'complete' );
 	}
 
 	/**
@@ -199,9 +266,6 @@ class Navigation {
 		this.renderSnapshotLinks();
 		this.renderNavigationLinks();
 		this.renderActionLinks();
-
-		// Fire hook on complete
-		mw.hook( `${ id.config.prefix }.navigation.complete` ).fire( this );
 	}
 
 	/******* NAVIGATION *******/
@@ -271,18 +335,8 @@ class Navigation {
 	 * @private
 	 */
 	renderSnapshotLinks() {
-		const options = {
-			canSystem: true,
-			systemType: 'pin',
-			systemGroup: 'snapshot',
-			canPin: false,
-			canMenu: false,
-		};
-
-		const mobileOptions = {
-			canMenu: true,
-			menuGroup: 'mobile',
-		};
+		const options = Navigation.SNAPSHOT_LINKS_OPTIONS;
+		const optionsMobile = Navigation.SNAPSHOT_LINKS_OPTIONS_MOBILE;
 
 		// Previous link on the page
 		this.renderSnapshotPrevLink( options );
@@ -292,13 +346,15 @@ class Navigation {
 
 		// Back to the initiator page link
 		if ( this.page.getInitiatorPage() ) {
-			this.renderBackLink( { ...options, ...mobileOptions } );
+			this.renderBackLink( { ...options, ...optionsMobile } );
 		}
 
-		// [FlaggedRevisions] Link to all unpatrolled changes
-		if ( !utils.isEmpty( this.options.links.unpatrolled ) ) {
-			this.renderUnpatrolledLink( { ...options, ...mobileOptions } );
+		// [FlaggedRevs] Link to all pending changes
+		if ( !utils.isEmpty( this.options.links.pendingChanges ) ) {
+			this.renderPendingChangesLink( { ...options, ...optionsMobile } );
 		}
+
+		this.emitHook( 'snapshotLinks', { options, optionsMobile } );
 	}
 
 	/**
@@ -306,29 +362,21 @@ class Navigation {
 	 * @private
 	 */
 	renderNavigationLinks() {
-		const options = {
-			canSystem: true,
-			systemType: 'navigation',
-			systemGroup: 'navigation',
-			canPin: false,
-			canMenu: false,
-		};
-
-		const mobileOptions = {
-			canMenu: true,
-			menuGroup: 'mobile',
-		};
+		const options = Navigation.NAVIGATION_LINKS_OPTIONS;
+		const optionsMobile = Navigation.NAVIGATION_LINKS_OPTIONS_MOBILE;
 
 		// Link to the previous diff
 		this.renderPrevLink( options );
 
 		// Link that switches between revision and diff
 		if ( ![ 'page' ].includes( this.article.get( 'typeVariant' ) ) ) {
-			this.renderSwitchLink( { ...options, ...mobileOptions } );
+			this.renderSwitchLink( { ...options, ...optionsMobile } );
 		}
 
 		// Link to the next diff
 		this.renderNextLink( options );
+
+		this.emitHook( 'navigationLinks', { options, optionsMobile } );
 	}
 
 	/**
@@ -349,12 +397,7 @@ class Navigation {
 	 * @private
 	 */
 	renderMenuLinks() {
-		const options = {
-			canPin: true,
-			pinGroup: 'pins',
-			canMenu: true,
-			menuGroup: 'menu',
-		};
+		const options = Navigation.MENU_LINKS_OPTIONS;
 
 		// Copy a link to the clipboard action
 		this.renderCopyLink( options );
@@ -397,6 +440,8 @@ class Navigation {
 
 		// Open Instant Diffs settings
 		this.renderSettingsLink( options );
+
+		this.emitHook( 'menuLinks', { options } );
 	};
 
 	/**
@@ -404,14 +449,12 @@ class Navigation {
 	 * @private
 	 */
 	renderMenuFooterLinks() {
-		const options = {
-			canPin: false,
-			canMenu: true,
-			menuGroup: 'footer',
-		};
+		const options = Navigation.MENU_FOOTER_LINKS_OPTIONS;
 
 		// Link to the Instant Diffs docs and current running version
 		this.renderIDLink( options );
+
+		this.emitHook( 'menuFooterLinks', { options } );
 	}
 
 	/**
@@ -605,18 +648,18 @@ class Navigation {
 	}
 
 	/**
-	 * Render a button that switches to the diff between the last patrolled revision and the current unpatrolled one.
-	 * The button appears only if the FlaggedRevs extension is installed and the page has unpatrolled edits.
+	 * Render a button that switches to the diff between the last checked revision and the current pending one.
+	 * The button appears only if the FlaggedRevs extension is installed and the page has pending changes.
 	 * @private
 	 * @param {Menu.ButtonOptions} [options] - Button configuration options
 	 */
-	renderUnpatrolledLink( options ) {
+	renderPendingChangesLink( options ) {
 		options = {
 			name: 'unpatrolled',
 			label: utils.msg( 'goto-view-unpatrolled' ),
 			title: utils.msgHint( 'goto-view-unpatrolled', 'unpatrolled', settings.get( 'enableHotkeys' ) ),
 			icon: 'eyeClosed',
-			href: this.options.links.unpatrolled,
+			href: this.options.links.pendingChanges,
 			classes: [ 'instantDiffs-button--pending' ],
 			setLink: true,
 			linkOptions: {
@@ -1293,6 +1336,16 @@ class Navigation {
 	 */
 	fire() {
 		this.focusAction( this.options.initiatorAction );
+	}
+
+	/**
+	 * Fires event and hook with a given name.
+	 * @param {string} name
+	 * @param {*} [data]
+	 */
+	emitHook( name, data ) {
+		this.emit( name, data );
+		mw.hook( `${ id.config.prefix }.navigation.${ name }` ).fire( this, data );
 	}
 
 	/**

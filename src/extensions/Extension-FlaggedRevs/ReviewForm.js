@@ -2,11 +2,11 @@ import id from '../../id';
 import * as utils from '../../utils';
 import { executeModuleScript } from '../../utils-oojs';
 
-import settings from '../../settings';
 import Site from '../../Site';
+import settings from '../../settings';
 
 /**
- * Class representing the review form.
+ * Class representing the Review Form.
  */
 class ReviewForm {
 	/**
@@ -30,19 +30,13 @@ class ReviewForm {
 	reviewButton;
 
 	/**
-	 * @type {Object<string,HTMLElement>}
-	 */
-	frElements = {};
-
-	/**
-	 * Creates a Review Form instance.
+	 * Creates the Review Form instance.
 	 * @param {import('../../Page').Page.Any} page - a Page instance
 	 */
 	constructor( page ) {
 		this.page = page;
 		this.article = page.getArticle();
 
-		const isValidPage = this.page.hasFlaggedRevs?.() ?? false;
 		const isReviewableArticle = !this.article.isForeign &&
 			this.article.hasAction( 'review' ) &&
 			this.article.get( 'type' ) === 'diff';
@@ -51,7 +45,6 @@ class ReviewForm {
 		if (
 			!settings.get( 'enableReviewForm' ) ||
 			!Site.hasSkinCached( 'apioutput' ) ||
-			!isValidPage ||
 			!isReviewableArticle ||
 			!isReviewableRevision
 		) {
@@ -60,11 +53,6 @@ class ReviewForm {
 
 		// Lazy-import modules
 		this.ReviewButton = require( './ReviewButton' ).default;
-
-		// Change id attributes for the FlaggedRevs elements on the page before render a review form.
-		// Restores attributes to the origin states before the page is detached.
-		this.prepareElements();
-		this.page.on( 'beforeDetach', () => this.restoreElements() );
 
 		this.render();
 	}
@@ -151,32 +139,6 @@ class ReviewForm {
 	onError = () => {
 		this.page.detachDiffTool( 'flaggedRevsButton' );
 	};
-
-	/**
-	 * Changes id attributes for the FlaggedRevs elements on the page.
-	 * @private
-	 */
-	prepareElements() {
-		const $container = $( '#mw-content-text' );
-		if ( $container.length === 0 ) return;
-
-		const $nodes = $container.find( '[id^="mw-fr-"]' );
-		for ( const node of $nodes ) {
-			const id = node.id;
-			node.id = `instantDiffs-${ id }`;
-			this.frElements[ id ] = node;
-		}
-	}
-
-	/**
-	 * Restores id attributes for the FlaggedRevs elements to the origin states before the page is detached.
-	 * @private
-	 */
-	restoreElements() {
-		for ( const [ id, node ] of Object.entries( this.frElements ) ) {
-			node.id = id;
-		}
-	}
 }
 
 export default ReviewForm;

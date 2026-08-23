@@ -20,8 +20,8 @@ import './styles/page.less';
  * @typedef {Object} Page.DiffTool
  * @property {string} name - Tool name
  * @property {HTMLElement|JQuery<HTMLElement>} [node] - Element to append
- * @property {(tool: Page.DiffTool) => void} [onAttach] - Callback fired after element attached
- * @property {(tool: Page.DiffTool) => void} [onDetach] - Callback fired after element detached
+ * @property {(tool: Page.DiffTool) => void} [onAttach] - Callback fired after the element attached
+ * @property {(tool: Page.DiffTool) => void} [onDetach] - Callback fired after the element detached
  */
 
 /**
@@ -90,7 +90,7 @@ class Page {
 	/**
 	 * @type {Object}
 	 */
-	links = {};
+	navigationLinks = {};
 
 	/**
 	 * @type {import('./ConfigManager').default}
@@ -617,7 +617,7 @@ class Page {
 			return;
 		}
 
-		// Check if revision timestamp is newer then last-viewed timestamp
+		// Check if revision timestamp is newer than last-viewed timestamp
 		const lastTime = new Date( this.article.get( 'notificationtimestamp' ) ).getTime();
 		const revTime = new Date( this.article.get( 'timestamp' ) ).getTime();
 		if ( revTime < lastTime ) return;
@@ -719,21 +719,40 @@ class Page {
 		}
 	}
 
-	async renderContentSuccess() {
+	async renderContentSuccess( options ) {
+		options = {
+			requestDependencies: true,
+			...options,
+		};
+
 		// Request lazy-loaded dependencies
-		await this.requestDependencies();
+		if ( options.requestDependencies ) {
+			await this.requestDependencies();
+		}
+
+		this.emitHook( 'renderContentSuccess' );
+		this.emitHook( 'renderContentComplete' );
 	}
 
-	async renderContentError() {
-		const message = utils.getErrorMessage( `error-${ this.error.type }-${ this.error.code }`, this.error, this.article );
-		const $content = $( `<p>${ message }</p>` );
-		this.renderWarning( { $content } );
+	async renderContentError( options ) {
+		options = {
+			renderWarning: true,
+			...options,
+		};
+
+		// Render error warning message
+		if ( options.renderWarning ) {
+			this.renderErrorWarning();
+		}
+
+		this.emitHook( 'renderContentError' );
+		this.emitHook( 'renderContentComplete' );
 	}
 
 	async renderNavigation() {
 		this.navigation = new Navigation( this, this.article, {
 			initiatorAction: this.options.initiatorAction,
-			links: this.links,
+			links: this.navigationLinks,
 		} );
 		this.navigation.embed( this.nodes.$container, 'prependTo' );
 	}
@@ -756,6 +775,15 @@ class Page {
 		const box = utils.renderMessageBox( { $content, type } );
 		utils.embed( box, container, insertMethod );
 		return box;
+	}
+
+	/**
+	 * Render an error warning box.
+	 */
+	renderErrorWarning() {
+		const message = utils.getErrorMessage( `error-${ this.error.type }-${ this.error.code }`, this.error, this.article );
+		const $content = $( `<p>${ message }</p>` );
+		this.nodes.errorWarning = this.renderWarning( { $content } );
 	}
 
 	/**
@@ -914,7 +942,7 @@ class Page {
 	}
 
 	/**
-	 * Fires event and hook with given name.
+	 * Fires event and hook with a given name.
 	 * @param {string} name
 	 */
 	emitHook( name ) {
@@ -996,7 +1024,7 @@ class Page {
 	 * @returns {JQuery<HTMLElement>}
 	 */
 	getDiffTable() {
-		return this.nodes.$table;
+		return this.nodes.$diffTable;
 	}
 
 	getInitiatorPage() {
@@ -1005,6 +1033,16 @@ class Page {
 
 	getNavigation() {
 		return this.navigation;
+	}
+
+	/**
+	 * Add a link to the navigation.
+	 * @param {string} name
+	 * @param {*} value
+	 */
+	addNavigationLink( name, value ) {
+		if ( utils.isEmpty( name ) || utils.isEmpty( value ) ) return;
+		this.navigationLinks[ name ] = value;
 	}
 
 	close() {
