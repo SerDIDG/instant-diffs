@@ -80,7 +80,7 @@ function processPage( page ) {
  * @param {JQuery<HTMLElement>} $tabsContainer
  */
 function processTabs( page, $tabsContainer ) {
-	// Modify ids of the PHP OOUI infuse elements so ensure they do not repeat
+	// Modify ids of the PHP OOUI infuse elements to ensure they do not repeat
 	const html = $tabsContainer
 		.html()
 		.replace( /("|&quot;)ooui-php-(\d+)(?!-id)("|&quot;)/g, '$1ooui-php-$2-id$3' );

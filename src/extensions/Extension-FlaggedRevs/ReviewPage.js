@@ -62,17 +62,18 @@ class ReviewPage {
 			.addClass( 'instantDiffs-hidden' );
 
 		// ToDo: move button rendering from Navigation to this class
-		if ( this.article.get( 'type' ) === 'diff' ) {
-			this.page.addNavigationLink( 'pendingChanges', this.nodes.$pendingChangesLink.attr( 'href' ) );
-		}
+		this.page.addNavigationLink( 'pendingChanges', this.nodes.$pendingChangesLink.attr( 'href' ) );
 
 		// Show or hide diff info table in the revision view
 		if ( this.article.get( 'type' ) === 'revision' ) {
 			if ( settings.get( 'showRevisionInfo' ) ) {
 				// Hide the left side of the table and left only related to the revision info
-				this.nodes.$diffHeader.find( '.fr-diff-ratings td:nth-child(2n-1)' ).addClass( 'instantDiffs-hidden' );
+				this.nodes.$diffHeader
+					.find( '.fr-diff-ratings td:nth-child(2n-1)' )
+					.addClass( 'instantDiffs-hidden' );
 			} else {
-				this.nodes.$diffHeader.addClass( 'instantDiffs-hidden' );
+				this.nodes.$diffHeader
+					.addClass( 'instantDiffs-hidden' );
 			}
 		}
 
@@ -83,10 +84,7 @@ class ReviewPage {
 	}
 
 	render() {
-		// Render the review form only if the page has a diff header
-		if ( this.hasDiffHeader() ) {
-			this.reviewForm = new ReviewForm( this.page );
-		}
+		this.reviewForm = new ReviewForm( this );
 	}
 
 	/******* HELPERS *******/
@@ -96,7 +94,7 @@ class ReviewPage {
 	 * @private
 	 */
 	prepareElements() {
-		const $container = $( '#mw-content-text' );
+		const $container = $( '#mw-content-text, #mw-data-after-content' );
 		if ( $container.length === 0 ) return;
 
 		const $nodes = $container.find( '[id^="mw-fr-"]' );
@@ -125,6 +123,22 @@ class ReviewPage {
 	 */
 	hasDiffHeader() {
 		return this.nodes.$diffHeader?.length > 0;
+	}
+
+	/**
+	 * Get the Page instance.
+	 * @returns {import('../../Page').Page.Any} a Page instance
+	 */
+	getPage() {
+		return this.page;
+	}
+
+	/**
+	 * Get the Article instance.
+	 * @returns {import('../../Article').default} an Article instance
+	 */
+	getArticle() {
+		return this.article;
 	}
 }
 

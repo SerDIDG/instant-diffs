@@ -187,7 +187,12 @@ class Navigation {
 	options = {};
 
 	/**
-	 * @type {Record<string, HTMLElement>}
+	 * @type {Record<string, *>}
+	 */
+	states = {};
+
+	/**
+	 * @type {Record<string, *>}
 	 */
 	nodes = {};
 
@@ -247,6 +252,7 @@ class Navigation {
 		this.render();
 
 		// Fire hook on complete
+		this.emitHook( 'ready' );
 		this.emitHook( 'complete' );
 	}
 
@@ -747,8 +753,7 @@ class Navigation {
 		const values = this.article.getValues();
 		if ( values.revid === values.curRevid ) return;
 
-		const ids = utils.arrayUnique( [ values.addedRevid, values.deletedRevid ] )
-			.filter( utils.isValidID );
+		const ids = [ values.addedRevid, values.deletedRevid ].filter( utils.isValidID );
 		if ( ids.length === 0 ) return;
 
 		const article = new Article( {
@@ -1340,12 +1345,27 @@ class Navigation {
 
 	/**
 	 * Fires event and hook with a given name.
-	 * @param {string} name
+	 * @param {string} event
 	 * @param {*} [data]
 	 */
-	emitHook( name, data ) {
-		this.emit( name, data );
-		mw.hook( `${ id.config.prefix }.navigation.${ name }` ).fire( this, data );
+	emitHook( event, data ) {
+		this.states[ event ] = data || true;
+		this.emit( event, data );
+		mw.hook( `${ id.config.prefix }.navigation.${ event }` ).fire( this, data );
+	}
+
+	/**
+	 * Fires callback on state or bind event.
+	 * @param {string} event
+	 * @param {Function} callback
+	 */
+	when( event, callback ) {
+		const state = this.states[ event ];
+		if ( !state ) {
+			return this.once( event, callback );
+		}
+		callback( this, state );
+		return this;
 	}
 
 	/**

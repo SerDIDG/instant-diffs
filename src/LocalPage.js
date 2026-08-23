@@ -337,14 +337,15 @@ class LocalPage extends Page {
 	}
 
 	processDiffTable() {
-		// Find diff table tools container and pre-toggle visibility
-		this.nodes.$diffTablePrefix = this.nodes.$body.find( '.mw-diff-table-prefix' );
-		if ( this.article.get( 'type' ) !== 'diff' || !settings.get( 'showDiffTools' ) ) {
-			this.nodes.$diffTablePrefix.addClass( 'instantDiffs-hidden' );
-		}
-
 		// Find table elements
 		this.nodes.$diffTable = this.nodes.$body.find( 'table.diff' );
+
+		// Find diff table tools container and pre-toggle visibility
+		this.nodes.$diffTablePrefix = this.nodes.$body.find( '.mw-diff-table-prefix' );
+		if ( this.article.get( 'type' ) === 'revision' ) {
+			this.nodes.$diffTablePrefix.empty();
+		}
+		this.checkDiffTools();
 
 		// Find and hide the next / previous diff links, so the other scripts can use them later
 		this.nodes.$prev = this.nodes.$diffTable

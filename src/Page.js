@@ -17,11 +17,11 @@ import './styles/page.less';
 
 /**
  * Page's diff tool configuration options.
- * @typedef {Object} Page.DiffTool
+ * @typedef {Object} Page.DiffToolOptions
  * @property {string} name - Tool name
  * @property {HTMLElement|JQuery<HTMLElement>} [node] - Element to append
- * @property {(tool: Page.DiffTool) => void} [onAttach] - Callback fired after the element attached
- * @property {(tool: Page.DiffTool) => void} [onDetach] - Callback fired after the element detached
+ * @property {(tool: import('./Page').DiffToolOptions) => void} [onAttach] - Callback fired after the element attached
+ * @property {(tool: import('./Page').DiffToolOptions) => void} [onDetach] - Callback fired after the element detached
  */
 
 /**
@@ -83,7 +83,12 @@ class Page {
 	errorData;
 
 	/**
-	 * @type {Object}
+	 * @type {Record<string, *>}
+	 */
+	states = {};
+
+	/**
+	 * @type {Record<string, *>}
 	 */
 	nodes = {};
 
@@ -118,9 +123,14 @@ class Page {
 	navigationLinks = {};
 
 	/**
-	 * @type {Array<Page.DiffTool>}
+	 * @type {Array<Page.DiffToolOptions>}
 	 */
 	diffTools = [];
+
+	/**
+	 * @type {boolean}
+	 */
+	isReady = false;
 
 	/**
 	 * @type {boolean}
@@ -811,7 +821,7 @@ class Page {
 
 	/**
 	 * Registers diff tool.
-	 * @param {Page.DiffTool} options - Tool options
+	 * @param {Page.DiffToolOptions} options - Tool options
 	 */
 	registerDiffTool( options ) {
 		if ( !settings.get( 'showDiffTools' ) ) return;
@@ -866,6 +876,11 @@ class Page {
 	 * @returns {JQuery<HTMLElement>}
 	 */
 	getDiffTools() {
+		if ( !this.nodes.$diffTablePrefix || this.nodes.$diffTablePrefix.length === 0 ) {
+			this.nodes.$diffTablePrefix = $( '<div>' )
+				.addClass( 'mw-diff-table-prefix' )
+				.insertBefore( this.getDiffTable() );
+		}
 		return this.nodes.$diffTablePrefix;
 	}
 
@@ -876,8 +891,11 @@ class Page {
 		const $container = this.getDiffTools();
 		if ( !$container || $container.length === 0 ) return;
 
-		const hasVisibleChild = $container.children( ':visible' ).length > 0;
-		const shouldVisible = settings.get( 'showDiffTools' ) && ( hasVisibleChild || this.diffTools.length > 0 );
+		const hasVisibleChildren = $container
+			.children()
+			.toArray()
+			.some( el => getComputedStyle( el ).display !== 'none' );
+		const shouldVisible = settings.get( 'showDiffTools' ) && ( hasVisibleChildren || this.diffTools.length > 0 );
 		$container.toggleClass( 'instantDiffs-hidden', !shouldVisible );
 	}
 
@@ -913,6 +931,8 @@ class Page {
 	 * Fire hooks and events.
 	 */
 	async fire() {
+		this.isReady = true;
+
 		// Fire hook on ready
 		this.emitHook( 'ready' );
 
@@ -943,11 +963,27 @@ class Page {
 
 	/**
 	 * Fires event and hook with a given name.
-	 * @param {string} name
+	 * @param {string} event
+	 * @param {*} [data]
 	 */
-	emitHook( name ) {
-		this.emit( name );
-		mw.hook( `${ id.config.prefix }.page.${ name }` ).fire( this );
+	emitHook( event, data ) {
+		this.states[ event ] = data || true;
+		this.emit( event, data );
+		mw.hook( `${ id.config.prefix }.page.${ event }` ).fire( this, data );
+	}
+
+	/**
+	 * Fires callback on state or bind event.
+	 * @param {string} event
+	 * @param {Function} callback
+	 */
+	when( event, callback ) {
+		const state = this.states[ event ];
+		if ( !state ) {
+			return this.once( event, callback );
+		}
+		callback( this, state );
+		return this;
 	}
 
 	focus() {

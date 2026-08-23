@@ -184,7 +184,7 @@ class GlobalPage extends Page {
 		// Try to parse an error message for a missing id
 		const values = this.article.getValues();
 		const revid = hasWarning ? this.errorData.info.replace( /\D/g, '' ) : null;
-		const ids = [ values.oldid, values.diff, revid ].filter( num => !isNaN( num ) && num > 0 );
+		const ids = [ values.oldid, values.diff, revid ].filter( utils.isValidID );
 
 		// Get values for mw.config
 		this.configManager.setValues( {
