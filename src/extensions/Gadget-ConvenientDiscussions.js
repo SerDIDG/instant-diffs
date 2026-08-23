@@ -12,13 +12,33 @@ import * as utils from '../utils';
 import Link from '../Link';
 
 /**
- * Extension config.
- * @type {Record<string, any>}
+ * Extension configuration options.
+ * @type {import('../Extensions').ExtenstionOptions}
  */
 export const schema = {
 	name: 'Gadget-ConvenientDiscussions',
 	enabled: true,
+	onReady: ready,
 };
+
+/**
+ * Extension ready.
+ */
+function ready() {
+	mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
+		if ( !cd ) return;
+
+		// Process already rendered links
+		if ( id.isRunCompleted ) {
+			for ( const link of Link.getLinks() ) {
+				renderLink( link );
+			}
+		}
+
+		// Add hook listener to process newly added links
+		mw.hook( `${ id.config.prefix }.link.renderSuccess` ).add( renderLink );
+	} );
+}
 
 /**
  * @param {import('../Link').default} link
@@ -86,17 +106,3 @@ function getHref( link ) {
 	}
 	return href;
 }
-
-mw.hook( 'convenientDiscussions.preprocessed' ).add( ( cd ) => {
-	if ( !cd ) return;
-
-	// Process already rendered links
-	if ( id.isRunCompleted ) {
-		for ( const link of Link.getLinks() ) {
-			renderLink( link );
-		}
-	}
-
-	// Add hook listener to process newly added links
-	mw.hook( `${ id.config.prefix }.link.renderSuccess` ).add( renderLink );
-} );

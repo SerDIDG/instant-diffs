@@ -93,7 +93,7 @@ class Link {
 	/**
 	 * Checks if a link node has been processed and added to the stack.
 	 * @param {HTMLAnchorElement} node - Link DOM element
-	 * @returns {boolean} True if a link exists in stack
+	 * @returns {boolean} True if a link exists in the stack
 	 */
 	static hasLink( node ) {
 		return this.stack.has( node );
@@ -532,7 +532,7 @@ class Link {
 	}
 
 	/**
-	 * Initiates the appropriate API request based on article type.
+	 * Initiates the appropriate API request based on the article type.
 	 * Routes to requestRevision, requestDiff, or requestCompare.
 	 * @returns {JQuery.Promise|undefined} API request promise
 	 * @private

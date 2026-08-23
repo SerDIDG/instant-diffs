@@ -11,8 +11,8 @@ import * as utils from '../utils';
 import view from '../view';
 
 /**
- * Extension config.
- * @type {Record<string, any>}
+ * Extension configuration options.
+ * @type {import('../Extensions').ExtenstionOptions}
  */
 export const schema = {
 	name: 'Extension-IPInfo',

@@ -16,8 +16,8 @@ import './styles.less';
 import ReviewPage from './ReviewPage';
 
 /**
- * Extension config.
- * @type {Record<string, any>}
+ * Extension configuration options.
+ * @type {import('../../Extensions').ExtenstionOptions}
  */
 export const schema = {
 	name: 'Extension-FlaggedRevs',

@@ -88,11 +88,6 @@ class Page {
 	nodes = {};
 
 	/**
-	 * @type {Object}
-	 */
-	navigationLinks = {};
-
-	/**
 	 * @type {import('./ConfigManager').default}
 	 */
 	configManager;
@@ -116,6 +111,11 @@ class Page {
 	 * @type {import('./Navigation').default}
 	 */
 	navigation;
+
+	/**
+	 * @type {Object}
+	 */
+	navigationLinks = {};
 
 	/**
 	 * @type {Array<Page.DiffTool>}

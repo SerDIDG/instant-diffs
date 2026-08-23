@@ -2,21 +2,46 @@ import id from './id';
 import * as utils from './utils';
 
 /**
+ * Extension configuration options.
+ * @typedef {Object} Extensions.ExtenstionOptions
+ * @property {string} name - An extension name
+ * @property {boolean} [enabled=true] - Whether the extension is enabled
+ * @property {(extenstion: import('./Extensions').ExtenstionOptions) => void} [enabledCondition] - Callback fired to check if an extension can be enabled
+ * @property {Object<string, *>} [dependencies] - An object of dependencies
+ * @property {Object<string, *>} [foreignDependencies] - An object of foreign dependencies
+ * @property {Object<string, *>} [selectors] - An object of links selectors
+ * @property {Object<string, (any) => void>} [hooks] - An object of Instant Diffs hooks to bind
+ * @property {(extenstion: import('./Extensions').ExtenstionOptions) => void} [onReady] - Callback fired when the extension is ready
+ */
+
+/**
  * Class representing the Extensions manager.
  */
 class Extensions {
 	/**
 	 * @private
-	 * @type {Object<string|*>}
+	 * @type {Object<string|Extensions.ExtenstionOptions>}
 	 */
 	registry = {};
 
 	/**
 	 * Registers an extension.
-	 * @param {Record} extension
+	 * @param {Extensions.ExtenstionOptions} extension - The extension configuration
 	 * @return {Promise<Record|undefined>} The registered extension, or undefined if registration failed
 	 */
 	async register( extension ) {
+		extension = {
+			name: null,
+			enabled: true,
+			enabledCondition: null,
+			dependencies: {},
+			foreignDependencies: {},
+			selectors: {},
+			hooks: {},
+			onReady: () => {},
+			...extension,
+		};
+
 		if ( utils.isEmptyObject( extension ) ) {
 			utils.logError( 'Extensions.register', 'Extension schema is empty.', extension );
 			return;
@@ -33,16 +58,18 @@ class Extensions {
 		// Validate
 		extension.enabled = await this.checkEnabledCondition( extension );
 
+		// Register
+		this.registry[ extension.name ] = extension;
+
 		// Process
 		if ( extension.enabled ) {
 			this.processDependencies( extension );
 			this.processForeignDependencies( extension );
 			this.processSelectors( extension );
 			this.processHooks( extension );
+			this.processCallbacks( extension );
 		}
 
-		// Register
-		this.registry[ extension.name ] = extension;
 		return extension;
 	}
 
@@ -92,6 +119,15 @@ class Extensions {
 		if ( utils.isEmptyObject( extension.hooks ) ) return;
 		for ( const [ hook, handler ] of Object.entries( extension.hooks ) ) {
 			mw.hook( `${ id.config.prefix }.${ hook }` ).add( handler );
+		}
+	}
+
+	/**
+	 * @private
+	 */
+	processCallbacks( extension ) {
+		if ( utils.isFunction( extension.onReady ) ) {
+			extension.onReady( extension );
 		}
 	}
 }

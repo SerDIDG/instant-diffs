@@ -12,13 +12,21 @@ import id from '../id';
 import * as utils from '../utils';
 
 /**
- * Extension config.
- * @type {Record<string, any>}
+ * Extension configuration options.
+ * @type {import('../Extensions').ExtenstionOptions}
  */
 export const schema = {
 	name: 'Extension-GlobalWatchlist',
 	enabled: true,
+	onReady: ready,
 };
+
+/**
+ * Extension ready.
+ */
+function ready() {
+	mw.hook( 'ext.globalwatchlist.rebuild' ).add( process );
+}
 
 /**
  * Processes Global Watchlist.
@@ -45,5 +53,3 @@ function process( context ) {
 
 	mw.hook( `${ id.config.prefix }.process` ).fire( $container );
 }
-
-mw.hook( 'ext.globalwatchlist.rebuild' ).add( process );

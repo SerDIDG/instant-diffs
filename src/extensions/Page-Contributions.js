@@ -12,8 +12,8 @@
 import * as utils from '../utils';
 
 /**
- * Extension config.
- * @type {Record<string, any>}
+ * Extension configuration options.
+ * @type {import('../Extensions').ExtenstionOptions}
  */
 export const schema = {
 	name: 'Page-Contributions',

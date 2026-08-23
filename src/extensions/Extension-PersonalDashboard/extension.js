@@ -11,13 +11,21 @@ import * as utils from '../../utils';
 import './styles.less';
 
 /**
- * Extension config.
- * @type {Record<string, any>}
+ * Extension configuration options.
+ * @type {import('../../Extensions').ExtenstionOptions}
  */
 export const schema = {
 	name: 'Extension-PersonalDashboard',
 	enabled: true,
+	onReady: ready,
 };
+
+/**
+ * Extension ready.
+ */
+function ready() {
+	mw.hook( 'personaldashboard.recentactivity.listcard.loaded' ).add( process );
+}
 
 /**
  * Process Personal Dashboard extension.
@@ -34,5 +42,3 @@ function process() {
 
 	mw.hook( `${ id.config.prefix }.process` ).fire( $context );
 }
-
-mw.hook( 'personaldashboard.recentactivity.listcard.loaded' ).add( process );
