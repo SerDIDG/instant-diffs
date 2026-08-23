@@ -4,21 +4,21 @@ import settings from './settings';
 
 /**
  * Menu Button's configuration options, extends MenuButton.Options.
- * @typedef {MenuButton.Options & Object} Menu.ButtonOptions
+ * @typedef {import('./MenuButton').Options & Object} Menu.ButtonOptions
  * @property {string} [name] - A button name, used for the data-mw-ui-id attribute
  * @property {string} [group] - A group name, used for grouping buttons
  * @property {boolean} [canSystem=false] - Whether to render a system button
  * @property {boolean} [isSystem=false] - Button is system action
- * @property {MenuButton.Options['type']} [systemType='navigation'] - System button type
+ * @property {import('./MenuButton').Options['type']} [systemType='navigation'] - System button type
  * @property {string} [systemGroup='navigation'] - System button group
- * @property {boolean} [pin=undefined] - Overrides user's pin settings if set
+ * @property {boolean} [pin] - Overrides user's pin settings if set
  * @property {boolean} [canPin=false] - Whether to render a pinned button
  * @property {boolean} [isPin=false] - Button is pinned action
- * @property {MenuButton.Options['type']} [pinType='pin'] - Pined button type
+ * @property {import('./MenuButton').Options['type']} [pinType='pin'] - Pined button type
  * @property {string} [pinGroup='pins'] - Pinned button group
  * @property {boolean} [canMenu=true] - Whether to render a menu button
- * @property {boolean} [isMnu=false] - Button is menu action
- * @property {MenuButton.Options['type']} [menuType='menu'] - Menu button type
+ * @property {boolean} [isMenu=false] - Button is menu action
+ * @property {import('./MenuButton').Options['type']} [menuType='menu'] - Menu button type
  * @property {string} [menuGroup='menu'] - Menu button group
  * @property {import('./MenuButton').default|OO.ui.PopupButtonWidget} [widget] - The Button widget instance
  */

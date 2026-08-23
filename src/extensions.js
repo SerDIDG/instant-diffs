@@ -20,14 +20,14 @@ import * as utils from './utils';
 class Extensions {
 	/**
 	 * @private
-	 * @type {Object<string|Extensions.ExtenstionOptions>}
+	 * @type {Object<string, Extensions.ExtenstionOptions>}
 	 */
 	registry = {};
 
 	/**
 	 * Registers an extension.
 	 * @param {Extensions.ExtenstionOptions} extension - The extension configuration
-	 * @return {Promise<Record|undefined>} The registered extension, or undefined if registration failed
+	 * @return {Promise<Extensions.ExtenstionOptions|undefined>} The registered extension, or undefined if registration failed
 	 */
 	async register( extension ) {
 		extension = {
