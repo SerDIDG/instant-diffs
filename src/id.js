@@ -3,7 +3,7 @@ self.instantDiffs ||= {};
 /**
  * @namespace instantDiffs
  * @typedef {object} InstantDiffsNamespace
- * @property {boolean} isLoaded - Script dependencies was loaded
+ * @property {boolean} isLoaded - Script dependencies were loaded
  * @property {boolean} isReady - Script initialized
  * @property {boolean} isReplaced - Script instance was replaced
  * @property {boolean} isUnloading - Script activity paused; tab is inactive
