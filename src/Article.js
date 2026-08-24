@@ -225,15 +225,8 @@ class Article {
 				this.values.direction = 'prev';
 			}
 
-			// Swap parameters if oldid is a direction and a title is empty
-			if ( utils.isEmpty( this.values.title ) && utils.isValidDir( this.values.oldid ) ) {
-				const dir = this.values.oldid;
-				this.values.oldid = this.values.diff;
-				this.values.diff = dir;
-			}
-
-			// Swap parameters if oldid is empty: special pages do not have a page title attribute
-			if ( utils.isEmpty( this.values.oldid ) ) {
+			// Swap parameters if oldid is empty or is a direction
+			if ( utils.isEmpty( this.values.oldid ) || utils.isValidDir( this.values.oldid ) ) {
 				this.values.oldid = this.values.diff;
 				this.values.diff = this.values.direction;
 			}
