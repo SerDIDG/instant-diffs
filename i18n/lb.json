@@ -49,7 +49,7 @@
 	"hint-prev": "Feil no lénks",
 	"hint-next": "Feil no riets",
 	"hint-switch": "Strg+Feil no uewen",
-	"hint-unpatrolled": "Strg+P",
+	"hint-pending-changes": "Strg+P",
 	"hint-back": "Strg+Z",
 	"hint-actions": "Strg+Feil no ënnen",
 	"copy-link": "Link kopéieren",

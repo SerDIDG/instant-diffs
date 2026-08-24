@@ -662,8 +662,8 @@ class Navigation {
 	renderPendingChangesLink( options ) {
 		options = {
 			name: 'unpatrolled',
-			label: utils.msg( 'goto-view-unpatrolled' ),
-			title: utils.msgHint( 'goto-view-unpatrolled', 'unpatrolled', settings.get( 'enableHotkeys' ) ),
+			label: utils.msg( 'goto-view-pending-changes' ),
+			title: utils.msgHint( 'goto-view-pending-changes', 'unpatrolled', settings.get( 'enableHotkeys' ) ),
 			icon: 'eyeClosed',
 			href: this.options.links.pendingChanges,
 			classes: [ 'instantDiffs-button--pending' ],
@@ -1355,7 +1355,7 @@ class Navigation {
 	}
 
 	/**
-	 * Fires callback on state or bind event.
+	 * Fires callback immediately if the state already happened, otherwise subscribes once.
 	 * @param {string} event
 	 * @param {Function} callback
 	 */

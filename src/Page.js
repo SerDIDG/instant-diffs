@@ -974,7 +974,7 @@ class Page {
 	}
 
 	/**
-	 * Fires callback on state or bind event.
+	 * Fires callback immediately if the state already happened, otherwise subscribes once.
 	 * @param {string} event
 	 * @param {Function} callback
 	 */
