@@ -1034,7 +1034,7 @@ class Page {
 		}
 
 		if ( !utils.isEmpty( values.label ) ) {
-			return `${ values.label } (${ title })`;
+			title = `${ values.label } (${ title })`;
 		}
 
 		return title;

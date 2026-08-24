@@ -10,6 +10,11 @@ import settings from '../../settings';
  */
 class ReviewForm {
 	/**
+	 * @type {string}
+	 */
+	static DIFF_TOOL_NAME = 'flaggedRevsButton';
+
+	/**
 	 * @type {typeof import('./ReviewButton').default}
 	 */
 	ReviewButton;
@@ -97,7 +102,7 @@ class ReviewForm {
 
 		// Register diff tool
 		this.page.registerDiffTool( {
-			name: 'flaggedRevsButton',
+			name: ReviewForm.DIFF_TOOL_NAME,
 			node: this.reviewButton.$element,
 			onAttach: () => this.process(),
 		} );
@@ -202,7 +207,7 @@ class ReviewForm {
 	 * @private
 	 */
 	onError = () => {
-		this.page.detachDiffTool( 'flaggedRevsButton' );
+		this.page.detachDiffTool( ReviewForm.DIFF_TOOL_NAME );
 	};
 }
 
