@@ -17,7 +17,7 @@ class HistoryCompareButton extends ViewButton {
 	/**
 	 * Open the View dialog.
 	 */
-	openDialog = () => {
+	openDialog() {
 		this.nodes.$oldid = $( '#mw-history-compare input[name="oldid"]:checked' );
 		this.nodes.$oldidLine = this.nodes.$oldid.closest( 'li' );
 
@@ -32,13 +32,13 @@ class HistoryCompareButton extends ViewButton {
 		} );
 
 		return super.openDialog();
-	};
+	}
 
 	/**
 	 * Event that emits after the View dialog opens.
 	 * @private
 	 */
-	onDialogOpen = () => {
+	onDialogOpen() {
 		this.nodes.$oldidLine.addClass( 'instantDiffs-line--active' );
 		this.nodes.$diffLine.addClass( 'instantDiffs-line--active' );
 
@@ -48,13 +48,13 @@ class HistoryCompareButton extends ViewButton {
 		}
 
 		super.onDialogOpen();
-	};
+	}
 
 	/**
 	 * Event that emits after the View dialog closes.
 	 * @private
 	 */
-	onDialogClose = () => {
+	onDialogClose() {
 		if ( settings.get( 'highlightLine' ) ) {
 			this.nodes.$oldidLine.removeClass( 'instantDiffs-line--highlight' );
 			this.nodes.$diffLine.removeClass( 'instantDiffs-line--highlight' );
@@ -67,7 +67,7 @@ class HistoryCompareButton extends ViewButton {
 		} );
 
 		super.onDialogClose();
-	};
+	}
 }
 
 export default HistoryCompareButton;

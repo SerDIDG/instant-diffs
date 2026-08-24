@@ -34,8 +34,8 @@ class ViewButton extends Button {
 	 */
 	openDialog() {
 		const options = {
-			onOpen: this.onDialogOpen,
-			onClose: this.onDialogClose,
+			onOpen: () => this.onDialogOpen(),
+			onClose: () => this.onDialogClose(),
 		};
 
 		const isReady = view.setup( this, options );
@@ -43,7 +43,7 @@ class ViewButton extends Button {
 
 		this.onDialogRequest();
 		return $.when( view.load() )
-			.always( this.onDialogLoad );
+			.always( () => this.onDialogLoad() );
 	}
 
 	/**
@@ -51,36 +51,36 @@ class ViewButton extends Button {
 	 * Shows loading cursor.
 	 * @private
 	 */
-	onDialogRequest = () => {
+	onDialogRequest() {
 		this.setPending( true );
 		this.emit( 'loading' );
-	};
+	}
 
 	/**
 	 * Callback fired after the View dialog loads.
 	 * Hides loading cursor.
 	 * @private
 	 */
-	onDialogLoad = () => {
+	onDialogLoad() {
 		this.setPending( false );
 		this.emit( 'loaded' );
-	};
+	}
 
 	/**
 	 * Callback fired after the View dialog opens.
 	 * @private
 	 */
-	onDialogOpen = () => {
+	onDialogOpen() {
 		this.emit( 'opened' );
-	};
+	}
 
 	/**
 	 * Callback fired after the View dialog closes.
 	 * @private
 	 */
-	onDialogClose = () => {
+	onDialogClose() {
 		this.emit( 'closed' );
-	};
+	}
 
 	/**
 	 * Gets the associated Article instance.
