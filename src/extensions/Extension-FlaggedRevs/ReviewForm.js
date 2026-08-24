@@ -119,10 +119,7 @@ class ReviewForm {
 	 * Processes the review form HTML.
 	 */
 	processForm() {
-		this.$reviewForm
-			.addClass( 'instantDiffs-extension-flaggedRevs' )
-			.removeClass( 'instantDiffs-hidden' );
-
+		this.$reviewForm.addClass( 'instantDiffs-extension-flaggedRevs' );
 		utils.addTargetToLinks( this.$reviewForm );
 
 		// Group and wrap buttons inside the form
@@ -147,6 +144,8 @@ class ReviewForm {
 		this.reviewButton
 			.setContent( this.$reviewForm )
 			.setPending( false );
+
+		this.$reviewForm.removeClass( 'instantDiffs-hidden' );
 
 		// Restore review form JS code
 		executeModuleScript( 'ext.flaggedRevs.review', 'review.js' );

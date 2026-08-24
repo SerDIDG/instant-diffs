@@ -20,8 +20,8 @@ import './styles/page.less';
  * @typedef {Object} Page.DiffToolOptions
  * @property {string} name - Tool name
  * @property {HTMLElement|JQuery<HTMLElement>} [node] - Element to append
- * @property {(tool: import('./Page').DiffToolOptions) => void} [onAttach] - Callback fired after the element attached
- * @property {(tool: import('./Page').DiffToolOptions) => void} [onDetach] - Callback fired after the element detached
+ * @property {(tool: import('./Page').Page.DiffToolOptions) => void} [onAttach] - Callback fired after the element attached
+ * @property {(tool: import('./Page').Page.DiffToolOptions) => void} [onDetach] - Callback fired after the element detached
  */
 
 /**
@@ -821,7 +821,7 @@ class Page {
 
 	/**
 	 * Registers diff tool.
-	 * @param {Page.DiffToolOptions} options - Tool options
+	 * @param {import('./Page').Page.DiffToolOptions} options - Tool options
 	 */
 	registerDiffTool( options ) {
 		if ( !settings.get( 'showDiffTools' ) ) return;
@@ -873,10 +873,14 @@ class Page {
 
 	/**
 	 * Gets diff tools container.
+	 * @param {boolean} [createIfMissing=false] - Whether to create the container if it doesn't exist
 	 * @returns {JQuery<HTMLElement>}
 	 */
-	getDiffTools() {
-		if ( !this.nodes.$diffTablePrefix || this.nodes.$diffTablePrefix.length === 0 ) {
+	getDiffTools( createIfMissing = false ) {
+		if (
+			createIfMissing &&
+			( !this.nodes.$diffTablePrefix || this.nodes.$diffTablePrefix.length === 0 )
+		) {
 			this.nodes.$diffTablePrefix = $( '<div>' )
 				.addClass( 'mw-diff-table-prefix' )
 				.insertBefore( this.getDiffTable() );
@@ -891,10 +895,7 @@ class Page {
 		const $container = this.getDiffTools();
 		if ( !$container || $container.length === 0 ) return;
 
-		const hasVisibleChildren = $container
-			.children()
-			.toArray()
-			.some( el => getComputedStyle( el ).display !== 'none' );
+		const hasVisibleChildren = $container.children( ':visible' ) > 0;
 		const shouldVisible = settings.get( 'showDiffTools' ) && ( hasVisibleChildren || this.diffTools.length > 0 );
 		$container.toggleClass( 'instantDiffs-hidden', !shouldVisible );
 	}

@@ -552,36 +552,39 @@ export function renderDiffMobileFooter( data ) {
 
 /**
  * Restores the Inline toggle switch button.
- * @param {JQuery} $container
- * @returns {boolean} a render status
+ * @param {import('./Page').Page.Any} page - a Page instance
  */
-export function restoreInlineFormatToggle( $container ) {
+export function restoreInlineFormatToggle( page ) {
+	const $container = page.getDiffTools( false );
 	if (
 		!$container || $container.length === 0 ||
 		mw.loader.getState( 'mediawiki.diff' ) !== 'ready'
 	) {
-		return false;
+		return;
 	}
 
-	const $inlineToggleSwitchLayout = $container.find( '#mw-diffPage-inline-toggle-switch-layout' );
-	const inlineFormatToggle = getModuleExport( 'mediawiki.diff', './inlineFormatToggle.js' );
+	page.registerDiffTool( { name: 'inlineFormatToggle' } );
 
-	try {
-		inlineFormatToggle( $inlineToggleSwitchLayout );
-		return true;
-	} catch {}
+	page.when( 'ready', () => {
+		const $inlineToggleSwitchLayout = $container.find( '#mw-diffPage-inline-toggle-switch-layout' );
+		const inlineFormatToggle = getModuleExport( 'mediawiki.diff', './inlineFormatToggle.js' );
 
-	return false;
+		try {
+			inlineFormatToggle( $inlineToggleSwitchLayout );
+		} catch {
+			page.detachDiffTool( 'inlineFormatToggle' );
+		}
+	} );
 }
 
 /******* VISUAL EDITOR / DIFFS *******/
 
 /**
  * Restores the Visual Diffs buttons.
- * @param {JQuery} $container
- * @returns {boolean} a render status
+ * @param {import('./Page').Page.Any} page - a Page instance
  */
-export function restoreVisualDiffs( $container ) {
+export function restoreVisualDiffs( page ) {
+	const $container = page.getDiffTools( false );
 	if (
 		!$container || $container.length === 0 ||
 		!utils.isValidID( mw.config.get( 'wgDiffOldId' ) ) ||
@@ -589,24 +592,24 @@ export function restoreVisualDiffs( $container ) {
 		!isVisualDiffsAvailable( mw.config.get( 'wgPageContentModel' ) ) ||
 		mw.loader.getState( 'ext.visualEditor.diffPage.init' ) !== 'ready'
 	) {
-		return false;
+		return;
 	}
-
-	let $diffModeContainer = $container.find( '.ve-init-mw-diffPage-diffMode' );
-	if ( $diffModeContainer.length > 0 ) return true;
 
 	// Structure
-	$diffModeContainer = $( '<div>' ).addClass( 've-init-mw-diffPage-diffMode' );
+	let $diffModeContainer = $container.find( '.ve-init-mw-diffPage-diffMode' );
+	if ( $diffModeContainer.length === 0 ) {
+		$diffModeContainer = $( '<div>' ).addClass( 've-init-mw-diffPage-diffMode' );
 
-	// Append before inline toggle container if exists
-	const $inlineToggleContainer = $container.find( '.mw-diffPage-inlineToggle-container' );
-	if ( $inlineToggleContainer.length > 0 ) {
-		$inlineToggleContainer.before( $diffModeContainer );
-	} else {
-		$container.append( $diffModeContainer );
+		// Append before inline toggle container if exists
+		const $inlineToggleContainer = $container.find( '.mw-diffPage-inlineToggle-container' );
+		if ( $inlineToggleContainer.length > 0 ) {
+			$inlineToggleContainer.before( $diffModeContainer );
+		} else {
+			$container.append( $diffModeContainer );
+		}
 	}
 
-	return true;
+	page.registerDiffTool( { name: 'visualDiffs' } );
 }
 
 /**
@@ -624,11 +627,11 @@ export function isVisualDiffsAvailable( contentModel ) {
 /**
  * Restores and implement a rollback link behavior. Partially copied from the MediaWiki Core:
  * @see {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/refs/heads/master/resources/src/mediawiki.misc-authed-curate/rollback.js}
- * @param {JQuery} $container
- * @returns {boolean} a render status
+ * @param {import('./Page').Page.Any} page - a Page instance
  */
-export function restoreRollbackLink( $container ) {
-	if ( !$container || $container.length === 0 ) return false;
+export function restoreRollbackLink( page ) {
+	const $container = page.getBody();
+	if ( !$container || $container.length === 0 ) return;
 
 	// Target elements map
 	const selectors = [
@@ -649,8 +652,6 @@ export function restoreRollbackLink( $container ) {
 			postRollback( e.target );
 		},
 	} );
-
-	return true;
 }
 
 function postRollback( link ) {

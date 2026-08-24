@@ -199,6 +199,9 @@ class LocalPage extends Page {
 		// Process diff table
 		this.processDiffTable();
 
+		// Restore functionally of extensions and scripts
+		this.processDiffTools();
+
 		// Process revision
 		if ( this.article.get( 'type' ) === 'revision' ) {
 			this.processRevision();
@@ -340,13 +343,6 @@ class LocalPage extends Page {
 		// Find table elements
 		this.nodes.$diffTable = this.nodes.$body.find( 'table.diff' );
 
-		// Find diff table tools container and pre-toggle visibility
-		this.nodes.$diffTablePrefix = this.nodes.$body.find( '.mw-diff-table-prefix' );
-		if ( this.article.get( 'type' ) === 'revision' ) {
-			this.nodes.$diffTablePrefix.empty();
-		}
-		this.checkDiffTools();
-
 		// Find and hide the next / previous diff links, so the other scripts can use them later
 		this.nodes.$prev = this.nodes.$diffTable
 			.find( '#differences-prevlink' )
@@ -373,6 +369,32 @@ class LocalPage extends Page {
 		// Collect links that will be available in the navigation
 		this.addNavigationLink( 'prev', utils.isValidID( this.configManager.get( 'wgDiffOldId' ) ) );
 		this.addNavigationLink( 'next', this.nodes.$next.attr( 'href' ) );
+	}
+
+	processDiffTools() {
+		if ( this.error ) return;
+
+		// Find diff table tools container
+		this.nodes.$diffTablePrefix = this.nodes.$body.find( '.mw-diff-table-prefix' );
+		if ( this.article.get( 'type' ) === 'revision' ) {
+			this.nodes.$diffTablePrefix.empty();
+		}
+
+		// Restore rollback and patrol scripts
+		this.when( 'ready', () => {
+			executeModuleScript( 'mediawiki.misc-authed-curate' );
+			utilsPage.restoreRollbackLink( this );
+		} );
+
+		// Restore diff format toggle buttons
+		if ( this.article.get( 'type' ) === 'diff' ) {
+			utilsPage.restoreInlineFormatToggle( this );
+			utilsPage.restoreVisualDiffs( this );
+		}
+
+		// Create a diff tool container if missing for third-party extensions to use
+		this.getDiffTools( true );
+		this.checkDiffTools();
 	}
 
 	processRevision() {
@@ -419,41 +441,6 @@ class LocalPage extends Page {
 		} else {
 			$buttons.children( 'a' ).addClass( buttonClasses );
 		}
-	}
-
-	/**
-	 * Restores functionally of extensions and scripts.
-	 */
-	processDiffTools() {
-		if ( this.error ) return;
-
-		// Restore rollback and patrol scripts
-		executeModuleScript( 'mediawiki.misc-authed-curate' );
-		utilsPage.restoreRollbackLink( this.nodes.$body );
-
-		// Restore diff format toggle buttons
-		if ( this.article.get( 'type' ) === 'diff' ) {
-			const hasInlineToggle = utilsPage.restoreInlineFormatToggle( this.getDiffTools() );
-			if ( hasInlineToggle ) this.registerDiffTool( { name: 'inlineFormatToggle' } );
-
-			const hasVisualDiffs = utilsPage.restoreVisualDiffs( this.getDiffTools() );
-			if ( hasVisualDiffs ) this.registerDiffTool( { name: 'visualDiffs' } );
-		}
-
-		this.checkDiffTools();
-	}
-
-	/******* ACTIONS *******/
-
-	/**
-	 * Fire hooks and events.
-	 */
-	async fire() {
-		// Restore functionally of extensions and scripts
-		this.processDiffTools();
-
-		// Fire parent hooks and events
-		await super.fire();
 	}
 }
 
