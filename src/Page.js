@@ -895,7 +895,7 @@ class Page {
 		const $container = this.getDiffTools();
 		if ( !$container || $container.length === 0 ) return;
 
-		const hasVisibleChildren = $container.children( ':visible' ) > 0;
+		const hasVisibleChildren = $container.children( ':visible' ).length > 0;
 		const shouldVisible = settings.get( 'showDiffTools' ) && ( hasVisibleChildren || this.diffTools.length > 0 );
 		$container.toggleClass( 'instantDiffs-hidden', !shouldVisible );
 	}
