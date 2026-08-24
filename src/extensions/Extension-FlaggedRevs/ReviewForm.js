@@ -2,7 +2,6 @@ import id from '../../id';
 import * as utils from '../../utils';
 import { executeModuleScript } from '../../utils-oojs';
 
-import Site from '../../Site';
 import settings from '../../settings';
 
 /**
