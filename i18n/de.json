@@ -52,7 +52,7 @@
 	"hint-prev": "Pfeil links",
 	"hint-next": "Pfeil rechts",
 	"hint-switch": "Strg+Pfeil nach oben",
-	"hint-pending-changes": "Strg+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-back": "Strg+Z",
 	"hint-actions": "Strg+Pfeil nach unten",
 	"copy-link": "Link kopieren",
