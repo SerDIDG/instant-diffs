@@ -31,6 +31,11 @@ class ReviewPage {
 	reviewForm;
 
 	/**
+	 * @type {MutationObserver}
+	 */
+	observer;
+
+	/**
 	 * Creates the Review Page instance.
 	 * @param {import('../../Page').Page.Any} page - a Page instance
 	 */
