@@ -70,7 +70,7 @@
 	"hint-next-description": "$1: 역사에서 다음 차이 또는 판으로 이동합니다.",
 	"hint-switch": "Ctrl+위쪽 화살표",
 	"hint-switch-description": "$1: 판 보기와 비교 보기 사이를 전환합니다.",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-pending-changes-description": "$1: 사용 가능한 경우 모든 [[mw:Special:MyLanguage/Extension:FlaggedRevs|대기중인 변경 사항]]을 표시합니다.",
 	"hint-back": "Ctrl+Z",
 	"hint-back-description": "$1: 이전 화면이 있으면 이전 화면으로 돌아갑니다.",

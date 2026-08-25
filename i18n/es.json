@@ -54,7 +54,7 @@
 	"hint-prev": "Flecha izquierda",
 	"hint-next": "Flecha derecha",
 	"hint-switch": "Ctrl+Flecha arriba",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-back": "Ctrl+Z",
 	"hint-actions": "Ctrl+Flecha abajo",
 	"copy-link": "Copiar enlace",

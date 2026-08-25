@@ -322,6 +322,7 @@ function app() {
 		Page,
 		LocalPage,
 		GlobalPage,
+		Navigation,
 		Watch,
 		extensions,
 		settings,

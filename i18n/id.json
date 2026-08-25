@@ -56,7 +56,7 @@
 	"hint-prev": "Panah Kiri",
 	"hint-next": "Panah Kanan",
 	"hint-switch": "Ctrl+Panah Atas",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-back": "Ctrl+Z",
 	"hint-actions": "Ctrl+Panah Bawah",
 	"copy-link": "Salin tautan",

@@ -1,4 +1,4 @@
-import { tweakUserOoUiClass } from './utils-oojs';
+import { es6ClassToOoJsClass } from './utils-oojs';
 
 /**
  * Class representing a custom LabelWidget with a div tag name.
@@ -18,6 +18,6 @@ class DivLabelWidget extends OO.ui.LabelWidget {
 	}
 }
 
-tweakUserOoUiClass( DivLabelWidget );
+es6ClassToOoJsClass( DivLabelWidget );
 
 export default DivLabelWidget;

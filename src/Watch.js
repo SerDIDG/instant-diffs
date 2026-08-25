@@ -99,7 +99,7 @@ class Watch {
 		};
 
 		// Render a fake watch button that required in watchlist popup
-		this.$watchLink = $( '<a class="instantDiffs-button--fake-watch">' );
+		this.$watchLink = $( '<a class="instantDiffs-dummy-watch">' );
 		utils.embed( this.$watchLink, document.body );
 
 		// Get ajax watch config

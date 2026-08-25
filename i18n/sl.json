@@ -44,7 +44,7 @@
 	"hint-prev": "Puščica levo",
 	"hint-next": "Puščica desno",
 	"hint-switch": "Ctrl+puščica gor",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-back": "Ctrl+Z",
 	"hint-actions": "Ctrl+puščica dol",
 	"copy-link": "Kopiraj povezavo",

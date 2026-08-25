@@ -57,7 +57,7 @@
 	"hint-prev": "Βέλος αριστερά",
 	"hint-next": "Βέλος δεξιά",
 	"hint-switch": "Ctrl+Βέλος προς τα πάνω",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-back": "Ctrl+Z",
 	"hint-actions": "Ctrl+Κάτω βέλος",
 	"copy-link": "Αντιγραφή συνδέσμου",

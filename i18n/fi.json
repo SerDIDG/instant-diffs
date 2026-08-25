@@ -52,7 +52,7 @@
 	"hint-prev": "Vasen nuoli",
 	"hint-next": "Oikea nuoli",
 	"hint-switch": "Ctrl + nuoli ylös",
-	"hint-pending-changes": "Ctrl + P",
+	"hint-pending-changes": "Shift + P",
 	"hint-back": "Ctrl + Z",
 	"hint-actions": "Ctrl + nuoli alas",
 	"copy-link": "Kopioi linkki",

@@ -63,7 +63,7 @@
 	"hint-next": "Arrow Right",
 	"hint-next-description": "$1: tarixçədəki növbəti fərqə və ya versiyaya keç.",
 	"hint-switch": "Ctrl+Arrow Up",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-back": "Ctrl+Z",
 	"hint-actions": "Ctrl+Arrow Down",
 	"copy-link": "Keçidi kopiyala",

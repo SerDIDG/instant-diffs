@@ -66,7 +66,7 @@
 	"hint-next-description": "$1 : الانتقال إلى التغيير أو المراجعة التالية في السجل.",
 	"hint-switch": "Ctrl+سهم لأعلى",
 	"hint-switch-description": "$1 : تبديل العرض بين المراجعة ومقارنتها.",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-back": "Ctrl+Z",
 	"hint-back-description": "$1 : العودة إلى العرض السابق إن وجد.",
 	"hint-actions": "Ctrl+سهم لأسفل",

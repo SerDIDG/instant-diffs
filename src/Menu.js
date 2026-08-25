@@ -3,24 +3,45 @@ import * as utils from './utils';
 import settings from './settings';
 
 /**
- * Menu Button's configuration options, extends MenuButton.Options.
- * @typedef {import('./MenuButton').Options & Object} Menu.ButtonOptions
+ * Menu Group's own configuration options.
+ * @typedef {Object} MenuGroupOwnOptions
+ * @property {string} [name] - Group name
+ * @property {string} [group] - Parent group name
+ * @property {import('./MenuGroup').default} [widget] - Widget instance
+ * @property {import('./MenuGroup').MenuGroup.Options['type']} [type='vertical'] - Group type
+ * @property {HTMLElement|JQuery<HTMLElement>} [container] - Container element
+ */
+
+/**
+ * Menu Group's configuration options.
+ * @typedef {import('./MenuGroup').MenuGroup.Options & MenuGroupOwnOptions} Menu.GroupOptions
+ */
+
+/**
+ * Menu Button's own configuration options.
+ * @typedef {Object} MenuButtonOwnOptions
  * @property {string} [name] - A button name, used for the data-mw-ui-id attribute
  * @property {string} [group] - A group name, used for grouping buttons
  * @property {boolean} [canSystem=false] - Whether to render a system button
  * @property {boolean} [isSystem=false] - Button is system action
- * @property {import('./MenuButton').Options['type']} [systemType='navigation'] - System button type
+ * @property {import('./MenuButton').MenuButton.Options['type']} [systemType='navigation'] - System button type
  * @property {string} [systemGroup='navigation'] - System button group
  * @property {boolean} [pin] - Overrides user's pin settings if set
  * @property {boolean} [canPin=false] - Whether to render a pinned button
  * @property {boolean} [isPin=false] - Button is pinned action
- * @property {import('./MenuButton').Options['type']} [pinType='pin'] - Pined button type
+ * @property {import('./MenuButton').MenuButton.Options['type']} [pinType='pin'] - Pined button type
  * @property {string} [pinGroup='pins'] - Pinned button group
  * @property {boolean} [canMenu=true] - Whether to render a menu button
  * @property {boolean} [isMenu=false] - Button is menu action
- * @property {import('./MenuButton').Options['type']} [menuType='menu'] - Menu button type
+ * @property {import('./MenuButton').MenuButton.Options['type']} [menuType='menu'] - Menu button type
  * @property {string} [menuGroup='menu'] - Menu button group
+ * @property {string} [mediaQuery] - Media query based visibility
  * @property {import('./MenuButton').default|OO.ui.PopupButtonWidget} [widget] - The Button widget instance
+ */
+
+/**
+ * Menu Button's configuration options.
+ * @typedef {import('./MenuButton').MenuButton.Options & MenuButtonOwnOptions} Menu.ButtonOptions
  */
 
 class Menu {
@@ -45,6 +66,11 @@ class Menu {
 	buttons = {};
 
 	/**
+	 * @type {typeof import('./MenuGroup').default}
+	 */
+	MenuGroup;
+
+	/**
 	 * @type {typeof import('./MenuButton').default}
 	 */
 	MenuButton;
@@ -62,6 +88,7 @@ class Menu {
 		};
 
 		// Lazy-import modules
+		this.MenuGroup = require( './MenuGroup' ).default;
 		this.MenuButton = require( './MenuButton' ).default;
 	}
 
@@ -69,14 +96,8 @@ class Menu {
 
 	/**
 	 * Render a button group widget.
-	 * @param {Object} options - Group configuration options
-	 * @param {string} [options.name] - Group name
-	 * @param {string} [options.group] - Parent group name
-	 * @param {Object} [options.widget] - Widget instance
-	 * @param {'vertical'|'horizontal'} [options.type='vertical'] - Group type
-	 * @param {string[]} [options.classes] - Additional CSS classes
-	 * @param {HTMLElement|JQuery<HTMLElement>} [options.container] - Container element
-	 * @returns {Object|undefined} The registered group configuration, or undefined if already exists
+	 * @param {Menu.GroupOptions} options - Group configuration options
+	 * @returns {Menu.GroupOptions|undefined} The registered group configuration, or undefined if already exists
 	 */
 	renderGroup( options ) {
 		options = {
@@ -84,29 +105,11 @@ class Menu {
 			group: null,
 			widget: null,
 			type: 'vertical',
-			classes: [],
 			container: null,
 			...options,
 		};
 
-		if ( options.type === 'vertical' ) {
-			options.classes.push(
-				'instantDiffs-buttons-group',
-				'instantDiffs-buttons-group--vertical',
-				`instantDiffs-buttons-group--${ options.name }`,
-				settings.get( 'showMenuIcons' ) ? 'has-icons' : null,
-			);
-		}
-
-		if ( options.type === 'horizontal' ) {
-			options.classes.push(
-				'instantDiffs-buttons-group',
-				'instantDiffs-buttons-group--horizontal',
-				`instantDiffs-buttons-group--${ options.name }`,
-			);
-		}
-
-		options.widget = new OO.ui.ButtonGroupWidget( options );
+		options.widget = new this.MenuGroup( options );
 		utils.embed( options.widget.$element, options.container );
 
 		return this.registerGroup( options );
@@ -114,11 +117,8 @@ class Menu {
 
 	/**
 	 * Register a button group configuration.
-	 * @param {Object} options - Group configuration options
-	 * @param {string} [options.name] - Group name
-	 * @param {string} [options.group] - Parent group name
-	 * @param {Object} [options.widget] - Widget instance
-	 * @returns {Object|undefined} The registered group configuration, or undefined if already exists
+	 * @param {Menu.GroupOptions} options - Group configuration options
+	 * @returns {Menu.GroupOptions|undefined} The registered group configuration, or undefined if already exists
 	 */
 	registerGroup( options ) {
 		options = {
@@ -136,7 +136,7 @@ class Menu {
 	/**
 	 * Get a group by name.
 	 * @param {string} name - The group name
-	 * @returns {Object|undefined} The group configuration object, or undefined if not found
+	 * @returns {Menu.GroupOptions|undefined} The group configuration object, or undefined if not found
 	 */
 	getGroup( name ) {
 		return this.groups[ name ];
@@ -145,7 +145,7 @@ class Menu {
 	/**
 	 * Get all groups, optionally filtered by parent group.
 	 * @param {string} [group] - Optional parent group name to filter by
-	 * @returns {Object[]} Array of group configuration objects
+	 * @returns {Menu.GroupOptions[]} Array of group configuration objects
 	 */
 	getGroups( group ) {
 		return Object.values( this.groups )
@@ -153,9 +153,9 @@ class Menu {
 	}
 
 	/**
-	 * Get widget instances for all groups, optionally filtered by parent group.
+	 * Get widget instances for all groups, optionally filtered by the parent group.
 	 * @param {string} [group] - Optional parent group name to filter by
-	 * @returns {Object[]} Array of widget instances
+	 * @returns {import('./MenuGroup').MenuGroup.Options[]} Array of widget instances
 	 */
 	getGroupsWidgets( group ) {
 		return this.getGroups( group )
@@ -163,7 +163,7 @@ class Menu {
 	}
 
 	/**
-	 * Get DOM elements for all groups, optionally filtered by parent group.
+	 * Get DOM elements for all groups, optionally filtered by the parent group.
 	 * @param {string} [group] - Optional parent group name to filter by
 	 * @returns {HTMLElement[]} Array of DOM elements
 	 */
@@ -224,7 +224,7 @@ class Menu {
 		};
 
 		if ( this.buttons[ options.name ] ) {
-			utils.logError( 'Menu.renderButton', 'Button not added: button with the same name already exists.', options );
+			utils.logError( 'Menu.renderButton', `Button not added: button with the name "${ options.name }" already exists.`, options );
 			return;
 		}
 		const buttons = this.buttons[ options.name ] = [];

@@ -60,7 +60,7 @@
 	"hint-prev": "左方鍵",
 	"hint-next": "右方鍵",
 	"hint-switch": "Ctrl+上方鍵",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-back": "Ctrl+Z",
 	"hint-actions": "Ctrl+下方鍵",
 	"copy-link": "複製連結",

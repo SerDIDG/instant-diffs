@@ -64,7 +64,7 @@
 	"hint-next-description": "$1: преоѓање кон следната разлика или преработка во историјата.",
 	"hint-switch": "Ctrl+Стрелка горе",
 	"hint-switch-description": "$1: го префрла прегледот помеѓу преработка и нејзината споредба.",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-pending-changes-description": "$1: ги покажува сите [[mw:Special:MyLanguage/Extension:FlaggedRevs|неиспатролирани промени]], ако ги има.",
 	"hint-back": "Ctrl+Z",
 	"hint-back-description": "$1: назад на претходниот преглед, ако го има.",

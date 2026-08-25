@@ -68,7 +68,7 @@
 	"hint-next-description": "$1: перейти к следующей версии или сравнению в истории.",
 	"hint-switch": "Ctrl+Стрелка вверх",
 	"hint-switch-description": "$1: переключить отображение версии и её сравнения.",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-pending-changes-description": "$1: показать все [[mw:Special:MyLanguage/Extension:FlaggedRevs|непроверенные изменения]], если доступны.",
 	"hint-back": "Ctrl+Z",
 	"hint-back-description": "$1: вернуться к предыдущему виду, если доступно.",

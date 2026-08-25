@@ -496,7 +496,7 @@ export function hint() {
 export function msgHint( str, hintStr, showHint = true ) {
 	str = msg( str );
 	if ( showHint ) {
-		str = `${ str } ${ hint( hintStr ) }`;
+		str = `${ str } ${ hint( ...( isArray( hintStr ) ? hintStr : [ hintStr ] ) ) }`;
 	}
 	return str.trim();
 }

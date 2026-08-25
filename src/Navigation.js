@@ -36,7 +36,8 @@ class Navigation {
 	 */
 	static SNAPSHOT_LINKS_OPTIONS_MOBILE = {
 		canMenu: true,
-		menuGroup: 'mobile',
+		menuGroup: 'menuNavigation',
+		mediaQuery: 'maxMobile',
 	};
 
 	/**
@@ -55,7 +56,8 @@ class Navigation {
 	 */
 	static NAVIGATION_LINKS_OPTIONS_MOBILE = {
 		canMenu: true,
-		menuGroup: 'mobile',
+		menuGroup: 'menuNavigation',
+		mediaQuery: 'maxMobile',
 	};
 
 	/**
@@ -66,6 +68,16 @@ class Navigation {
 		pinGroup: 'pins',
 		canMenu: true,
 		menuGroup: 'menu',
+	};
+
+	/**
+	 * @type {Menu.ButtonOptions}
+	 */
+	static MENU_NAVIGATION_LINKS_OPTIONS = {
+		canPin: true,
+		pinGroup: 'pins',
+		canMenu: true,
+		menuGroup: 'menuNavigation',
 	};
 
 	/**
@@ -83,8 +95,8 @@ class Navigation {
 	 * @type {Record<string, string>}
 	 */
 	static ACTION_COUNTERPARTS = {
-		'unpatrolled': 'back',
-		'back-unpatrolled': 'unpatrolled',
+		'pendingChanges': 'back',
+		'back-pendingChanges': 'pendingChanges',
 		'compareCur': 'back',
 		'back-compareCur': 'compareCur',
 	};
@@ -118,10 +130,12 @@ class Navigation {
 			ArrowUp: 'switch',
 			ArrowDown: 'actions',
 			KeyZ: 'back',
-			KeyP: 'unpatrolled',
 		},
 		alt: {},
-		shift: {},
+		shift: {
+			KeyL: 'compareCur',
+			KeyP: 'pendingChanges',
+		},
 	};
 
 	/**
@@ -202,6 +216,11 @@ class Navigation {
 	actionRegister;
 
 	/**
+	 * @type {MediaQueryList}
+	 */
+	mediaObserver;
+
+	/**
 	 * @type {import('./Watch').default}
 	 */
 	watch;
@@ -272,7 +291,34 @@ class Navigation {
 		this.renderSnapshotLinks();
 		this.renderNavigationLinks();
 		this.renderActionLinks();
+		this.renderObservers();
 	}
+
+	renderObservers() {
+		this.mediaObserver = window.matchMedia( id.config.breakpoints.maxMobile );
+		this.mediaObserver.addEventListener( 'change', this.onMediaObserve );
+		this.onMediaObserve( this.mediaObserver );
+	}
+
+	/**
+	 * Event that fires when a media observer matches the criteria.
+	 * @param {MediaQueryList} event
+	 */
+	onMediaObserve = ( event ) => {
+		const actions = this.menu.getGroupButtons( 'menuNavigation' );
+
+		let visibleActions = 0;
+		for ( const action of actions ) {
+			const isVisible = !action.mediaQuery || ( action.mediaQuery === 'maxMobile' && event.matches );
+			action.widget.setHidden( !isVisible );
+			if ( isVisible ) {
+				visibleActions++;
+			}
+		}
+
+		const group = this.menu.getGroup( 'menuNavigation' );
+		group.widget.setHidden( visibleActions === 0 );
+	};
 
 	/******* NAVIGATION *******/
 
@@ -296,7 +342,7 @@ class Navigation {
 	 * Map of the action menu groups.
 	 * @type {string[]}
 	 */
-	ACTION_GROUPS = [ 'mobile', 'menu-custom', 'menu', 'footer' ];
+	ACTION_GROUPS = [ 'menuNavigation', 'menu-custom', 'menu', 'footer' ];
 
 	/**
 	 * Collection of the action menu groups.
@@ -355,11 +401,6 @@ class Navigation {
 			this.renderBackLink( { ...options, ...optionsMobile } );
 		}
 
-		// [FlaggedRevs] Link to all pending changes
-		if ( !utils.isEmpty( this.options.links.pendingChanges ) ) {
-			this.renderPendingChangesLink( { ...options, ...optionsMobile } );
-		}
-
 		this.emitHook( 'snapshotLinks', { options, optionsMobile } );
 	}
 
@@ -391,12 +432,31 @@ class Navigation {
 	 */
 	renderActionLinks() {
 		// Render button link groups
+		this.renderMenuNavigationLinks();
 		this.renderMenuLinks();
 		this.renderMenuFooterLinks();
 
 		// Render actions menu
 		this.renderMenuActions();
 	}
+
+	/**
+	 * Render the navigation context links.
+	 * @private
+	 */
+	renderMenuNavigationLinks() {
+		const options = Navigation.MENU_NAVIGATION_LINKS_OPTIONS;
+
+		/// Link to the compare with lastest revision
+		this.renderCompareCurLink( options );
+
+		// [FlaggedRevs] Link to all pending changes
+		if ( !utils.isEmpty( this.options.links.pendingChanges ) ) {
+			this.renderPendingChangesLink( options );
+		}
+
+		this.emitHook( 'menuNavigationLinks', { options } );
+	};
 
 	/**
 	 * Render the main context links.
@@ -410,9 +470,6 @@ class Navigation {
 
 		// Copy a wikilink to the clipboard action
 		this.renderCopyWikilink( options );
-
-		// Link to the compare with lastest revision
-		this.renderCompareCurLink( options );
 
 		// Link to the revision or to the edit
 		this.renderTypeLink( options );
@@ -642,34 +699,8 @@ class Navigation {
 			title: utils.msgHint( `goto-view-${ type }`, 'switch', settings.get( 'enableHotkeys' ) ),
 			icon: 'specialPages',
 			href: getHref( this.article, {}, hrefOptions ),
-			classes: [ 'instantDiffs-button--switch' ],
 			setLink: true,
 			linkOptions: {
-				onRequest: () => this.setActionRegister( options.name ),
-			},
-			...options,
-		};
-
-		this.menu.renderButton( options );
-	}
-
-	/**
-	 * Render a button that switches to the diff between the last checked revision and the current pending one.
-	 * The button appears only if the FlaggedRevs extension is installed and the page has pending changes.
-	 * @private
-	 * @param {Menu.ButtonOptions} [options] - Button configuration options
-	 */
-	renderPendingChangesLink( options ) {
-		options = {
-			name: 'unpatrolled',
-			label: utils.msg( 'goto-view-pending-changes' ),
-			title: utils.msgHint( 'goto-view-pending-changes', 'unpatrolled', settings.get( 'enableHotkeys' ) ),
-			icon: 'eyeClosed',
-			href: this.options.links.pendingChanges,
-			classes: [ 'instantDiffs-button--pending' ],
-			setLink: true,
-			linkOptions: {
-				initiatorPage: this.page,
 				onRequest: () => this.setActionRegister( options.name ),
 			},
 			...options,
@@ -698,7 +729,6 @@ class Navigation {
 			title: utils.msgHint( `goto-back-${ type }`, 'back', settings.get( 'enableHotkeys' ) ),
 			icon: 'newline',
 			href: getHref( article, {}, hrefOptions ),
-			classes: [ 'instantDiffs-button--back' ],
 			setLink: true,
 			linkOptions: {
 				onRequest: () => {
@@ -707,6 +737,66 @@ class Navigation {
 						? `${ options.name }-${ initiatorAction }` : options.name;
 					this.setActionRegister( action );
 				},
+			},
+			...options,
+		};
+
+		this.menu.renderButton( options );
+	}
+
+	/**
+	 * Render a button that navigates to the compare with lastest revision
+	 * @private
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
+	 */
+	renderCompareCurLink( options ) {
+		const values = this.article.getValues();
+		if ( values.revid === values.curRevid ) return;
+
+		const ids = [ values.addedRevid, values.deletedRevid ].filter( utils.isValidID );
+		if ( ids.length === 0 ) return;
+
+		const article = new Article( {
+			title: values.title,
+			hostname: values.hostname,
+			oldid: Math.min( ...ids ),
+			diff: 'cur',
+		} );
+
+		options = {
+			name: 'compareCur',
+			label: utils.msg( 'goto-compare-cur' ),
+			title: utils.msgHint( 'goto-compare-cur', 'compare-cur', settings.get( 'enableHotkeys' ) ),
+			icon: utils.isLegacy( '1.47.0' ) ? 'articles' : 'diffs',
+			href: getHref( article ),
+			setLink: true,
+			linkOptions: {
+				initiatorPage: this.page,
+				onRequest: () => this.setActionRegister( options.name ),
+			},
+			...options,
+		};
+
+		this.menu.renderButton( options );
+	}
+
+	/**
+	 * Render a button that switches to the diff between the last checked revision and the current pending one.
+	 * The button appears only if the FlaggedRevs extension is installed and the page has pending changes.
+	 * @private
+	 * @param {Menu.ButtonOptions} [options] - Button configuration options
+	 */
+	renderPendingChangesLink( options ) {
+		options = {
+			name: 'pendingChanges',
+			label: utils.msg( 'goto-view-pending-changes' ),
+			title: utils.msgHint( 'goto-view-pending-changes', 'pending-changes', settings.get( 'enableHotkeys' ) ),
+			icon: 'eyeClosed',
+			href: this.options.links.pendingChanges,
+			setLink: true,
+			linkOptions: {
+				initiatorPage: this.page,
+				onRequest: () => this.setActionRegister( options.name ),
 			},
 			...options,
 		};
@@ -742,41 +832,6 @@ class Navigation {
 			handler: this.actionCopyWikilink.bind( this ),
 			...options,
 		} );
-	}
-
-	/**
-	 * Render a button that navigates to the compare with lastest revision
-	 * @private
-	 * @param {Menu.ButtonOptions} [options] - Button configuration options
-	 */
-	renderCompareCurLink( options ) {
-		const values = this.article.getValues();
-		if ( values.revid === values.curRevid ) return;
-
-		const ids = [ values.addedRevid, values.deletedRevid ].filter( utils.isValidID );
-		if ( ids.length === 0 ) return;
-
-		const article = new Article( {
-			title: values.title,
-			hostname: values.hostname,
-			oldid: Math.min( ...ids ),
-			diff: 'cur',
-		} );
-
-		options = {
-			name: 'compareCur',
-			label: utils.msg( 'goto-compare-cur' ),
-			icon: utils.isLegacy( '1.47.0' ) ? 'articles' : 'diffs',
-			href: getHref( article ),
-			setLink: true,
-			linkOptions: {
-				initiatorPage: this.page,
-				onRequest: () => this.setActionRegister( options.name ),
-			},
-			...options,
-		};
-
-		this.menu.renderButton( options );
 	}
 
 	/**
@@ -935,11 +990,10 @@ class Navigation {
 		);
 
 		this.menu.renderButton( {
-			name: 'id',
+			name: 'link-id',
 			label: $( label ),
 			icon: null,
 			href: utils.originPage( id.config.link ),
-			classes: [ 'instantDiffs-button--link-id' ],
 			...options,
 		} );
 	}
@@ -1387,7 +1441,8 @@ class Navigation {
 		// Hide menu dropdown
 		this.toggleActions( false );
 
-		// Disconnect hotkey events
+		// Disconnect observers
+		this.mediaObserver.removeEventListener( 'change', this.onMediaObserve );
 		view.disconnect( this, { hotkey: 'onHotkey' } );
 
 		this.nodes.container.remove();

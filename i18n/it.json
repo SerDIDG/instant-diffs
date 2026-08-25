@@ -57,7 +57,7 @@
 	"hint-prev": "Freccia sinistra",
 	"hint-next": "Freccia destra",
 	"hint-switch": "Ctrl+Freccia su",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-back": "Ctrl+Z",
 	"hint-actions": "Ctrl+Freccia giù",
 	"copy-link": "Copia collegamento",

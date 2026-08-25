@@ -63,7 +63,7 @@
 	"hint-next-description": "$1: nascleanúint go dtí an chéad difríocht nó athbhreithniú eile sa stair.",
 	"hint-switch": "Ctrl+Saighead Suas",
 	"hint-switch-description": "$1: athraigh an radharc idir an t-athbhreithniú agus a chomparáid.",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-pending-changes-description": "$1: taispeáin na [[mw:Special:MyLanguage/Extension:FlaggedRevs|athruithe neamhphatráilte]] uile más féidir.",
 	"hint-back": "Ctrl+Z",
 	"hint-back-description": "$1: fill ar an radharc roimhe seo más féidir.",

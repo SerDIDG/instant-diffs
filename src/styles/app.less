@@ -40,6 +40,17 @@
 	&.instantDiffs-button--pending {
 		pointer-events: none;
 	}
+
+	&.instantDiffs-button--hidden {
+		display: none !important;
+	}
+}
+
+.instantDiffs-dummy-watch {
+	position: fixed;
+	top: 0;
+	left: 0;
+	visibility: hidden;
 }
 
 .instantDiffs-notice-box {
@@ -105,7 +116,7 @@
 
 /*** HISTORY PAGE ***/
 
-.instantDiffs-button--compare {
+.instantDiffs-button--history-compare {
 	font-weight: normal;
 
 	// /* Fix button min-width for legacy wikis */

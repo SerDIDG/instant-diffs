@@ -1,5 +1,5 @@
 import * as utils from './utils';
-import { fixFloatedElementsIsolation, tweakUserOoUiClass } from './utils-oojs';
+import { fixFloatedElementsIsolation, es6ClassToOoJsClass } from './utils-oojs';
 
 import DivLabelWidget from './DivLabelWidget';
 import ViewProgressBar from './ViewProgrssBar';
@@ -229,6 +229,6 @@ class ViewDialog extends OO.ui.MessageDialog {
 	}
 }
 
-tweakUserOoUiClass( ViewDialog );
+es6ClassToOoJsClass( ViewDialog );
 
 export default ViewDialog;

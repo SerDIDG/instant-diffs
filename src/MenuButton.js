@@ -1,100 +1,63 @@
 import * as utils from './utils';
-import { tweakUserOoUiClass } from './utils-oojs';
+import { es6ClassToOoJsClass, mixIntoClass } from './utils-oojs';
 import { getHrefAbsolute } from './utils-article';
 
-import Link from './Link';
+import ButtonWidgetMixin from './ButtonWidgetMixin';
 import settings from './settings';
 
 /**
- * MenuButton's configuration options, extends OO.ui.ButtonWidget configuration.
- * @typedef {OO.ui.ButtonWidget.ConfigOptions & Object} MenuButton.Options
- * @property {string} [name] - A button name, used for the data-mw-ui-id attribute
+ * MenuButton's own configuration options.
+ * @typedef {Object} MenuButtonOwnOptions
  * @property {'default'|'navigation'|'pin'|'menu'} [type='default'] - A Button view type
- * @property {boolean} [pending=false] - Set pending state
- * @property {boolean} [invisibleLabel=false] - Hide the button label
- * @property {boolean} [invisibleIcon=false] - Hide the button icon
- * @property {string} [href] - Button link href
- * @property {string} [target] - Button link target
- * @property {(widget: MenuButton, event: Event) => void} [handler] - A click handler
- * @property {boolean} [useAltKey=false] - Use the alt key to bypass the handler
  * @property {import('./Article').default} [article] - An Article instance
- * @property {boolean} [setLink=false] - Create a Link instance around the button element
- * @property {Link.Options} [linkOptions] - A Link configuration options
+ * @property {(button: MenuButton, event: (MouseEvent|KeyboardEvent)) => void} [handler] - A click handler
+ */
+
+/**
+ * MenuButton's configuration options.
+ * @typedef {OO.ui.ButtonWidget.ConfigOptions & import('./ButtonWidgetMixin').ButtonWidgetMixin.Options & MenuButtonOwnOptions} MenuButton.Options
  */
 
 /**
  * Class representing a custom ButtonWidget for the navigation menu.
  * @augments OO.ui.ButtonWidget
+ * @augments {import('./ButtonWidgetMixin').default}
  */
-class MenuButton extends OO.ui.ButtonWidget {
-	/**
-	 * @type {MenuButton.Options}
-	 */
-	options = {};
-
-	/**
-	 * @type {boolean}
-	 */
-	invisibleIcon = false;
-
-	/**
-	 * @type {import('./Link').default}
-	 */
-	link;
-
-	/**
-	 * @type {Function}
-	 */
-	handler;
-
+class MenuButton extends mixIntoClass( OO.ui.ButtonWidget, ButtonWidgetMixin ) {
 	/**
 	 * Creates a MenuButton instance.
 	 * @param {MenuButton.Options} [options] - A MenuButton configuration options
 	 */
 	constructor( options ) {
 		// Validate options
-		options = {
-			name: null,
+		options = utils.deepMerge( {
 			type: 'default',
-			classes: [ 'instantDiffs-button' ],
 			framed: true,
-			pending: false,
-			invisibleLabel: false,
-			invisibleIcon: false,
 			icon: 'puzzle',
-			href: null,
-			target: utils.getTarget( true ),
-			handler: null,
-			useAltKey: false,
-			article: null,
-			setLink: false,
-
-			...options,
-
-			linkOptions: {
-				behavior: 'event',
-				useAltKey: false,
-				...options.linkOptions,
-			},
-		};
+			modifiers: [],
+		}, options );
 
 		if ( options.type === 'navigation' ) {
 			options.icon = null;
-			options.classes = [ ...options.classes, 'instantDiffs-button--navigation' ];
+			options.modifiers.push( 'navigation' );
 		}
 
 		if ( options.type === 'pin' ) {
 			options.invisibleLabel = true;
-			options.classes = [ ...options.classes, 'instantDiffs-button--pin' ];
+			options.modifiers.push( 'pin' );
 		}
 
 		if ( options.type === 'menu' ) {
-			options.classes = [ ...options.classes, 'instantDiffs-button--link' ];
 			options.framed = false;
+			options.modifiers.push( 'menu' );
 
 			if ( !settings.get( 'showMenuIcons' ) ) {
 				options.invisibleIcon = true;
 			}
+		}
+
+		if ( !utils.isEmpty( options.name ) ) {
+			options.modifiers.push( `action-${ options.name }` );
 		}
 
 		if ( !utils.isEmpty( options.href ) ) {
@@ -103,107 +66,6 @@ class MenuButton extends OO.ui.ButtonWidget {
 
 		// Call parent class constructor
 		super( options );
-
-		// Properties
-		this.options = options;
-
-		// Pending element
-		this.$pending = $( '<span>' )
-			.addClass( 'oo-ui-buttonElement-pending' )
-			.prependTo( this.$button );
-
-		// Mixin constructors
-		OO.ui.mixin.PendingElement.call( this, { $pending: this.$pending } );
-
-		// Initialization
-		this.setInvisibleIcon( options.invisibleIcon );
-
-		if ( options.handler ) {
-			this.setHandler( options.handler, options.useAltKey );
-		}
-
-		if ( options.setLink ) {
-			this.setLink( options.linkOptions );
-		}
-
-		if ( options.pending ) {
-			this.setPending( options.pending );
-		}
-	}
-
-	/**
-	 * Toggles icon visibility.
-	 * @param {boolean} invisibleIcon
-	 * @returns {MenuButton}
-	 */
-	setInvisibleIcon( invisibleIcon ) {
-		invisibleIcon = !!invisibleIcon;
-
-		if ( this.invisibleIcon !== invisibleIcon ) {
-			this.invisibleIcon = invisibleIcon;
-			this.$element.toggleClass( 'instantDiffs-invisibleIconElement', !this.icon || this.invisibleIcon );
-		}
-
-		return this;
-	}
-
-	/**
-	 * Creates a Link instance around the button element.
-	 * @param {Link.Options}linkOptions
-	 * @returns {MenuButton}
-	 */
-	setLink( linkOptions ) {
-		const node = this.$button.get( 0 );
-		node.dataset.instantdiffsLink = '';
-		this.link = new Link( node, linkOptions );
-
-		return this;
-	}
-
-	/**
-	 * Sets a click handler to the button element.
-	 * @param {(widget: MenuButton, event: Event) => void} [handler] - A click handler
-	 * @param {boolean} [useAltKey] - Use the alt key to bypass the handler
-	 * @returns {MenuButton}
-	 */
-	setHandler( handler, useAltKey ) {
-		if ( utils.isFunction( this.handler ) ) {
-			utils.removeClick( this.$button.get( 0 ), this.handler );
-		}
-
-		if ( utils.isFunction( handler ) ) {
-			const helper = ( event ) => handler( this, event );
-			this.handler = utils.addClick( this.$button.get( 0 ), helper, useAltKey );
-		}
-
-		return this;
-	}
-
-	/**
-	 * Executes a click handler on the button element.
-	 * @returns {MenuButton}
-	 */
-	execHandler() {
-		this.$button.get( 0 ).click();
-
-		return this;
-	}
-
-	/**
-	 * Gets a configuration option by name.
-	 * @param {string} name
-	 * @returns {*}
-	 */
-	getOption( name ) {
-		return this.options[ name ];
-	}
-
-	/**
-	 * Gets configuration options.
-	 * @returns {MenuButton.Options}
-	 */
-	getOptions() {
-		return this.options;
 	}
 
 	/**
@@ -213,20 +75,8 @@ class MenuButton extends OO.ui.ButtonWidget {
 	getArticle() {
 		return this.getOption( 'article' );
 	}
-
-	/**
-	 * Toggles a buttons pending state that shows a loading cursor.
-	 * @param {boolean} value
-	 * @returns {MenuButton}
-	 */
-	setPending( value ) {
-		value ? this.pushPending() : this.popPending();
-		this.$element.toggleClass( 'instantDiffs-button--pending', value );
-		return this;
-	}
 }
 
-tweakUserOoUiClass( MenuButton );
-OO.mixinClass( MenuButton, OO.ui.mixin.PendingElement );
+es6ClassToOoJsClass( MenuButton );
 
 export default MenuButton;

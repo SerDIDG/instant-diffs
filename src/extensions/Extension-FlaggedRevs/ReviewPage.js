@@ -43,19 +43,75 @@ class ReviewPage {
 		// Change id attributes for the FlaggedRevs elements on the current page before render.
 		// Restores attributes to the origin states before the page is detached.
 		this.prepareElements();
-		this.page.on( 'beforeDetach', () => this.restoreElements() );
 
 		this.process();
 		this.render();
+
+		this.page.on( 'beforeDetach', () => this.detach() );
 	}
 
+	/**
+	 * Processes the FlaggedRevs elements on the page: fixes the element flow, collects rating
+	 * data, hides unsupported elements, and reroutes the pending changes link.
+	 */
 	process() {
 		// Find FlaggedRevs table info and insert before the diff table to fix the element flow
 		this.nodes.$diffHeader = this.page.getBody()
 			.find( '#mw-fr-diff-headeritems' )
 			.insertBefore( this.page.getDiffTable() );
 
+		// Find FlaggedRevs ratings and collect data
+		this.processRatings();
+
 		// Find and hide the "All unpatrolled diffs" link, so the other scripts can use it later
+		this.processPendingChangesLink();
+
+		// Show or hide diff info table in the revision view
+		if ( this.article.get( 'type' ) === 'revision' ) {
+			if ( settings.get( 'showRevisionInfo' ) ) {
+				// Hide the left side of the table and left only related to the revision info
+				this.nodes.$diffHeaderRemoved.addClass( 'instantDiffs-hidden' );
+			} else {
+				this.nodes.$diffHeader.addClass( 'instantDiffs-hidden' );
+			}
+		}
+
+		// Hide unsupported or unnecessary element
+		this.page.getBody()
+			.find( '.fr-diff-to-stable, #mw-fr-diff-dataform' )
+			.addClass( 'instantDiffs-hidden' );
+	}
+
+	/**
+	 * Finds the FlaggedRevs diff rating cells and stores the review status on the Article instance.
+	 */
+	processRatings() {
+		const articleValues = {};
+
+		this.nodes.$diffHeaderRatings = this.nodes.$diffHeader
+			.find( '.fr-diff-ratings td' );
+
+		if ( this.nodes.$diffHeaderRatings.length === 2 ) {
+			this.nodes.$diffHeaderRemoved = this.nodes.$diffHeaderRatings.first();
+			this.nodes.$diffHeaderAdded = this.nodes.$diffHeaderRatings.last();
+		} else {
+			this.nodes.$diffHeaderRemoved = $();
+			this.nodes.$diffHeaderAdded = this.nodes.$diffHeaderRatings.first();
+		}
+
+		articleValues.deletedFlaggedRevsReviewed = this.nodes.$diffHeaderAdded
+			.has( 'span.flaggedrevs-color-0' ).length > 0;
+		articleValues.addedFlaggedRevsReviewed = this.nodes.$diffHeaderAdded
+			.has( 'span.flaggedrevs-color-1' ).length > 0;
+
+		// Set article alues
+		this.article.setValues( articleValues );
+	}
+
+	/**
+	 * Hides the "All unpatrolled diffs" link and adds it to the Page's navigation links.
+	 */
+	processPendingChangesLink() {
 		this.nodes.$pendingChangesLink = this.nodes.$diffHeader
 			.find( '.fr-diff-to-stable a' )
 			.attr( 'data-instantdiffs-link', 'none' )
@@ -63,28 +119,51 @@ class ReviewPage {
 
 		// ToDo: move button rendering from Navigation to this class
 		this.page.addNavigationLink( 'pendingChanges', this.nodes.$pendingChangesLink.attr( 'href' ) );
-
-		// Show or hide diff info table in the revision view
-		if ( this.article.get( 'type' ) === 'revision' ) {
-			if ( settings.get( 'showRevisionInfo' ) ) {
-				// Hide the left side of the table and left only related to the revision info
-				this.nodes.$diffHeader
-					.find( '.fr-diff-ratings td:nth-child(2n-1)' )
-					.addClass( 'instantDiffs-hidden' );
-			} else {
-				this.nodes.$diffHeader
-					.addClass( 'instantDiffs-hidden' );
-			}
-		}
-
-		// Hide unsupported or unnecessary element
-		this.page.getBody()
-			.find( '.fr-diff-to-stable, #mw-fr-diff-dataform, #mw-fr-reviewform' )
-			.addClass( 'instantDiffs-hidden' );
 	}
 
+	/**
+	 * Constructs the Review Form and registers the DOM observer once the page is ready.
+	 */
 	render() {
 		this.reviewForm = new ReviewForm( this );
+
+		// Wait until the page is ready to register observers
+		this.page.when( 'ready', () => this.ready() );
+	}
+
+	/**
+	 * Registers a mutation observer to catch when FlaggedRevs updates its nodes.
+	 */
+	ready() {
+		// Observe DOM changes to catch when FlaggedRevs updates its nodes
+		// after the review form is submitted.
+		this.observer = new MutationObserver( this.onObserve );
+		this.observer.observe( this.page.getBody().get( 0 ), {
+			subtree: true,
+			childList: true,
+		} );
+	}
+
+	/**
+	 * Event that emits on observer DOM changes.
+	 * @param {MutationRecord[]} mutationList
+	 * @private
+	 */
+	onObserve = ( mutationList ) => {
+		for ( const mutation of mutationList ) {
+			if ( mutation.target?.id !== 'mw-fr-diff-headeritems' ) continue;
+
+			this.process();
+			this.reviewForm.update();
+		}
+	};
+
+	/**
+	 * Detaches the Review Page instance.
+	 */
+	detach() {
+		this.observer?.disconnect();
+		this.restoreElements();
 	}
 
 	/******* HELPERS *******/

@@ -61,7 +61,7 @@ function processPageAdjustments( id ) {
 		new HistoryCompareButton( {
 			label: utils.msg( 'compare-label', utils.getLabel( 'diff' ) ),
 			title: utils.msg( 'compare-title', utils.msg( 'script-name' ) ),
-			classes: [ 'mw-ui-button', 'cdx-button', 'instantDiffs-button--compare' ],
+			classes: [ 'mw-ui-button', 'cdx-button', 'instantDiffs-button--history-compare' ],
 			insertMethod: 'insertAfter',
 			container: $button,
 		} );

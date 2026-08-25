@@ -57,7 +57,7 @@
 	"hint-prev": "बायाँ तीर",
 	"hint-next": "दायाँ तीर",
 	"hint-switch": "Ctrl+ऊपर तीर",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-back": "Ctrl+Z",
 	"hint-actions": "Ctrl+नीचे तीर",
 	"copy-link": "कड़ी कॉपी करें",

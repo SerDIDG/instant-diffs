@@ -64,7 +64,7 @@
 	"hint-next-description": "$1: prejsť na nasledujúci rozdiel alebo revíziu v histórii.",
 	"hint-switch": "Ctrl+šípka nahor",
 	"hint-switch-description": "$1: prepnúť zobrazenie medzi revíziou a jej porovnaním.",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-pending-changes-description": "$1: zobraziť všetky [[mw:Special:MyLanguage/Extension:FlaggedRevs|neskontrolované zmeny]], ak sú dostupné.",
 	"hint-back": "Ctrl+Z",
 	"hint-back-description": "$1: vrátiť sa na predchádzajúce zobrazenie, ak je dostupné.",

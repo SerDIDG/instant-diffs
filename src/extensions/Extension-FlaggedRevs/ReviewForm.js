@@ -14,6 +14,15 @@ class ReviewForm {
 	static DIFF_TOOL_NAME = 'flaggedRevsButton';
 
 	/**
+	 * @type {Object<string,string>}
+	 */
+	static BUTTONS_MAP = {
+		'$accept': '#mw-fr-submit-accept',
+		'$reject': '#mw-fr-submit-reject',
+		'$unaccept': '#mw-fr-submit-unaccept',
+	};
+
+	/**
 	 * @type {typeof import('./ReviewButton').default}
 	 */
 	ReviewButton;
@@ -39,9 +48,9 @@ class ReviewForm {
 	reviewButton;
 
 	/**
-	 * @type(JQuery<HTMLElement>)
+	 * @type {Object}
 	 */
-	$reviewForm;
+	nodes = {};
 
 	/**
 	 * Creates the Review Form instance.
@@ -89,7 +98,8 @@ class ReviewForm {
 	isReviewableRevision() {
 		return (
 			this.article.get( 'type' ) === 'revision' ||
-			this.article.get( 'deletedRevid' ) <= this.article.get( 'stableRevid' )
+			this.article.get( 'deletedRevid' ) <= this.article.get( 'stableRevid' ) ||
+			this.article.get( 'deletedReviwed' ) || this.article.get( 'addedReviwed' )
 		);
 	}
 
@@ -111,8 +121,8 @@ class ReviewForm {
 	 * Processes the review form if available, or requests review form HTML.
 	 */
 	process() {
-		this.$reviewForm = this.page.getBody().find( '#mw-fr-reviewform' );
-		if ( this.$reviewForm.length > 0 ) {
+		this.nodes.$reviewForm = this.page.getBody().find( '#mw-fr-reviewform' );
+		if ( this.nodes.$reviewForm.length > 0 ) {
 			return this.processForm();
 		}
 
@@ -123,37 +133,59 @@ class ReviewForm {
 	 * Processes the review form HTML.
 	 */
 	processForm() {
-		this.$reviewForm.addClass( 'instantDiffs-extension-flaggedRevs' );
-		utils.addTargetToLinks( this.$reviewForm );
+		// Attach form to the review button's popup
+		this.reviewButton.setContent( this.nodes.$reviewForm );
+
+		this.nodes.$reviewForm.addClass( 'instantDiffs-extension-flaggedRevs' );
+		utils.addTargetToLinks( this.nodes.$reviewForm );
 
 		// Group and wrap buttons inside the form
-		const $buttonContainer = $( '<div>' ).addClass( 'fr-rating-buttons' );
-		const $buttons = this.$reviewForm.find( '#mw-fr-submit-accept, #mw-fr-submit-reject, #mw-fr-submit-unaccept' );
-		for ( const button of $buttons ) {
-			const $button = $( button );
-			$buttonContainer
-				.insertBefore( $button )
-				.append( $button );
+		this.nodes.$buttonContainer = $( '<div>' ).addClass( 'fr-rating-buttons' );
+		for ( const [ name, selector ] of Object.entries( ReviewForm.BUTTONS_MAP ) ) {
+			this.nodes[ name ] = this.nodes.$reviewForm.find( selector );
+			this.nodes.$buttonContainer
+				.insertBefore( this.nodes[ name ] )
+				.append( this.nodes[ name ] );
 		}
 
+		// Wait until the page is ready to execute the module scripts
 		this.page.when( 'ready', () => this.ready() );
 	}
 
 	/**
-	 * Attaches the review form to the review button's popup and fires the extension scripts.
+	 * Unblock the review button pending state and executes the module scripts.
 	 * Fires when the page is ready.
 	 */
 	ready() {
-		// Attach form to the review button's popup and pop pending state
-		this.reviewButton
-			.setContent( this.$reviewForm )
-			.setPending( false );
+		// Add click event that allows accepting revision by pressing Shift+Click
+		this.reviewButton.setHandler( this.onReviewButtonClick );
 
-		this.$reviewForm.removeClass( 'instantDiffs-hidden' );
+		// Update review states
+		this.update();
 
-		// Restore review form JS code
+		// Execute the flaggedRevs module scripts
 		executeModuleScript( 'ext.flaggedRevs.review', 'review.js' );
 	}
+
+	/**
+	 * Updates the review button state.
+	 */
+	update() {
+		this.reviewButton
+			.setActive( this.article.get( 'addedFlaggedRevsReviewed' ) )
+			.setPending( false );
+	}
+
+	/**
+	 * Event that emits after the request successive.
+	 * @param {import('./ReviewButton').default} button - a ReviewButton instance
+	 * @param {MouseEvent|KeyboardEvent} event - an event object
+	 * @private
+	 */
+	onReviewButtonClick = ( button, event ) => {
+		if ( !event || !event.shiftKey || this.nodes.$accept.prop( 'disabled' ) ) return;
+		this.nodes.$accept.trigger( 'click' );
+	};
 
 	/**
 	 * Requests the review form HTML.
@@ -194,8 +226,8 @@ class ReviewForm {
 		}
 
 		// Find and process review form
-		this.$reviewForm = $nodes.find( '#mw-fr-reviewform' );
-		if ( this.$reviewForm.length === 0 ) {
+		this.nodes.$reviewForm = $nodes.find( '#mw-fr-reviewform' );
+		if ( this.nodes.$reviewForm.length === 0 ) {
 			return this.onError();
 		}
 		this.processForm();

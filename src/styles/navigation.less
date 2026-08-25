@@ -32,8 +32,7 @@
 		flex: 1;
 
 		@media (max-width: @max-width-breakpoint-mobile) {
-			.instantDiffs-button--pending,
-			.instantDiffs-button--back {
+			.instantDiffs-button--action-back {
 				display: none;
 			}
 		}
@@ -58,7 +57,7 @@
 		@media (max-width: @max-width-breakpoint-mobile) {
 			flex: auto;
 
-			.instantDiffs-button--switch {
+			.instantDiffs-button--action-switch {
 				display: none;
 			}
 		}
@@ -85,17 +84,23 @@
 
 	&:is(:empty) {
 		display: none;
+
+		& + hr {
+			display: none;
+		}
+	}
+
+	&--hidden {
+		display: none;
+
+		& + hr {
+			display: none;
+		}
 	}
 
 	&--vertical {
 		padding: 0;
 		flex-direction: column;
-
-		&:is(:empty) {
-			& + hr {
-				display: none;
-			}
-		}
 
 		&.has-icons {
 			gap: var(--instantDiffs-gap);
@@ -105,18 +110,6 @@
 	&--pins-custom {
 		@media (max-width: @max-width-breakpoint-laptop) {
 			display: none;
-		}
-	}
-
-	&--mobile {
-		@media (min-width: @min-width-breakpoint-tablet) {
-			&& {
-				display: none;
-			}
-
-			& + hr {
-				display: none;
-			}
 		}
 	}
 }
@@ -147,7 +140,7 @@
 
 /******* BUTTON MENU *******/
 
-.instantDiffs-button--link {
+.instantDiffs-button--menu {
 	display: block;
 
 	> .oo-ui-buttonElement-button {
@@ -183,7 +176,7 @@
 	}
 }
 
-.instantDiffs-button--link-id {
+.instantDiffs-button--action-link-id {
 	.oo-ui-labelElement-label {
 		white-space: wrap;
 
@@ -197,13 +190,6 @@
 			color: var(--color-placeholder, #72777d);
 		}
 	}
-}
-
-.instantDiffs-button--fake-watch {
-	position: fixed;
-	top: 0;
-	left: 0;
-	visibility: hidden;
 }
 
 /******* BUTTON LABELS *******/

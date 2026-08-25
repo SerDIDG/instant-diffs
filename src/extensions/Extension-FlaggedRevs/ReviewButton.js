@@ -1,24 +1,27 @@
 import * as utils from '../../utils';
-import { tweakUserOoUiClass } from '../../utils-oojs';
+import { es6ClassToOoJsClass, mixIntoClass } from '../../utils-oojs';
+
+import ButtonWidgetMixin from '../../ButtonWidgetMixin';
+
+/**
+ * ReviewButton's own configuration options.
+ * @typedef {Object} ReviewButtonOwnOptions
+ * @property {JQuery<HTMLElement>} [$content] - Content to embed into popup
+ * @property {(button: ReviewButton, event: (MouseEvent|KeyboardEvent)) => void} [handler] - A click handler
+ */
 
 /**
  * ReviewButton's configuration options, extends OO.ui.ButtonWidget configuration.
- * @typedef {OO.ui.PopupButtonWidget.ConfigOptions & Object} ReviewButton.Options
- * @property {JQuery<HTMLElement>} [$content] - Content to embed into popup
- * @property {boolean} [pending=false] - Set pending state
- * @property {boolean} [hidden=false] - Set hidden state
+ * @typedef {OO.ui.PopupButtonWidget.ConfigOptions & import('../../ButtonWidgetMixin').ButtonWidgetMixin.Options & ReviewButtonOwnOptions} ReviewButton.Options
  */
 
 /**
  * Class representing a custom PopupButtonWidget for the review form.
+ * Augments OO.ui.PopupButtonWidget with ButtonWidgetMixin.
  * @augments OO.ui.PopupButtonWidget
+ * @augments ButtonWidgetMixin
  */
-class ReviewButton extends OO.ui.PopupButtonWidget {
-	/**
-	 * @type {ReviewButton.Options}
-	 */
-	options = {};
-
+class ReviewButton extends mixIntoClass( OO.ui.PopupButtonWidget, ButtonWidgetMixin ) {
 	/**
 	 * Creates a ReviewButton instance.
 	 * @param {ReviewButton.Options} [options] - A PopupButtonWidget configuration options
@@ -26,12 +29,11 @@ class ReviewButton extends OO.ui.PopupButtonWidget {
 	constructor( options = {} ) {
 		// Validate options
 		options = utils.deepMerge( {
-			classes: [ 'instantDiffs-button' ],
 			icon: 'eyeClosed',
 			label: utils.msg( 'action-review' ),
-			title: utils.msg( 'action-review-title' ),
+			title: utils.msgHint( 'action-review-title', [ 'review-description', utils.msg( 'hint-review' ) ] ),
 			pending: true,
-			hidden: false,
+			framed: true,
 			popup: {
 				padded: false,
 				align: 'force-right',
@@ -41,26 +43,9 @@ class ReviewButton extends OO.ui.PopupButtonWidget {
 		// Call parent class constructor
 		super( options );
 
-		// Properties
-		this.options = options;
-
-		// Pending element
-		this.$pending = $( '<span>' )
-			.addClass( 'oo-ui-buttonElement-pending' )
-			.prependTo( this.$button );
-
-		// Mixin constructors
-		OO.ui.mixin.PendingElement.call( this, { $pending: this.$pending } );
-
 		// Set properties
 		if ( options.$content ) {
 			this.setContent( options.$content );
-		}
-		if ( options.pending ) {
-			this.setPending( options.pending );
-		}
-		if ( options.hidden ) {
-			this.setHidden( options.hidden );
 		}
 	}
 
@@ -73,30 +58,8 @@ class ReviewButton extends OO.ui.PopupButtonWidget {
 		this.getPopup().$body.append( $content );
 		return this;
 	}
-
-	/**
-	 * Toggles a buttons pending state.
-	 * @param {boolean} value
-	 * @returns {ReviewButton}
-	 */
-	setPending( value ) {
-		value ? this.pushPending() : this.popPending();
-		this.$element.toggleClass( 'instantDiffs-button--pending', value );
-		return this;
-	}
-
-	/**
-	 * Toggles a buttons hidden state.
-	 * @param {boolean} value
-	 * @returns {ReviewButton}
-	 */
-	setHidden( value ) {
-		this.$element.toggleClass( 'instantDiffs-hidden', value );
-		return this;
-	}
 }
 
-tweakUserOoUiClass( ReviewButton );
-OO.mixinClass( ReviewButton, OO.ui.mixin.PendingElement );
+es6ClassToOoJsClass( ReviewButton );
 
 export default ReviewButton;

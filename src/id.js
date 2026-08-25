@@ -32,6 +32,7 @@ self.instantDiffs ||= {};
  *   Page: typeof import('./Page').default,
  *   LocalPage: typeof import('./LocalPage').default,
  *   GlobalPage: typeof import('./GlobalPage').default,
+ *   Navigation: typeof import('./Navigation').default,
  *   Watch: typeof import('./Watch').default,
  *   extensions: InstanceType<typeof import('./extensions').default>,
  *   settings: InstanceType<typeof import('./settings').default>,

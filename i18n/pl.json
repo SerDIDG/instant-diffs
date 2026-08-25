@@ -51,7 +51,7 @@
 	"hint-prev": "Strzałka w lewo",
 	"hint-next": "Strzałka w prawo",
 	"hint-switch": "Ctrl+Strzałka w górę",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-back": "Ctrl+Z",
 	"hint-actions": "Ctrl+Strzałka w dół",
 	"copy-link": "Kopiuj link",

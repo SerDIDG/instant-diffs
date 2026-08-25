@@ -39,7 +39,7 @@
 	"hint-close": "Esc",
 	"hint-alt-click": "Alt+クリック",
 	"hint-alt-click-description": "$1: リンクを開く",
-	"hint-pending-changes": "Ctrl+P",
+	"hint-pending-changes": "Shift+P",
 	"hint-back": "Ctrl+Z",
 	"copy-link": "リンクをコピー",
 	"copy-link-copied": "リンクをクリップボードにコピーしました。",

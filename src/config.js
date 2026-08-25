@@ -208,8 +208,8 @@ export const config = {
 
 	// Breakpoints
 	breakpoints: {
-		mobileUp: '(min-width: 640px)',
-		mobileDown: '(max-width: 639px)',
+		minTablet: '(min-width: 640px)',
+		maxMobile: '(max-width: 639px)',
 	},
 
 	// Link format presets

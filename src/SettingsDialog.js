@@ -1,6 +1,6 @@
 import id from './id';
 import * as utils from './utils';
-import { tweakUserOoUiClass } from './utils-oojs';
+import { es6ClassToOoJsClass } from './utils-oojs';
 import { renderNoticeBox } from './utils-settings';
 import { schema } from './schema-settings';
 
@@ -692,6 +692,6 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	}
 }
 
-tweakUserOoUiClass( SettingsDialog );
+es6ClassToOoJsClass( SettingsDialog );
 
 export default SettingsDialog;

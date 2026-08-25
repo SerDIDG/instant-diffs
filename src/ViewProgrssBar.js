@@ -1,5 +1,5 @@
 import * as utils from './utils';
-import { tweakUserOoUiClass } from './utils-oojs';
+import { es6ClassToOoJsClass } from './utils-oojs';
 
 /**
  * Class representing a ViewProgressBar.
@@ -73,6 +73,6 @@ class ViewProgressBar extends OO.ui.ProgressBarWidget {
 	}
 }
 
-tweakUserOoUiClass( ViewProgressBar );
+es6ClassToOoJsClass( ViewProgressBar );
 
 export default ViewProgressBar;

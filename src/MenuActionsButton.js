@@ -1,5 +1,5 @@
 import * as utils from './utils';
-import { tweakUserOoUiClass } from './utils-oojs';
+import { es6ClassToOoJsClass } from './utils-oojs';
 
 import settings from './settings';
 
@@ -46,7 +46,7 @@ class MenuActionsButton extends OO.ui.PopupButtonWidget {
 	}
 
 	/**
-	 * Toggles a popup state.
+	 * Toggles the popup state.
 	 * @param {boolean} value
 	 * @returns {MenuActionsButton}
 	 */
@@ -56,7 +56,7 @@ class MenuActionsButton extends OO.ui.PopupButtonWidget {
 	}
 
 	/**
-	 * Toggles a buttons pending state that shows a loading cursor.
+	 * Toggles the button pending state that shows a loading cursor.
 	 * @param {boolean} value
 	 * @returns {MenuActionsButton}
 	 */
@@ -66,6 +66,6 @@ class MenuActionsButton extends OO.ui.PopupButtonWidget {
 	}
 }
 
-tweakUserOoUiClass( MenuActionsButton );
+es6ClassToOoJsClass( MenuActionsButton );
 
 export default MenuActionsButton;
