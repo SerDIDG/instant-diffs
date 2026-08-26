@@ -21,6 +21,24 @@ const { h, hf, ht } = utils;
  */
 class Navigation {
 	/**
+	 * Map of the main menu groups.
+	 * @type {{left: [string], center: [string], right: string[]}}
+	 * @private
+	 */
+	static GROUPS = {
+		left: [ 'snapshot' ],
+		center: [ 'navigation' ],
+		right: [ 'pins-custom', 'pins' ],
+	};
+
+	/**
+	 * Map of the action menu groups.
+	 * @type {string[]}
+	 * @private
+	 */
+	static ACTION_GROUPS = [ 'menu-navigation', 'menu-custom', 'menu', 'menu-footer' ];
+
+	/**
 	 * @type {Menu.ButtonOptions}
 	 */
 	static SNAPSHOT_LINKS_OPTIONS = {
@@ -36,7 +54,7 @@ class Navigation {
 	 */
 	static SNAPSHOT_LINKS_OPTIONS_MOBILE = {
 		canMenu: true,
-		menuGroup: 'menuNavigation',
+		menuGroup: 'menu-navigation',
 		mediaQuery: 'maxMobile',
 	};
 
@@ -56,7 +74,7 @@ class Navigation {
 	 */
 	static NAVIGATION_LINKS_OPTIONS_MOBILE = {
 		canMenu: true,
-		menuGroup: 'menuNavigation',
+		menuGroup: 'menu-navigation',
 		mediaQuery: 'maxMobile',
 	};
 
@@ -77,7 +95,7 @@ class Navigation {
 		canPin: true,
 		pinGroup: 'pins',
 		canMenu: true,
-		menuGroup: 'menuNavigation',
+		menuGroup: 'menu-navigation',
 	};
 
 	/**
@@ -86,13 +104,13 @@ class Navigation {
 	static MENU_FOOTER_LINKS_OPTIONS = {
 		canPin: false,
 		canMenu: true,
-		menuGroup: 'footer',
+		menuGroup: 'menu-footer',
 	};
 
 	/**
 	 * Map of action names to their counterpart actions.
-	 * @private
 	 * @type {Record<string, string>}
+	 * @private
 	 */
 	static ACTION_COUNTERPARTS = {
 		'pendingChanges': 'back',
@@ -103,8 +121,8 @@ class Navigation {
 
 	/**
 	 * Map of disabled action names to their alternative actions.
-	 * @private
 	 * @type {Record<string, string>}
+	 * @private
 	 */
 	static ACTION_DISABLED_COUNTERPARTS = {
 		'next': 'prev',
@@ -116,8 +134,8 @@ class Navigation {
 	/**
 	 * Map of action hotkeys in LTR direction.
 	 * Keys are modifier states, values map key codes to action names.
-	 * @private
 	 * @type {Record<string, Record<string, string>>}
+	 * @private
 	 */
 	static ACTION_HOTKEYS = {
 		none: {
@@ -141,8 +159,8 @@ class Navigation {
 	/**
 	 * Map of action hotkeys in RTL direction (overrides for LTR).
 	 * Keys are modifier states, values map key codes to action names.
-	 * @private
 	 * @type {Record<string, Record<string, string>>}
+	 * @private
 	 */
 	static ACTION_HOTKEYS_RTL = {
 		none: {
@@ -156,8 +174,8 @@ class Navigation {
 	};
 
 	/**
-	 * @private
 	 * @type {Object}
+	 * @private
 	 */
 	static SUBJECT_PAGE_ICONS = {
 		2: 'userAvatar',
@@ -166,8 +184,8 @@ class Navigation {
 	};
 
 	/**
-	 * @private
 	 * @type {Object}
+	 * @private
 	 */
 	static TALK_PAGE_ICONS = {
 		2: 'userTalk',
@@ -305,7 +323,7 @@ class Navigation {
 	 * @param {MediaQueryList} event
 	 */
 	onMediaObserve = ( event ) => {
-		const actions = this.menu.getGroupButtons( 'menuNavigation' );
+		const actions = this.menu.getGroupButtons( 'menu-navigation' );
 
 		let visibleActions = 0;
 		for ( const action of actions ) {
@@ -316,33 +334,17 @@ class Navigation {
 			}
 		}
 
-		const group = this.menu.getGroup( 'menuNavigation' );
+		const group = this.menu.getGroup( 'menu-navigation' );
 		group.widget.setHidden( visibleActions === 0 );
 	};
 
 	/******* NAVIGATION *******/
 
 	/**
-	 * Map of the main menu groups.
-	 * @type {{left: [string], center: [string], right: string[]}}
-	 */
-	GROUPS = {
-		left: [ 'snapshot' ],
-		center: [ 'navigation' ],
-		right: [ 'pins-custom', 'pins' ],
-	};
-
-	/**
 	 * Collection of the main menu groups.
 	 * @type {string[]}
 	 */
 	groups = [];
-
-	/**
-	 * Map of the action menu groups.
-	 * @type {string[]}
-	 */
-	ACTION_GROUPS = [ 'menuNavigation', 'menu-custom', 'menu', 'footer' ];
 
 	/**
 	 * Collection of the action menu groups.
@@ -359,7 +361,7 @@ class Navigation {
 		this.menu = new Menu( this.article );
 
 		// Render main menu groups
-		for ( const [ group, names ] of Object.entries( this.GROUPS ) ) {
+		for ( const [ group, names ] of Object.entries( Navigation.GROUPS ) ) {
 			names.forEach( name => {
 				this.groups.push( name );
 				this.menu.renderGroup( {
@@ -372,7 +374,7 @@ class Navigation {
 		}
 
 		// Render actions menu groups
-		this.ACTION_GROUPS.forEach( name => {
+		Navigation.ACTION_GROUPS.forEach( name => {
 			this.actionGroups.push( name );
 			this.menu.renderGroup( {
 				name,
@@ -401,7 +403,7 @@ class Navigation {
 			this.renderBackLink( { ...options, ...optionsMobile } );
 		}
 
-		this.emitHook( 'snapshotLinks', { options, optionsMobile } );
+		this.emitHook( 'group.snapshot', { options, optionsMobile } );
 	}
 
 	/**
@@ -423,7 +425,7 @@ class Navigation {
 		// Link to the next diff
 		this.renderNextLink( options );
 
-		this.emitHook( 'navigationLinks', { options, optionsMobile } );
+		this.emitHook( 'group.navigation', { options, optionsMobile } );
 	}
 
 	/**
@@ -438,6 +440,8 @@ class Navigation {
 
 		// Render actions menu
 		this.renderMenuActions();
+
+		this.emitHook( 'group.actions' );
 	}
 
 	/**
@@ -455,7 +459,7 @@ class Navigation {
 			this.renderPendingChangesLink( options );
 		}
 
-		this.emitHook( 'menuNavigationLinks', { options } );
+		this.emitHook( 'group.menu-navigation', { options } );
 	};
 
 	/**
@@ -504,7 +508,7 @@ class Navigation {
 		// Open Instant Diffs settings
 		this.renderSettingsLink( options );
 
-		this.emitHook( 'menuLinks', { options } );
+		this.emitHook( 'group.menu', { options } );
 	};
 
 	/**
@@ -517,11 +521,11 @@ class Navigation {
 		// Link to the Instant Diffs docs and current running version
 		this.renderIDLink( options );
 
-		this.emitHook( 'menuFooterLinks', { options } );
+		this.emitHook( 'group.menu-footer', { options } );
 	}
 
 	/**
-	 * Render an action menu dropdown.
+	 * Render the action menu dropdown.
 	 * @private
 	 */
 	renderMenuActions() {
