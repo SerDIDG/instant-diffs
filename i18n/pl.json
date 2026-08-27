@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"PanWor",
 			"Serhio Magpie"
 		]
 	},
@@ -51,7 +52,11 @@
 	"hint-prev": "Strzałka w lewo",
 	"hint-next": "Strzałka w prawo",
 	"hint-switch": "Ctrl+Strzałka w górę",
+	"hint-compare-cur": "Shift + L",
+	"hint-compare-cur-description": "$1 – porównaj z najnowszą wersją, jeśli jest dostępna.",
 	"hint-pending-changes": "Shift+P",
+	"hint-review": "Shift + lewy przycisk myszy",
+	"hint-review-description": "$1 – zaakceptuj zmianę",
 	"hint-back": "Ctrl+Z",
 	"hint-actions": "Ctrl+Strzałka w dół",
 	"copy-link": "Kopiuj link",
