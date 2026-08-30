@@ -5,6 +5,11 @@
 			top: var(--instantDiffs-view-top);
 		}
 	}
+
+	// Set z-index to be higher than the Codex dialog backdrop (@z-index-overlay-backdrop)
+	#mw-teleport-target:has(.cdx-dialog-backdrop) & {
+		z-index: @z-index-overlay;
+	}
 }
 
 .instantDiffs-settings-intro {
