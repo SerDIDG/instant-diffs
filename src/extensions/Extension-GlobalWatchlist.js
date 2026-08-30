@@ -46,9 +46,14 @@ function process( context ) {
 		.find( '.ext-globalwatchlist-site li' )
 		.attr( 'data-instantdiffs-line', '' );
 
+	// Mark elements that contain page titles to be collected for diff links
+	$container
+		.find( '.ext-globalwatchlist-pagetitle' )
+		.attr( 'data-instantdiffs-line-title', '' );
+
 	// Mark links as ready to be processed
 	$container
-		.find( 'a.ext-globalwatchlist-diff' )
+		.find( '.ext-globalwatchlist-diff' )
 		.attr( 'data-instantdiffs-link', 'mw' );
 
 	mw.hook( `${ id.config.prefix }.process` ).fire( $container );
