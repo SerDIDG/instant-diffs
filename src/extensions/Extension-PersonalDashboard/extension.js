@@ -21,6 +21,15 @@ export const schema = {
 };
 
 /**
+ * Context elements selectors.
+ * @type {string[]}
+ */
+const CONTEXT_SELECTORS = [
+	'.personal-dashboard-viewport',
+	'#personal-dashboard-teleport',
+];
+
+/**
  * Extension ready.
  */
 function ready() {
@@ -31,7 +40,7 @@ function ready() {
  * Process Personal Dashboard extension.
  */
 function process() {
-	const $context = $( '.personal-dashboard-viewport' );
+	const $context = $( CONTEXT_SELECTORS.join( ',' ) );
 	if ( !utils.isAllowed() || $context.length === 0 ) return;
 
 	const options = JSON.stringify( { setClasses: 'clear' } );

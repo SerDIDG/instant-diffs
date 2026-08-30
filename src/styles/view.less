@@ -1,6 +1,12 @@
 @import ( reference ) '@wikimedia/codex-design-tokens/theme-wikimedia-ui.less';
 
-/******* VIEW *******/
+.instantDiffs-windowManager {
+	// Set z-index to be higher than the Codex dialog backdrop (@z-index-overlay-backdrop)
+	.cdx-dialog-backdrop + & {
+		position: fixed;
+		z-index: @z-index-overlay;
+	}
+}
 
 .instantDiffs-view {
 	// Set top indent for the dialogs because of the fixed header on some skins

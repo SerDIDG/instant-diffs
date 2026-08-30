@@ -161,7 +161,9 @@ export function getWindowManager() {
 	// Define custom dialog size
 	setViewDialogSize();
 
-	const manager = new OO.ui.WindowManager();
+	const manager = new OO.ui.WindowManager( {
+		classes: [ 'instantDiffs-windowManager' ],
+	} );
 	$( OO.ui.getTeleportTarget() ).append( manager.$element );
 	return manager;
 }
