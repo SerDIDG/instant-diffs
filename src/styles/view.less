@@ -1,13 +1,5 @@
 @import ( reference ) '@wikimedia/codex-design-tokens/theme-wikimedia-ui.less';
 
-.instantDiffs-windowManager {
-	// Set z-index to be higher than the Codex dialog backdrop (@z-index-overlay-backdrop)
-	#mw-teleport-target:has(.cdx-dialog-backdrop) & {
-		position: fixed;
-		z-index: @z-index-overlay;
-	}
-}
-
 .instantDiffs-view {
 	// Set top indent for the dialogs because of the fixed header on some skins
 	&.oo-ui-window-active {
@@ -39,6 +31,12 @@
 			border-top-right-radius: max(var(--instantDiffs-view-radius), 0.28571429em) 0.28571429em;
 			border-top-left-radius: max(var(--instantDiffs-view-radius), 0.28571429em) 0.28571429em;
 		}
+	}
+
+	// Set z-index to be higher than the Codex dialog backdrop (@z-index-overlay-backdrop)
+	#mw-teleport-target:has(.cdx-dialog-backdrop) & {
+		position: fixed;
+		z-index: @z-index-overlay;
 	}
 }
 
