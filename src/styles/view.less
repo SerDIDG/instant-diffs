@@ -2,7 +2,7 @@
 
 .instantDiffs-windowManager {
 	// Set z-index to be higher than the Codex dialog backdrop (@z-index-overlay-backdrop)
-	.cdx-dialog-backdrop + & {
+	#mw-teleport-target:has(.cdx-dialog-backdrop) & {
 		position: fixed;
 		z-index: @z-index-overlay;
 	}
