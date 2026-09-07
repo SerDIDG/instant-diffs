@@ -929,40 +929,6 @@ class Page {
 	/******* ACTIONS *******/
 
 	/**
-	 * Fire hooks and events.
-	 */
-	async fire() {
-		this.isReady = true;
-
-		// Fire hook on ready
-		this.emitHook( 'ready' );
-
-		// Fire navigation events
-		this.getNavigation()?.fire();
-
-		// Fire wikipage hooks
-		if ( this.options.fireDiffHook ) {
-			// Fire diff table hook
-			const $diffTable = this.getDiffTable();
-			if ( this.article.get( 'type' ) === 'diff' && $diffTable?.length > 0 ) {
-				mw.hook( 'wikipage.diff' ).fire( $diffTable );
-			}
-		}
-		if ( this.options.fireContentHook ) {
-			// Fire content hook
-			const $container = this.getContainer();
-			if ( $container?.length > 0 ) {
-				mw.hook( 'wikipage.content' ).fire( $container );
-			}
-		}
-
-		utils.addTargetToLinks( this.nodes.$container );
-
-		// Fire hook on complete
-		this.emitHook( 'complete' );
-	}
-
-	/**
 	 * Fires event and hook with a given name.
 	 * @param {string} event
 	 * @param {*} [data]
@@ -985,10 +951,6 @@ class Page {
 		}
 		callback( this, state );
 		return this;
-	}
-
-	focus() {
-		this.emit( 'focus' );
 	}
 
 	setConfigs() {
@@ -1080,6 +1042,44 @@ class Page {
 	addNavigationLink( name, value ) {
 		if ( utils.isEmpty( name ) || utils.isEmpty( value ) ) return;
 		this.navigationLinks[ name ] = value;
+	}
+
+	/**
+	 * Fire hooks and events.
+	 */
+	async fire() {
+		this.isReady = true;
+
+		// Fire hook on ready
+		this.emitHook( 'ready' );
+
+		// Fire navigation events
+		this.getNavigation()?.fire();
+
+		// Fire wikipage hooks
+		if ( this.options.fireDiffHook ) {
+			// Fire diff table hook
+			const $diffTable = this.getDiffTable();
+			if ( this.article.get( 'type' ) === 'diff' && $diffTable?.length > 0 ) {
+				mw.hook( 'wikipage.diff' ).fire( $diffTable );
+			}
+		}
+		if ( this.options.fireContentHook ) {
+			// Fire content hook
+			const $container = this.getContainer();
+			if ( $container?.length > 0 ) {
+				mw.hook( 'wikipage.content' ).fire( $container );
+			}
+		}
+
+		utils.addTargetToLinks( this.nodes.$container );
+
+		// Fire hook on complete
+		this.emitHook( 'complete' );
+	}
+
+	focus() {
+		this.emit( 'focus' );
 	}
 
 	close() {

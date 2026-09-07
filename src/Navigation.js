@@ -229,11 +229,6 @@ class Navigation {
 	nodes = {};
 
 	/**
-	 * @type {string}
-	 */
-	actionRegister;
-
-	/**
 	 * @type {MediaQueryList}
 	 */
 	mediaObserver;
@@ -247,6 +242,11 @@ class Navigation {
 	 * @type {import('./Menu').default}
 	 */
 	menu;
+
+	/**
+	 * @type {string}
+	 */
+	lastAction;
 
 	/**
 	 * @type {boolean}
@@ -285,12 +285,8 @@ class Navigation {
 		// Mixin constructor
 		OO.EventEmitter.call( this );
 
-		// Render content
 		this.render();
-
-		// Fire hook on complete
 		this.emitHook( 'ready' );
-		this.emitHook( 'complete' );
 	}
 
 	/**
@@ -568,7 +564,7 @@ class Navigation {
 			setLink: !!link,
 			linkOptions: {
 				initiatorLink: link,
-				onRequest: () => this.setActionRegister( options.name ),
+				onRequest: () => this.setLastAction( options.name ),
 			},
 			...options,
 		};
@@ -594,7 +590,7 @@ class Navigation {
 			setLink: !!link,
 			linkOptions: {
 				initiatorLink: link,
-				onRequest: () => this.setActionRegister( options.name ),
+				onRequest: () => this.setLastAction( options.name ),
 			},
 			...options,
 		};
@@ -635,7 +631,7 @@ class Navigation {
 			disabled: !href,
 			setLink: !!href,
 			linkOptions: {
-				onRequest: () => this.setActionRegister( options.name ),
+				onRequest: () => this.setLastAction( options.name ),
 			},
 			...options,
 		};
@@ -677,7 +673,7 @@ class Navigation {
 			disabled: !href,
 			setLink: !!href,
 			linkOptions: {
-				onRequest: () => this.setActionRegister( options.name ),
+				onRequest: () => this.setLastAction( options.name ),
 			},
 			...options,
 		};
@@ -705,7 +701,7 @@ class Navigation {
 			href: getHref( this.article, {}, hrefOptions ),
 			setLink: true,
 			linkOptions: {
-				onRequest: () => this.setActionRegister( options.name ),
+				onRequest: () => this.setLastAction( options.name ),
 			},
 			...options,
 		};
@@ -736,10 +732,10 @@ class Navigation {
 			setLink: true,
 			linkOptions: {
 				onRequest: () => {
-					const initiatorAction = initiator.getNavigation()?.getActionRegister();
+					const initiatorAction = initiator.getNavigation()?.getLastAction();
 					const action = !utils.isEmpty( initiatorAction )
 						? `${ options.name }-${ initiatorAction }` : options.name;
-					this.setActionRegister( action );
+					this.setLastAction( action );
 				},
 			},
 			...options,
@@ -776,7 +772,7 @@ class Navigation {
 			setLink: true,
 			linkOptions: {
 				initiatorPage: this.page,
-				onRequest: () => this.setActionRegister( options.name ),
+				onRequest: () => this.setLastAction( options.name ),
 			},
 			...options,
 		};
@@ -800,7 +796,7 @@ class Navigation {
 			setLink: true,
 			linkOptions: {
 				initiatorPage: this.page,
-				onRequest: () => this.setActionRegister( options.name ),
+				onRequest: () => this.setLastAction( options.name ),
 			},
 			...options,
 		};
@@ -1209,29 +1205,19 @@ class Navigation {
 	}
 
 	/**
-	 * Toggle the actions menu dropdown visibility.
-	 * @param {boolean} [value] - State
-	 */
-	toggleActions( value ) {
-		this.menu.eachButtonWidget( 'actions', this.groups, widget => {
-			widget.togglePopup( value );
-		} );
-	}
-
-	/**
-	 * Set to the register currently executed switch action, like navigation, etc.
+	 * Set the last executed action, like navigation, etc.
 	 * @param {string} name - Action name
 	 */
-	setActionRegister( name ) {
-		this.actionRegister = name;
+	setLastAction( name ) {
+		this.lastAction = name;
 	}
 
 	/**
-	 * Get from the register previously executed switch action, like navigation, etc.
+	 * Get the last executed action, like navigation, etc.
 	 * @returns {string} Action name
 	 */
-	getActionRegister() {
-		return this.actionRegister;
+	getLastAction() {
+		return this.lastAction;
 	}
 
 	/**
@@ -1241,6 +1227,16 @@ class Navigation {
 	getPinnableActions() {
 		return this.menu.getButtons()
 			.filter( entry => entry.canPin );
+	}
+
+	/**
+	 * Toggle the actions menu dropdown visibility.
+	 * @param {boolean} [value] - State
+	 */
+	toggleActions( value ) {
+		this.menu.eachButtonWidget( 'actions', this.groups, widget => {
+			widget.togglePopup( value );
+		} );
 	}
 
 	/******* CUSTOM ACTIONS *******/
@@ -1370,6 +1366,31 @@ class Navigation {
 	/******* ACTIONS *******/
 
 	/**
+	 * Fires event and hook with a given name.
+	 * @param {string} event
+	 * @param {*} [data]
+	 */
+	emitHook( event, data ) {
+		this.states[ event ] = data || true;
+		this.emit( event, data );
+		mw.hook( `${ id.config.prefix }.navigation.${ event }` ).fire( this, data );
+	}
+
+	/**
+	 * Fires callback immediately if the state already happened, otherwise subscribes once.
+	 * @param {string} event
+	 * @param {Function} callback
+	 */
+	when( event, callback ) {
+		const state = this.states[ event ];
+		if ( !state ) {
+			return this.once( event, callback );
+		}
+		callback( this, state );
+		return this;
+	}
+
+	/**
 	 * Get the navigation bar outer offset height.
 	 * @param {boolean} [includeMargin=false]- Include margin in height
 	 * @return {number}
@@ -1399,31 +1420,7 @@ class Navigation {
 	 */
 	fire() {
 		this.focusAction( this.options.initiatorAction );
-	}
-
-	/**
-	 * Fires event and hook with a given name.
-	 * @param {string} event
-	 * @param {*} [data]
-	 */
-	emitHook( event, data ) {
-		this.states[ event ] = data || true;
-		this.emit( event, data );
-		mw.hook( `${ id.config.prefix }.navigation.${ event }` ).fire( this, data );
-	}
-
-	/**
-	 * Fires callback immediately if the state already happened, otherwise subscribes once.
-	 * @param {string} event
-	 * @param {Function} callback
-	 */
-	when( event, callback ) {
-		const state = this.states[ event ];
-		if ( !state ) {
-			return this.once( event, callback );
-		}
-		callback( this, state );
-		return this;
+		this.emitHook( 'complete' );
 	}
 
 	/**
@@ -1439,6 +1436,8 @@ class Navigation {
 	 * Detach a navigation bar from the DOM.
 	 */
 	detach() {
+		this.emitHook( 'beforeDetach' );
+
 		// Destroy components
 		this.watch?.detach();
 
@@ -1451,6 +1450,8 @@ class Navigation {
 
 		this.nodes.container.remove();
 		this.isDetached = true;
+
+		this.emitHook( 'detach' );
 	}
 }
 

@@ -465,7 +465,7 @@ class View {
 		// Get a Page params
 		const article = this.link.getArticle();
 		const options = {
-			initiatorAction: this.previousPage?.getNavigation()?.getActionRegister(),
+			initiatorAction: this.previousPage?.getNavigation()?.getLastAction(),
 			initiatorPage: this.options.initiatorPage,
 		};
 
