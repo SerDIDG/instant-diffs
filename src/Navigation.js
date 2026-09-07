@@ -266,7 +266,6 @@ class Navigation {
 	 */
 	constructor( page, article, options ) {
 		this.page = page;
-
 		this.article = article;
 
 		this.options = {
@@ -1397,6 +1396,14 @@ class Navigation {
 	 */
 	getOuterHeight( includeMargin = false ) {
 		return utils.outerHeight( this.nodes.container, includeMargin );
+	}
+
+	/**
+	 * Get the Page instance.
+	 * @returns {import('./Page').Page.Any} a Page instance
+	 */
+	getPage() {
+		return this.page;
 	}
 
 	/**

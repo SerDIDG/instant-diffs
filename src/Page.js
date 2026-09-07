@@ -1003,6 +1003,14 @@ class Page {
 	}
 
 	/**
+	 * Get the request manager instance.
+	 * @returns {import('./RequestManager').default}
+	 */
+	getRequestManager() {
+		return this.requestManager;
+	}
+
+	/**
 	 * Get the container element.
 	 * @returns {JQuery<HTMLElement>}
 	 */
