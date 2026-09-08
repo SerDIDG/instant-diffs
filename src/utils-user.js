@@ -21,7 +21,7 @@ export function isTemporary( user ) {
 
 /**
  * Gets a date in the user format.
- * Uses "mediawiki.DateFormatter" module for formatting if exists, otherwise uses "date.toLocaleString".
+ * Uses "mediawiki.DateFormatter" module for formatting if it exists, otherwise uses "date.toLocaleString".
  * @param {string|Date} date a date string, or a Date instance
  * @returns {string|undefined}
  */

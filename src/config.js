@@ -61,12 +61,12 @@ export const config = {
 			'mediawiki.misc-authed-curate',
 			'mediawiki.page.watch.ajax',
 			'ext.visualEditor.diffPage.init',
+			'ext.checkUser.userInfoCard',
 		],
 		page: {
 			'*': [
 				'ext.thanks.corethank',
 				'ext.checkUser.styles',
-				'ext.checkUser.userInfoCard',
 			],
 		},
 		revision: {

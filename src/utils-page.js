@@ -486,27 +486,52 @@ export function renderUserLink( article, user ) {
 	);
 }
 
+const USER_INFO_CARD_BUTTON = 'ext-checkuser-userinfocard-button';
+const USER_INFO_CARD_ICON = `${ USER_INFO_CARD_BUTTON }__icon`;
+
 /**
  * Renders the user info card button element.
  * @returns {HTMLAnchorElement|undefined} The created button element
  */
 export function renderUserInfoCardButton( user ) {
-	if ( !mw.user.options.get( 'checkuser-userinfocard-enable' ) || !isRegistered( user ) ) return;
+	if (
+		!mw.user.isNamed() ||
+		!mw.user.options.get( 'checkuser-userinfocard-enable' ) ||
+		!isRegistered( user )
+	) {
+		return;
+	}
 
+	// Try to use built-in module for MediaWiki @since 1.47
+	const uic = utils.moduleRequire( 'ext.checkUser.userInfoCard' );
+	if ( utils.isFunction( uic?.createButton ) ) {
+		return uic.createButton( user );
+	}
+
+	// Otherwise construct button HTML for legacy wikis
+	const classes = [
+		USER_INFO_CARD_BUTTON,
+		'cdx-button',
+		'cdx-button--action-default',
+		'cdx-button--weight-quiet',
+		'cdx-button--fake-button',
+		'cdx-button--fake-button--enabled',
+		'cdx-button--icon-only',
+	];
 	const iconClasses = [
 		'cdx-button__icon',
-		'ext-checkuser-userinfocard-button__icon',
+		USER_INFO_CARD_ICON,
 		( isTemporary( user )
-			? 'ext-checkuser-userinfocard-button__icon--userTemporary'
-			: 'ext-checkuser-userinfocard-button__icon--userAvatar' ),
+			? `${ USER_INFO_CARD_ICON }--userTemporary`
+			: `${ USER_INFO_CARD_ICON }--userAvatar` ),
 	];
 
 	const buton = h( 'a', {
-			class: 'ext-checkuser-userinfocard-button cdx-button cdx-button--action-default cdx-button--weight-quiet cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--icon-only cd-comment-author-userInfoCard-button',
+			class: classes,
 			role: 'button',
 			tabindex: 0,
 			href: 'javascript:void(0)',
-			ariaLabel: mw.msg( 'checkuser-userinfocard-toggle-button-aria-label' ),
+			ariaLabel: mw.msg( 'checkuser-userinfocard-toggle-button-aria-label', user ),
 			'data-username': user,
 		},
 		h( 'span', { class: iconClasses } ),

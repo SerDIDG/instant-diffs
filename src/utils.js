@@ -175,7 +175,11 @@ export function hasModules( data ) {
  * @return {*}
  */
 export function moduleRequire( name ) {
-	return id.local.require( name );
+	try {
+		return id.local.require( name );
+	} catch ( error ) {
+		logError( 'utils.moduleRequire', `Module "${ name }" is not loaded.`, error );
+	}
 }
 
 /**
