@@ -503,9 +503,9 @@ export function renderUserInfoCardButton( user ) {
 	}
 
 	// Try to use built-in module for MediaWiki @since 1.47
-	const uic = utils.moduleRequire( 'ext.checkUser.userInfoCard' );
-	if ( utils.isFunction( uic?.createButton ) ) {
-		return uic.createButton( user );
+	const { createButton } = utils.moduleRequire( 'ext.checkUser.userInfoCard' ) || {};
+	if ( utils.isFunction( createButton ) ) {
+		return createButton( user );
 	}
 
 	// Otherwise construct button HTML for legacy wikis
