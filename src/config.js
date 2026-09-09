@@ -183,7 +183,7 @@ export const config = {
 		standalone: false,                                              // Standalone mode
 		storageExpiry: 60 * 60 * 24,                                    // Cache local storage for 1 day
 		logTimers: true,
-		expEnableWatchlistPopup: false,                                 // New Watchlist Popup
+		expEnableWatchstarPopover: false,                               // New Watchlist Popup
 	},
 
 	// Including / excluding rules
