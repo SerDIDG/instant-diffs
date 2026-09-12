@@ -50,10 +50,11 @@ export function updateWatchButtonStatus( article, button ) {
 		icon = 'star';
 	}
 
-	button.setLabel( utils.msg( label ) );
-	button.setTitle( mw.msg( `tooltip-ca-${ tooltipAction }`, daysLeftExpiry ) );
-	button.setHref( getHrefAbsolute( article, href ) );
-	button.setIcon( icon );
+	button
+		.setLabel( utils.msg( label ) )
+		.setTitle( mw.msg( `tooltip-ca-${ tooltipAction }`, daysLeftExpiry ) )
+		.setHref( getHrefAbsolute( article, href ) )
+		.setIcon( icon );
 }
 
 /******* WATCHLIST *******/

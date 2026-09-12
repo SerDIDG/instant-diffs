@@ -6,21 +6,13 @@
 /******* VARIABLES *******/
 
 @media screen {
+	--instantDiffs-color-subtle:  var(--theme-page-text-color, #e6e6e6);
 	--instantDiffs-background-glass: color-mix(in srgb, var(--theme-page-background-color--secondary, #ffffff) 70%, transparent);
 	--instantDiffs-border-color: var(--theme-border-color, #4f4f51);
 	--instantDiffs-line-height: 1.75;
 	--instantDiffs-font-size: 1rem;
 	--instantDiffs-view-top: 45px;
-}
-
-/******* NAVIGATION *******/
-
-.instantDiffs-navigation {
-	margin-inline: -24px;
-
-	@media (min-width: @min-width-breakpoint-tablet) {
-		padding-inline: 24px;
-	}
+	--instantDiffs-view-padding: 24px;
 }
 
 /*** BUTTON GROUPS ***/

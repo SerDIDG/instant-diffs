@@ -1053,6 +1053,7 @@ class Navigation {
 
 		if ( !this.watch ) {
 			this.watch = new Watch( this.article, {
+				linkContainer: this.nodes.right,
 				onUpdate: state => {
 					this.menu.eachButtonWidget( 'watch', null, widget => {
 						widget.setPending( state === 'loading' );

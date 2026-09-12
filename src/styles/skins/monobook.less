@@ -11,26 +11,37 @@
 	--instantDiffs-font-size: 0.794rem; /* 127% (12.7px) */
 	--instantDiffs-font-size-navigation: var(--instantDiffs-font-size);
 	--instantDiffs-button-radius: var(--border-radius-base, 3px);
+	--instantDiffs-view-padding: 1rem;
+}
+
+/******* PAGE *******/
+
+&.skin--responsive {
+	.instantDiffs-page {
+		@media ( max-width: 550px ) {
+			// Disable horizontal scrolling
+			overflow: visible;
+		}
+	}
 }
 
 /******* VIEW *******/
 
 .instantDiffs-view {
-	// /* Use rem instead of em to avoid horizontal scrolling */
 	.oo-ui-messageDialog-text {
+		// Use rem instead of em to avoid horizontal scrolling
 		padding: 1rem 1rem 1.25rem;
 	}
 }
 
 /******* NAVIGATION *******/
 
-/* Use rem instead of em to avoid horizontal scrolling */
 .instantDiffs-navigation {
-	margin-inline: -1rem;
+	// Use rem instead of em to avoid horizontal scrolling
 	margin-bottom: 1rem;
-	padding: 1rem;
+	padding-block: 1rem;
 
 	@media (max-width: @max-width-breakpoint-mobile) {
-		padding: 0.5rem 1rem;
+		padding: calc(var(--instantDiffs-view-padding) / 2);
 	}
 }

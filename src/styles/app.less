@@ -7,6 +7,8 @@
 	display: none !important;
 }
 
+/******* COMMON *******/
+
 .instantDiffs-invisibleIconElement {
 	&& {
 		&.oo-ui-buttonElement-framed {
@@ -46,11 +48,25 @@
 	}
 }
 
-.instantDiffs-dummy-watch {
+.instantDiffs-code {
+	padding: 1px 4px;
+	border-radius: 2px;
+	background-color: var(--background-color-neutral-subtle, #f8f9fa);
+	color: var(--color-emphasized, #101418);
+	border: 1px solid var(--border-color-muted, #dadde3);
+}
+
+.instantDiffs-watch-dummy {
 	position: fixed;
 	top: 0;
-	left: 0;
+	right: @size-100;
 	visibility: hidden;
+}
+
+/******* NOTIFICATIONS *******/
+
+.instantDiffs-notification-label {
+	font-weight: bold;
 }
 
 .instantDiffs-notice-box {
@@ -79,20 +95,6 @@
 			width: 128px;
 		}
 	}
-}
-
-.instantDiffs-code {
-	padding: 1px 4px;
-	border-radius: 2px;
-	background-color: var(--background-color-neutral-subtle, #f8f9fa);
-	color: var(--color-emphasized, #101418);
-	border: 1px solid var(--border-color-muted, #dadde3);
-}
-
-/******* NOTIFICATION *******/
-
-.instantDiffs-notification-label {
-	font-weight: bold;
 }
 
 /******* PAGE SPECIFIC ADJUSTMENTS *******/

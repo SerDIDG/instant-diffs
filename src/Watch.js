@@ -85,14 +85,20 @@ class Watch {
 	$watchLink;
 
 	/**
-	 * Watchstart popover wrapper element.
+	 * Watchstar popover wrapper element.
 	 * @type {HTMLElement}
 	 */
 	watchstarPopoverWrapper;
 
 	/**
-	 * Watchstart popover instance.
-	 * @type {Vue.App<import('vue').ComponentOptions>}
+	 * Watchstar popover Vue app instance.
+	 * @type {import('vue').App<Element>}
+	 */
+	watchstarPopoverApp;
+
+	/**
+	 * Watchstar popover mounted component instance.
+	 * @type {import('vue').ComponentPublicInstance}
 	 */
 	watchstarPopover;
 
@@ -100,21 +106,23 @@ class Watch {
 	 * Creates a Watch instance.
 	 * @param {import('./Article').default} article - Article instance to manage watch status for
 	 * @param {Object} [options] - Configuration options
+	 * @param {HTMLElement} [options.linkContainer] - Container for the fake watch link
 	 * @param {Function} [options.onUpdate] - Callback invoked when watch status updates
 	 */
 	constructor( article, options ) {
 		this.article = article;
 
 		this.options = {
+			linkContainer: null,
 			onUpdate: () => {},
 			...options,
 		};
 
 		// Render a fake watch button that required in watchlist popup
-		this.$watchLink = $( '<a class="instantDiffs-dummy-watch">' );
-		utils.embed( this.$watchLink, document.body );
+		this.$watchLink = $( '<a class="instantDiffs-watch-dummy">' );
+		utils.embed( this.$watchLink, this.options.linkContainer );
 
-		// Get ajax watch config
+		// Get configuration for the ajax watch
 		const config = getModuleExport( 'mediawiki.page.watch.ajax', 'config.json' ) || {};
 		if ( !this.article.isForeign ) {
 			this.watchlistExpiryEnabled = config.WatchlistExpiry || false;
@@ -123,19 +131,18 @@ class Watch {
 		}
 		this.isWatchListPopupEnabled = settings.get( 'showWatchlistPopup' ) &&
 			( this.watchlistExpiryEnabled || this.watchlistLabelsEnabled );
-		this.isWatchstarPopoverEnabled =
-			( settings.get( 'expEnableWatchstarPopover' ) || mw.util.getParamValue( 'watchstarpopover' ) === '1' ) &&
-			( this.watchstarPopoverEnabled && this.isWatchListPopupEnabled );
+		this.isWatchstarPopoverEnabled = this.watchstarPopoverEnabled && this.isWatchListPopupEnabled;
 
 		// Preload the notification module for mw.notify
 		const modulesToLoad = [ 'mediawiki.notification' ];
 
 		// Preload modules required for the popup in parallel with the initial watch API call.
-		if ( this.watchstarPopoverEnabled ) {
-			modulesToLoad.push( 'mediawiki.watchstar.popover' );
-		}
 		if ( this.watchlistExpiryEnabled || this.watchlistLabelsEnabled ) {
-			modulesToLoad.push( 'mediawiki.watchstar.widgets' );
+			if ( this.watchstarPopoverEnabled ) {
+				modulesToLoad.push( 'mediawiki.watchstar.popover' );
+			} else {
+				modulesToLoad.push( 'mediawiki.watchstar.widgets' );
+			}
 		}
 		if ( this.watchlistLabelsEnabled ) {
 			modulesToLoad.push( 'mediawiki.widgets.MenuTagMultiselectWidget' );
@@ -269,8 +276,8 @@ class Watch {
 
 		// Re-set to idle.
 		notifyPromise.always( () => {
-			const otherAction = this.isWatched ? 'unwatch' : 'watch';
-			this.updateStatus( this.$watchLink, otherAction, 'idle', expiry, 'infinity' );
+			const state = this.isWatched ? 'unwatch' : 'watch';
+			this.updateStatus( this.$watchLink, state, 'idle', expiry, 'infinity' );
 		} );
 	};
 
@@ -356,81 +363,9 @@ class Watch {
 	}
 
 	/**
-	 * Shows the watchstar popover interface for managing watch status, expiry, and labels.
-	 * @since MediaWiki 1.47 (T417847)
-	 * @returns {JQuery.Promise} Promise that resolves when popover is shown or toggled
-	 * @private
-	 */
-	showWatchstarPopover() {
-		if ( this.watchstarPopover ) {
-			this.resetWatchstarPopover();
-			return $.Deferred().resolve().promise();
-		}
-
-		return mw.loader.using( 'mediawiki.watchstar.popover' )
-			.then( require => {
-				const Vue = require( 'vue' );
-				const { WatchlistPopup, dataExpiryOptions } = require( 'mediawiki.watchstar.popover' ) ?? {};
-
-				this.watchstarPopoverWrapper = h( 'span.mw-watchlink-popup' );
-				utils.embed( this.watchstarPopoverWrapper, document.body );
-
-				this.watchstarPopover = Vue.createMwApp( WatchlistPopup, {
-					initialAction: this.isWatched ? 'unwatch' : 'watch',
-					expiryEnabled: this.watchlistExpiryEnabled,
-					labelsEnabled: this.watchlistLabelsEnabled,
-					title: this.article.getTitle(),
-					dataExpiryOptions: dataExpiryOptions,
-					preferredExpiry: this.preferredExpiry,
-					link: this.$watchLink[ 0 ],
-					// On mobile the popover is shown as a bottom sheet.
-					useBottomSheet: utils.isMF(),
-				} ).mount( this.watchstarPopoverWrapper );
-
-				window.addEventListener( 'WatchlistPopup.watch', this.onWatchlistPopupWatch );
-				window.addEventListener( 'WatchlistPopup.unwatch', this.onWatchlistPopupUnwatch );
-
-				this.resetWatchstarPopover();
-			} );
-	}
-
-	resetWatchstarPopover() {
-		if ( this.watchstarPopover.isOpen ) {
-			this.watchstarPopover.isOpen = false;
-		} else {
-			this.watchstarPopover.openPopup( this.$watchLink[ 0 ] );
-		}
-	}
-
-	/**
-	 * Event handler for WatchlistPopup watch events.
-	 * Updates watch status to watched state with expiry information.
-	 * @param {CustomEvent} event - Custom event with watch response details
-	 * @private
-	 */
-	onWatchlistPopupWatch = ( event ) => {
-		this.isWatched = true;
-		const expiry = event.detail?.watchResponse
-			? event.detail.watchResponse.expiry || event.detail.watchResponse._rawValue?.expiry
-			: 'infinity';
-		this.updateStatus( this.$watchLink, 'unwatch', 'idle', expiry );
-	};
-
-	/**
-	 * Event handler for WatchlistPopup unwatch events.
-	 * Updates watch status to unwatched state.
-	 * @param {CustomEvent} event - Custom event with unwatch response details
-	 * @private
-	 */
-	onWatchlistPopupUnwatch = ( event ) => {
-		this.isWatched = false;
-		this.updateStatus( this.$watchLink, 'watch', 'idle' );
-	};
-
-	/**
 	 * Updates the article's watch status and related UI elements.
 	 * - Updates the article watch status and button
-	 * - Fires page update if article matches current page
+	 * - Fires page update if the article matches the current page
 	 * - Updates watchlist lines if on a watchlist page
 	 * @param {mw.Title|JQuery<HTMLElement>} titleOrLink - Title or link element
 	 * @param {('watch'|'unwatch')} action - Next available action
@@ -478,6 +413,117 @@ class Watch {
 		}
 	};
 
+	/******* POPOVER *******/
+
+	/**
+	 * Shows the watchstar popover interface for managing watch status, expiry, and labels.
+	 * @since MediaWiki 1.47 (T417847)
+	 * @returns {JQuery.Promise} Promise that resolves when popover is shown or toggled
+	 * @private
+	 */
+	showWatchstarPopover() {
+		if ( this.watchstarPopover ) {
+			this.resetWatchstarPopover();
+			return $.Deferred().resolve().promise();
+		}
+
+		return mw.loader.using( 'mediawiki.watchstar.popover' )
+			.then( require => {
+				const Vue = require( 'vue' );
+				const { WatchlistPopup, dataExpiryOptions } = require( 'mediawiki.watchstar.popover' ) ?? {};
+
+				this.watchstarPopoverWrapper = h( 'span.mw-watchlink-popup' );
+				utils.embed( this.watchstarPopoverWrapper, document.body );
+
+				this.watchstarPopoverApp = Vue.createMwApp( WatchlistPopup, {
+					initialAction: this.isWatched ? 'unwatch' : 'watch',
+					expiryEnabled: this.watchlistExpiryEnabled,
+					labelsEnabled: this.watchlistLabelsEnabled,
+					title: this.article.getTitle(),
+					dataExpiryOptions: dataExpiryOptions,
+					preferredExpiry: this.preferredExpiry,
+					link: this.$watchLink[ 0 ],
+					// On mobile the popover is shown as a bottom sheet.
+					useBottomSheet: utils.isMF(),
+					// FixMe: submit a patch for this option
+					//hideArrow: true,
+					placement: 'right-start',
+				} );
+				this.watchstarPopover = this.watchstarPopoverApp.mount( this.watchstarPopoverWrapper );
+
+				window.addEventListener( 'WatchlistPopup.loading', this.onWatchlistPopupLoading );
+				window.addEventListener( 'WatchlistPopup.watch', this.onWatchlistPopupWatch );
+				window.addEventListener( 'WatchlistPopup.unwatch', this.onWatchlistPopupUnwatch );
+
+				this.resetWatchstarPopover();
+			} );
+	}
+
+	/**
+	 * Resets the watchstar popover instance idle state.
+	 * @private
+	 */
+	resetWatchstarPopover() {
+		// Re-set to idle.
+		const state = this.isWatched ? 'unwatch' : 'watch';
+		this.updateStatus( this.$watchLink, state, 'idle' );
+
+		if ( this.watchstarPopover.isOpen ) {
+			this.watchstarPopover.isOpen = false;
+		} else {
+			this.watchstarPopover.openPopup( this.$watchLink[ 0 ] );
+		}
+	}
+
+	destroyWatchstarPopover() {
+		window.removeEventListener( 'WatchlistPopup.loading', this.onWatchlistPopupLoading );
+		window.removeEventListener( 'WatchlistPopup.watch', this.onWatchlistPopupWatch );
+		window.removeEventListener( 'WatchlistPopup.unwatch', this.onWatchlistPopupUnwatch );
+
+		this.watchstarPopoverApp.unmount();
+		this.watchstarPopoverWrapper.remove();
+
+		this.watchstarPopoverApp = null;
+		this.watchstarPopover = null;
+		this.watchstarPopoverWrapper = null;
+	}
+
+	/**
+	 * Event handler for WatchlistPopup watch events.
+	 * Updates watch status to the loading state.
+	 * @param {CustomEvent} event - Custom event with watch response details
+	 * @private
+	 */
+	onWatchlistPopupLoading = ( event ) => {
+		const state = this.isWatched ? 'unwatch' : 'watch';
+		this.updateStatus( this.$watchLink, state, 'loading' );
+	};
+
+	/**
+	 * Event handler for WatchlistPopup watch events.
+	 * Updates watch status to watched state with expiry information.
+	 * @param {CustomEvent} event - Custom event with watch response details
+	 * @private
+	 */
+	onWatchlistPopupWatch = ( event ) => {
+		this.isWatched = true;
+		const expiry = event.detail?.watchResponse
+			? event.detail.watchResponse.expiry || event.detail.watchResponse._rawValue?.expiry
+			: 'infinity';
+		this.updateStatus( this.$watchLink, 'unwatch', 'idle', expiry );
+	};
+
+	/**
+	 * Event handler for WatchlistPopup unwatch events.
+	 * Updates watch status to unwatched state.
+	 * @param {CustomEvent} event - Custom event with unwatch response details
+	 * @private
+	 */
+	onWatchlistPopupUnwatch = ( event ) => {
+		this.isWatched = false;
+		this.updateStatus( this.$watchLink, 'watch', 'idle' );
+	};
+
 	/******* ACTIONS *******/
 
 	/**
@@ -493,14 +539,9 @@ class Watch {
 	 * Removes the watchlist popup, event handlers, and fake watch button from the DOM.
 	 */
 	detach() {
-		// Detach watchlist popup and associated events
+		// Detach watchstar popover and associated events
 		if ( this.watchstarPopover ) {
-			window.removeEventListener( 'WatchlistPopup.watch', this.onWatchlistPopupWatch );
-			window.removeEventListener( 'WatchlistPopup.unwatch', this.onWatchlistPopupUnwatch );
-
-			this.watchstarPopover.isOpen = false;
-			//this.watchstarPopover.unmount();
-			this.watchstarPopoverWrapper.remove();
+			this.destroyWatchstarPopover();
 		}
 
 		// Detach the fake watch button
