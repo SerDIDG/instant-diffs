@@ -555,7 +555,6 @@ class Page {
 				expiry: page.watchlistexpiry,
 				notificationtimestamp: page.notificationtimestamp,
 				new: page.new,
-				editable: page.actions?.edit,
 				actions: page.actions,
 				label:
 					( isWbContentModel( page.contentmodel ) && entity.label?.[ 0 ] ) ||

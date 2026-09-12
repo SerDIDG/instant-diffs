@@ -443,11 +443,9 @@ class Watch {
 					dataExpiryOptions: dataExpiryOptions,
 					preferredExpiry: this.preferredExpiry,
 					link: this.$watchLink[ 0 ],
+					placement: 'right-start',
 					// On mobile the popover is shown as a bottom sheet.
 					useBottomSheet: utils.isMF(),
-					// FixMe: submit a patch for this option
-					//hideArrow: true,
-					placement: 'right-start',
 				} );
 				this.watchstarPopover = this.watchstarPopoverApp.mount( this.watchstarPopoverWrapper );
 
@@ -475,6 +473,10 @@ class Watch {
 		}
 	}
 
+	/**
+	 * Unmounts and removes the watchstar popover and event listeners.
+	 * @private
+	 */
 	destroyWatchstarPopover() {
 		window.removeEventListener( 'WatchlistPopup.loading', this.onWatchlistPopupLoading );
 		window.removeEventListener( 'WatchlistPopup.watch', this.onWatchlistPopupWatch );
@@ -536,7 +538,6 @@ class Watch {
 
 	/**
 	 * Cleans up and detaches watch-related UI elements and event listeners.
-	 * Removes the watchlist popup, event handlers, and fake watch button from the DOM.
 	 */
 	detach() {
 		// Detach watchstar popover and associated events

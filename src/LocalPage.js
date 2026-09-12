@@ -242,7 +242,6 @@ class LocalPage extends Page {
 			const title = utils.getTitleFromUrl( href ) || $fromLinks.prop( 'title' );
 			if ( !utils.isEmpty( title ) ) {
 				articleValues.deletedTitle = title;
-				articleValues.page1 = title;
 				articleValues.title = title;
 			}
 		}
@@ -268,15 +267,14 @@ class LocalPage extends Page {
 			const title = utils.getTitleFromUrl( href ) || $toLinks.prop( 'title' );
 			if ( !utils.isEmpty( title ) ) {
 				articleValues.addedTitle = title;
-				articleValues.page2 = title;
 				articleValues.title = title;
 			}
 		}
 
 		// Validate titles
-		if ( articleValues.page1 === articleValues.page2 ) {
-			delete articleValues.page1;
-			delete articleValues.page2;
+		if ( articleValues.deletedTitle !== articleValues.addedTitle ) {
+			articleValues.page1 = articleValues.deletedTitle;
+			articleValues.page2 = articleValues.addedTitle;
 		}
 
 		// Populate username
@@ -303,7 +301,6 @@ class LocalPage extends Page {
 		// Get undo links to check if the user can edit the page
 		const $editLinks = this.nodes.$body.find( '.mw-diff-undo a, .mw-rollback-link a' );
 		if ( $editLinks.length > 0 ) {
-			articleValues.editable = true;
 			configValues.wgIsProbablyEditable = true;
 			configValues.wgRelevantPageIsProbablyEditable = true;
 		}
