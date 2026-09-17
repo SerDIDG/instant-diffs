@@ -1,6 +1,7 @@
 import id from './id';
 import * as utils from './utils';
 
+import Link from './Link';
 import ViewButton from './ViewButton';
 import settings from './settings';
 
@@ -39,12 +40,12 @@ class HistoryCompareButton extends ViewButton {
 	 * @private
 	 */
 	onDialogOpen() {
-		this.nodes.$oldidLine.addClass( 'instantDiffs-line--active' );
-		this.nodes.$diffLine.addClass( 'instantDiffs-line--active' );
+		this.nodes.$oldidLine.addClass( `${ Link.LINE_CLASS_NAME }--active` );
+		this.nodes.$diffLine.addClass( `${ Link.LINE_CLASS_NAME }--active` );
 
 		if ( settings.get( 'highlightLine' ) ) {
-			this.nodes.$oldidLine.addClass( 'instantDiffs-line--highlight' );
-			this.nodes.$diffLine.addClass( 'instantDiffs-line--highlight' );
+			this.nodes.$oldidLine.addClass( `${ Link.LINE_CLASS_NAME }--highlight` );
+			this.nodes.$diffLine.addClass( `${ Link.LINE_CLASS_NAME }--highlight` );
 		}
 
 		super.onDialogOpen();
@@ -56,14 +57,14 @@ class HistoryCompareButton extends ViewButton {
 	 */
 	onDialogClose() {
 		if ( settings.get( 'highlightLine' ) ) {
-			this.nodes.$oldidLine.removeClass( 'instantDiffs-line--highlight' );
-			this.nodes.$diffLine.removeClass( 'instantDiffs-line--highlight' );
+			this.nodes.$oldidLine.removeClass( `${ Link.LINE_CLASS_NAME }--highlight` );
+			this.nodes.$diffLine.removeClass( `${ Link.LINE_CLASS_NAME }--highlight` );
 		}
 
 		// Deferred via double rAF so the browser paints the intermediate state.
 		utils.onSchedule( () => {
-			this.nodes.$oldidLine.removeClass( 'instantDiffs-line--active' );
-			this.nodes.$diffLine.removeClass( 'instantDiffs-line--active' );
+			this.nodes.$oldidLine.removeClass( `${ Link.LINE_CLASS_NAME }--active` );
+			this.nodes.$diffLine.removeClass( `${ Link.LINE_CLASS_NAME }--active` );
 		} );
 
 		super.onDialogClose();

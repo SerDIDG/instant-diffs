@@ -61,7 +61,7 @@ class MenuActionsButton extends OO.ui.PopupButtonWidget {
 	 * @returns {MenuActionsButton}
 	 */
 	setPending( value ) {
-		this.$button.toggleClass( 'instantDiffs-link--pending', value );
+		this.$button.toggleClass( 'instantDiffs-pending', value );
 		return this;
 	}
 }

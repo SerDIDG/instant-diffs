@@ -7,46 +7,11 @@
 	display: none !important;
 }
 
+.instantDiffs-pending {
+	cursor: wait !important;
+}
+
 /******* COMMON *******/
-
-.instantDiffs-invisibleIconElement {
-	&& {
-		&.oo-ui-buttonElement-framed {
-			> .oo-ui-buttonElement-button {
-				padding-inline: 12px;
-			}
-		}
-
-		&.oo-ui-buttonElement-frameless {
-			> .oo-ui-buttonElement-button {
-				padding-inline: 6px;
-			}
-		}
-	}
-
-	.oo-ui-iconElement-icon {
-		display: none;
-	}
-}
-
-.instantDiffs-button {
-	.oo-ui-buttonElement-pending {
-		position: absolute;
-		inset: 0;
-	}
-
-	.oo-ui-labelElement-label {
-		position: relative;
-	}
-
-	&.instantDiffs-button--pending {
-		pointer-events: none;
-	}
-
-	&.instantDiffs-button--hidden {
-		display: none !important;
-	}
-}
 
 .instantDiffs-code {
 	padding: 1px 4px;
@@ -121,7 +86,7 @@
 .instantDiffs-button--history-compare {
 	font-weight: normal;
 
-	// /* Fix button min-width for legacy wikis */
+	// Fix button min-width for legacy wikis
 	&.mw-ui-button {
 		min-width: 0;
 	}
@@ -139,12 +104,12 @@
 body:not(.skin-minerva) {
 	.instantDiffs-line--history {
 		@media (min-width: @min-width-breakpoint-tablet) {
-			// /* Add indent before the left checkbox selector for the all skins except Minerva */
+			// Add indent before the left checkbox selector for the all skins except Minerva
 			.mw-history-histlinks {
 				margin-inline-end: 0.5em;
 			}
 
-			// /* Add indent after the right checkbox selector for the all skins except Minerva */
+			// Add indent after the right checkbox selector for the all skins except Minerva
 			.mw-changeslist-date {
 				margin-inline-start: 0.5em;
 			}

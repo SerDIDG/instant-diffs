@@ -117,6 +117,18 @@ class Link {
 	}
 
 	/**
+	 * Link CSS class name prefix.
+	 * @type {string}
+	 */
+	static CLASS_NAME = 'instantDiffs-link';
+
+	/**
+	 * Line CSS class name prefix.
+	 * @type {string}
+	 */
+	static LINE_CLASS_NAME = 'instantDiffs-line';
+
+	/**
 	 * List of URL search param names to collect values from.
 	 * @type {string[]}
 	 */
@@ -404,7 +416,7 @@ class Link {
 			this.mw.line = utilsLink.getMWLine( this.node );
 			if ( this.mw.line ) {
 				this.mw.hasLine = true;
-				this.mw.line.classList.add( 'instantDiffs-line' );
+				this.mw.line.classList.add( Link.LINE_CLASS_NAME );
 
 				// Populate the page title from the watchlist line entry for the edge cases.
 				// Link minifiers often remove titles from the links.
@@ -982,19 +994,21 @@ class Link {
 		this.node.dataset.instantdiffsLink = this.options.behavior;
 
 		if ( this.options.setClasses ) {
-			const classes = [ 'instantDiffs-link', `instantDiffs-link--${ this.article.get( 'type' ) }`, `is-${ this.options.insertMethod }` ];
+			const classes = [ Link.CLASS_NAME, `is-${ this.options.insertMethod }` ];
+			this.node.classList.remove( 'external' );
+			this.node.classList.add( ...classes );
+
+			const modifiers = [ this.article.get( 'type' ) ];
 			if ( this.options.setClasses !== 'clear' ) {
-				classes.push( 'instantDiffs-link--styled' );
+				modifiers.push( 'styled' );
 				if ( this.isHidden ) {
-					classes.push( 'instantDiffs-link--error' );
+					modifiers.push( 'error' );
 				}
 			}
 			if ( this.options.setClasses === 'clear' ) {
-				classes.push( 'instantDiffs-link--clear' );
+				modifiers.push( 'clear' );
 			}
-
-			this.node.classList.remove( 'external' );
-			this.node.classList.add( ...classes );
+			this.setModifiers( modifiers );
 		}
 
 		this.actions.action = new Button( {
@@ -1079,9 +1093,9 @@ class Link {
 	 */
 	onDialogOpen = () => {
 		if ( this.mw.hasLine ) {
-			this.mw.line.classList.add( 'instantDiffs-line--active' );
+			this.mw.line.classList.add( `${ Link.LINE_CLASS_NAME }--active` );
 			if ( settings.get( 'highlightLine' ) ) {
-				this.mw.line.classList.add( 'instantDiffs-line--highlight' );
+				this.mw.line.classList.add( `${ Link.LINE_CLASS_NAME }--highlight` );
 			}
 		}
 
@@ -1102,31 +1116,25 @@ class Link {
 	onDialogClose = () => {
 		// Mark link as seen
 		if ( settings.get( 'markWatchedLink' ) && this.options.setClasses ) {
-			this.node.classList.add( 'is-seen' );
+			this.setModifiers( 'visited' );
 		}
 
 		// Mark list line as seen
 		if ( this.mw.hasLine ) {
 			if ( settings.get( 'highlightLine' ) ) {
-				this.mw.line.classList.remove( 'instantDiffs-line--highlight' );
+				this.mw.line.classList.remove( `${ Link.LINE_CLASS_NAME }--highlight` );
 			}
 
 			// Deferred via double rAF so the browser paints the intermediate state.
-			utils.onSchedule( () => this.mw.line.classList.remove( 'instantDiffs-line--active' ) );
+			utils.onSchedule( () => this.mw.line.classList.remove( `${ Link.LINE_CLASS_NAME }--active` ) );
 
-			if (
-				settings.get( 'markWatchedLine' ) &&
-				id.config.changeLists.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) )
-			) {
-				this.mw.line.classList.remove( ...id.config.selectors.mwLine.unseen );
-				this.mw.line.classList.add( ...id.config.selectors.mwLine.seen );
-			}
+			if ( settings.get( 'markWatchedLine' ) ) {
+				this.mw.line.classList.add( `${ Link.LINE_CLASS_NAME }--visited` );
 
-			if (
-				settings.get( 'markWatchedLine' ) &&
-				id.local.mwCanonicalSpecialPageName === 'GlobalWatchlist'
-			) {
-				this.mw.line.classList.add( 'instantDiffs-line--seen' );
+				if ( id.config.changeLists.includes( mw.config.get( 'wgCanonicalSpecialPageName' ) ) ) {
+					this.mw.line.classList.remove( ...id.config.selectors.mwLine.unseen );
+					this.mw.line.classList.add( ...id.config.selectors.mwLine.seen );
+				}
 			}
 		}
 
@@ -1168,6 +1176,22 @@ class Link {
 	/******* ACTIONS *******/
 
 	/**
+	 * Sets class modifiers to the link node.
+	 * @param {Array|string} values
+	 * @param {boolean} [toggle=true]
+	 */
+	setModifiers( values, toggle = true ) {
+		values = !utils.isArray( values ) ? [ values ] : values;
+		const classes = [];
+		values.forEach( value => {
+			value = value.trim();
+			if ( !value ) return;
+			classes.push( `${ Link.CLASS_NAME }--${ value }` );
+		} );
+		this.node.classList[ toggle ? 'add' : 'remove' ]( ...classes );
+	}
+
+	/**
 	 * Toggles the pending loader cursor visibility.
 	 * Shows a loading cursor on the action button or link element.
 	 * @param {boolean} value - True to show loader, false to hide
@@ -1176,7 +1200,7 @@ class Link {
 		if ( this.actions.action ) {
 			this.actions.action.setPending( value );
 		} else {
-			this.node.classList.toggle( 'instantDiffs-link--pending', value );
+			this.node.classList.toggle( 'instantDiffs-pending', value );
 		}
 	}
 

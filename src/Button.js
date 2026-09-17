@@ -1,5 +1,7 @@
 import * as utils from './utils';
 
+import './styles/buttons.less';
+
 /**
  * Class representing a button.
  * @mixes OO.EventEmitter
@@ -133,7 +135,7 @@ class Button {
 	 * @returns {Button}
 	 */
 	setPending( value ) {
-		this.node.classList.toggle( 'instantDiffs-link--pending', value );
+		this.node.classList.toggle( 'instantDiffs-pending', value );
 		return this;
 	}
 

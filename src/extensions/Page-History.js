@@ -11,6 +11,7 @@
 
 import * as utils from '../utils';
 
+import Link from '../Link';
 import HistoryCompareButton from '../HistoryCompareButton';
 
 /**
@@ -34,7 +35,7 @@ function processPageAdjustments( id ) {
 
 	// Add an instantDiffs-line CSS class that adds spaces between selector checkboxes
 	const $revisionLines = $( '#pagehistory > li, #pagehistory .mw-contributions-list > li' )
-		.addClass( 'instantDiffs-line--history' );
+		.addClass( `${ Link.LINE_CLASS_NAME }--history` );
 
 	// Makes diff links and wrap empty links
 	$revisionLines.each( ( i, node ) => {

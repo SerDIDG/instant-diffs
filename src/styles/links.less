@@ -35,10 +35,6 @@
 		--instantDiffs-label: var(--instantDiffs-label-revision);
 	}
 
-	&--pending {
-		cursor: wait !important;
-	}
-
 	&--styled {
 		padding-inline: var(--instantDiffs-gap);
 		-webkit-box-decoration-break: clone;
@@ -47,9 +43,9 @@
 		color: var(--instantDiffs-color-link);
 		text-decoration: none;
 
-		&.is-seen {
-			background: var(--instantDiffs-background-link--seen);
-			color: var(--instantDiffs-color-link--seen);
+		&.instantDiffs-link--visited {
+			background: var(--instantDiffs-background-link--visited);
+			color: var(--instantDiffs-color-link--visited);
 		}
 
 		&:is(:hover, :focus-visible) {
@@ -135,17 +131,18 @@
 		}
 	}
 
-	a.seen + & {
-		color: var(--instantDiffs-color-link--seen)
+	.instantDiffs-link--visited + & {
+		color: var(--instantDiffs-color-link--visited)
 	}
 
-	// /* Edge-case when the panel is inside a codex dialog footer */
+	// Edge-case when the panel is inside a codex dialog footer
+	// (for example, FlaggedRevs pending changes popover)
 	.cdx-dialog__footer__actions & {
 		align-self: center;
 	}
 }
 
-/*** PLACEHOLDER ***/
+/******* PLACEHOLDER *******/
 
 .instantDiffs-panel-placeholder {
 	padding-inline: var(--instantDiffs-gap);
@@ -189,7 +186,7 @@
 	}
 }
 
-/*** LINES ***/
+/******* LINES *******/
 
 #instantDiffs-line() {
 	.--active() {
@@ -205,7 +202,7 @@
 		background-color: transparent !important;
 	}
 
-	.--seen() {
+	.--visited() {
 		.mw-title {
 			font-weight: normal;
 		}
@@ -239,7 +236,7 @@
 		}
 	}
 
-	&--seen {
-		#instantDiffs-line.--seen();
+	&--visited {
+		#instantDiffs-line.--visited();
 	}
 }

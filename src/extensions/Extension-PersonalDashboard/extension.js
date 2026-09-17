@@ -43,9 +43,13 @@ function process() {
 	const $context = $( CONTEXT_SELECTORS.join( ',' ) );
 	if ( !utils.isAllowed() || $context.length === 0 ) return;
 
+	$context
+		.find( '.personal-dashboard-review-changes__card' )
+		.attr( 'data-instantdiffs-line', '' );
+
 	const options = JSON.stringify( { setClasses: 'clear' } );
 	$context
-		.find( 'a.personal-dashboard-review-changes__card__link' )
+		.find( 'a.personal-dashboard-feed__card__link' )
 		.attr( 'data-instantdiffs-link', 'event' )
 		.attr( 'data-instantdiffs-options', options );
 

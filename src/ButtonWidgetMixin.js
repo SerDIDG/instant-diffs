@@ -22,6 +22,9 @@ import Link from './Link';
  * Class representing a custom ButtonWidget for the navigation menu.
  */
 class ButtonWidgetMixin {
+	/**
+	 * @type {string}
+	 */
 	static CLASS_NAME = 'instantDiffs-button';
 
 	/**
