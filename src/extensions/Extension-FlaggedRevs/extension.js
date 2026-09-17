@@ -11,9 +11,9 @@
 
 import * as utils from '../../utils';
 
-import './styles.less';
-
 import ReviewPage from './ReviewPage';
+
+import './styles.less';
 
 /**
  * Extension configuration options.
@@ -58,6 +58,10 @@ export const schema = {
 	},
 };
 
+const SPECIAL_PENDING_CHANGES_SELECTORS = [
+	'.mw-fr-pending-changes-table',
+];
+
 /**
  * Processes special pages.
  * @param {import('../id').InstantDiffsNamespace} id
@@ -66,9 +70,9 @@ function processPageAdjustments( id ) {
 	if ( id.local.mwCanonicalSpecialPageName === 'RevisionReview' ) {
 		processRevisionReview();
 	}
-	if ( id.local.mwCanonicalSpecialPageName === 'PendingChanges' ) {
-		processPendingChanges();
-	}
+
+	// Process Special:PendingChanges page and embedded tables in content
+	processPendingChanges();
 }
 
 /**
@@ -87,9 +91,8 @@ function processRevisionReview() {
  * Processes Special:PendingChanges.
  */
 function processPendingChanges() {
-	const $container = utils
-		.getContentNode()
-		.find( '.mw-fr-pending-changes-table' );
+	const $container = utils.contentFind( SPECIAL_PENDING_CHANGES_SELECTORS );
+	if ( $container.length === 0 ) return;
 
 	// Mark the diff list lines as ready to be processed
 	$container

@@ -798,6 +798,11 @@ export function getContentNode() {
 	return $content;
 }
 
+export function contentFind( selector ) {
+	selector = isArray( selector ) ? selector.join( ',' ) : selector;
+	return getContentNode().find( selector );
+}
+
 export function getSpecialPageAliases( data, name ) {
 	const namespace = 'Special';
 	const localNamespace = mw.config.get( 'wgFormattedNamespaces' )[ '-1' ];
