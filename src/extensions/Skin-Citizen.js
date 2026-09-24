@@ -21,15 +21,27 @@ export const schema = {
 	},
 };
 
+const SIDEBAR_LASTMOD_SELECTORS = [
+	'#citizen-sidebar-lastmod',      // @version 3.23
+	'#citizen-page-aside-lastmod',   // @since 3.24
+];
+
+const SIDEBAR_LASTMOD_LINK_SELECTORS = [
+	'#citizen-lastmod-relative',     // @version 3.23
+	'.citizen-page-aside__link',   // @since 3.24
+];
+
 /**
  * Processes page.
  */
 function processPageAdjustments() {
-	const lastModLink = document.querySelector( '#citizen-lastmod-relative' );
-	const lastModSidebar = document.querySelector( '#citizen-sidebar-lastmod' );
-	if ( lastModLink && lastModSidebar ) {
-		renderLastMod( lastModLink, lastModSidebar );
-	}
+	const sidebarLastMod = document.querySelectorAll( SIDEBAR_LASTMOD_SELECTORS.join( ',' ) );
+	sidebarLastMod.forEach( sidebar => {
+		const link = sidebar.querySelector( SIDEBAR_LASTMOD_LINK_SELECTORS.join( ',' ) );
+		if ( link ) {
+			renderLastMod( link, sidebar );
+		}
+	} );
 }
 
 /**
