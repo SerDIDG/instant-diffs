@@ -354,7 +354,6 @@ class SettingsDialog extends OO.ui.ProcessDialog {
 	}
 
 	async getFieldContent( name, field ) {
-		if ( !settings.check( name ) ) return;
 		if ( !utils.isFunction( field.content ) ) return;
 		return await field.content( name, field );
 	}
