@@ -51,6 +51,17 @@
 
 /******* VIEW *******/
 
+.instantDiffs-windowManager {
+	&.oo-ui-windowManager-modal.oo-ui-windowManager-floating {
+		> .instantDiffs-view {
+			> .oo-ui-window-frame {
+				// Reset max-height to allow the view to expand to the height of the screen
+				max-height: 100%;
+			}
+		}
+	}
+}
+
 .instantDiffs-view-loader {
 	border: none;
 
