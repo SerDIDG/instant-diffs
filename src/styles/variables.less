@@ -9,7 +9,7 @@
 	--instantDiffs-label-revision: '✪';
 	--instantDiffs-label-placeholder: '◇';
 
-	--instantDiffs-color-subtle:  var(--color-base--subtle, #54595d);
+	--instantDiffs-color-subtle: var(--color-base--subtle, #54595d);
 	--instantDiffs-color-link: var(--color-progressive, #36c);
 	--instantDiffs-color-link--hover: var(--color-progressive--hover, #3056a9);
 	--instantDiffs-color-link--active: var(--color-progressive--active, #233566);
@@ -17,6 +17,9 @@
 	--instantDiffs-color-link-error: var(--color-error, #bf3c2c);
 	--instantDiffs-color-link-error--hover: var(--color-error--hover, #9f3526);
 	--instantDiffs-color-link-error--active: var(--color-error--active, #612419);
+	--instantDiffs-color-button-menu--hover: var(--color-progressive--hover, var(--instantDiffs-color-link--hover));
+	--instantDiffs-color-button-menu--active: var(--color-progressive--active, var(--instantDiffs-color-link--active));
+	--instantDiffs-color-button-menu-border--active: var(--border-color-progressive--active, #2a4b8d);
 	--instantDiffs-color-panel: var(--color-placeholder, #72777d);
 
 	--instantDiffs-background-link: var(--background-color-progressive-subtle, #f1f4fd);
@@ -26,10 +29,14 @@
 	--instantDiffs-background-link-error: var(--background-color-error-subtle, #ffe9e5);
 	--instantDiffs-background-link-error--hover: var(--background-color-error-subtle--hover, #ffdad3);
 	--instantDiffs-background-link-error--active: var(--background-color-error-subtle--active, #ffc8bd);
+	--instantDiffs-background-button-menu--hover: var(--background-color-interactive, #eaecf0);
+	--instantDiffs-background-button-menu--active: var(--background-color-progressive-subtle, #eaf3ff);
 	--instantDiffs-background-line: color-mix(in srgb, var(--border-color-progressive, #cfe3ff) 30%, transparent);
 	--instantDiffs-background-glass: color-mix(in srgb, var(--background-color-base, #ffffff) 70%, transparent);
 
 	--instantDiffs-border-color: var(--border-color-base, #a2a9b1);
+	--instantDiffs-border-color-button-menu--active: var(--border-color-progressive--active, #2a4b8d);
+	--instantDiffs-border-radius: var(--border-radius-base, @border-radius-base);
 
 	--instantDiffs-line-height: var(--line-height-medium, 1.5714285);
 	--instantDiffs-font-size: var(--font-size-medium, 0.875rem);
@@ -38,15 +45,14 @@
 
 	--instantDiffs-gap: .25rem;
 
-	--instantDiffs-button-radius: var(--border-radius-base, @border-radius-base);
-
-	--instantDiffs-view-top: 0;
+	--instantDiffs-view-top: 0px;
 	--instantDiffs-view-padding: @spacing-100;
-	--instantDiffs-view-radius: 0;
-	--instantDiffs-view-scroll-padding-top: 0;
+	--instantDiffs-view-border: 1px;
+	--instantDiffs-view-radius: var(--border-radius-base, @border-radius-base);
+	--instantDiffs-view-scroll-padding-top: 0px;
 
 	&.skin-theme-clientpref-night {
-		--instantDiffs-color-subtle:  var(--color-base--subtle, #a2a9b1);
+		--instantDiffs-color-subtle: var(--color-base--subtle, #a2a9b1);
 		--instantDiffs-background-link--visited: var(--background-color-option-purple, #353262);
 	}
 }

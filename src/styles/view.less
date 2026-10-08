@@ -23,13 +23,15 @@
 	}
 
 	.oo-ui-windowManager-modal:not(.oo-ui-windowManager-size-full) & {
+		@radius: calc(var(--instantDiffs-view-radius) - var(--instantDiffs-view-border));
+
 		.instantDiffs-navigation {
-			border-radius: var(--instantDiffs-view-radius) var(--instantDiffs-view-radius) 0 0;
+			border-radius: @radius @radius 0 0;
 		}
 
 		.instantDiffs-view-loader {
-			border-top-right-radius: max(var(--instantDiffs-view-radius), 0.28571429em) 0.28571429em;
-			border-top-left-radius: max(var(--instantDiffs-view-radius), 0.28571429em) 0.28571429em;
+			border-top-right-radius: @radius;
+			border-top-left-radius: @radius;
 		}
 	}
 

@@ -162,21 +162,21 @@
 
 		> .oo-ui-buttonElement-button {
 			margin: 0;
-			border-radius: var(--instantDiffs-button-radius);
+			border-radius: var(--instantDiffs-border-radius);
 		}
 	}
 
 	&.oo-ui-widget-enabled {
 		> .oo-ui-buttonElement-button {
 			&:is(:hover, :focus) {
-				background-color: var(--background-color-interactive, #eaecf0);
-				color: var(--color-progressive--hover, var(--instantDiffs-color-link--hover));
+				background-color: var(--instantDiffs-background-button-menu--hover);
+				color: var(--instantDiffs-color-button-menu--hover);
 			}
 
 			&:active {
-				border-color: var(--border-color-progressive--active, #2a4b8d);
-				background-color: var(--background-color-progressive-subtle, #eaf3ff);
-				color: var(--color-progressive--active, var(--instantDiffs-color-link--active));
+				border-color: var(--instantDiffs-border-color-button-menu--active);
+				background-color: var(--instantDiffs-background-button-menu--active);
+				color: var(--instantDiffs-color-button-menu--active);
 			}
 		}
 	}

@@ -1,0 +1,60 @@
+/**
+ * Skin:Fandom base styles
+ */
+
+/******* VARIABLES *******/
+
+@media screen {
+	--instantDiffs-color-subtle: var(--theme-page-text-color, #e6e6e6);
+	--instantDiffs-color-link: var(--theme-link-color, var(--color-progressive, #36c));
+	--instantDiffs-color-link--hover: var(--theme-link-color--hover, var(--color-progressive--hover, #3056a9));
+	--instantDiffs-color-link--active: var(--theme-link-color--hover, var(--color-progressive--active, #233566));
+	--instantDiffs-color-link--visited: var(--color-visited, #6a60b0);
+	--instantDiffs-color-button-menu--hover: var(--theme-link-color, var(--instantDiffs-color-link--hover));
+	--instantDiffs-color-button-menu--active: var(--theme-link-color, var(--instantDiffs-color-link--active));
+
+	--instantDiffs-background-link: var(--theme-page-background-color--secondary, var(--background-color-progressive-subtle, #f1f4fd));
+	--instantDiffs-background-link--hover: var(--theme-page-background-color--secondary, var(--background-color-interactive-subtle--hover, #eaecf0));
+	--instantDiffs-background-link--active: var(--theme-page-background-color--secondary, var(--background-color-interactive-subtle--active, #dadde3));
+	--instantDiffs-background-button-menu--hover: var(--theme-page-background-color, #eaecf0);
+	--instantDiffs-background-button-menu--active: var(--theme-page-background-color, #eaf3ff);
+	--instantDiffs-background-glass: color-mix(in srgb, var(--theme-page-background-color--secondary, #ffffff) 70%, transparent);
+
+	--instantDiffs-border-color: var(--theme-border-color, #4f4f51);
+	--instantDiffs-border-color-button-menu--active: var(--theme-accent-color, #36c);
+	--instantDiffs-border-radius: var(--border-radius-base, 3px);
+
+	--instantDiffs-line-height: 1.75;
+	--instantDiffs-font-size: 1rem;
+
+	--instantDiffs-view-padding: 24px;
+	--instantDiffs-view-border: 0px;
+	--instantDiffs-view-radius: var(--border-radius-base, 3px);
+}
+
+/******* BUTTONS *******/
+
+.instantDiffs-button {
+	&--history-compare {
+		border-radius: var(--instantDiffs-border-radius);
+		background-color: var(--theme-accent-color);
+		border: 1px solid var(--theme-accent-color);
+		color: var(--theme-accent-label-color);
+
+		&:hover {
+			background-color: var(--theme-accent-color--hover);
+			border: 1px solid var(--theme-accent-color--hover);
+			color: var(--theme-accent-label-color);
+		}
+	}
+}
+
+/******* VIEW *******/
+
+.instantDiffs-view-loader {
+	border: none;
+
+	.oo-ui-progressBarWidget-bar {
+		height: 0.28571429em;
+	}
+}

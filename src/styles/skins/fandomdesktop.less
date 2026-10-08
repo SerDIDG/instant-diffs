@@ -3,34 +3,15 @@
  * Used on desktop devices in Fandom
  */
 
+@import ( multiple ) 'fandom.base.less';
+
 /******* VARIABLES *******/
 
 @media screen {
-	--instantDiffs-color-subtle:  var(--theme-page-text-color, #e6e6e6);
-	--instantDiffs-background-glass: color-mix(in srgb, var(--theme-page-background-color--secondary, #ffffff) 70%, transparent);
-	--instantDiffs-border-color: var(--theme-border-color, #4f4f51);
-	--instantDiffs-line-height: 1.75;
-	--instantDiffs-font-size: 1rem;
 	--instantDiffs-view-top: 45px;
-	--instantDiffs-view-padding: 24px;
-}
 
-/*** BUTTON GROUPS ***/
-
-.instantDiffs-buttons-group {
-	&--vertical {
-		hr {
-			border-color: var(--instantDiffs-border-color);
-		}
-	}
-}
-
-/******* VIEW *******/
-
-.instantDiffs-view-loader {
-	border: none;
-
-	.oo-ui-progressBarWidget-bar {
-		height: 0.28571429em;
+	&.theme-fandomdesktop-dark {
+		--instantDiffs-color-link--visited: var(--color-visited, #a799cd);
+		--instantDiffs-background-link--visited: var(--background-color-option-purple, #353262);
 	}
 }
