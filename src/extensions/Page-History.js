@@ -5,7 +5,7 @@
  * - adds instantDiffs-line CSS class that adds spacing between selector checkboxes;
  * - adds a compare button to the revision selector;
  * - makes diff links for the first page edit if possible;
- * - wraps empty diff links with placeholders.
+ * - wraps empty diff and revision links with placeholders.
  * @see {@link https://www.mediawiki.org/wiki/Help:History}
  */
 
@@ -40,14 +40,21 @@ function processPageAdjustments( id ) {
 	// Makes diff links and wrap empty links
 	$revisionLines.each( ( i, node ) => {
 		const $line = $( node );
+
+		// Diffs
 		const $cur = $line.find( '.mw-history-histlinks > span:first-child' );
 		const $prev = $line.find( '.mw-history-histlinks > span:last-child' );
 		if ( $cur.find( 'a' ).length === 0 ) {
-			$cur.wrapInner( utils.renderPlaceholder() );
+			$cur.wrapInner( utils.renderPlaceholder( [ 'diff-empty' ] ) );
 		}
 		if ( $prev.find( 'a' ).length === 0 ) {
 			utils.wrapContributionsDiffLink( $line, $prev, [ 'mw-history-histlinks-previous' ] );
 		}
+
+		// Revisions
+		$line
+			.find( '.mw-changeslist-date.history-deleted' )
+			.addClass( utils.getPlaceholderClasses( [ 'revision-empty' ] ) );
 	} );
 
 	// Add a compare button only if the number of lines is greater than 1

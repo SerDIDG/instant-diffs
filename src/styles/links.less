@@ -150,7 +150,6 @@
 	&:after {
 		margin-inline-start: var(--instantDiffs-gap);
 		color: var(--color-placeholder, #72777d);
-		content: var(--instantDiffs-label-placeholder);
 	}
 
 	&.has-link {
@@ -163,9 +162,21 @@
 		}
 	}
 
+	&--diff-empty {
+		&::after {
+			content: var(--instantDiffs-label-diff--empty);
+		}
+	}
+
 	&--revision {
 		&::after {
 			content: var(--instantDiffs-label-revision);
+		}
+	}
+
+	&--revision-empty {
+		&::after {
+			content: var(--instantDiffs-label-revision--empty);
 		}
 	}
 

@@ -1261,8 +1261,8 @@ export function getPlaceholderClasses( modifiers = [] ) {
 	return classes;
 }
 
-export function renderPlaceholder() {
-	return $( '<span>' ).addClass( getPlaceholderClasses() );
+export function renderPlaceholder( modifiers ) {
+	return $( '<span>' ).addClass( getPlaceholderClasses( modifiers ) );
 }
 
 export function renderLabel( params ) {
@@ -1339,7 +1339,7 @@ export function renderMessageBox( params ) {
  * @param {string[]} [addClasses] - classes to add to the diff link
  */
 export function wrapContributionsDiffLink( $line, $span, addClasses ) {
-	let $wrapper = renderPlaceholder();
+	let $wrapper = renderPlaceholder( [ 'diff-empty' ] );
 
 	// Clone revision link and convert it to diff link
 	const $revLink = $line.find( 'a.mw-changeslist-date' );

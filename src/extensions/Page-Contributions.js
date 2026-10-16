@@ -3,7 +3,7 @@
  *
  * Adds enhancements to user contribution pages:
  * - makes diff links for the first page edit if possible;
- * - wraps empty diff links with placeholders;
+ * - wraps empty diff and revision links with placeholders;
  * - fixes relative links in edit summaries by adding base URLs in GlobalContributions.
  * @see {@link https://www.mediawiki.org/wiki/Help:User_contributions}
  * @see {@link https://www.mediawiki.org/wiki/Extension:GlobalContributions}
@@ -42,16 +42,23 @@ function processPageAdjustments( id ) {
 /**
  * Process user contribution pages:
  * - makes diff links for the first page edit if possible;
- * - wraps empty diff links with placeholders and handles.
+ * - wraps empty diff and revision links with placeholders and handles.
  */
 function process() {
 	const $contributionsLines = $( '.mw-contributions-list li' );
 	$contributionsLines.each( ( i, node ) => {
 		const $line = $( node );
+
+		// Diffs
 		const $span = $line.find( '.mw-changeslist-links:not(.mw-pager-tools, .mw-usertoollinks) > span:first-child' );
 		if ( $span.find( 'a' ).length === 0 ) {
 			utils.wrapContributionsDiffLink( $line, $span, [ 'mw-changeslist-diff' ] );
 		}
+
+		// Revisions
+		$line
+			.find( '.mw-changeslist-date.history-deleted' )
+			.addClass( utils.getPlaceholderClasses( [ 'revision-empty' ] ) );
 	} );
 }
 
