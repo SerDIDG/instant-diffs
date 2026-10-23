@@ -27,6 +27,7 @@ export const schema = {
 const CONTEXT_SELECTORS = [
 	'.personal-dashboard-viewport',
 	'#personal-dashboard-teleport',
+	'#personal-dashboard-root',
 ];
 
 /**
